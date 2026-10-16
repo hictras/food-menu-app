@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useLang } from "./LanguageProvider";
 import { t } from "@/lib/i18n";
+import PushSubscribe from "./PushSubscribe";
 
 export default function Nav() {
   const { lang, toggle } = useLang();
@@ -13,11 +14,12 @@ export default function Nav() {
         <Link href="/" className="brand">
           {t(lang, "brand")}<span>.</span>
         </Link>
-        <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
           <Link href="/recipes">{t(lang, "nav_recipes")}</Link>
           <Link href="/recipes/new" className="btn btn-primary">
             {t(lang, "nav_add")}
           </Link>
+          <PushSubscribe />
           <button
             type="button"
             onClick={toggle}
