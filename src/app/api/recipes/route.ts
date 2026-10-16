@@ -2,23 +2,31 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/db";
 import { recipes, ingredients, instructions } from "@/db/schema";
 
+type IngredientPayload = {
+  name: string;
+  nameAr: string;
+  amount: string;
+  unit: string;
+  unitAr: string;
+  preparation: string;
+  preparationAr: string;
+};
+
 type Payload = {
   name: string;
+  nameAr: string;
   description: string;
+  descriptionAr: string;
   cuisine: string;
+  cuisineAr: string;
   prepTime: number;
   cookTime: number;
   servings: number;
   dietaryTags: string[];
   imageUrl: string | null;
   videoUrl: string | null;
-  ingredients: {
-    name: string;
-    amount: string;
-    unit: string;
-    preparation: string;
-  }[];
-  instructions: { text: string }[];
+  ingredients: IngredientPayload[];
+  instructions: { text: string; textAr: string }[];
 };
 
 export async function POST(req: NextRequest) {
@@ -27,18 +35,18 @@ export async function POST(req: NextRequest) {
     const body: Payload = await req.json();
 
     if (!body.name?.trim()) {
-      return NextResponse.json(
-        { error: "Recipe name is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Recipe name is required" }, { status: 400 });
     }
 
     const [recipe] = await db
       .insert(recipes)
       .values({
         name: body.name.trim(),
+        nameAr: body.nameAr?.trim() || null,
         description: body.description?.trim() || null,
+        descriptionAr: body.descriptionAr?.trim() || null,
         cuisine: body.cuisine?.trim() || null,
+        cuisineAr: body.cuisineAr?.trim() || null,
         prepTime: Number(body.prepTime) || 0,
         cookTime: Number(body.cookTime) || 0,
         servings: Number(body.servings) || 1,
@@ -51,13 +59,16 @@ export async function POST(req: NextRequest) {
     if (body.ingredients?.length) {
       await db.insert(ingredients).values(
         body.ingredients
-          .filter((i) => i.name?.trim())
+          .filter((i) => i.name?.trim() || i.nameAr?.trim())
           .map((i) => ({
             recipeId: recipe.id,
-            name: i.name.trim(),
+            name: i.name?.trim() || i.nameAr?.trim() || "",
+            nameAr: i.nameAr?.trim() || null,
             amount: i.amount?.trim() || null,
             unit: i.unit?.trim() || null,
+            unitAr: i.unitAr?.trim() || null,
             preparation: i.preparation?.trim() || null,
+            preparationAr: i.preparationAr?.trim() || null,
           }))
       );
     }
@@ -65,11 +76,12 @@ export async function POST(req: NextRequest) {
     if (body.instructions?.length) {
       await db.insert(instructions).values(
         body.instructions
-          .filter((s) => s.text?.trim())
+          .filter((s) => s.text?.trim() || s.textAr?.trim())
           .map((s, idx) => ({
             recipeId: recipe.id,
             stepNumber: idx + 1,
-            text: s.text.trim(),
+            text: s.text?.trim() || s.textAr?.trim() || "",
+            textAr: s.textAr?.trim() || null,
           }))
       );
     }
@@ -77,9 +89,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ id: recipe.id });
   } catch (err) {
     console.error("Save recipe error:", err);
-    return NextResponse.json(
-      { error: "Failed to save recipe" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to save recipe" }, { status: 500 });
   }
 }

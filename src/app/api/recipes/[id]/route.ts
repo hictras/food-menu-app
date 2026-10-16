@@ -3,59 +3,57 @@ import { getDb } from "@/db";
 import { recipes, ingredients, instructions } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
+type IngredientPayload = {
+  name: string;
+  nameAr: string;
+  amount: string;
+  unit: string;
+  unitAr: string;
+  preparation: string;
+  preparationAr: string;
+};
+
 type Payload = {
   name: string;
+  nameAr: string;
   description: string;
+  descriptionAr: string;
   cuisine: string;
+  cuisineAr: string;
   prepTime: number;
   cookTime: number;
   servings: number;
   dietaryTags: string[];
   imageUrl: string | null;
   videoUrl: string | null;
-  ingredients: {
-    name: string;
-    amount: string;
-    unit: string;
-    preparation: string;
-  }[];
-  instructions: { text: string }[];
+  ingredients: IngredientPayload[];
+  instructions: { text: string; textAr: string }[];
 };
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const db = getDb();
   try {
     const { id } = await params;
     const recipeId = Number(id);
-    if (Number.isNaN(recipeId)) {
-      return NextResponse.json({ error: "Invalid id" }, { status: 400 });
-    }
+    if (Number.isNaN(recipeId)) return NextResponse.json({ error: "Invalid id" }, { status: 400 });
 
     const body: Payload = await req.json();
-    if (!body.name?.trim()) {
-      return NextResponse.json(
-        { error: "Recipe name is required" },
-        { status: 400 }
-      );
-    }
+    if (!body.name?.trim()) return NextResponse.json({ error: "Recipe name is required" }, { status: 400 });
 
-    await db
-      .update(recipes)
-      .set({
-        name: body.name.trim(),
-        description: body.description?.trim() || null,
-        cuisine: body.cuisine?.trim() || null,
-        prepTime: Number(body.prepTime) || 0,
-        cookTime: Number(body.cookTime) || 0,
-        servings: Number(body.servings) || 1,
-        dietaryTags: JSON.stringify(body.dietaryTags ?? []),
-        imageUrl: body.imageUrl ?? null,
-        videoUrl: body.videoUrl ?? null,
-      })
-      .where(eq(recipes.id, recipeId));
+    await db.update(recipes).set({
+      name: body.name.trim(),
+      nameAr: body.nameAr?.trim() || null,
+      description: body.description?.trim() || null,
+      descriptionAr: body.descriptionAr?.trim() || null,
+      cuisine: body.cuisine?.trim() || null,
+      cuisineAr: body.cuisineAr?.trim() || null,
+      prepTime: Number(body.prepTime) || 0,
+      cookTime: Number(body.cookTime) || 0,
+      servings: Number(body.servings) || 1,
+      dietaryTags: JSON.stringify(body.dietaryTags ?? []),
+      imageUrl: body.imageUrl ?? null,
+      videoUrl: body.videoUrl ?? null,
+    }).where(eq(recipes.id, recipeId));
 
     await db.delete(ingredients).where(eq(ingredients.recipeId, recipeId));
     await db.delete(instructions).where(eq(instructions.recipeId, recipeId));
@@ -63,13 +61,16 @@ export async function PUT(
     if (body.ingredients?.length) {
       await db.insert(ingredients).values(
         body.ingredients
-          .filter((i) => i.name?.trim())
+          .filter((i) => i.name?.trim() || i.nameAr?.trim())
           .map((i) => ({
             recipeId,
-            name: i.name.trim(),
+            name: i.name?.trim() || i.nameAr?.trim() || "",
+            nameAr: i.nameAr?.trim() || null,
             amount: i.amount?.trim() || null,
             unit: i.unit?.trim() || null,
+            unitAr: i.unitAr?.trim() || null,
             preparation: i.preparation?.trim() || null,
+            preparationAr: i.preparationAr?.trim() || null,
           }))
       );
     }
@@ -77,11 +78,12 @@ export async function PUT(
     if (body.instructions?.length) {
       await db.insert(instructions).values(
         body.instructions
-          .filter((s) => s.text?.trim())
+          .filter((s) => s.text?.trim() || s.textAr?.trim())
           .map((s, idx) => ({
             recipeId,
             stepNumber: idx + 1,
-            text: s.text.trim(),
+            text: s.text?.trim() || s.textAr?.trim() || "",
+            textAr: s.textAr?.trim() || null,
           }))
       );
     }
@@ -89,32 +91,20 @@ export async function PUT(
     return NextResponse.json({ id: recipeId });
   } catch (err) {
     console.error("Update recipe error:", err);
-    return NextResponse.json(
-      { error: "Failed to update recipe" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to update recipe" }, { status: 500 });
   }
 }
 
-export async function DELETE(
-  _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const db = getDb();
   try {
     const { id } = await params;
     const recipeId = Number(id);
-    if (Number.isNaN(recipeId)) {
-      return NextResponse.json({ error: "Invalid id" }, { status: 400 });
-    }
-
+    if (Number.isNaN(recipeId)) return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     await db.delete(recipes).where(eq(recipes.id, recipeId));
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("Delete recipe error:", err);
-    return NextResponse.json(
-      { error: "Failed to delete recipe" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to delete recipe" }, { status: 500 });
   }
 }

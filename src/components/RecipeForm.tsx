@@ -9,22 +9,41 @@ import { extractYouTubeId } from "@/lib/youtube";
 import { useLang } from "./LanguageProvider";
 import { t } from "@/lib/i18n";
 
-type Ingredient = { name: string; amount: string; unit: string; preparation: string };
-type Step = { text: string };
+type Ingredient = {
+  name: string;
+  nameAr: string;
+  amount: string;
+  unit: string;
+  unitAr: string;
+  preparation: string;
+  preparationAr: string;
+};
+type Step = { text: string; textAr: string };
 
 type InitialData = {
   id: number;
   name: string;
+  nameAr: string | null;
   description: string | null;
+  descriptionAr: string | null;
   cuisine: string | null;
+  cuisineAr: string | null;
   prepTime: number;
   cookTime: number;
   servings: number;
   dietaryTags: string | null;
   imageUrl: string | null;
   videoUrl: string | null;
-  ingredients: { name: string; amount: string | null; unit: string | null; preparation: string | null }[];
-  instructions: { text: string }[];
+  ingredients: {
+    name: string;
+    nameAr: string | null;
+    amount: string | null;
+    unit: string | null;
+    unitAr: string | null;
+    preparation: string | null;
+    preparationAr: string | null;
+  }[];
+  instructions: { text: string; textAr: string | null }[];
 };
 
 const TAG_AR: Record<string, string> = {
@@ -42,14 +61,27 @@ const TAG_AR: Record<string, string> = {
   Quick: "سريع",
 };
 
+const emptyIngredient: Ingredient = {
+  name: "",
+  nameAr: "",
+  amount: "",
+  unit: "",
+  unitAr: "",
+  preparation: "",
+  preparationAr: "",
+};
+
 export default function RecipeForm({ initial }: { initial?: InitialData }) {
   const router = useRouter();
   const { lang } = useLang();
   const isEdit = !!initial;
 
   const [name, setName] = useState(initial?.name ?? "");
+  const [nameAr, setNameAr] = useState(initial?.nameAr ?? "");
   const [description, setDescription] = useState(initial?.description ?? "");
+  const [descriptionAr, setDescriptionAr] = useState(initial?.descriptionAr ?? "");
   const [cuisine, setCuisine] = useState(initial?.cuisine ?? "");
+  const [cuisineAr, setCuisineAr] = useState(initial?.cuisineAr ?? "");
   const [prepTime, setPrepTime] = useState(initial?.prepTime ? String(initial.prepTime) : "");
   const [cookTime, setCookTime] = useState(initial?.cookTime ? String(initial.cookTime) : "");
   const [servings, setServings] = useState(initial?.servings ? String(initial.servings) : "4");
@@ -64,17 +96,20 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
     initial?.ingredients?.length
       ? initial.ingredients.map((i) => ({
           name: i.name,
+          nameAr: i.nameAr ?? "",
           amount: i.amount ?? "",
           unit: i.unit ?? "",
+          unitAr: i.unitAr ?? "",
           preparation: i.preparation ?? "",
+          preparationAr: i.preparationAr ?? "",
         }))
-      : [{ name: "", amount: "", unit: "", preparation: "" }]
+      : [{ ...emptyIngredient }]
   );
 
   const [steps, setSteps] = useState<Step[]>(
     initial?.instructions?.length
-      ? initial.instructions.map((s) => ({ text: s.text }))
-      : [{ text: "" }]
+      ? initial.instructions.map((s) => ({ text: s.text, textAr: s.textAr ?? "" }))
+      : [{ text: "", textAr: "" }]
   );
 
   const [bulkIngredients, setBulkIngredients] = useState("");
@@ -98,14 +133,12 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
   }, [name, description]);
 
   function toggleTag(tag: string) {
-    setTags((t) => (t.includes(tag) ? t.filter((x) => x !== tag) : [...t, tag]));
+    setTags((tags) => (tags.includes(tag) ? tags.filter((x) => x !== tag) : [...tags, tag]));
   }
   function updateIngredient(i: number, patch: Partial<Ingredient>) {
     setIngredientsList((list) => list.map((ing, idx) => (idx === i ? { ...ing, ...patch } : ing)));
   }
-  function addIngredient() {
-    setIngredientsList((l) => [...l, { name: "", amount: "", unit: "", preparation: "" }]);
-  }
+  function addIngredient() { setIngredientsList((l) => [...l, { ...emptyIngredient }]); }
   function removeIngredient(i: number) {
     setIngredientsList((l) => (l.length === 1 ? l : l.filter((_, idx) => idx !== i)));
   }
@@ -113,16 +146,27 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
     const parsed = parseIngredientsBulk(bulkIngredients);
     if (parsed.length === 0) return;
     setIngredientsList((prev) => {
-      const cleaned = prev.filter((i) => i.name.trim() || i.amount.trim());
-      return [...cleaned, ...parsed];
+      const cleaned = prev.filter((i) => i.name.trim() || i.nameAr.trim() || i.amount.trim());
+      return [
+        ...cleaned,
+        ...parsed.map((p) => ({
+          name: p.name,
+          nameAr: "",
+          amount: p.amount,
+          unit: p.unit,
+          unitAr: "",
+          preparation: p.preparation,
+          preparationAr: "",
+        })),
+      ];
     });
     setBulkIngredients("");
     setShowBulkIng(false);
   }
-  function updateStep(i: number, text: string) {
-    setSteps((s) => s.map((st, idx) => (idx === i ? { text } : st)));
+  function updateStep(i: number, patch: Partial<Step>) {
+    setSteps((s) => s.map((st, idx) => (idx === i ? { ...st, ...patch } : st)));
   }
-  function addStep() { setSteps((s) => [...s, { text: "" }]); }
+  function addStep() { setSteps((s) => [...s, { text: "", textAr: "" }]); }
   function removeStep(i: number) {
     setSteps((s) => (s.length === 1 ? s : s.filter((_, idx) => idx !== i)));
   }
@@ -132,8 +176,8 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
       .filter(Boolean);
     if (lines.length === 0) return;
     setSteps((prev) => {
-      const cleaned = prev.filter((s) => s.text.trim());
-      return [...cleaned, ...lines.map((text) => ({ text }))];
+      const cleaned = prev.filter((s) => s.text.trim() || s.textAr.trim());
+      return [...cleaned, ...lines.map((text) => ({ text, textAr: "" }))];
     });
     setBulkSteps("");
     setShowBulkStep(false);
@@ -142,7 +186,7 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!name.trim()) { setError(t(lang, "name_required")); return; }
+    if (!name.trim() && !nameAr.trim()) { setError(t(lang, "name_required")); return; }
 
     setSubmitting(true);
     try {
@@ -152,17 +196,20 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name, description, cuisine,
+          name: name.trim() || nameAr.trim(),
+          nameAr,
+          description,
+          descriptionAr,
+          cuisine,
+          cuisineAr,
           prepTime: parseInt(prepTime) || 0,
           cookTime: parseInt(cookTime) || 0,
           servings: parseInt(servings) || 1,
           dietaryTags: tags,
           imageUrl,
           videoUrl: videoUrl.trim() || null,
-          ingredients: ingredientsList.filter((i) => i.name.trim()).map((i) => ({
-            name: i.name, amount: i.amount, unit: i.unit, preparation: i.preparation,
-          })),
-          instructions: steps.filter((s) => s.text.trim()),
+          ingredients: ingredientsList.filter((i) => i.name.trim() || i.nameAr.trim()),
+          instructions: steps.filter((s) => s.text.trim() || s.textAr.trim()),
         }),
       });
 
@@ -191,42 +238,58 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
       <section className="form-section">
         <h2>{t(lang, "basics")}</h2>
 
-        <div className="field">
-          <label htmlFor="name">{t(lang, "name")} *</label>
-          <input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+        <div className="field-pair">
+          <div className="field">
+            <label>Recipe name (EN)</label>
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} dir="ltr" />
+          </div>
+          <div className="field">
+            <label>اسم الوصفة (AR)</label>
+            <input type="text" value={nameAr} onChange={(e) => setNameAr(e.target.value)} dir="rtl" />
+          </div>
         </div>
 
-        <div className="field">
-          <label htmlFor="description">{t(lang, "description")}</label>
-          <textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder={t(lang, "description_ph")} />
+        <div className="field-pair">
+          <div className="field">
+            <label>Description (EN)</label>
+            <textarea value={description} onChange={(e) => setDescription(e.target.value)} dir="ltr" />
+          </div>
+          <div className="field">
+            <label>الوصف (AR)</label>
+            <textarea value={descriptionAr} onChange={(e) => setDescriptionAr(e.target.value)} dir="rtl" />
+          </div>
         </div>
 
-        <div className="field">
-          <label htmlFor="cuisine">{t(lang, "cuisine")}</label>
-          <input id="cuisine" type="text" value={cuisine} onChange={(e) => setCuisine(e.target.value)} placeholder={t(lang, "cuisine_ph")} />
+        <div className="field-pair">
+          <div className="field">
+            <label>Cuisine (EN)</label>
+            <input type="text" value={cuisine} onChange={(e) => setCuisine(e.target.value)} dir="ltr" />
+          </div>
+          <div className="field">
+            <label>المطبخ (AR)</label>
+            <input type="text" value={cuisineAr} onChange={(e) => setCuisineAr(e.target.value)} dir="rtl" />
+          </div>
         </div>
       </section>
 
       <section className="form-section">
         <h2>
           {t(lang, "time_servings")}
-          {totalTime > 0 && (
-            <span className="total-time">⏱ {totalTime} {t(lang, "min_total")}</span>
-          )}
+          {totalTime > 0 && <span className="total-time">⏱ {totalTime} {t(lang, "min_total")}</span>}
         </h2>
 
         <div className="field-row">
           <div className="field">
-            <label htmlFor="prep">{t(lang, "prep")}</label>
-            <input id="prep" type="number" min="0" value={prepTime} onChange={(e) => setPrepTime(e.target.value)} />
+            <label>{t(lang, "prep")}</label>
+            <input type="number" min="0" value={prepTime} onChange={(e) => setPrepTime(e.target.value)} />
           </div>
           <div className="field">
-            <label htmlFor="cook">{t(lang, "cook")}</label>
-            <input id="cook" type="number" min="0" value={cookTime} onChange={(e) => setCookTime(e.target.value)} />
+            <label>{t(lang, "cook")}</label>
+            <input type="number" min="0" value={cookTime} onChange={(e) => setCookTime(e.target.value)} />
           </div>
           <div className="field">
-            <label htmlFor="servings">{t(lang, "servings")}</label>
-            <input id="servings" type="number" min="1" value={servings} onChange={(e) => setServings(e.target.value)} />
+            <label>{t(lang, "servings")}</label>
+            <input type="number" min="1" value={servings} onChange={(e) => setServings(e.target.value)} />
           </div>
         </div>
       </section>
@@ -246,15 +309,13 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
       <section className="form-section">
         <h2>{t(lang, "photo")}</h2>
         <ImageUpload onUploaded={setImageUrl} initialUrl={imageUrl ?? undefined} />
-        <p className="helper">{t(lang, "photo_hint")}</p>
       </section>
 
       <section className="form-section">
         <h2>{t(lang, "video")}</h2>
         <div className="field">
-          <label htmlFor="videoUrl">{t(lang, "video_label")}</label>
-          <input id="videoUrl" type="text" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder={t(lang, "video_ph")} />
-          <p className="helper">{t(lang, "video_hint")}</p>
+          <label>{t(lang, "video_label")}</label>
+          <input type="text" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="https://youtube.com/watch?v=..." dir="ltr" />
         </div>
         {videoPreviewId && (
           <div className="video-wrap" style={{ marginTop: 12 }}>
@@ -267,11 +328,14 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
         <h2>{t(lang, "ingredients")}</h2>
         <div className="row-list">
           {ingredientsList.map((ing, i) => (
-            <div className="row" key={i} style={{ display: "grid", gridTemplateColumns: "60px 80px 1fr 130px auto", gap: 10 }}>
-              <input type="text" placeholder={t(lang, "qty")} value={ing.amount} onChange={(e) => updateIngredient(i, { amount: e.target.value })} />
-              <input type="text" placeholder={t(lang, "unit")} value={ing.unit} onChange={(e) => updateIngredient(i, { unit: e.target.value })} />
-              <input type="text" placeholder={t(lang, "ingredient")} value={ing.name} onChange={(e) => updateIngredient(i, { name: e.target.value })} />
-              <input type="text" placeholder={t(lang, "prep_short")} value={ing.preparation} onChange={(e) => updateIngredient(i, { preparation: e.target.value })} />
+            <div className="ing-row" key={i}>
+              <input className="cell-qty" type="text" placeholder={t(lang, "qty")} value={ing.amount} onChange={(e) => updateIngredient(i, { amount: e.target.value })} dir="ltr" />
+              <input className="cell-unit" type="text" placeholder={t(lang, "unit")} value={ing.unit} onChange={(e) => updateIngredient(i, { unit: e.target.value })} dir="ltr" />
+              <input className="cell-unit" type="text" placeholder={t(lang, "unit_ar_label")} value={ing.unitAr} onChange={(e) => updateIngredient(i, { unitAr: e.target.value })} dir="rtl" />
+              <input className="cell-name" type="text" placeholder={t(lang, "ingredient")} value={ing.name} onChange={(e) => updateIngredient(i, { name: e.target.value })} dir="ltr" />
+              <input className="cell-name" type="text" placeholder={t(lang, "ingredient_ar_label")} value={ing.nameAr} onChange={(e) => updateIngredient(i, { nameAr: e.target.value })} dir="rtl" />
+              <input className="cell-prep" type="text" placeholder={t(lang, "prep_short")} value={ing.preparation} onChange={(e) => updateIngredient(i, { preparation: e.target.value })} dir="ltr" />
+              <input className="cell-prep" type="text" placeholder={t(lang, "prep_short_ar")} value={ing.preparationAr} onChange={(e) => updateIngredient(i, { preparationAr: e.target.value })} dir="rtl" />
               <button type="button" className="icon-btn" onClick={() => removeIngredient(i)} disabled={ingredientsList.length === 1}>✕</button>
             </div>
           ))}
@@ -295,9 +359,10 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
         <h2>{t(lang, "instructions")}</h2>
         <div className="row-list">
           {steps.map((st, i) => (
-            <div className="row row-step" key={i}>
+            <div className="step-pair" key={i}>
               <div className="step-num">{i + 1}</div>
-              <textarea value={st.text} onChange={(e) => updateStep(i, e.target.value)} />
+              <textarea placeholder={t(lang, "step_en")} value={st.text} onChange={(e) => updateStep(i, { text: e.target.value })} dir="ltr" />
+              <textarea placeholder={t(lang, "step_ar")} value={st.textAr} onChange={(e) => updateStep(i, { textAr: e.target.value })} dir="rtl" />
               <button type="button" className="icon-btn" onClick={() => removeStep(i)} disabled={steps.length === 1}>✕</button>
             </div>
           ))}
@@ -318,9 +383,7 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
       </section>
 
       <div className="form-actions">
-        <button type="button" className="btn btn-ghost" onClick={() => router.push(isEdit ? `/recipes/${initial!.id}` : "/")} disabled={submitting}>
-          {t(lang, "cancel")}
-        </button>
+        <button type="button" className="btn btn-ghost" onClick={() => router.push(isEdit ? `/recipes/${initial!.id}` : "/")} disabled={submitting}>{t(lang, "cancel")}</button>
         <button type="submit" className="btn btn-primary" disabled={submitting}>
           {submitting ? t(lang, "saving") : isEdit ? t(lang, "save_changes") : t(lang, "save")}
         </button>

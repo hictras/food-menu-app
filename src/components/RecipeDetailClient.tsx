@@ -2,14 +2,17 @@
 
 import Link from "next/link";
 import { useLang } from "./LanguageProvider";
-import { t } from "@/lib/i18n";
+import { t, pick } from "@/lib/i18n";
 import { extractYouTubeId } from "@/lib/youtube";
 
 type RecipeRow = {
   id: number;
   name: string;
+  nameAr: string | null;
   description: string | null;
+  descriptionAr: string | null;
   cuisine: string | null;
+  cuisineAr: string | null;
   prepTime: number;
   cookTime: number;
   servings: number;
@@ -21,15 +24,34 @@ type RecipeRow = {
 type IngredientRow = {
   id: number;
   name: string;
+  nameAr: string | null;
   amount: string | null;
   unit: string | null;
+  unitAr: string | null;
   preparation: string | null;
+  preparationAr: string | null;
 };
 
 type InstructionRow = {
   id: number;
   stepNumber: number;
   text: string;
+  textAr: string | null;
+};
+
+const TAG_AR: Record<string, string> = {
+  Vegetarian: "نباتي",
+  Vegan: "نباتي صرف",
+  "Gluten-Free": "خالٍ من الغلوتين",
+  "Dairy-Free": "خالٍ من الألبان",
+  "Nut-Free": "خالٍ من المكسرات",
+  Halal: "حلال",
+  Kosher: "كوشير",
+  "Low-Carb": "قليل الكربوهيدرات",
+  Keto: "كيتو",
+  Paleo: "باليو",
+  Spicy: "حار",
+  Quick: "سريع",
 };
 
 export default function RecipeDetailClient({
@@ -46,26 +68,26 @@ export default function RecipeDetailClient({
   const youtubeId = extractYouTubeId(recipe.videoUrl);
   const minLabel = lang === "ar" ? "د" : "min";
 
+  const displayName = pick(lang, recipe.name, recipe.nameAr);
+  const displayDesc = pick(lang, recipe.description, recipe.descriptionAr);
+  const displayCuisine = pick(lang, recipe.cuisine, recipe.cuisineAr);
+
   return (
     <>
       <div style={{ margin: "24px 0" }}>
-        <Link href="/" className="btn btn-ghost">
-          {t(lang, "back_cookbook")}
-        </Link>
+        <Link href="/" className="btn btn-ghost">{t(lang, "back_cookbook")}</Link>
       </div>
 
       {recipe.imageUrl && (
-        <img src={recipe.imageUrl} alt={recipe.name} className="detail-hero" />
+        <img src={recipe.imageUrl} alt={displayName} className="detail-hero" />
       )}
 
       <header className="detail-head">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
-          <h1 style={{ margin: 0 }}>{recipe.name}</h1>
-          <Link href={`/recipes/${recipe.id}/edit`} className="btn btn-ghost">
-            {t(lang, "edit")}
-          </Link>
+          <h1 style={{ margin: 0 }}>{displayName}</h1>
+          <Link href={`/recipes/${recipe.id}/edit`} className="btn btn-ghost">{t(lang, "edit")}</Link>
         </div>
-        {recipe.description && <p className="detail-desc">{recipe.description}</p>}
+        {displayDesc && <p className="detail-desc">{displayDesc}</p>}
 
         <div className="detail-meta">
           <div className="meta-item">
@@ -84,10 +106,10 @@ export default function RecipeDetailClient({
             <span className="meta-label">{t(lang, "servings")}</span>
             <span className="meta-value">{recipe.servings}</span>
           </div>
-          {recipe.cuisine && (
+          {displayCuisine && (
             <div className="meta-item">
               <span className="meta-label">{t(lang, "cuisine")}</span>
-              <span className="meta-value">{recipe.cuisine}</span>
+              <span className="meta-value">{displayCuisine}</span>
             </div>
           )}
         </div>
@@ -95,7 +117,9 @@ export default function RecipeDetailClient({
         {tags.length > 0 && (
           <div className="chips" style={{ marginTop: 16 }}>
             {tags.map((tag) => (
-              <span key={tag} className="chip active">{tag}</span>
+              <span key={tag} className="chip active">
+                {lang === "ar" ? TAG_AR[tag] ?? tag : tag}
+              </span>
             ))}
           </div>
         )}
@@ -122,21 +146,26 @@ export default function RecipeDetailClient({
             <p className="helper">{t(lang, "no_ingredients")}</p>
           ) : (
             <ul className="ing-list">
-              {ingredients.map((i) => (
-                <li key={i.id}>
-                  <span className="ing-amount">
-                    {[i.amount, i.unit].filter(Boolean).join(" ")}
-                  </span>
-                  <span className="ing-name">
-                    {i.name}
-                    {i.preparation && (
-                      <span style={{ color: "var(--muted)", fontStyle: "italic" }}>
-                        {lang === "ar" ? "، " : ", "}{i.preparation}
-                      </span>
-                    )}
-                  </span>
-                </li>
-              ))}
+              {ingredients.map((i) => {
+                const ingName = pick(lang, i.name, i.nameAr);
+                const ingUnit = pick(lang, i.unit, i.unitAr);
+                const ingPrep = pick(lang, i.preparation, i.preparationAr);
+                return (
+                  <li key={i.id}>
+                    <span className="ing-amount">
+                      {[i.amount, ingUnit].filter(Boolean).join(" ")}
+                    </span>
+                    <span className="ing-name">
+                      {ingName}
+                      {ingPrep && (
+                        <span style={{ color: "var(--muted)", fontStyle: "italic" }}>
+                          {lang === "ar" ? "، " : ", "}{ingPrep}
+                        </span>
+                      )}
+                    </span>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </section>
@@ -150,7 +179,7 @@ export default function RecipeDetailClient({
               {instructions.map((s) => (
                 <li key={s.id}>
                   <div className="step-num">{s.stepNumber}</div>
-                  <p>{s.text}</p>
+                  <p>{pick(lang, s.text, s.textAr)}</p>
                 </li>
               ))}
             </ol>

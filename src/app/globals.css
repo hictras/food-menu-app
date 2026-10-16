@@ -435,3 +435,66 @@ html[dir="rtl"] .form-actions { flex-direction: row-reverse; }
   height: 100%;
   border: 0;
 }
+
+/* Bilingual input pairs */
+.field-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+@media (max-width: 640px) {
+  .field-pair { grid-template-columns: 1fr; }
+}
+
+/* Ingredient row with 7 inputs */
+.ing-row {
+  display: grid;
+  grid-template-columns: 55px 70px 70px 1fr 1fr 90px 90px auto;
+  gap: 8px;
+  align-items: center;
+}
+@media (max-width: 900px) {
+  .ing-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.ing-row .cell-qty,
+.ing-row .cell-unit,
+.ing-row .cell-prep,
+.ing-row .cell-name {
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  font-size: 14px;
+  min-width: 0;
+}
+
+/* Step with EN + AR side by side */
+.step-pair {
+  display: grid;
+  grid-template-columns: 44px 1fr 1fr auto;
+  gap: 10px;
+  align-items: flex-start;
+}
+@media (max-width: 900px) {
+  .step-pair {
+    grid-template-columns: 44px 1fr;
+  }
+}
+.step-pair textarea {
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  font-family: inherit;
+  font-size: 14px;
+  min-height: 70px;
+  resize: vertical;
+}
+.step-pair textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: white;
+}

@@ -23,8 +23,11 @@ async function EditLoader({ params }: { params: Promise<{ id: string }> }) {
       initial={{
         id: recipe.id,
         name: recipe.name,
+        nameAr: recipe.nameAr,
         description: recipe.description,
+        descriptionAr: recipe.descriptionAr,
         cuisine: recipe.cuisine,
+        cuisineAr: recipe.cuisineAr,
         prepTime: recipe.prepTime,
         cookTime: recipe.cookTime,
         servings: recipe.servings,
@@ -33,11 +36,14 @@ async function EditLoader({ params }: { params: Promise<{ id: string }> }) {
         videoUrl: recipe.videoUrl,
         ingredients: ings.map((i) => ({
           name: i.name,
+          nameAr: i.nameAr,
           amount: i.amount,
           unit: i.unit,
+          unitAr: i.unitAr,
           preparation: i.preparation,
+          preparationAr: i.preparationAr,
         })),
-        instructions: steps.map((s) => ({ text: s.text })),
+        instructions: steps.map((s) => ({ text: s.text, textAr: s.textAr })),
       }}
     />
   );
