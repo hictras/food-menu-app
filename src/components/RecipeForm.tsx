@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import ImageUpload from "./ImageUpload";
 import { DIETARY_TAGS } from "@/lib/dietary-tags";
 import { parseIngredientsBulk } from "@/lib/parse-ingredients";
+import { extractYouTubeId } from "@/lib/youtube";
 
 type Ingredient = {
   name: string;
@@ -24,6 +25,7 @@ type InitialData = {
   servings: number;
   dietaryTags: string | null;
   imageUrl: string | null;
+  videoUrl: string | null;
   ingredients: {
     name: string;
     amount: string | null;
@@ -60,6 +62,7 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
   const [imageUrl, setImageUrl] = useState<string | null>(
     initial?.imageUrl ?? null
   );
+  const [videoUrl, setVideoUrl] = useState(initial?.videoUrl ?? "");
 
   const [ingredientsList, setIngredientsList] = useState<Ingredient[]>(
     initial?.ingredients?.length
@@ -92,6 +95,11 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
     const c = parseInt(cookTime) || 0;
     return p + c;
   }, [prepTime, cookTime]);
+
+  const videoPreviewId = useMemo(
+    () => extractYouTubeId(videoUrl),
+    [videoUrl]
+  );
 
   useEffect(() => {
     const handler = (e: BeforeUnloadEvent) => {
@@ -190,6 +198,7 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
           servings: parseInt(servings) || 1,
           dietaryTags: tags,
           imageUrl,
+          videoUrl: videoUrl.trim() || null,
           ingredients: ingredientsList
             .filter((i) => i.name.trim())
             .map((i) => ({
@@ -340,6 +349,33 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
           initialUrl={imageUrl ?? undefined}
         />
         <p className="helper">Optional. Uploads go straight to Cloudflare R2.</p>
+      </section>
+
+      <section className="form-section">
+        <h2>Video</h2>
+        <div className="field">
+          <label htmlFor="videoUrl">YouTube URL or video ID</label>
+          <input
+            id="videoUrl"
+            type="text"
+            value={videoUrl}
+            onChange={(e) => setVideoUrl(e.target.value)}
+            placeholder="https://www.youtube.com/watch?v=..."
+          />
+          <p className="helper">
+            Paste any YouTube link — watch, youtu.be, shorts, or the raw ID.
+          </p>
+        </div>
+        {videoPreviewId && (
+          <div className="video-wrap" style={{ marginTop: 12 }}>
+            <iframe
+              src={`https://www.youtube.com/embed/${videoPreviewId}`}
+              title="Preview"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        )}
       </section>
 
       <section className="form-section">

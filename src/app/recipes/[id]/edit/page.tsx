@@ -44,6 +44,7 @@ async function EditLoader({ params }: { params: Promise<{ id: string }> }) {
         servings: recipe.servings,
         dietaryTags: recipe.dietaryTags,
         imageUrl: recipe.imageUrl,
+        videoUrl: recipe.videoUrl,
         ingredients: ings.map((i) => ({
           name: i.name,
           amount: i.amount,

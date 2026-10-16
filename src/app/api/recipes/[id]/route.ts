@@ -12,6 +12,7 @@ type Payload = {
   servings: number;
   dietaryTags: string[];
   imageUrl: string | null;
+  videoUrl: string | null;
   ingredients: {
     name: string;
     amount: string;
@@ -52,6 +53,7 @@ export async function PUT(
         servings: Number(body.servings) || 1,
         dietaryTags: JSON.stringify(body.dietaryTags ?? []),
         imageUrl: body.imageUrl ?? null,
+        videoUrl: body.videoUrl ?? null,
       })
       .where(eq(recipes.id, recipeId));
 

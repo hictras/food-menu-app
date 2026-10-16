@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { getDb } from "@/db";
 import { recipes, ingredients, instructions } from "@/db/schema";
 import { eq, asc } from "drizzle-orm";
+import { extractYouTubeId } from "@/lib/youtube";
 
 async function RecipeDetail({ id }: { id: number }) {
   const db = getDb();
@@ -31,6 +32,8 @@ async function RecipeDetail({ id }: { id: number }) {
   const tags: string[] = recipe.dietaryTags
     ? JSON.parse(recipe.dietaryTags)
     : [];
+
+  const youtubeId = extractYouTubeId(recipe.videoUrl);
 
   return (
     <>
@@ -100,6 +103,20 @@ async function RecipeDetail({ id }: { id: number }) {
           </div>
         )}
       </header>
+
+      {youtubeId && (
+        <section className="video-section">
+          <h2>Video</h2>
+          <div className="video-wrap">
+            <iframe
+              src={`https://www.youtube.com/embed/${youtubeId}`}
+              title="Recipe video"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        </section>
+      )}
 
       <div className="detail-cols">
         <section className="detail-section">

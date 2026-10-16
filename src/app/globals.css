@@ -435,3 +435,29 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
   margin: 4px 0 0;
   line-height: 1.6;
 }
+
+/* Video section */
+.video-section { margin: 0 0 40px; }
+.video-section h2 {
+  font-size: 20px;
+  margin: 0 0 16px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--accent);
+  display: inline-block;
+}
+.video-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  background: #000;
+}
+.video-wrap iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}

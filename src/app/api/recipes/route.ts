@@ -11,6 +11,7 @@ type Payload = {
   servings: number;
   dietaryTags: string[];
   imageUrl: string | null;
+  videoUrl: string | null;
   ingredients: {
     name: string;
     amount: string;
@@ -43,6 +44,7 @@ export async function POST(req: NextRequest) {
         servings: Number(body.servings) || 1,
         dietaryTags: JSON.stringify(body.dietaryTags ?? []),
         imageUrl: body.imageUrl ?? null,
+        videoUrl: body.videoUrl ?? null,
       })
       .returning();
 

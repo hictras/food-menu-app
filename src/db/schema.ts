@@ -11,6 +11,7 @@ export const recipes = sqliteTable("recipes", {
   cuisine: text("cuisine"),
   dietaryTags: text("dietary_tags"),
   imageUrl: text("image_url"),
+  videoUrl: text("video_url"),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
