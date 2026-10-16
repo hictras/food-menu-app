@@ -67,7 +67,18 @@ export default function RecipeDetailClient({
           )}
         </div>
         {displayDesc && <p className="detail-desc">{displayDesc}</p>}
-
+<button
+  type="button"
+  className="btn btn-ghost"
+  onClick={async () => {
+    const res = await fetch(`/api/share/whatsapp?id=${recipe.id}&lang=${lang}`);
+    const data = await res.json();
+    window.open(data.url, "_blank");
+  }}
+>
+  <span style={{ fontSize: 14 }}>💬</span>
+  {lang === "ar" ? "مشاركة واتساب" : "Share"}
+</button>
         <div className="detail-meta">
           <div className="meta-item"><span className="meta-label">{t(lang, "prep")}</span><span className="meta-value">{recipe.prepTime} {minLabel}</span></div>
           <div className="meta-item"><span className="meta-label">{t(lang, "cook")}</span><span className="meta-value">{recipe.cookTime} {minLabel}</span></div>

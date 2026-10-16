@@ -3,11 +3,14 @@
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ImageUpload from "./ImageUpload";
+import PickerDropdown from "./PickerDropdown";
+import AutoTranslate from "./AutoTranslate";
 import { DIETARY_TAGS } from "@/lib/dietary-tags";
 import { parseIngredientsBulk } from "@/lib/parse-ingredients";
 import { extractYouTubeId } from "@/lib/youtube";
 import { useLang } from "./LanguageProvider";
 import { t } from "@/lib/i18n";
+import { CUISINES, UNITS, PREPARATIONS } from "@/lib/pickers";
 
 type Ingredient = {
   name: string; nameAr: string; amount: string; unit: string; unitAr: string;
@@ -192,7 +195,7 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
   return (
     <form className="form-card" onSubmit={handleSubmit}>
       {error && (
-        <div style={{ background: "#fdecea", color: "#c84b31", padding: "12px 16px", borderRadius: 10, marginBottom: 24, fontSize: 14 }}>
+        <div style={{ background: "var(--accent-soft)", color: "var(--accent)", padding: "12px 16px", borderRadius: 10, marginBottom: 24, fontSize: 13 }}>
           {error}
         </div>
       )}
@@ -225,57 +228,63 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
         <div className="field-pair">
           <div className="field">
             <label>Cuisine (EN)</label>
-            <input type="text" value={cuisine} onChange={(e) => setCuisine(e.target.value)} dir="ltr" />
+            <div className="input-with-tools">
+              <input type="text" value={cuisine} onChange={(e) => setCuisine(e.target.value)} dir="ltr" />
+              <AutoTranslate
+                kind="cuisine"
+                value={cuisine}
+                sourceIsAr={false}
+                onTranslated={setCuisineAr}
+                title={lang === "ar" ? "ترجمة تلقائية إلى العربية" : "Auto-translate to Arabic"}
+              />
+              <PickerDropdown
+                items={CUISINES}
+                title={lang === "ar" ? "اختر المطبخ" : "Pick cuisine"}
+                onPick={(en, ar) => {
+                  setCuisine(en);
+                  setCuisineAr(ar);
+                }}
+              />
+            </div>
           </div>
           <div className="field">
             <label>المطبخ (AR)</label>
-            <input type="text" value={cuisineAr} onChange={(e) => setCuisineAr(e.target.value)} dir="rtl" />
+            <div className="input-with-tools">
+              <input type="text" value={cuisineAr} onChange={(e) => setCuisineAr(e.target.value)} dir="rtl" />
+              <AutoTranslate
+                kind="cuisine"
+                value={cuisineAr}
+                sourceIsAr={true}
+                onTranslated={setCuisine}
+                title={lang === "ar" ? "ترجمة تلقائية إلى الإنجليزية" : "Auto-translate to English"}
+              />
+            </div>
           </div>
         </div>
       </section>
 
       <section className="form-section">
-        <h2>Serving</h2>
+        <h2>{lang === "ar" ? "التقديم" : "Serving"}</h2>
 
         <div className="field-pair">
           <div className="field">
             <label>Served with (EN)</label>
-            <textarea
-              value={servedWith}
-              onChange={(e) => setServedWith(e.target.value)}
-              dir="ltr"
-              placeholder="e.g. Fattoush salad and warm Lentil soup"
-            />
+            <textarea value={servedWith} onChange={(e) => setServedWith(e.target.value)} dir="ltr" placeholder="e.g. Fattoush salad and warm Lentil soup" />
           </div>
           <div className="field">
             <label>يقدم مع (AR)</label>
-            <textarea
-              value={servedWithAr}
-              onChange={(e) => setServedWithAr(e.target.value)}
-              dir="rtl"
-              placeholder="مثال: سلطة فتوش وشوربة عدس دافئة"
-            />
+            <textarea value={servedWithAr} onChange={(e) => setServedWithAr(e.target.value)} dir="rtl" placeholder="مثال: سلطة فتوش وشوربة عدس" />
           </div>
         </div>
 
         <div className="field-pair">
           <div className="field">
             <label>How to serve (EN)</label>
-            <textarea
-              value={howToServe}
-              onChange={(e) => setHowToServe(e.target.value)}
-              dir="ltr"
-              placeholder="e.g. Serve hot in a large platter, garnish with pine nuts"
-            />
+            <textarea value={howToServe} onChange={(e) => setHowToServe(e.target.value)} dir="ltr" placeholder="e.g. Serve hot in a large platter" />
           </div>
           <div className="field">
             <label>طريقة التقديم (AR)</label>
-            <textarea
-              value={howToServeAr}
-              onChange={(e) => setHowToServeAr(e.target.value)}
-              dir="rtl"
-              placeholder="مثال: يقدم ساخناً في طبق كبير مع تزيينه بالصنوبر"
-            />
+            <textarea value={howToServeAr} onChange={(e) => setHowToServeAr(e.target.value)} dir="rtl" placeholder="مثال: يقدم ساخناً في طبق كبير" />
           </div>
         </div>
       </section>
@@ -338,12 +347,60 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
           {ingredientsList.map((ing, i) => (
             <div className="ing-row" key={i}>
               <input className="cell-qty" type="text" placeholder={t(lang, "qty")} value={ing.amount} onChange={(e) => updateIngredient(i, { amount: e.target.value })} dir="ltr" />
-              <input className="cell-unit" type="text" placeholder={t(lang, "unit")} value={ing.unit} onChange={(e) => updateIngredient(i, { unit: e.target.value })} dir="ltr" />
-              <input className="cell-unit" type="text" placeholder={t(lang, "unit_ar_label")} value={ing.unitAr} onChange={(e) => updateIngredient(i, { unitAr: e.target.value })} dir="rtl" />
+
+              <div className="input-with-tools">
+                <input className="cell-unit" type="text" placeholder={t(lang, "unit")} value={ing.unit} onChange={(e) => updateIngredient(i, { unit: e.target.value })} dir="ltr" />
+                <AutoTranslate
+                  kind="unit"
+                  value={ing.unit}
+                  sourceIsAr={false}
+                  onTranslated={(val) => updateIngredient(i, { unitAr: val })}
+                />
+                <PickerDropdown
+                  items={UNITS}
+                  title={lang === "ar" ? "اختر الوحدة" : "Pick unit"}
+                  onPick={(en, ar) => updateIngredient(i, { unit: en, unitAr: ar })}
+                />
+              </div>
+
+              <div className="input-with-tools">
+                <input className="cell-unit" type="text" placeholder={t(lang, "unit_ar_label")} value={ing.unitAr} onChange={(e) => updateIngredient(i, { unitAr: e.target.value })} dir="rtl" />
+                <AutoTranslate
+                  kind="unit"
+                  value={ing.unitAr}
+                  sourceIsAr={true}
+                  onTranslated={(val) => updateIngredient(i, { unit: val })}
+                />
+              </div>
+
               <input className="cell-name" type="text" placeholder={t(lang, "ingredient")} value={ing.name} onChange={(e) => updateIngredient(i, { name: e.target.value })} dir="ltr" />
               <input className="cell-name" type="text" placeholder={t(lang, "ingredient_ar_label")} value={ing.nameAr} onChange={(e) => updateIngredient(i, { nameAr: e.target.value })} dir="rtl" />
-              <input className="cell-prep" type="text" placeholder={t(lang, "prep_short")} value={ing.preparation} onChange={(e) => updateIngredient(i, { preparation: e.target.value })} dir="ltr" />
-              <input className="cell-prep" type="text" placeholder={t(lang, "prep_short_ar")} value={ing.preparationAr} onChange={(e) => updateIngredient(i, { preparationAr: e.target.value })} dir="rtl" />
+
+              <div className="input-with-tools">
+                <input className="cell-prep" type="text" placeholder={t(lang, "prep_short")} value={ing.preparation} onChange={(e) => updateIngredient(i, { preparation: e.target.value })} dir="ltr" />
+                <AutoTranslate
+                  kind="prep"
+                  value={ing.preparation}
+                  sourceIsAr={false}
+                  onTranslated={(val) => updateIngredient(i, { preparationAr: val })}
+                />
+                <PickerDropdown
+                  items={PREPARATIONS}
+                  title={lang === "ar" ? "اختر التحضير" : "Pick preparation"}
+                  onPick={(en, ar) => updateIngredient(i, { preparation: en, preparationAr: ar })}
+                />
+              </div>
+
+              <div className="input-with-tools">
+                <input className="cell-prep" type="text" placeholder={t(lang, "prep_short_ar")} value={ing.preparationAr} onChange={(e) => updateIngredient(i, { preparationAr: e.target.value })} dir="rtl" />
+                <AutoTranslate
+                  kind="prep"
+                  value={ing.preparationAr}
+                  sourceIsAr={true}
+                  onTranslated={(val) => updateIngredient(i, { preparation: val })}
+                />
+              </div>
+
               <button type="button" className="icon-btn" onClick={() => removeIngredient(i)} disabled={ingredientsList.length === 1}>✕</button>
             </div>
           ))}
@@ -354,7 +411,7 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
         </div>
         {showBulkIng && (
           <div style={{ marginTop: 12 }}>
-            <textarea placeholder={t(lang, "bulk_ing_ph")} value={bulkIngredients} onChange={(e) => setBulkIngredients(e.target.value)} style={{ width: "100%", minHeight: 140, padding: 12, border: "1px solid var(--line)", borderRadius: 10, background: "var(--bg)", fontSize: 14 }} />
+            <textarea placeholder={t(lang, "bulk_ing_ph")} value={bulkIngredients} onChange={(e) => setBulkIngredients(e.target.value)} style={{ width: "100%", minHeight: 140, padding: 12, border: "1px solid var(--line)", borderRadius: 10, background: "var(--input-bg)", fontSize: 13 }} />
             <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
               <button type="button" className="btn btn-primary" onClick={applyBulkIngredients}>{t(lang, "parse_add")}</button>
               <button type="button" className="btn btn-ghost" onClick={() => { setBulkIngredients(""); setShowBulkIng(false); }}>{t(lang, "cancel")}</button>
@@ -381,7 +438,7 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
         </div>
         {showBulkStep && (
           <div style={{ marginTop: 12 }}>
-            <textarea placeholder={t(lang, "bulk_step_ph")} value={bulkSteps} onChange={(e) => setBulkSteps(e.target.value)} style={{ width: "100%", minHeight: 140, padding: 12, border: "1px solid var(--line)", borderRadius: 10, background: "var(--bg)", fontSize: 14 }} />
+            <textarea placeholder={t(lang, "bulk_step_ph")} value={bulkSteps} onChange={(e) => setBulkSteps(e.target.value)} style={{ width: "100%", minHeight: 140, padding: 12, border: "1px solid var(--line)", borderRadius: 10, background: "var(--input-bg)", fontSize: 13 }} />
             <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
               <button type="button" className="btn btn-primary" onClick={applyBulkSteps}>{t(lang, "parse_add")}</button>
               <button type="button" className="btn btn-ghost" onClick={() => { setBulkSteps(""); setShowBulkStep(false); }}>{t(lang, "cancel")}</button>

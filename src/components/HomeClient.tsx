@@ -3,11 +3,14 @@
 import Link from "next/link";
 import { useLang } from "./LanguageProvider";
 import { t, pick } from "@/lib/i18n";
+import { cuisineFlag } from "@/lib/cuisine-flag";
 
 type RecipeRow = {
   id: number;
   name: string;
   nameAr: string | null;
+  cuisine: string | null;
+  cuisineAr: string | null;
   prepTime: number;
   cookTime: number;
   servings: number;
@@ -16,18 +19,10 @@ type RecipeRow = {
 };
 
 const TAG_AR: Record<string, string> = {
-  Vegetarian: "نباتي",
-  Vegan: "نباتي صرف",
-  "Gluten-Free": "خالٍ من الغلوتين",
-  "Dairy-Free": "خالٍ من الألبان",
-  "Nut-Free": "خالٍ من المكسرات",
-  Halal: "حلال",
-  Kosher: "كوشير",
-  "Low-Carb": "قليل الكربوهيدرات",
-  Keto: "كيتو",
-  Paleo: "باليو",
-  Spicy: "حار",
-  Quick: "سريع",
+  Vegetarian: "نباتي", Vegan: "نباتي صرف", "Gluten-Free": "خالٍ من الغلوتين",
+  "Dairy-Free": "خالٍ من الألبان", "Nut-Free": "خالٍ من المكسرات",
+  Halal: "حلال", Kosher: "كوشير", "Low-Carb": "قليل الكربوهيدرات",
+  Keto: "كيتو", Paleo: "باليو", Spicy: "حار", Quick: "سريع",
 };
 
 export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
@@ -58,15 +53,33 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
           {recipes.map((r) => {
             const tags: string[] = r.dietaryTags ? JSON.parse(r.dietaryTags) : [];
             const displayName = pick(lang, r.name, r.nameAr);
+            const displayCuisine = pick(lang, r.cuisine, r.cuisineAr);
+            const flag = cuisineFlag(r.cuisine) || cuisineFlag(r.cuisineAr);
+
             return (
               <Link key={r.id} href={`/recipes/${r.id}`} className="recipe-card">
-                {r.imageUrl ? (
-                  <img src={r.imageUrl} alt={displayName} className="recipe-card-img" />
-                ) : (
-                  <div className="recipe-card-img" />
-                )}
+                <div className="recipe-card-img-wrap">
+                  {r.imageUrl ? (
+                    <img src={r.imageUrl} alt={displayName} className="recipe-card-img" />
+                  ) : (
+                    <div className="recipe-card-img" />
+                  )}
+                  {flag && (
+                    <span className="recipe-card-flag" title={displayCuisine}>
+                      {flag}
+                    </span>
+                  )}
+                </div>
                 <div className="recipe-card-body">
-                  <h3>{displayName}</h3>
+                  <div className="recipe-card-title-row">
+                    <h3>{displayName}</h3>
+                    {displayCuisine && (
+                      <span className="recipe-card-cuisine">
+                        {flag && <span className="recipe-card-cuisine-flag">{flag}</span>}
+                        {displayCuisine}
+                      </span>
+                    )}
+                  </div>
                   <div className="recipe-card-meta">
                     <span>⏱ {r.prepTime + r.cookTime} {lang === "ar" ? "د" : "min"}</span>
                     <span>🍽 {r.servings}</span>
