@@ -6,62 +6,33 @@ import { t, pick } from "@/lib/i18n";
 import { extractYouTubeId } from "@/lib/youtube";
 
 type RecipeRow = {
-  id: number;
-  name: string;
-  nameAr: string | null;
-  description: string | null;
-  descriptionAr: string | null;
-  cuisine: string | null;
-  cuisineAr: string | null;
-  prepTime: number;
-  cookTime: number;
-  servings: number;
-  dietaryTags: string | null;
-  imageUrl: string | null;
-  videoUrl: string | null;
+  id: number; name: string; nameAr: string | null;
+  description: string | null; descriptionAr: string | null;
+  cuisine: string | null; cuisineAr: string | null;
+  prepTime: number; cookTime: number; servings: number;
+  dietaryTags: string | null; imageUrl: string | null; videoUrl: string | null;
 };
-
 type IngredientRow = {
-  id: number;
-  name: string;
-  nameAr: string | null;
-  amount: string | null;
-  unit: string | null;
-  unitAr: string | null;
-  preparation: string | null;
-  preparationAr: string | null;
+  id: number; name: string; nameAr: string | null;
+  amount: string | null; unit: string | null; unitAr: string | null;
+  preparation: string | null; preparationAr: string | null;
 };
-
-type InstructionRow = {
-  id: number;
-  stepNumber: number;
-  text: string;
-  textAr: string | null;
-};
+type InstructionRow = { id: number; stepNumber: number; text: string; textAr: string | null };
 
 const TAG_AR: Record<string, string> = {
-  Vegetarian: "نباتي",
-  Vegan: "نباتي صرف",
-  "Gluten-Free": "خالٍ من الغلوتين",
-  "Dairy-Free": "خالٍ من الألبان",
-  "Nut-Free": "خالٍ من المكسرات",
-  Halal: "حلال",
-  Kosher: "كوشير",
-  "Low-Carb": "قليل الكربوهيدرات",
-  Keto: "كيتو",
-  Paleo: "باليو",
-  Spicy: "حار",
-  Quick: "سريع",
+  Vegetarian: "نباتي", Vegan: "نباتي صرف", "Gluten-Free": "خالٍ من الغلوتين",
+  "Dairy-Free": "خالٍ من الألبان", "Nut-Free": "خالٍ من المكسرات",
+  Halal: "حلال", Kosher: "كوشير", "Low-Carb": "قليل الكربوهيدرات",
+  Keto: "كيتو", Paleo: "باليو", Spicy: "حار", Quick: "سريع",
 };
 
 export default function RecipeDetailClient({
-  recipe,
-  ingredients,
-  instructions,
+  recipe, ingredients, instructions, isAdmin,
 }: {
   recipe: RecipeRow;
   ingredients: IngredientRow[];
   instructions: InstructionRow[];
+  isAdmin: boolean;
 }) {
   const { lang } = useLang();
   const tags: string[] = recipe.dietaryTags ? JSON.parse(recipe.dietaryTags) : [];
@@ -85,41 +56,28 @@ export default function RecipeDetailClient({
       <header className="detail-head">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
           <h1 style={{ margin: 0 }}>{displayName}</h1>
-          <Link href={`/recipes/${recipe.id}/edit`} className="btn btn-ghost">{t(lang, "edit")}</Link>
+          {isAdmin && (
+            <Link href={`/recipes/${recipe.id}/edit`} className="btn btn-ghost">
+              {t(lang, "edit")}
+            </Link>
+          )}
         </div>
         {displayDesc && <p className="detail-desc">{displayDesc}</p>}
 
         <div className="detail-meta">
-          <div className="meta-item">
-            <span className="meta-label">{t(lang, "prep")}</span>
-            <span className="meta-value">{recipe.prepTime} {minLabel}</span>
-          </div>
-          <div className="meta-item">
-            <span className="meta-label">{t(lang, "cook")}</span>
-            <span className="meta-value">{recipe.cookTime} {minLabel}</span>
-          </div>
-          <div className="meta-item">
-            <span className="meta-label">{t(lang, "min_total")}</span>
-            <span className="meta-value">{recipe.prepTime + recipe.cookTime} {minLabel}</span>
-          </div>
-          <div className="meta-item">
-            <span className="meta-label">{t(lang, "servings")}</span>
-            <span className="meta-value">{recipe.servings}</span>
-          </div>
+          <div className="meta-item"><span className="meta-label">{t(lang, "prep")}</span><span className="meta-value">{recipe.prepTime} {minLabel}</span></div>
+          <div className="meta-item"><span className="meta-label">{t(lang, "cook")}</span><span className="meta-value">{recipe.cookTime} {minLabel}</span></div>
+          <div className="meta-item"><span className="meta-label">{t(lang, "min_total")}</span><span className="meta-value">{recipe.prepTime + recipe.cookTime} {minLabel}</span></div>
+          <div className="meta-item"><span className="meta-label">{t(lang, "servings")}</span><span className="meta-value">{recipe.servings}</span></div>
           {displayCuisine && (
-            <div className="meta-item">
-              <span className="meta-label">{t(lang, "cuisine")}</span>
-              <span className="meta-value">{displayCuisine}</span>
-            </div>
+            <div className="meta-item"><span className="meta-label">{t(lang, "cuisine")}</span><span className="meta-value">{displayCuisine}</span></div>
           )}
         </div>
 
         {tags.length > 0 && (
           <div className="chips" style={{ marginTop: 16 }}>
             {tags.map((tag) => (
-              <span key={tag} className="chip active">
-                {lang === "ar" ? TAG_AR[tag] ?? tag : tag}
-              </span>
+              <span key={tag} className="chip active">{lang === "ar" ? TAG_AR[tag] ?? tag : tag}</span>
             ))}
           </div>
         )}
@@ -129,12 +87,7 @@ export default function RecipeDetailClient({
         <section className="video-section">
           <h2>{t(lang, "video")}</h2>
           <div className="video-wrap">
-            <iframe
-              src={`https://www.youtube.com/embed/${youtubeId}`}
-              title="Recipe video"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+            <iframe src={`https://www.youtube.com/embed/${youtubeId}`} title="Recipe video" allowFullScreen />
           </div>
         </section>
       )}
@@ -152,9 +105,7 @@ export default function RecipeDetailClient({
                 const ingPrep = pick(lang, i.preparation, i.preparationAr);
                 return (
                   <li key={i.id}>
-                    <span className="ing-amount">
-                      {[i.amount, ingUnit].filter(Boolean).join(" ")}
-                    </span>
+                    <span className="ing-amount">{[i.amount, ingUnit].filter(Boolean).join(" ")}</span>
                     <span className="ing-name">
                       {ingName}
                       {ingPrep && (

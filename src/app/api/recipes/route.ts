@@ -1,16 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/db";
 import { recipes, ingredients, instructions } from "@/db/schema";
-
-type IngredientPayload = {
-  name: string;
-  nameAr: string;
-  amount: string;
-  unit: string;
-  unitAr: string;
-  preparation: string;
-  preparationAr: string;
-};
+import { isAdmin } from "@/lib/auth";
 
 type Payload = {
   name: string;
@@ -25,36 +16,36 @@ type Payload = {
   dietaryTags: string[];
   imageUrl: string | null;
   videoUrl: string | null;
-  ingredients: IngredientPayload[];
+  ingredients: { name: string; nameAr: string; amount: string; unit: string; unitAr: string; preparation: string; preparationAr: string }[];
   instructions: { text: string; textAr: string }[];
 };
 
 export async function POST(req: NextRequest) {
+  if (!(await isAdmin())) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const db = getDb();
   try {
     const body: Payload = await req.json();
-
-    if (!body.name?.trim()) {
+    if (!body.name?.trim() && !body.nameAr?.trim()) {
       return NextResponse.json({ error: "Recipe name is required" }, { status: 400 });
     }
 
-    const [recipe] = await db
-      .insert(recipes)
-      .values({
-        name: body.name.trim(),
-        nameAr: body.nameAr?.trim() || null,
-        description: body.description?.trim() || null,
-        descriptionAr: body.descriptionAr?.trim() || null,
-        cuisine: body.cuisine?.trim() || null,
-        cuisineAr: body.cuisineAr?.trim() || null,
-        prepTime: Number(body.prepTime) || 0,
-        cookTime: Number(body.cookTime) || 0,
-        servings: Number(body.servings) || 1,
-        dietaryTags: JSON.stringify(body.dietaryTags ?? []),
-        imageUrl: body.imageUrl ?? null,
-        videoUrl: body.videoUrl ?? null,
-      })
-      .returning();
+    const [recipe] = await db.insert(recipes).values({
+      name: body.name?.trim() || body.nameAr?.trim() || "",
+      nameAr: body.nameAr?.trim() || null,
+      description: body.description?.trim() || null,
+      descriptionAr: body.descriptionAr?.trim() || null,
+      cuisine: body.cuisine?.trim() || null,
+      cuisineAr: body.cuisineAr?.trim() || null,
+      prepTime: Number(body.prepTime) || 0,
+      cookTime: Number(body.cookTime) || 0,
+      servings: Number(body.servings) || 1,
+      dietaryTags: JSON.stringify(body.dietaryTags ?? []),
+      imageUrl: body.imageUrl ?? null,
+      videoUrl: body.videoUrl ?? null,
+    }).returning();
 
     if (body.ingredients?.length) {
       await db.insert(ingredients).values(

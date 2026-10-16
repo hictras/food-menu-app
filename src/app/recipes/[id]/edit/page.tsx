@@ -1,10 +1,16 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import { getDb } from "@/db";
 import { recipes, ingredients, instructions } from "@/db/schema";
 import { eq, asc } from "drizzle-orm";
 import RecipeForm from "@/components/RecipeForm";
 import EditRecipeShell from "@/components/EditRecipeShell";
+import { isAdmin } from "@/lib/auth";
+
+async function AuthGate({ children }: { children: React.ReactNode }) {
+  if (!(await isAdmin())) redirect("/login");
+  return <>{children}</>;
+}
 
 async function EditLoader({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -58,7 +64,9 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
     <main className="container">
       <EditRecipeShell>
         <Suspense fallback={<FormSkeleton />}>
-          <EditLoader params={params} />
+          <AuthGate>
+            <EditLoader params={params} />
+          </AuthGate>
         </Suspense>
       </EditRecipeShell>
     </main>

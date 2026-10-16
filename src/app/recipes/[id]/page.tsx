@@ -4,6 +4,7 @@ import { getDb } from "@/db";
 import { recipes, ingredients, instructions } from "@/db/schema";
 import { eq, asc } from "drizzle-orm";
 import RecipeDetailClient from "@/components/RecipeDetailClient";
+import { isAdmin } from "@/lib/auth";
 
 async function RecipeDetail({ id }: { id: number }) {
   const db = getDb();
@@ -13,8 +14,16 @@ async function RecipeDetail({ id }: { id: number }) {
 
   const ings = await db.select().from(ingredients).where(eq(ingredients.recipeId, id)).orderBy(asc(ingredients.id));
   const steps = await db.select().from(instructions).where(eq(instructions.recipeId, id)).orderBy(asc(instructions.stepNumber));
+  const admin = await isAdmin();
 
-  return <RecipeDetailClient recipe={recipe} ingredients={ings} instructions={steps} />;
+  return (
+    <RecipeDetailClient
+      recipe={recipe}
+      ingredients={ings}
+      instructions={steps}
+      isAdmin={admin}
+    />
+  );
 }
 
 function DetailSkeleton() {

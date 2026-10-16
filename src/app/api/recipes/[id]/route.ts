@@ -2,16 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/db";
 import { recipes, ingredients, instructions } from "@/db/schema";
 import { eq } from "drizzle-orm";
-
-type IngredientPayload = {
-  name: string;
-  nameAr: string;
-  amount: string;
-  unit: string;
-  unitAr: string;
-  preparation: string;
-  preparationAr: string;
-};
+import { isAdmin } from "@/lib/auth";
 
 type Payload = {
   name: string;
@@ -26,11 +17,13 @@ type Payload = {
   dietaryTags: string[];
   imageUrl: string | null;
   videoUrl: string | null;
-  ingredients: IngredientPayload[];
+  ingredients: { name: string; nameAr: string; amount: string; unit: string; unitAr: string; preparation: string; preparationAr: string }[];
   instructions: { text: string; textAr: string }[];
 };
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  if (!(await isAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   const db = getDb();
   try {
     const { id } = await params;
@@ -38,10 +31,10 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     if (Number.isNaN(recipeId)) return NextResponse.json({ error: "Invalid id" }, { status: 400 });
 
     const body: Payload = await req.json();
-    if (!body.name?.trim()) return NextResponse.json({ error: "Recipe name is required" }, { status: 400 });
+    if (!body.name?.trim() && !body.nameAr?.trim()) return NextResponse.json({ error: "Recipe name is required" }, { status: 400 });
 
     await db.update(recipes).set({
-      name: body.name.trim(),
+      name: body.name?.trim() || body.nameAr?.trim() || "",
       nameAr: body.nameAr?.trim() || null,
       description: body.description?.trim() || null,
       descriptionAr: body.descriptionAr?.trim() || null,
@@ -96,6 +89,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  if (!(await isAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   const db = getDb();
   try {
     const { id } = await params;
