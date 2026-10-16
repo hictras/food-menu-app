@@ -4,14 +4,24 @@ import { getDb } from "@/db";
 import { pushSubscriptions } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
-webpush.setVapidDetails(
-  process.env.VAPID_SUBJECT!,
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
-);
+function initWebPush() {
+  const subject = process.env.VAPID_SUBJECT;
+  const publicKey = process.env.VAPID_PUBLIC_KEY || process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+  const privateKey = process.env.VAPID_PRIVATE_KEY;
+
+  if (!subject || !publicKey || !privateKey) {
+    throw new Error(
+      "Missing VAPID env vars: VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY"
+    );
+  }
+
+  webpush.setVapidDetails(subject, publicKey, privateKey);
+}
 
 export async function POST(req: NextRequest) {
   try {
+    initWebPush();
+
     const db = getDb();
     const body = await req.json();
 
@@ -41,12 +51,24 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    const failed = results
+      .filter((r) => r.status === "rejected")
+      .map((r: any) => ({
+        statusCode: r.reason?.statusCode,
+        body: r.reason?.body,
+        message: r.reason?.message,
+      }));
+
     return NextResponse.json({
       sent: results.filter((r) => r.status === "fulfilled").length,
       total: subs.length,
+      failed: failed.length ? failed : undefined,
     });
   } catch (err) {
     console.error("Send error:", err);
-    return NextResponse.json({ error: "Failed to send" }, { status: 500 });
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : "Failed to send" },
+      { status: 500 }
+    );
   }
 }
