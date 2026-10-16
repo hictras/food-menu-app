@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { recipes, ingredients, instructions } from "@/db/schema";
 import { eq, asc } from "drizzle-orm";
 
 async function RecipeDetail({ id }: { id: number }) {
+  const db = getDb();
+
   const [recipe] = await db
     .select()
     .from(recipes)
@@ -41,7 +43,10 @@ async function RecipeDetail({ id }: { id: number }) {
       )}
 
       <header className="detail-head">
-        <h1>{recipe.name}</h1>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16 }}>
+          <h1 style={{ margin: 0 }}>{recipe.name}</h1>
+          <Link href={`/recipes/${recipe.id}/edit`} className="btn btn-ghost">✎ Edit</Link>
+        </div>
         {recipe.description && (
           <p className="detail-desc">{recipe.description}</p>
         )}

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { recipes, ingredients, instructions } from "@/db/schema";
 
 type Payload = {
@@ -16,6 +16,7 @@ type Payload = {
 };
 
 export async function POST(req: NextRequest) {
+ const db = getDb();
   try {
     const body: Payload = await req.json();
 

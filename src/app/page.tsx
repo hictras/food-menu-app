@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { recipes } from "@/db/schema";
 import { desc } from "drizzle-orm";
 
 async function RecipeList() {
+const db = getDb();
   const all = await db.select().from(recipes).orderBy(desc(recipes.createdAt));
 
   if (all.length === 0) {
