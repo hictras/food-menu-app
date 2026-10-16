@@ -1,0 +1,6340 @@
+[
+  {
+    "name": "Lamb Ouzi",
+    "nameAr": "لحم أوزي",
+    "description": "Fattoush & Lentil Soup",
+    "descriptionAr": "فتوش وشوربة عدس",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Lamb shoulder (bone-in",
+        "nameAr": "كتف خروف بالعظم",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "2kg)",
+        "nameAr": "أرز بسمتي",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Basmati rice",
+        "nameAr": "بهار مشكل",
+        "amount": "3 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "7-spice",
+        "nameAr": "صنوبر",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pine nuts",
+        "nameAr": "لوز",
+        "amount": "1/2 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Almonds",
+        "nameAr": "بصل",
+        "amount": "1/2 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onion",
+        "nameAr": "ورق غار",
+        "amount": "2 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Bay leaves",
+        "nameAr": "عود قرفة",
+        "amount": "3",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cinnamon stick",
+        "nameAr": "حبهان",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cardamom pods",
+        "nameAr": "زيت نباتي",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Vegetable oil",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "فلفل أسود",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Black pepper",
+        "nameAr": "",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Pat lamb completely dry with paper towels.",
+        "textAr": "جفف لحم الغنم جيداً بالمناشف الورقية."
+      },
+      {
+        "text": "Mix 1 tbsp salt, 1 tsp pepper, and 1 tbsp 7-spice.",
+        "textAr": "اخلط ملعقة كبيرة ملح، ملعقة صغيرة فلفل، وملعقة كبيرة بهار مشكل."
+      },
+      {
+        "text": "Rub all over lamb, massaging into meat.",
+        "textAr": "افرك اللحم بالبهارات من جميع الجهات."
+      },
+      {
+        "text": "Let sit 30 minutes at room temperature.",
+        "textAr": "اتركه لمدة 30 دقيقة في درجة حرارة الغرفة."
+      },
+      {
+        "text": "Heat 3 tbsp oil in large heavy pot over medium-high until shimmering.",
+        "textAr": "سخن 3 ملاعق كبيرة زيت في قدر كبير ثقيل على نار متوسطة عالية حتى يصدر دخاناً خفيفاً."
+      },
+      {
+        "text": "Sear lamb without moving 5-7 minutes per side until deep golden brown on all sides.",
+        "textAr": "حمّر اللحم دون تحريك لمدة 5-7 دقائق لكل جهة حتى يصبح بنياً ذهبياً غامقاً من جميع الجهات."
+      },
+      {
+        "text": "Remove lamb.",
+        "textAr": "أزل اللحم."
+      },
+      {
+        "text": "In same pot, add quartered onions, cook 3-4 minutes until softened.",
+        "textAr": "في نفس القدر، أضف البصل المقطع أرباع، اطبخ لمدة 3-4 دقائق حتى يلين."
+      },
+      {
+        "text": "Return lamb to pot, add bay leaves, cinnamon, cardamom.",
+        "textAr": "أعد اللحم إلى القدر، أضف ورق الغار، القرفة، والحبهان."
+      },
+      {
+        "text": "Cover with water by 2 inches.",
+        "textAr": "غطّ اللحم بالماء بمقدار 2 إنش."
+      },
+      {
+        "text": "Bring to boil, skim foam, reduce heat to low, cover and simmer 2.5-3 hours until meat falls off bone.",
+        "textAr": "دع المزيج يغلي، أزل الرغوة، خفف النار إلى منخفضة، غطّ واتركه على نار هادئة لمدة 2.5-3 ساعات حتى ينفصل اللحم عن العظم."
+      },
+      {
+        "text": "Remove lamb, cover with foil.",
+        "textAr": "أزل اللحم، غطّه بورق قصدير."
+      },
+      {
+        "text": "Strain broth, measure 6 cups.",
+        "textAr": "صفِّ المرق، قس 6 أكواب."
+      },
+      {
+        "text": "Rinse rice until water runs clear.",
+        "textAr": "اغسل الأرز حتى يصبح الماء صافياً."
+      },
+      {
+        "text": "In same pot, heat 3 tbsp oil, add rice, toast 3 minutes stirring constantly.",
+        "textAr": "في نفس القدر، سخن 3 ملاعق كبيرة زيت، أضف الأرز، حمّصه لمدة 3 دقائق مع التحريك المستمر."
+      },
+      {
+        "text": "Add 6 cups hot broth, 1 tsp salt.",
+        "textAr": "أضف 6 أكواب من المرق الساخن، ملعقة صغيرة ملح."
+      },
+      {
+        "text": "Bring to boil, reduce heat to lowest, cover tightly and cook 20 minutes.",
+        "textAr": "دع المزيج يغلي، خفف الحرارة إلى أقل درجة، غطّ بإحكام واطبخ لمدة 20 دقيقة."
+      },
+      {
+        "text": "Turn off heat, let rest covered 10 minutes.",
+        "textAr": "أطفئ النار، اتركه مغطى لمدة 10 دقائق."
+      },
+      {
+        "text": "Fry pine nuts and almonds in small pan with 2 tbsp oil until golden.",
+        "textAr": "حمّص الصنوبر واللوز في مقلاة صغيرة مع ملعقتين كبيرتين زيت حتى يصبح ذهبياً."
+      },
+      {
+        "text": "To serve: fluff rice with fork, mound on large platter, place lamb pieces on top, sprinkle generously with fried nuts.",
+        "textAr": "للتقديم: قلّب الأرز بالشوكة، كوّمه في طبق كبير، ضع قطع اللحم فوقه، وزّع المكسرات المحمصة بسخاء."
+      },
+      {
+        "text": "Serve immediately with Fattoush salad and warm Lentil soup on side.",
+        "textAr": "قدّم فوراً مع سلطة فتوش وشوربة عدس دافئة إلى جانبه."
+      },
+      {
+        "text": "Pair with sweet Jallab drink.",
+        "textAr": "قدّم مع مشروب جلاب حلو."
+      }
+    ]
+  },
+  {
+    "name": "Chicken Maqluba",
+    "nameAr": "مقلوبة دجاج",
+    "description": "Hummus & Sambousek",
+    "descriptionAr": "حمص وسمبوسك",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Chicken pieces",
+        "nameAr": "قطع دجاج",
+        "amount": "1.5kg",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Eggplant",
+        "nameAr": "باذنجان",
+        "amount": "2 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cauliflower",
+        "nameAr": "قرنبيط",
+        "amount": "1 head",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Long-grain rice",
+        "nameAr": "أرز طويل الحبة",
+        "amount": "3 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Tomatoes",
+        "nameAr": "طماطم",
+        "amount": "3",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Turmeric",
+        "nameAr": "كركم",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "7-spice",
+        "nameAr": "بهار مشكل",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Chicken stock",
+        "nameAr": "مرق دجاج",
+        "amount": "4 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Vegetable oil",
+        "nameAr": "زيت نباتي",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pine nuts",
+        "nameAr": "صنوبر",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Slice eggplant into 1cm rounds, arrange on tray, sprinkle generously with salt.",
+        "textAr": "قطّع الباذنجان إلى شرائح بسمك 1سم، رتبها في صينية، رشها بالملح بسخاء."
+      },
+      {
+        "text": "Let sit 30 minutes to draw out bitterness.",
+        "textAr": "اتركها لمدة 30 دقيقة لتخرج مرارتها."
+      },
+      {
+        "text": "Rinse well and pat completely dry with paper towels.",
+        "textAr": "اغسلها جيداً وجففها تماماً بالمناشف الورقية."
+      },
+      {
+        "text": "Cut cauliflower into florets.",
+        "textAr": "قطّع القرنبيط إلى زهيرات."
+      },
+      {
+        "text": "Heat 1 cup oil in deep pan.",
+        "textAr": "سخن كوب زيت في مقلاة عميقة."
+      },
+      {
+        "text": "Fry eggplant batches until golden brown on both sides, drain on paper towel.",
+        "textAr": "اقلي الباذنجان على دفعات حتى يصبح بنياً ذهبياً من الجانبين، صفّه على ورق مطبخ."
+      },
+      {
+        "text": "Fry cauliflower until golden, drain.",
+        "textAr": "اقلي القرنبيط حتى يصبح ذهبياً، صفّه."
+      },
+      {
+        "text": "Season chicken pieces with salt, pepper, 1 tsp turmeric.",
+        "textAr": "تبّل قطع الدجاج بالملح، الفلفل، وملعقة صغيرة كركم."
+      },
+      {
+        "text": "In large heavy pot, heat 3 tbsp oil, brown chicken in batches until golden on all sides, remove and set aside.",
+        "textAr": "في قدر كبير ثقيل، سخن 3 ملاعق كبيرة زيت، حمّر الدجاج على دفعات حتى يصبح ذهبياً من جميع الجهات، أزله واتركه جانباً."
+      },
+      {
+        "text": "Slice tomatoes into 1cm rounds.",
+        "textAr": "قطّع الطماطم إلى شرائح بسمك 1سم."
+      },
+      {
+        "text": "Layer bottom of same pot with tomato slices.",
+        "textAr": "في نفس القدر، رتب شرائح الطماطم في القاع."
+      },
+      {
+        "text": "Layer half the eggplant, then half the cauliflower, then all chicken pieces, then remaining cauliflower, then remaining eggplant.",
+        "textAr": "ضع نصف كمية الباذنجان، ثم نصف القرنبيط، ثم كل قطع الدجاج، ثم ما تبقى من القرنبيط، ثم ما تبقى من الباذنجان."
+      },
+      {
+        "text": "Press down gently with spatula.",
+        "textAr": "اضغط برفق بملعقة مسطحة."
+      },
+      {
+        "text": "Rinse rice thoroughly until water runs clear, drain well.",
+        "textAr": "اغسل الأرز جيداً حتى يصبح الماء صافياً، صفّه."
+      },
+      {
+        "text": "Sprinkle rice evenly over top layer.",
+        "textAr": "وزّع الأرز بالتساوي فوق الطبقات."
+      },
+      {
+        "text": "Measure 4 cups hot chicken stock, add 1 tbsp salt, 1 tbsp 7-spice, stir.",
+        "textAr": "قس 4 أكواب من مرق الدجاج الساخن، أضف ملعقة كبيرة ملح، ملعقة كبيرة بهار مشكل، حرّك."
+      },
+      {
+        "text": "Pour carefully over rice until liquid just covers rice by 1cm.",
+        "textAr": "صب المرق بحذر فوق الأرز حتى يغطيه بمقدار 1سم."
+      },
+      {
+        "text": "Bring to boil over medium-high, reduce heat to low, cover tightly with lid wrapped in kitchen towel.",
+        "textAr": "دع المزيج يغلي على نار متوسطة عالية، خفف الحرارة إلى منخفضة، غطّ القدر بإحكام (يمكن لف الغطاء بمنشفة مطبخ)."
+      },
+      {
+        "text": "Simmer 35-40 minutes without lifting lid.",
+        "textAr": "اطبخ على نار هادئة لمدة 35-40 دقيقة دون رفع الغطاء."
+      },
+      {
+        "text": "Remove from heat, let rest 15 minutes.",
+        "textAr": "أبعده عن النار، اتركه يرتاح لمدة 15 دقيقة."
+      },
+      {
+        "text": "Place large serving platter over pot, hold tightly with oven mitts, confidently flip over in one smooth motion.",
+        "textAr": "ضع طبق تقديم كبير فوق القدر، أمسكه جيداً بقفازات الفرن، اقلب القدر بثقة وحركة واحدة سلسة."
+      },
+      {
+        "text": "Let sit 2 minutes then gently lift pot.",
+        "textAr": "اتركه لمدة 2 دقيقة ثم ارفع القدر بحذر."
+      },
+      {
+        "text": "Garnish with fried pine nuts.",
+        "textAr": "زيّن بالصنوبر المقلي."
+      },
+      {
+        "text": "Serve with hummus and cheese sambousek, and glass of Qamar al-Din.",
+        "textAr": "قدّم مع حمص وسمبوسك بالجبن، وكوب من قمر الدين."
+      }
+    ]
+  },
+  {
+    "name": "Moroccan Harira",
+    "nameAr": "حريرة مغربية",
+    "description": "Dates & Cheese Briouats",
+    "descriptionAr": "بريوات بالتمر والجبن",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [
+      "Vegetarian"
+    ],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Chickpeas",
+        "nameAr": "حمص",
+        "amount": "1 cup dried",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Brown lentils",
+        "nameAr": "عدس بني",
+        "amount": "1 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onion",
+        "nameAr": "بصل",
+        "amount": "1 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Tomatoes",
+        "nameAr": "طماطم",
+        "amount": "4 ripe",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Tomato paste",
+        "nameAr": "معجون طماطم",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Celery",
+        "nameAr": "كرفس",
+        "amount": "2 stalks",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Fresh parsley",
+        "nameAr": "بقدونس طازج",
+        "amount": "1 bunch",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Fresh cilantro",
+        "nameAr": "كزبرة طازجة",
+        "amount": "1 bunch",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Ginger",
+        "nameAr": "زنجبيل",
+        "amount": "2 inch",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Turmeric",
+        "nameAr": "كركم",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cinnamon stick",
+        "nameAr": "عود قرفة",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Flour",
+        "nameAr": "طحين",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Lemon juice",
+        "nameAr": "عصير ليمون",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Olive oil",
+        "nameAr": "زيت زيتون",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pepper",
+        "nameAr": "فلفل",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Place chickpeas in bowl, cover with water, soak overnight.",
+        "textAr": "ضع الحمص في وعاء، غطّه بالماء، انقعه ليلة كاملة."
+      },
+      {
+        "text": "Drain.",
+        "textAr": "صفّه."
+      },
+      {
+        "text": "In large heavy pot, heat 3 tbsp olive oil over medium.",
+        "textAr": "في قدر كبير ثقيل، سخن 3 ملاعق كبيرة زيت زيتون على نار متوسطة."
+      },
+      {
+        "text": "Add finely diced onion, cook 5-7 minutes until soft and translucent.",
+        "textAr": "أضف البصل المفروم ناعماً، اطبخ لمدة 5-7 دقائق حتى يلين ويصبح شفافاً."
+      },
+      {
+        "text": "Grate ginger, add to pot, cook 1 minute until fragrant.",
+        "textAr": "ابشر الزنجبيل، أضفه إلى القدر، اطبخ لمدة دقيقة حتى تفوح رائحته."
+      },
+      {
+        "text": "Add 1 tsp turmeric, 1 tsp pepper, 1 cinnamon stick, stir 30 seconds.",
+        "textAr": "أضف ملعقة صغيرة كركم، ملعقة صغيرة فلفل، عود قرفة، حرّك لمدة 30 ثانية."
+      },
+      {
+        "text": "Grate tomatoes on box grater (should yield about 2 cups pulp), add to pot with 2 tbsp tomato paste.",
+        "textAr": "ابشر الطماطم على مبشرة خشنة (يجب أن تحصل على حوالي كوبين من اللب)، أضفها إلى القدر مع ملعقتين كبيرتين معجون طماطم."
+      },
+      {
+        "text": "Cook 5 minutes until tomatoes deepen in color.",
+        "textAr": "اطبخ لمدة 5 دقائق حتى يتغير لون الطماطم."
+      },
+      {
+        "text": "Add drained chickpeas, brown lentils, chopped celery, 1 liter water.",
+        "textAr": "أضف الحمص المصفى، العدس البني، الكرفس المفروم، لتر ماء."
+      },
+      {
+        "text": "Bring to boil, reduce heat, cover and simmer 45 minutes until legumes are tender.",
+        "textAr": "دع المزيج يغلي، خفف الحرارة، غطّ واتركه على نار هادئة لمدة 45 دقيقة حتى تنضج البقوليات."
+      },
+      {
+        "text": "Check consistency: soup should be fairly thick.",
+        "textAr": "تأكد من القوام: يجب أن تكون الشوربة كثيفة نوعاً ما."
+      },
+      {
+        "text": "In small bowl, whisk 2 tbsp flour with 1/2 cup cold water until smooth.",
+        "textAr": "في وعاء صغير، اخفق ملعقتين كبيرتين طحين مع نصف كوب ماء بارد حتى يصبح المزيج ناعماً."
+      },
+      {
+        "text": "Slowly stir into soup, simmer 5 minutes until slightly thickened.",
+        "textAr": "أضفه ببطء إلى الشوربة مع التحريك، اطبخ لمدة 5 دقائق حتى تثخن قليلاً."
+      },
+      {
+        "text": "Add chopped fresh parsley and cilantro (about 1 cup each), simmer 5 more minutes.",
+        "textAr": "أضف البقدونس الطازج المفروم والكزبرة الطازجة المفرومة (حوالي كوب من كل منهما)، اطبخ لمدة 5 دقائق إضافية."
+      },
+      {
+        "text": "Turn off heat, stir in juice of 1 lemon.",
+        "textAr": "أطفئ النار، أضف عصير ليمونة واحدة."
+      },
+      {
+        "text": "Adjust salt to taste.",
+        "textAr": "اضبط الملح حسب الرغبة."
+      },
+      {
+        "text": "Serve hot in bowls with lemon wedges on side.",
+        "textAr": "قدّم ساخناً في أطباق مع شرائح ليمون إلى الجانب."
+      },
+      {
+        "text": "Pair with crispy cheese-filled briouats and refreshing mint lemonade.",
+        "textAr": "قدّم مع بريوات بالجبن المقرمشة ومشروب ليمون بالنعناع المنعش."
+      }
+    ]
+  },
+  {
+    "name": "Lamb Mansaf",
+    "nameAr": "منسف لحم",
+    "description": "Batata Harra & Yogurt",
+    "descriptionAr": "بطاطا حارة ولبن",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Jameed (dried yogurt balls",
+        "nameAr": "جميد",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "500g)",
+        "nameAr": "كتف خروف بالعظم",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Lamb shoulder with bone",
+        "nameAr": "خبز الشراك",
+        "amount": "2kg",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Shrak bread",
+        "nameAr": "أرز بسمتي",
+        "amount": "2 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Basmati rice",
+        "nameAr": "صنوبر",
+        "amount": "3 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pine nuts",
+        "nameAr": "لوز",
+        "amount": "1/2 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Almonds",
+        "nameAr": "سمنة",
+        "amount": "1/2 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Ghee",
+        "nameAr": "حبهان",
+        "amount": "4 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cardamom pods",
+        "nameAr": "ورق غار",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Bay leaves",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "فلفل أسود",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Black pepper",
+        "nameAr": "",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Break jameed into pieces, place in bowl, cover with warm water.",
+        "textAr": "كسّر الجميد إلى قطع، ضعه في وعاء، غطّه بالماء الدافئ."
+      },
+      {
+        "text": "Soak 4 hours or overnight until softened.",
+        "textAr": "انقعه لمدة 4 ساعات أو طوال الليل حتى يلين."
+      },
+      {
+        "text": "Drain, place in blender with 2 cups fresh water, blend until smooth.",
+        "textAr": "صفّه، ضعه في الخلاط مع كوبين ماء طازج، اخلط حتى يصبح ناعماً."
+      },
+      {
+        "text": "Pour through fine-mesh strainer into pot, discard solids.",
+        "textAr": "صفّه عبر مصفاة ناعمة في قدر، تخلص من المواد الصلبة."
+      },
+      {
+        "text": "You should have smooth jameed liquid.",
+        "textAr": "يجب أن تحصل على سائل جميد ناعم."
+      },
+      {
+        "text": "Cut lamb into large chunks, place in large pot, cover with water.",
+        "textAr": "قطّع اللحم إلى قطع كبيرة، ضعه في قدر كبير، غطّه بالماء."
+      },
+      {
+        "text": "Bring to boil, skim foam, add salt, cardamom, bay leaves.",
+        "textAr": "دع المزيج يغلي، أزل الرغوة، أضف الملح، الحبهان، ورق الغار."
+      },
+      {
+        "text": "Simmer 1.5 hours until lamb is tender.",
+        "textAr": "اطبخ على نار هادئة لمدة 1.5 ساعة حتى ينضج اللحم."
+      },
+      {
+        "text": "Remove lamb, strain broth, reserve 4 cups.",
+        "textAr": "أزل اللحم، صفِّ المرق، احتفظ بأربعة أكواب منه."
+      },
+      {
+        "text": "In separate large pot, pour jameed liquid, bring to gentle simmer over low heat (do not boil or it will curdle).",
+        "textAr": "في قدر كبير منفصل، صب سائل الجميد، سخنه على نار هادئة جداً (لا تدعه يغلي وإلا سيتخثر)."
+      },
+      {
+        "text": "Add cooked lamb pieces, simmer 30 minutes in jameed.",
+        "textAr": "أضف قطع اللحم المطبوخة، اطبخ في الجميد لمدة 30 دقيقة."
+      },
+      {
+        "text": "Meanwhile, rinse rice until water runs clear.",
+        "textAr": "في هذه الأثناء، اغسل الأرز حتى يصبح الماء صافياً."
+      },
+      {
+        "text": "In pot, heat 3 tbsp ghee, add rice, toast 2 minutes.",
+        "textAr": "في قدر، سخن 3 ملاعق كبيرة سمنة، أضف الأرز، حمّصه لمدة دقيقتين."
+      },
+      {
+        "text": "Add 4 cups reserved lamb broth, salt.",
+        "textAr": "أضف 4 أكواب من مرق اللحم المحفوظ، ملح."
+      },
+      {
+        "text": "Bring to boil, cover, reduce heat to low, cook 20 minutes.",
+        "textAr": "دع المزيج يغلي، غطّ، خفف الحرارة إلى منخفضة، اطبخ لمدة 20 دقيقة."
+      },
+      {
+        "text": "Turn off heat, rest 10 minutes.",
+        "textAr": "أطفئ النار، اتركه يرتاح لمدة 10 دقائق."
+      },
+      {
+        "text": "Fry pine nuts and almonds in ghee until golden.",
+        "textAr": "حمّص الصنوبر واللوز في سمنة حتى يصبح ذهبياً."
+      },
+      {
+        "text": "To serve: place shrak bread on large platter, spoon some jameed sauce over to soften.",
+        "textAr": "للتقديم: ضع خبز الشراك في طبق كبير، اسكب بعض صلصة الجميد فوقه لتليينه."
+      },
+      {
+        "text": "Mound rice on bread, arrange lamb pieces on top, pour remaining jameed sauce over, sprinkle generously with fried nuts.",
+        "textAr": "كوّم الأرز على الخبز، رتب قطع اللحم فوق الأرز، اسكب ما تبقى من صلصة الجميد، وزّع المكسرات المحمصة بسخاء."
+      },
+      {
+        "text": "Serve with Batata Harra and yogurt on side, and glass of Vimto.",
+        "textAr": "قدّم مع بطاطا حارة ولبن إلى جانبه، وكوب من فيمتو."
+      }
+    ]
+  },
+  {
+    "name": "Egyptian Kushari",
+    "nameAr": "كشري مصري",
+    "description": "Tabbouleh & Garlic Bread",
+    "descriptionAr": "تبولة وخبز ثوم",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [
+      "Vegetarian"
+    ],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Short-grain rice",
+        "nameAr": "أرز قصير الحبة",
+        "amount": "2 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Macaroni pasta",
+        "nameAr": "مكرونة قرون",
+        "amount": "2 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Brown lentils",
+        "nameAr": "عدس بني",
+        "amount": "1 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Chickpeas",
+        "nameAr": "حمص",
+        "amount": "1 cup canned",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onions",
+        "nameAr": "بصل",
+        "amount": "4 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Garlic",
+        "nameAr": "ثوم",
+        "amount": "6 cloves",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Tomatoes",
+        "nameAr": "طماطم",
+        "amount": "6 ripe",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Tomato paste",
+        "nameAr": "معجون طماطم",
+        "amount": "3 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cumin",
+        "nameAr": "كمون",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Coriander",
+        "nameAr": "كزبرة",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "White vinegar",
+        "nameAr": "خل أبيض",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Vegetable oil",
+        "nameAr": "زيت نباتي",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Prepare lentils: rinse brown lentils, place in pot with 3 cups water, boil 20 minutes until tender but not mushy.",
+        "textAr": "حضّر العدس: اغسل العدس البني، ضعه في قدر مع 3 أكواب ماء، اسلقه لمدة 20 دقيقة حتى ينضج لكن لا يتهرى."
+      },
+      {
+        "text": "Drain, set aside.",
+        "textAr": "صفّه، اتركه جانباً."
+      },
+      {
+        "text": "Prepare rice: rinse until water runs clear.",
+        "textAr": "حضّر الأرز: اغسله حتى يصبح الماء صافياً."
+      },
+      {
+        "text": "In pot, heat 2 tbsp oil, add rice, stir 2 minutes, add 3 cups water, salt, bring to boil, reduce heat, cover, cook 15 minutes.",
+        "textAr": "في قدر، سخن ملعقتين كبيرتين زيت، أضف الأرز، حرّك لمدة دقيقتين، أضف 3 أكواب ماء، ملح، دع المزيج يغلي، خفف الحرارة، غطّ، اطبخ لمدة 15 دقيقة."
+      },
+      {
+        "text": "Turn off heat, rest covered.",
+        "textAr": "أطفئ النار، اتركه مغطى."
+      },
+      {
+        "text": "Prepare pasta: boil macaroni in salted water according to package, drain, set aside.",
+        "textAr": "حضّر المكرونة: اسلق المكرونة في ماء مملح حسب التعليمات على العبوة، صفّها، اتركها جانباً."
+      },
+      {
+        "text": "Prepare chickpeas: rinse canned chickpeas, set aside.",
+        "textAr": "حضّر الحمص: اغسل الحمص المعلب، اتركه جانباً."
+      },
+      {
+        "text": "Prepare tomato sauce: slice 4 onions thinly.",
+        "textAr": "حضّر صلصة الطماطم: قطّع 4 حبات بصل إلى شرائح رفيعة."
+      },
+      {
+        "text": "In large skillet, heat 1 cup oil, fry onion slices in batches until dark brown and crispy, drain on paper towel.",
+        "textAr": "في مقلاة كبيرة، سخن كوب زيت، اقلي شرائح البصل على دفعات حتى تصبح بنية داكنة ومقرمشة، صفها على ورق مطبخ."
+      },
+      {
+        "text": "Reserve oil.",
+        "textAr": "احتفظ بالزيت المستعمل."
+      },
+      {
+        "text": "In same skillet, heat 3 tbsp reserved onion oil, add minced garlic, cook 1 minute.",
+        "textAr": "في نفس المقلاة، سخن 3 ملاعق كبيرة من زيت البصل المحفوظ، أضف الثوم المفروم، اطبخ لمدة دقيقة."
+      },
+      {
+        "text": "Add grated tomatoes, tomato paste, cumin, coriander, salt, pepper, 1 cup water.",
+        "textAr": "أضف الطماطم المبشورة، معجون الطماطم، الكمون، الكزبرة، ملح، فلفل، كوب ماء."
+      },
+      {
+        "text": "Simmer 15 minutes until thickened.",
+        "textAr": "اطبخ على نار هادئة لمدة 15 دقيقة حتى تثخن."
+      },
+      {
+        "text": "Add vinegar, cook 2 more minutes.",
+        "textAr": "أضف الخل، اطبخ لمدة دقيقتين إضافيتين."
+      },
+      {
+        "text": "To assemble: in large serving dish, layer rice, then macaroni, then lentils, then chickpeas.",
+        "textAr": "للتجميع: في طبق تقديم كبير، ضع طبقات: الأرز، ثم المكرونة، ثم العدس، ثم الحمص."
+      },
+      {
+        "text": "Pour hot tomato sauce over top, sprinkle generously with crispy fried onions.",
+        "textAr": "اسكب صلصة الطماطم الساخنة فوق الكل، وزّع البصل المقلي المقرمش بسخارة."
+      },
+      {
+        "text": "Serve immediately with Tabbouleh and garlic bread on side, and glass of Hibiscus Tea.",
+        "textAr": "قدّم فوراً مع تبولة وخبز ثوم إلى جانبه، وكوب من كركديه."
+      }
+    ]
+  },
+  {
+    "name": "Okra Stew (Bamya)",
+    "nameAr": "بامية باللحم",
+    "description": "Baba Ganoush & Salad",
+    "descriptionAr": "بابا غنوج وسلطة",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Fresh okra",
+        "nameAr": "بامية طازجة",
+        "amount": "1kg",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Lamb shoulder chunks",
+        "nameAr": "لحم غنم مقطع",
+        "amount": "800g",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Garlic",
+        "nameAr": "ثوم",
+        "amount": "1 whole head",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cilantro",
+        "nameAr": "كزبرة",
+        "amount": "1 bunch",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Tomato paste",
+        "nameAr": "معجون طماطم",
+        "amount": "3 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Fresh tomatoes",
+        "nameAr": "طماطم طازجة",
+        "amount": "4",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Coriander powder",
+        "nameAr": "كزبرة بودرة",
+        "amount": "2 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cumin",
+        "nameAr": "كمون",
+        "amount": "2 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pomegranate molasses",
+        "nameAr": "دبس رمان",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Vegetable oil",
+        "nameAr": "زيت نباتي",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pepper",
+        "nameAr": "فلفل",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Lemon juice",
+        "nameAr": "عصير ليمون",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Wash okra, trim tops carefully without cutting into pods (to prevent seeds from releasing).",
+        "textAr": "اغسل البامية، قطّع الأطراف بحذر دون قطع القرون (لمنع خروج البذور)."
+      },
+      {
+        "text": "Pat completely dry.",
+        "textAr": "جففها تماماً."
+      },
+      {
+        "text": "Cut lamb into 2cm cubes, season with salt, pepper, coriander powder, cumin.",
+        "textAr": "قطّع اللحم إلى مكعبات بحجم 2سم، تبّلها بالملح، الفلفل، الكزبرة البودرة، الكمون."
+      },
+      {
+        "text": "In large heavy pot, heat 3 tbsp oil, brown lamb in batches until deep golden on all sides.",
+        "textAr": "في قدر كبير ثقيل، سخن 3 ملاعق كبيرة زيت، حمّر اللحم على دفعات حتى يصبح ذهبياً غامقاً من جميع الجهات."
+      },
+      {
+        "text": "Remove lamb.",
+        "textAr": "أزل اللحم."
+      },
+      {
+        "text": "In same pot, add whole peeled garlic cloves, cook 2 minutes until fragrant and lightly golden.",
+        "textAr": "في نفس القدر، أضف فصوص الثوم المقشرة كاملة، اطبخ لمدة دقيقتين حتى تفوح رائحتها وتصبح ذهبية فاتحة."
+      },
+      {
+        "text": "Add frozen okra (if using fresh, fry first in separate pan until lightly browned).",
+        "textAr": "أضف البامية المجمدة (إذا كنت تستخدم طازجة، اقليها أولاً في مقلاة منفصلة حتى تصبح بنية فاتحة)."
+      },
+      {
+        "text": "Stir gently to combine.",
+        "textAr": "حرّك بلطف لتتداخل المكونات."
+      },
+      {
+        "text": "Add tomato paste, stir 1 minute.",
+        "textAr": "أضف معجون الطماطم، حرّك لمدة دقيقة."
+      },
+      {
+        "text": "Add grated fresh tomatoes, pomegranate molasses, 2 cups water, salt, pepper.",
+        "textAr": "أضف الطماطم الطازجة المبشورة، دبس الرمان، كوبين ماء، ملح، فلفل."
+      },
+      {
+        "text": "Return lamb to pot.",
+        "textAr": "أعد اللحم إلى القدر."
+      },
+      {
+        "text": "Bring to boil, reduce heat to low, cover and simmer 45 minutes until lamb is tender and okra is cooked through but still holding shape.",
+        "textAr": "دع المزيج يغلي، خفف الحرارة إلى منخفضة، غطّ واتركه على نار هادئة لمدة 45 دقيقة حتى ينضج اللحم وتنضج البامية مع بقاء شكلها."
+      },
+      {
+        "text": "Stir very gently occasionally to avoid breaking okra.",
+        "textAr": "حرّك برفق شديد من حين لآخر لتجنب تكسير البامية."
+      },
+      {
+        "text": "In last 10 minutes, add chopped fresh cilantro and squeeze lemon juice.",
+        "textAr": "في آخر 10 دقائق، أضف الكزبرة الطازجة المفرومة واعصر عصير ليمون."
+      },
+      {
+        "text": "Serve hot with white rice or bread.",
+        "textAr": "قدّم ساخناً مع أرز أبيض أو خبز."
+      },
+      {
+        "text": "Pair with Baba Ganoush and salad on side, and glass of Rose Water flavored drink.",
+        "textAr": "قدّم مع بابا غنوج وسلطة إلى جانبه، وكوب من مشروب ماء ورد منكه."
+      }
+    ]
+  },
+  {
+    "name": "Molokhia & Chicken",
+    "nameAr": "ملوخية بالدجاج",
+    "description": "Vermicelli Rice & Soup",
+    "descriptionAr": "أرز بشعرية وشوربة",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Frozen Molokhia leaves",
+        "nameAr": "ملوخية مجمدة",
+        "amount": "1kg",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Chicken whole",
+        "nameAr": "دجاجة كاملة",
+        "amount": "1.5kg",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Garlic",
+        "nameAr": "ثوم",
+        "amount": "2 whole heads",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Fresh coriander",
+        "nameAr": "كزبرة طازجة",
+        "amount": "2 bunches",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cilantro",
+        "nameAr": "كزبرة خضراء",
+        "amount": "1 bunch",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Coriander seeds",
+        "nameAr": "حب كزبرة",
+        "amount": "1 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "7-spice",
+        "nameAr": "بهار مشكل",
+        "amount": "1 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Chicken stock",
+        "nameAr": "مرق دجاج",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Ghee",
+        "nameAr": "سمنة",
+        "amount": "4 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pepper",
+        "nameAr": "فلفل",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Lemon juice",
+        "nameAr": "عصير ليمون",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Wash chicken whole, pat dry.",
+        "textAr": "اغسل الدجاجة كاملة، جففها."
+      },
+      {
+        "text": "Rub inside and out with salt, pepper, 7-spice.",
+        "textAr": "افرك الداخل والخارج بالملح، الفلفل، البهار المشكل."
+      },
+      {
+        "text": "Place in large pot, cover with water, add 1 whole head garlic halved, bay leaves.",
+        "textAr": "ضعها في قدر كبير، غطّها بالماء، أضف رأس ثوم كامل مقطع نصفين، ورق غار."
+      },
+      {
+        "text": "Bring to boil, skim foam, reduce heat, simmer 45 minutes until chicken is cooked through.",
+        "textAr": "دع المزيج يغلي، أزل الرغوة، خفف الحرارة، اطبخ على نار هادئة لمدة 45 دقيقة حتى ينضج الدجاج."
+      },
+      {
+        "text": "Remove chicken, strain broth, reserve.",
+        "textAr": "أزل الدجاج، صفِّ المرق، احتفظ به."
+      },
+      {
+        "text": "Let chicken cool slightly, then shred meat from bones, discard skin and bones.",
+        "textAr": "اترك الدجاج يبرد قليلاً، ثم انزع اللحم من العظام (يمكن التخلص من الجلد والعظام)."
+      },
+      {
+        "text": "Set shredded chicken aside.",
+        "textAr": "اترك اللحم المقطع جانباً."
+      },
+      {
+        "text": "Wash Molokhia leaves thoroughly if using fresh, or thaw frozen.",
+        "textAr": "اغسل أوراق الملوخية جيداً إذا كنت تستخدم طازجة، أو ذوّب المجمدة."
+      },
+      {
+        "text": "Chop finely if fresh.",
+        "textAr": "افرمها ناعماً إذا كانت طازجة."
+      },
+      {
+        "text": "In large pot, heat 4 tbsp ghee.",
+        "textAr": "في قدر كبير، سخن 4 ملاعق كبيرة سمنة."
+      },
+      {
+        "text": "Add 1 whole head garlic minced finely, cook 1 minute until fragrant but not brown.",
+        "textAr": "أضف رأس ثوم كامل مفروم ناعماً، اطبخ لمدة دقيقة حتى تفوح رائحته دون أن يحمر."
+      },
+      {
+        "text": "Add ground coriander seeds, stir 10 seconds.",
+        "textAr": "أضف حب الكزبرة المطحون، حرّك لمدة 10 ثوانٍ."
+      },
+      {
+        "text": "Add Molokhia leaves gradually, stirring constantly.",
+        "textAr": "أضف أوراق الملوخية بالتدريج مع التحريك المستمر."
+      },
+      {
+        "text": "Add 4 cups reserved chicken broth, bring to gentle simmer.",
+        "textAr": "أضف 4 أكواب من مرق الدجاج المحفوظ، سخنه على نار هادئة."
+      },
+      {
+        "text": "Cook 10-15 minutes until Molokhia is tender and has slightly thickened.",
+        "textAr": "اطبخ لمدة 10-15 دقيقة حتى تنضج الملوخية وتثخن قليلاً."
+      },
+      {
+        "text": "Season with salt, pepper.",
+        "textAr": "تبّل بالملح والفلفل."
+      },
+      {
+        "text": "In separate pan, heat 2 tbsp ghee, add shredded chicken, warm through.",
+        "textAr": "في مقلاة منفصلة، سخن ملعقتين كبيرتين سمنة، أضف الدجاج المقطع، سخنه."
+      },
+      {
+        "text": "To serve: place chicken in bowl, ladle Molokhia soup over.",
+        "textAr": "للتقديم: ضع الدجاج في طبق، اسكب شوربة الملوخية فوقه."
+      },
+      {
+        "text": "Serve with vermicelli rice on side and squeeze of lemon.",
+        "textAr": "قدّم مع أرز بشعرية إلى جانبه وعصرة ليمون."
+      },
+      {
+        "text": "Pair with yogurt drink.",
+        "textAr": "قدّم مع شنينة."
+      }
+    ]
+  },
+  {
+    "name": "Dawood Basha",
+    "nameAr": "داود باشا",
+    "description": "White Rice & Fattoush",
+    "descriptionAr": "أرز أبيض وفتوش",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Beef mince",
+        "nameAr": "لحم بقر مفروم",
+        "amount": "800g",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onion",
+        "nameAr": "بصل",
+        "amount": "1 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Fresh parsley",
+        "nameAr": "بقدونس طازج",
+        "amount": "1 bunch",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pine nuts",
+        "nameAr": "صنوبر",
+        "amount": "1/3 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "7-spice",
+        "nameAr": "بهار مشكل",
+        "amount": "1 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cinnamon",
+        "nameAr": "قرفة",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Tomato passata",
+        "nameAr": "باساتا طماطم",
+        "amount": "2 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Tomato paste",
+        "nameAr": "معجون طماطم",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Water",
+        "nameAr": "ماء",
+        "amount": "2 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Vegetable oil",
+        "nameAr": "زيت نباتي",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pepper",
+        "nameAr": "فلفل",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "White rice for serving",
+        "nameAr": "أرز أبيض للتقديم",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Finely grate onion, squeeze out excess liquid.",
+        "textAr": "ابشر البصل ناعماً، اعصر السائل الزائد منه."
+      },
+      {
+        "text": "In large bowl, combine beef mince, grated onion, finely chopped parsley, pine nuts, 7-spice, cinnamon, salt, pepper.",
+        "textAr": "في وعاء كبير، اخلط اللحم المفروم، البصل المبشور، البقدونس المفروم ناعماً، الصنوبر، البهار المشكل، القرفة، الملح، الفلفل."
+      },
+      {
+        "text": "Mix thoroughly with hands until paste-like.",
+        "textAr": "اخلط جيداً باليدين حتى تتماسك العجينة."
+      },
+      {
+        "text": "Shape into small meatballs about 2cm diameter.",
+        "textAr": "شكّل كرات لحم صغيرة بقطر حوالي 2سم."
+      },
+      {
+        "text": "Heat 3 tbsp oil in large skillet, brown meatballs in batches until evenly browned on all sides.",
+        "textAr": "سخن 3 ملاعق كبيرة زيت في مقلاة كبيرة، حمّر كرات اللحم على دفعات حتى يصبح لونها بنياً ذهبياً من جميع الجهات."
+      },
+      {
+        "text": "Remove meatballs.",
+        "textAr": "أزل كرات اللحم."
+      },
+      {
+        "text": "In same skillet, add tomato passata, tomato paste, water, salt, pepper.",
+        "textAr": "في نفس المقلاة، أضف باساتا الطماطم، معجون الطماطم، الماء، الملح، الفلفل."
+      },
+      {
+        "text": "Stir, bring to simmer.",
+        "textAr": "حرّك، دع المزيج يغلي على نار هادئة."
+      },
+      {
+        "text": "Return meatballs to sauce, cover and simmer 30 minutes until meatballs are cooked through and sauce has thickened.",
+        "textAr": "أعد كرات اللحم إلى الصلصة، غطّ واتركها على نار هادئة لمدة 30 دقيقة حتى تنضج كرات اللحم تماماً وتثخن الصلصة."
+      },
+      {
+        "text": "Serve hot over white rice, spoon sauce generously over.",
+        "textAr": "قدّم ساخناً فوق أرز أبيض، اسكب الصلصة بسخاء."
+      },
+      {
+        "text": "Garnish with extra parsley.",
+        "textAr": "زيّن ببقدونس إضافي."
+      },
+      {
+        "text": "Pair with fattoush salad on side, and glass of Jallab.",
+        "textAr": "قدّم مع سلطة فتوش إلى جانبه، وكوب من جلاب."
+      }
+    ]
+  },
+  {
+    "name": "Fish Sayadieh",
+    "nameAr": "صيادية سمك",
+    "description": "Tahini Salad & Mutabal",
+    "descriptionAr": "سلطة طحينة ومتبل",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "White fish fillets",
+        "nameAr": "فيليه سمك أبيض",
+        "amount": "1kg",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Basmati rice",
+        "nameAr": "أرز بسمتي",
+        "amount": "3 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onions",
+        "nameAr": "بصل",
+        "amount": "5 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cumin seeds",
+        "nameAr": "حب كمون",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cumin powder",
+        "nameAr": "كمون بودرة",
+        "amount": "1 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Turmeric",
+        "nameAr": "كركم",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Fish stock",
+        "nameAr": "مرق سمك",
+        "amount": "4 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Vegetable oil",
+        "nameAr": "زيت نباتي",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pepper",
+        "nameAr": "فلفل",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Almonds (1/2 cup) for garnish",
+        "nameAr": "لوز (نصف كوب) للتزيين",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Peel onions, slice thinly.",
+        "textAr": "قشّر البصل، قطّعه إلى شرائح رفيعة."
+      },
+      {
+        "text": "In large deep skillet, heat 1/2 cup oil, add onions, cook over medium-low heat 30-40 minutes stirring occasionally until onions are deep golden brown and caramelized.",
+        "textAr": "في مقلاة عميقة كبيرة، سخن نصف كوب زيت، أضف البصل، اطبخ على نار متوسطة منخفضة لمدة 30-40 دقيقة مع التحريك من وقت لآخر حتى يصبح البصل ذهبياً غامقاً ومكرملًا."
+      },
+      {
+        "text": "Do not rush this step.",
+        "textAr": "لا تتعجل في هذه الخطوة."
+      },
+      {
+        "text": "Remove half the caramelized onions, set aside for garnish.",
+        "textAr": "أزل نصف كمية البصل المكرمل، اتركه جانباً للتزيين."
+      },
+      {
+        "text": "To remaining onions in pan, add cumin seeds, toast 1 minute.",
+        "textAr": "إلى ما تبقى من البصل في المقلاة، أضف حب الكمون، حمّصه لمدة دقيقة."
+      },
+      {
+        "text": "Add 4 cups water, fish stock cube if using, cumin powder, turmeric, salt.",
+        "textAr": "أضف 4 أكواب ماء، مكعب مرق سمك إذا رغبت، كمون بودرة، كركم، ملح."
+      },
+      {
+        "text": "Bring to boil.",
+        "textAr": "دع المزيج يغلي."
+      },
+      {
+        "text": "Rinse rice thoroughly until water runs clear.",
+        "textAr": "اغسل الأرز جيداً حتى يصبح الماء صافياً."
+      },
+      {
+        "text": "Add rice to boiling onion broth, stir, reduce heat to low, cover and cook 20 minutes until rice is tender and liquid absorbed.",
+        "textAr": "أضف الأرز إلى مرق البصل المغلي، حرّك، خفف الحرارة إلى منخفضة، غطّ واطبخ لمدة 20 دقيقة حتى ينضج الأرز ويمتص السائل."
+      },
+      {
+        "text": "Turn off heat, let rest 10 minutes.",
+        "textAr": "أطفئ النار، اتركه يرتاح لمدة 10 دقائق."
+      },
+      {
+        "text": "Meanwhile, season fish fillets with salt, pepper, cumin.",
+        "textAr": "في هذه الأثناء، تبّل شرائح السمك بالملح، الفلفل، الكمون."
+      },
+      {
+        "text": "In separate pan, heat 2 tbsp oil, cook fish 3-4 minutes per side until just cooked through.",
+        "textAr": "في مقلاة منفصلة، سخن ملعقتين كبيرتين زيت، اطبخ السمك لمدة 3-4 دقائق لكل جهة حتى ينضج تماماً."
+      },
+      {
+        "text": "Fry almonds in small pan until golden.",
+        "textAr": "حمّص اللوز في مقلاة صغيرة حتى يصبح ذهبياً."
+      },
+      {
+        "text": "To serve: fluff rice with fork, mound on platter, place fish fillets on top, sprinkle with reserved caramelized onions and fried almonds.",
+        "textAr": "للتقديم: قلّب الأرز بالشوكة، كوّمه في طبق، ضع شرائح السمك فوقه، وزّع البصل المكرمل المحفوظ واللوز المقلي."
+      },
+      {
+        "text": "Serve with tahini salad and mutabal on side, and glass of Lemon Mint.",
+        "textAr": "قدّم مع سلطة طحينة ومتبل إلى جانبه، وكوب من ليمون نعناع."
+      }
+    ]
+  },
+  {
+    "name": "Shish Barak",
+    "nameAr": "شيش برك",
+    "description": "Greek Salad & Lentil Soup",
+    "descriptionAr": "سلطة يونانية وشوربة عدس",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "All-purpose flour",
+        "nameAr": "طحين",
+        "amount": "4 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Beef mince",
+        "nameAr": "لحم بقر مفروم",
+        "amount": "500g",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onion",
+        "nameAr": "بصل",
+        "amount": "1 small",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pine nuts",
+        "nameAr": "صنوبر",
+        "amount": "1/4 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "7-spice",
+        "nameAr": "بهار مشكل",
+        "amount": "1 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cinnamon",
+        "nameAr": "قرفة",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Plain yogurt",
+        "nameAr": "لبن عادي",
+        "amount": "1kg",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cornstarch",
+        "nameAr": "نشا ذرة",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Dried mint",
+        "nameAr": "نعناع مجفف",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Garlic",
+        "nameAr": "ثوم",
+        "amount": "1 whole head",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Ghee",
+        "nameAr": "سمنة",
+        "amount": "4 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pepper",
+        "nameAr": "فلفل",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Water",
+        "nameAr": "ماء",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Prepare dough: In large bowl, combine flour, salt.",
+        "textAr": "حضّر العجينة: في وعاء كبير، اخلط الطحين، الملح."
+      },
+      {
+        "text": "In separate bowl, mix yeast with warm water and sugar, let sit 5 minutes until foamy.",
+        "textAr": "في وعاء منفصل، اخلط الخميرة مع الماء الدافئ والسكر، اتركه لمدة 5 دقائق حتى يصبح رغوياً."
+      },
+      {
+        "text": "Add yeast mixture and 2 tbsp oil to flour, mix until dough forms.",
+        "textAr": "أضف خليط الخميرة وملعقتين كبيرتين زيت إلى الطحين، اخلط حتى تتشكل عجينة."
+      },
+      {
+        "text": "Knead 10 minutes until smooth and elastic.",
+        "textAr": "اعجن لمدة 10 دقائق حتى تصبح ناعمة ومطاطية."
+      },
+      {
+        "text": "Cover, let rise 1 hour until doubled.",
+        "textAr": "غطّها، اتركها لتتخمر لمدة ساعة حتى يتضاعف حجمها."
+      },
+      {
+        "text": "Prepare filling: finely chop onion, mix with beef mince, pine nuts, 7-spice, cinnamon, salt, pepper.",
+        "textAr": "حضّر الحشوة: افرم البصل ناعماً، اخلطه مع اللحم المفروم، الصنوبر، البهار المشكل، القرفة، الملح، الفلفل."
+      },
+      {
+        "text": "Cook in skillet until meat is browned, drain fat, set aside to cool.",
+        "textAr": "اطبخ الخليط في مقلاة حتى يحمر اللحم، صفِّ الدهن، اتركه ليبرد جانباً."
+      },
+      {
+        "text": "Prepare yogurt sauce: In large pot, whisk yogurt with cornstarch until smooth.",
+        "textAr": "حضّر صلصة اللبن: في قدر كبير، اخفق اللبن مع نشا الذرة حتى يصبح ناعماً."
+      },
+      {
+        "text": "Add 2 cups water, salt.",
+        "textAr": "أضف كوبين ماء، ملح."
+      },
+      {
+        "text": "Bring to gentle simmer over medium-low heat, stirring constantly (do not boil or yogurt will curdle).",
+        "textAr": "سخنه على نار هادئة مع التحريك المستمر (لا تدعه يغلي وإلا سيتخثر اللبن)."
+      },
+      {
+        "text": "Simmer 10 minutes until slightly thickened.",
+        "textAr": "اطبخ لمدة 10 دقائق حتى يثخن قليلاً."
+      },
+      {
+        "text": "Prepare shish barak: Punch down dough, roll out thinly on floured surface.",
+        "textAr": "حضّر الشيش برك: أفرغ العجينة من الهواء، افردها على سطح مرشوش بالطحين."
+      },
+      {
+        "text": "Cut into 5cm circles.",
+        "textAr": "اقطعها إلى دوائر بقطر 5سم."
+      },
+      {
+        "text": "Place small amount of filling in center, fold into half-moon, pinch edges tightly.",
+        "textAr": "ضع كمية صغيرة من الحشوة في المركز، اطوِ الدائرة إلى نصف هلال، أطراف الأصابع بإحكام."
+      },
+      {
+        "text": "Bring corners together to form tortellini shape.",
+        "textAr": "اجمع الزوايا معاً لتشكيل شكل تورتيليني."
+      },
+      {
+        "text": "In batches, drop shish barak into simmering yogurt sauce.",
+        "textAr": "على دفعات، أسقط الشيش برك في صلصة اللبن التي تغلي على نار هادئة."
+      },
+      {
+        "text": "Cook 10 minutes until dough is cooked through and floats.",
+        "textAr": "اطبخ لمدة 10 دقائق حتى تنضج العجينة وتطفو على السطح."
+      },
+      {
+        "text": "Prepare tempering: In small pan, heat ghee, add minced garlic, cook 1 minute until fragrant, add dried mint, remove from heat.",
+        "textAr": "حضّر التسوية: في مقلاة صغيرة، سخن السمنة، أضف الثوم المفروم، اطبخ لمدة دقيقة حتى تفوح رائحته، أضف النعناع المجفف، ارفعه عن النار."
+      },
+      {
+        "text": "Pour tempering over shish barak in pot.",
+        "textAr": "اسكب التسوية فوق الشيش برك في القدر."
+      },
+      {
+        "text": "Serve hot in bowls with Greek salad and lentil soup on side, and glass of Tamarind drink.",
+        "textAr": "قدّم ساخناً في أطباق مع سلطة يونانية وشوربة عدس إلى جانبه، وكوب من تمر هندي."
+      }
+    ]
+  },
+  {
+    "name": "Chicken Kabsa",
+    "nameAr": "كبسة دجاج",
+    "description": "Daqqus & Green Salad",
+    "descriptionAr": "دقوس وسلطة خضراء",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Chicken whole cut into 8 pieces",
+        "nameAr": "دجاجة كاملة مقطعة 8 قطع",
+        "amount": "1.5kg",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Basmati rice",
+        "nameAr": "أرز بسمتي",
+        "amount": "4 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onion",
+        "nameAr": "بصل",
+        "amount": "2 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Black lime (loomi",
+        "nameAr": "لومي",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "4 whole)",
+        "nameAr": "حبهان",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cardamom pods",
+        "nameAr": "عود قرفة",
+        "amount": "6",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cinnamon stick",
+        "nameAr": "قرنفل",
+        "amount": "2",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cloves",
+        "nameAr": "ورق غار",
+        "amount": "4",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Bay leaves",
+        "nameAr": "كمون بودرة",
+        "amount": "3",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cumin powder",
+        "nameAr": "كزبرة بودرة",
+        "amount": "1 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Coriander powder",
+        "nameAr": "كركم",
+        "amount": "1 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Turmeric",
+        "nameAr": "معجون طماطم",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Tomato paste",
+        "nameAr": "زيت نباتي",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Vegetable oil",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "زبيب",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Raisins",
+        "nameAr": "لوز",
+        "amount": "1/2 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Almonds",
+        "nameAr": "",
+        "amount": "1/2 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Wash chicken pieces, pat dry.",
+        "textAr": "اغسل قطع الدجاج، جففها."
+      },
+      {
+        "text": "Mix salt, pepper, cumin, coriander, turmeric in small bowl.",
+        "textAr": "اخلط الملح، الفلفل، الكمون، الكزبرة، الكركم في وعاء صغير."
+      },
+      {
+        "text": "Rub spice mixture all over chicken.",
+        "textAr": "افرك خليط البهارات على الدجاج من جميع الجهات."
+      },
+      {
+        "text": "In large heavy pot, heat 3 tbsp oil, brown chicken in batches until golden on all sides.",
+        "textAr": "في قدر كبير ثقيل، سخن 3 ملاعق كبيرة زيت، حمّر الدجاج على دفعات حتى يصبح ذهبياً من جميع الجهات."
+      },
+      {
+        "text": "Remove chicken.",
+        "textAr": "أزل الدجاج."
+      },
+      {
+        "text": "In same pot, add sliced onions, cook 5-7 minutes until softened.",
+        "textAr": "في نفس القدر، أضف البصل المقطع شرائح، اطبخ لمدة 5-7 دقائق حتى يلين."
+      },
+      {
+        "text": "Add tomato paste, stir 1 minute.",
+        "textAr": "أضف معجون الطماطم، حرّك لمدة دقيقة."
+      },
+      {
+        "text": "Return chicken to pot, add whole black lime, cardamom, cinnamon, cloves, bay leaves.",
+        "textAr": "أعد الدجاج إلى القدر، أضف اللومي الكامل، الحبهان، القرفة، القرنفل، ورق الغار."
+      },
+      {
+        "text": "Cover with water by 2 inches.",
+        "textAr": "غطّ المكونات بالماء بمقدار 2 إنش."
+      },
+      {
+        "text": "Bring to boil, reduce heat, cover and simmer 30 minutes.",
+        "textAr": "دع المزيج يغلي، خفف الحرارة، غطّ واتركه على نار هادئة لمدة 30 دقيقة."
+      },
+      {
+        "text": "Remove chicken, set aside.",
+        "textAr": "أزل الدجاج، اتركه جانباً."
+      },
+      {
+        "text": "Strain broth, measure 4 cups.",
+        "textAr": "صفِّ المرق، احتفظ بأربعة أكواب منه."
+      },
+      {
+        "text": "Rinse rice until water runs clear.",
+        "textAr": "اغسل الأرز حتى يصبح الماء صافياً."
+      },
+      {
+        "text": "In same pot, heat 2 tbsp oil, add rice, toast 2 minutes.",
+        "textAr": "في نفس القدر، سخن ملعقتين كبيرتين زيت، أضف الأرز، حمّصه لمدة دقيقتين."
+      },
+      {
+        "text": "Add 4 cups hot chicken broth, salt.",
+        "textAr": "أضف 4 أكواب من مرق الدجاج الساخن، ملح."
+      },
+      {
+        "text": "Bring to boil, reduce heat to low, cover and cook 20 minutes.",
+        "textAr": "دع المزيج يغلي، خفف الحرارة إلى منخفضة، غطّ واطبخ لمدة 20 دقيقة."
+      },
+      {
+        "text": "Turn off heat, rest 10 minutes.",
+        "textAr": "أطفئ النار، اتركه يرتاح لمدة 10 دقائق."
+      },
+      {
+        "text": "Meanwhile, fry raisins and almonds in ghee until plump and golden.",
+        "textAr": "في هذه الأثناء، حمّص الزبيب واللوز في سمنة حتى ينتفخا ويصبحا ذهبيين."
+      },
+      {
+        "text": "To serve: fluff rice, mound on platter, place chicken pieces on top, sprinkle with raisins and almonds.",
+        "textAr": "للتقديم: قلّب الأرز بالشوكة، كوّمه في طبق، ضع قطع الدجاج فوقه، وزّع الزبيب واللوز."
+      },
+      {
+        "text": "Serve with Daqqus (tomato dipping sauce) and green salad on side, and Arabic coffee.",
+        "textAr": "قدّم مع دقوس وسلطة خضراء إلى جانبه، وقهوة عربية."
+      }
+    ]
+  },
+  {
+    "name": "Beef Kofta",
+    "nameAr": "كفتة لحم",
+    "description": "Hummus & Roasted Veggies",
+    "descriptionAr": "حمص وخضروات مشوية",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Beef mince",
+        "nameAr": "لحم بقر مفروم",
+        "amount": "1kg",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onion",
+        "nameAr": "بصل",
+        "amount": "1 large grated",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Fresh parsley",
+        "nameAr": "بقدونس طازج",
+        "amount": "1 bunch finely chopped",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "7-spice",
+        "nameAr": "بهار مشكل",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cinnamon",
+        "nameAr": "قرفة",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Nutmeg",
+        "nameAr": "جوزة الطيب",
+        "amount": "1/2 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Potatoes",
+        "nameAr": "بطاطس",
+        "amount": "4 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Tahini",
+        "nameAr": "طحينة",
+        "amount": "1 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Lemon juice",
+        "nameAr": "عصير ليمون",
+        "amount": "1/2 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Garlic",
+        "nameAr": "ثوم",
+        "amount": "4 cloves",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Water",
+        "nameAr": "ماء",
+        "amount": "1/2 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Tomato slices",
+        "nameAr": "شرائح طماطم",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Olive oil",
+        "nameAr": "زيت زيتون",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pepper",
+        "nameAr": "فلفل",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Grate onion finely, squeeze out excess liquid.",
+        "textAr": "ابشر البصل ناعماً، اعصر السائل الزائد منه."
+      },
+      {
+        "text": "Finely chop parsley.",
+        "textAr": "افرم البقدونس ناعماً."
+      },
+      {
+        "text": "In large bowl, combine beef mince, grated onion, parsley, 7-spice, cinnamon, nutmeg, salt, pepper.",
+        "textAr": "في وعاء كبير، اخلط اللحم المفروم، البصل المبشور، البقدونس، البهار المشكل، القرفة، جوزة الطيب، الملح، الفلفل."
+      },
+      {
+        "text": "Mix thoroughly with hands until paste-like.",
+        "textAr": "اخلط جيداً باليدين حتى تتماسك العجينة."
+      },
+      {
+        "text": "Take handful of mixture, shape into oval or round kofta, press onto skewer if using, or form into logs.",
+        "textAr": "خذ حفنة من الخليط، شكّلها على هيئة كفتة بيضاوية أو دائرية، اضغطها على أسياخ إذا كنت تستخدمها، أو شكّلها على هيئة أصابع."
+      },
+      {
+        "text": "Repeat with remaining mixture.",
+        "textAr": "كرر العملية مع ما تبقى من الخليط."
+      },
+      {
+        "text": "Place kofta on tray, refrigerate 30 minutes to firm up.",
+        "textAr": "ضع الكفتة في صينية، بردها في الثلاجة لمدة 30 دقيقة لتتماسك."
+      },
+      {
+        "text": "Peel potatoes, slice into 1cm rounds.",
+        "textAr": "قشّر البطاطس، قطّعها إلى شرائح بسمك 1سم."
+      },
+      {
+        "text": "Arrange potato slices in baking dish in single layer, season with salt.",
+        "textAr": "رتب شرائح البطاطس في طبق خبز في طبقة واحدة، تبّلها بالملح."
+      },
+      {
+        "text": "Place kofta on top of potatoes.",
+        "textAr": "ضع الكفتة فوق البطاطس."
+      },
+      {
+        "text": "Prepare tahini sauce: In bowl, whisk tahini with lemon juice, minced garlic, water until smooth and pourable.",
+        "textAr": "حضّر صلصة الطحينة: في وعاء، اخفق الطحينة مع عصير الليمون، الثوم المفروم، الماء حتى تصبح ناعمة وقابلة للسكب."
+      },
+      {
+        "text": "Season with salt.",
+        "textAr": "تبّلها بالملح."
+      },
+      {
+        "text": "Pour tahini sauce over kofta and potatoes, covering completely.",
+        "textAr": "اسكب صلصة الطحينة فوق الكفتة والبطاطس، لتغطيها تماماً."
+      },
+      {
+        "text": "Cover baking dish with foil.",
+        "textAr": "غطِّ طبق الخبز بورق قصدير."
+      },
+      {
+        "text": "Bake at 375°F (190°C) for 45 minutes.",
+        "textAr": "اخبز على حرارة 375°F (190°C) لمدة 45 دقيقة."
+      },
+      {
+        "text": "Remove foil, bake 15 more minutes until top is golden.",
+        "textAr": "أزل ورق القصدير، اخبز لمدة 15 دقيقة إضافية حتى يصبح الوجه ذهبياً."
+      },
+      {
+        "text": "Garnish with tomato slices and fresh parsley.",
+        "textAr": "زيّن بشرائح الطماطم والبقدونس الطازج."
+      },
+      {
+        "text": "Serve hot with hummus and roasted veggies on side, and glass of Ayran.",
+        "textAr": "قدّم ساخناً مع حمص وخضروات مشوية إلى جانبه، وكوب من عيران."
+      }
+    ]
+  },
+  {
+    "name": "Stuffed Zucchini",
+    "nameAr": "كوسا محشي",
+    "description": "Garlic Yogurt & Salad",
+    "descriptionAr": "لبن بالثوم وسلطة",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Medium zucchini",
+        "nameAr": "كوسا متوسطة",
+        "amount": "12 pieces",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Lamb mince",
+        "nameAr": "لحم غنم مفروم",
+        "amount": "500g",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Basmati rice",
+        "nameAr": "أرز بسمتي",
+        "amount": "1/2 cup raw",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onion",
+        "nameAr": "بصل",
+        "amount": "1 small",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Fresh mint",
+        "nameAr": "نعناع طازج",
+        "amount": "1/2 bunch",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "7-spice",
+        "nameAr": "بهار مشكل",
+        "amount": "1 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cinnamon",
+        "nameAr": "قرفة",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Allspice",
+        "nameAr": "بهار حلو",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Tomatoes",
+        "nameAr": "طماطم",
+        "amount": "6 ripe",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Tomato paste",
+        "nameAr": "معجون طماطم",
+        "amount": "3 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Garlic",
+        "nameAr": "ثوم",
+        "amount": "6 cloves",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Lemon juice",
+        "nameAr": "عصير ليمون",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pepper",
+        "nameAr": "فلفل",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Olive oil",
+        "nameAr": "زيت زيتون",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Wash zucchini, trim ends.",
+        "textAr": "اغسل الكوسا، قطّع الأطراف."
+      },
+      {
+        "text": "Using zucchini corer or apple corer, carefully hollow out each zucchini from the top, leaving 1/2cm thick walls.",
+        "textAr": "باستخدام مخلية الكوسا أو أداة تقطيع التفاح، فرّغ كل كوسة بحذر من الأعلى، تاركاً جدران بسمك نصف سم."
+      },
+      {
+        "text": "Be careful not to pierce bottom or sides.",
+        "textAr": "احذر من ثقب القاع أو الجوانب."
+      },
+      {
+        "text": "Reserve removed pulp.",
+        "textAr": "احتفظ باللب المستخرج."
+      },
+      {
+        "text": "In bowl, combine lamb mince, rinsed raw rice, finely chopped onion, chopped mint, 7-spice, cinnamon, allspice, salt, pepper.",
+        "textAr": "في وعاء، اخلط اللحم المفروم، الأرز النيء المغسول، البصل المفروم ناعماً، النعناع المفروم، البهار المشكل، القرفة، البهار الحلو، الملح، الفلفل."
+      },
+      {
+        "text": "Mix well with hands.",
+        "textAr": "اخلط جيداً باليدين."
+      },
+      {
+        "text": "Stuff each zucchini loosely with meat mixture (rice will expand during cooking), leave 1cm space at top.",
+        "textAr": "احشو كل كوسة بشكل غير محكم بخليط اللحم (سوف يتمدد الأرز أثناء الطهي)، اترك فراغاً بمقدار 1سم في الأعلى."
+      },
+      {
+        "text": "Arrange stuffed zucchini in large pot in single layer.",
+        "textAr": "رتب الكوسا المحشوة في قدر كبير في طبقة واحدة."
+      },
+      {
+        "text": "Prepare sauce: grate tomatoes, mince garlic.",
+        "textAr": "حضّر الصلصة: ابشر الطماطم، افرم الثوم."
+      },
+      {
+        "text": "In bowl, combine grated tomatoes, tomato paste, chopped reserved zucchini pulp, minced garlic, lemon juice, salt, pepper, 2 cups water.",
+        "textAr": "في وعاء، اخلط الطماطم المبشورة، معجون الطماطم، لب الكوسا المفروم المحفوظ، الثوم المفروم، عصير الليمون، الملح، الفلفل، كوبين ماء."
+      },
+      {
+        "text": "Pour over stuffed zucchini, liquid should almost cover them.",
+        "textAr": "اسكب المزيج فوق الكوسا المحشوة، يجب أن يغطيها السائل تقريباً."
+      },
+      {
+        "text": "Place heavy heat-proof plate on top to keep zucchini submerged.",
+        "textAr": "ضع طبقاً ثقيلاً مقاومًا للحرارة فوق الكوسا لتبقى مغمورة."
+      },
+      {
+        "text": "Bring to boil, reduce heat to low, cover and simmer 1 hour until zucchini is tender and rice inside is cooked.",
+        "textAr": "دع المزيج يغلي، خفف الحرارة إلى منخفضة، غطّ واتركه على نار هادئة لمدة ساعة حتى تنضج الكوسا ويطهى الأرز بداخلها."
+      },
+      {
+        "text": "Serve hot with garlic yogurt and salad on side, and glass of Vimto.",
+        "textAr": "قدّم ساخناً مع لبن بالثوم وسلطة إلى جانبه، وكوب من فيمتو."
+      }
+    ]
+  },
+  {
+    "name": "Turkish Pide",
+    "nameAr": "لحم بعجين",
+    "description": "Lentil Soup & Pickles",
+    "descriptionAr": "شوربة عدس ومخللات",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "All-purpose flour",
+        "nameAr": "طحين",
+        "amount": "4 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Instant yeast",
+        "nameAr": "خميرة فورية",
+        "amount": "2 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Sugar",
+        "nameAr": "سكر",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Olive oil",
+        "nameAr": "زيت زيتون",
+        "amount": "1/4 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Warm water",
+        "nameAr": "ماء دافئ",
+        "amount": "1.5 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Beef mince",
+        "nameAr": "لحم بقر مفروم",
+        "amount": "400g",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onion",
+        "nameAr": "بصل",
+        "amount": "1 small",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Bell pepper",
+        "nameAr": "فليفلة حلوة",
+        "amount": "1",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Tomato",
+        "nameAr": "طماطم",
+        "amount": "1",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Fresh parsley",
+        "nameAr": "بقدونس طازج",
+        "amount": "1/2 bunch",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "7-spice",
+        "nameAr": "بهار مشكل",
+        "amount": "1 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pepper",
+        "nameAr": "فلفل",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Egg yolk for wash",
+        "nameAr": "صفار بيضة للدهان",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Prepare dough: In large bowl, combine flour, salt, sugar, instant yeast.",
+        "textAr": "حضّر العجينة: في وعاء كبير، اخلط الطحين، الملح، السكر، الخميرة الفورية."
+      },
+      {
+        "text": "Add olive oil and warm water gradually, mix until dough forms.",
+        "textAr": "أضف زيت الزيتون والماء الدافئ بالتدريج، اخلط حتى تتشكل عجينة."
+      },
+      {
+        "text": "Knead 8-10 minutes until smooth and elastic.",
+        "textAr": "اعجن لمدة 8-10 دقائق حتى تصبح ناعمة ومطاطية."
+      },
+      {
+        "text": "Cover, let rise 1 hour until doubled.",
+        "textAr": "غطّها، اتركها لتتخمر لمدة ساعة حتى يتضاعف حجمها."
+      },
+      {
+        "text": "Prepare filling: Finely chop onion, bell pepper, tomato.",
+        "textAr": "حضّر الحشوة: افرم البصل، الفليفلة الحلوة، الطماطم ناعماً."
+      },
+      {
+        "text": "In bowl, combine beef mince, chopped vegetables, chopped parsley, 7-spice, salt, pepper.",
+        "textAr": "في وعاء، اخلط اللحم المفروم، الخضار المفرومة، البقدونس المفروم، البهار المشكل، الملح، الفلفل."
+      },
+      {
+        "text": "Mix well.",
+        "textAr": "اخلط جيداً."
+      },
+      {
+        "text": "Punch down dough, divide into 6-8 balls.",
+        "textAr": "أفرغ العجينة من الهواء، قسمها إلى 6-8 كرات."
+      },
+      {
+        "text": "On floured surface, roll each ball into oval about 1/2cm thick.",
+        "textAr": "على سطح مرشوش بالطحين، افرد كل كرة على شكل بيضاوي بسمك نصف سم."
+      },
+      {
+        "text": "Place filling along center of oval, leaving edges clear.",
+        "textAr": "ضع الحشوة في وسط الشكل البيضاوي، تاركاً الأطراف فارغة."
+      },
+      {
+        "text": "Fold edges up and over filling, pinch ends to form boat shape.",
+        "textAr": "اطوِ الأطراف للأعلى وفوق الحشوة، أطراف الأصابع لتشكيل شكل القارب."
+      },
+      {
+        "text": "Place on baking sheet lined with parchment.",
+        "textAr": "ضعها في صينية خبز مبطنة بورق زبدة."
+      },
+      {
+        "text": "Repeat with remaining dough.",
+        "textAr": "كرر العملية مع ما تبقى من العجين."
+      },
+      {
+        "text": "Brush edges with beaten egg yolk.",
+        "textAr": "ادهن الأطراف بصفار البيض المخفوق."
+      },
+      {
+        "text": "Bake at 450°F (230°C) for 12-15 minutes until edges are golden and filling is cooked.",
+        "textAr": "اخبز على حرارة 450°F (230°C) لمدة 12-15 دقيقة حتى تصبح الأطراف ذهبية وتنضج الحشوة."
+      },
+      {
+        "text": "Serve hot with lentil soup and pickles on side, and glass of Mint Tea.",
+        "textAr": "قدّم ساخناً مع شوربة عدس ومخللات إلى جانبه، وكوب من شاي نعناع."
+      }
+    ]
+  },
+  {
+    "name": "Lentil Haleem",
+    "nameAr": "هريس عدس",
+    "description": "Naan & Fresh Onions",
+    "descriptionAr": "خبز نان وبصل طازج",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [
+      "Vegetarian"
+    ],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Brown lentils",
+        "nameAr": "عدس بني",
+        "amount": "1 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pearl barley",
+        "nameAr": "شعير لؤلؤي",
+        "amount": "1/2 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cracked wheat",
+        "nameAr": "برغل",
+        "amount": "1/2 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onion",
+        "nameAr": "بصل",
+        "amount": "1 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Ginger",
+        "nameAr": "زنجبيل",
+        "amount": "2 inch",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Garlic",
+        "nameAr": "ثوم",
+        "amount": "6 cloves",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Turmeric",
+        "nameAr": "كركم",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cumin",
+        "nameAr": "كمون",
+        "amount": "1 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Coriander",
+        "nameAr": "كزبرة",
+        "amount": "1 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Chicken stock",
+        "nameAr": "مرق دجاج",
+        "amount": "2 liters",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Ghee",
+        "nameAr": "سمنة",
+        "amount": "4 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Lemon juice",
+        "nameAr": "عصير ليمون",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pepper",
+        "nameAr": "فلفل",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Crispy fried onions for garnish",
+        "nameAr": "بصل مقلي مقرمش للتزيين",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Rinse lentils, barley, and cracked wheat separately.",
+        "textAr": "اغسل العدس، الشعير، والبرغل كل على حدة."
+      },
+      {
+        "text": "In large heavy pot, heat 3 tbsp ghee.",
+        "textAr": "في قدر كبير ثقيل، سخن 3 ملاعق كبيرة سمنة."
+      },
+      {
+        "text": "Add finely chopped onion, cook 5-7 minutes until soft.",
+        "textAr": "أضف البصل المفروم ناعماً، اطبخ لمدة 5-7 دقائق حتى يلين."
+      },
+      {
+        "text": "Add minced ginger and garlic, cook 2 minutes until fragrant.",
+        "textAr": "أضف الزنجبيل المفروم والثوم، اطبخ لمدة دقيقتين حتى تفوح رائحتهما."
+      },
+      {
+        "text": "Add turmeric, cumin, coriander, stir 30 seconds.",
+        "textAr": "أضف الكركم، الكمون، الكزبرة، حرّك لمدة 30 ثانية."
+      },
+      {
+        "text": "Add lentils, barley, cracked wheat, stir to coat with spices.",
+        "textAr": "أضف العدس، الشعير، البرغل، حرّك لتتداخل مع البهارات."
+      },
+      {
+        "text": "Add 2 liters chicken stock or water.",
+        "textAr": "أضف 2 لتر من مرق الدجاج أو الماء."
+      },
+      {
+        "text": "Bring to boil, reduce heat to low, cover and simmer 2 hours, stirring occasionally to prevent sticking.",
+        "textAr": "دع المزيج يغلي، خفف الحرارة إلى منخفضة، غطّ واتركه على نار هادئة لمدة ساعتين مع التحريك من حين لآخر لمنع الالتصاق."
+      },
+      {
+        "text": "Mixture should become very thick and porridge-like.",
+        "textAr": "يجب أن يصبح الخليط كثيفاً جداً مثل العصيدة."
+      },
+      {
+        "text": "If too thick, add more hot water.",
+        "textAr": "إذا كان كثيفاً جداً، أضف المزيد من الماء الساخن."
+      },
+      {
+        "text": "Season with salt and pepper.",
+        "textAr": "تبّل بالملح والفلفل."
+      },
+      {
+        "text": "Prepare tempering: In small pan, heat 3 tbsp ghee, add sliced garlic, fry until golden, add dried chili if using, pour over haleem.",
+        "textAr": "حضّر التسوية: في مقلاة صغيرة، سخن 3 ملاعق كبيرة سمنة، أضف شرائح الثوم، اقليها حتى تصبح ذهبية، أضف الفلفل الحار المجفف إذا رغبت، اسكب التسوية فوق الهريس."
+      },
+      {
+        "text": "Serve hot in bowls, topped with crispy fried onions, squeeze of lemon juice.",
+        "textAr": "قدّم ساخناً في أطباق، مع وضع البصل المقلي المقرمش على الوجه، وعصرة ليمون."
+      },
+      {
+        "text": "Pair with naan and fresh onions on side, and glass of Mango Lassi.",
+        "textAr": "قدّم مع خبز نان وبصل طازج إلى جانبه، وكوب من لاسي مانجو."
+      }
+    ]
+  },
+  {
+    "name": "Persian Fesenjan",
+    "nameAr": "فسنجون",
+    "description": "Saffron Rice & Mast-o-Khiar",
+    "descriptionAr": "أرز زعفران ومست خيار",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Chicken thighs bone-in",
+        "nameAr": "أفخاذ دجاج بالعظم",
+        "amount": "1kg",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Walnuts",
+        "nameAr": "جوز",
+        "amount": "500g",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pomegranate molasses",
+        "nameAr": "دبس رمان",
+        "amount": "1/2 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pomegranate concentrate",
+        "nameAr": "مركز رمان",
+        "amount": "1/4 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onion",
+        "nameAr": "بصل",
+        "amount": "2 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Turmeric",
+        "nameAr": "كركم",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cinnamon",
+        "nameAr": "قرفة",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Nutmeg",
+        "nameAr": "جوزة الطيب",
+        "amount": "1/2 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Brown sugar",
+        "nameAr": "سكر بني",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Chicken stock",
+        "nameAr": "مرق دجاج",
+        "amount": "4 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Vegetable oil",
+        "nameAr": "زيت نباتي",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pepper",
+        "nameAr": "فلفل",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pomegranate seeds for garnish",
+        "nameAr": "حب رمان للتزيين",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Toast walnuts on baking sheet at 350°F for 8-10 minutes until fragrant.",
+        "textAr": "حمّص الجوز في صينية خبز على حرارة 350°F لمدة 8-10 دقائق حتى تفوح رائحته."
+      },
+      {
+        "text": "Let cool, then grind in food processor until fine but not paste.",
+        "textAr": "اتركه ليبرد، ثم اطحنه في محضرة الطعام حتى يصبح ناعماً (ليس معجوناً)."
+      },
+      {
+        "text": "Set aside.",
+        "textAr": "اتركه جانباً."
+      },
+      {
+        "text": "Season chicken pieces with salt, pepper, turmeric.",
+        "textAr": "تبّل قطع الدجاج بالملح، الفلفل، الكركم."
+      },
+      {
+        "text": "In large heavy pot, heat 3 tbsp oil, brown chicken in batches until golden.",
+        "textAr": "في قدر كبير ثقيل، سخن 3 ملاعق كبيرة زيت، حمّر الدجاج على دفعات حتى يصبح ذهبياً."
+      },
+      {
+        "text": "Remove chicken.",
+        "textAr": "أزل الدجاج."
+      },
+      {
+        "text": "In same pot, add sliced onions, cook 8-10 minutes until deep golden brown.",
+        "textAr": "في نفس القدر، أضف البصل المقطع شرائح، اطبخ لمدة 8-10 دقائق حتى يصبح بنياً ذهبياً غامقاً."
+      },
+      {
+        "text": "Add ground walnuts, stir 2 minutes.",
+        "textAr": "أضف الجوز المطحون، حرّك لمدة دقيقتين."
+      },
+      {
+        "text": "Add pomegranate molasses, pomegranate concentrate, brown sugar, cinnamon, nutmeg, 4 cups chicken stock.",
+        "textAr": "أضف دبس الرمان، مركز الرمان، السكر البني، القرفة، جوزة الطيب، 4 أكواب مرق دجاج."
+      },
+      {
+        "text": "Stir well, bring to simmer.",
+        "textAr": "حرّك جيداً، دع المزيج يغلي على نار هادئة."
+      },
+      {
+        "text": "Return chicken to pot, cover and simmer over lowest heat 2 hours, stirring occasionally, until chicken is very tender and sauce is thick and dark.",
+        "textAr": "أعد الدجاج إلى القدر، غطّ واتركه على نار هادئة جداً لمدة ساعتين مع التحريك من حين لآخر، حتى يصبح الدجاج طرياً جداً وتصبح الصلصة داكنة وسميكة."
+      },
+      {
+        "text": "Taste and adjust seasoning.",
+        "textAr": "تذوّق واضبط التوابل."
+      },
+      {
+        "text": "Serve hot over saffron rice, garnished with pomegranate seeds.",
+        "textAr": "قدّم ساخناً فوق أرز بالزعفران، وزّع حب الرمان على الوجه للتزيين."
+      },
+      {
+        "text": "Pair with Mast-o-Khiar (yogurt cucumber dip) on side, and glass of Apple Sherbet.",
+        "textAr": "قدّم مع مست خيار إلى جانبه، وكوب من شراب تفاح."
+      }
+    ]
+  },
+  {
+    "name": "Kabuli Palaw",
+    "nameAr": "كابلي بالاو",
+    "description": "Carrot Salad & Hummus",
+    "descriptionAr": "سلطة جزر وحمص",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Lamb shoulder",
+        "nameAr": "كتف خروف",
+        "amount": "1kg",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Basmati rice",
+        "nameAr": "أرز بسمتي",
+        "amount": "4 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Carrots",
+        "nameAr": "جزر",
+        "amount": "4 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Raisins",
+        "nameAr": "زبيب",
+        "amount": "1 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onion",
+        "nameAr": "بصل",
+        "amount": "2 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cumin seeds",
+        "nameAr": "حب كمون",
+        "amount": "2 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cardamom pods",
+        "nameAr": "حبهان",
+        "amount": "4",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cinnamon stick",
+        "nameAr": "عود قرفة",
+        "amount": "2",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Black pepper",
+        "nameAr": "فلفل أسود",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Saffron threads",
+        "nameAr": "زعفران",
+        "amount": "1/2 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Vegetable oil",
+        "nameAr": "زيت نباتي",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Ghee",
+        "nameAr": "سمنة",
+        "amount": "4 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Almonds for garnish",
+        "nameAr": "لوز للتزيين",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Cut lamb into large chunks.",
+        "textAr": "قطّع اللحم إلى قطع كبيرة."
+      },
+      {
+        "text": "In large heavy pot, heat 3 tbsp oil, brown lamb in batches until deep golden on all sides.",
+        "textAr": "في قدر كبير ثقيل، سخن 3 ملاعق كبيرة زيت، حمّر اللحم على دفعات حتى يصبح ذهبياً غامقاً من جميع الجهات."
+      },
+      {
+        "text": "Remove lamb.",
+        "textAr": "أزل اللحم."
+      },
+      {
+        "text": "In same pot, add sliced onions, cook 5-7 minutes until soft.",
+        "textAr": "في نفس القدر، أضف البصل المقطع شرائح، اطبخ لمدة 5-7 دقائق حتى يلين."
+      },
+      {
+        "text": "Add cumin seeds, cardamom, cinnamon, black pepper, stir 1 minute.",
+        "textAr": "أضف حب الكمون، الحبهان، القرفة، الفلفل الأسود، حرّك لمدة دقيقة."
+      },
+      {
+        "text": "Return lamb to pot, add 4 cups water, bring to boil, reduce heat, cover and simmer 1.5 hours until lamb is tender.",
+        "textAr": "أعد اللحم إلى القدر، أضف 4 أكواب ماء، دع المزيج يغلي، خفف الحرارة، غطّ واتركه على نار هادئة لمدة 1.5 ساعة حتى ينضج اللحم."
+      },
+      {
+        "text": "Meanwhile, julienne carrots into thin matchsticks.",
+        "textAr": "في هذه الأثناء، قطّع الجزر إلى أعواد رفيعة (جوليان)."
+      },
+      {
+        "text": "In separate pan, heat 2 tbsp ghee, add carrots, sauté 5 minutes until slightly softened.",
+        "textAr": "في مقلاة منفصلة، سخن ملعقتين كبيرتين سمنة، أضف الجزر، قلّب لمدة 5 دقائق حتى يلين قليلاً."
+      },
+      {
+        "text": "Add raisins, cook 2 more minutes, set aside.",
+        "textAr": "أضف الزبيب، اطبخ لمدة دقيقتين إضافيتين، اتركه جانباً."
+      },
+      {
+        "text": "Rinse rice until water runs clear.",
+        "textAr": "اغسل الأرز حتى يصبح الماء صافياً."
+      },
+      {
+        "text": "In large pot, bring 6 cups water to boil with salt.",
+        "textAr": "في قدر كبير، اغلي 6 أكواب ماء مع ملح."
+      },
+      {
+        "text": "Add rice, boil 5 minutes, drain.",
+        "textAr": "أضف الأرز، اسلقه لمدة 5 دقائق، صفّه."
+      },
+      {
+        "text": "In same large pot, layer half the rice, then lamb pieces, then carrot-raisin mixture, then remaining rice.",
+        "textAr": "في نفس القدر الكبير، ضع طبقة من نصف كمية الأرز، ثم قطع اللحم، ثم خليط الجزر والزبيب، ثم ما تبقى من الأرز."
+      },
+      {
+        "text": "Pour 1 cup reserved lamb broth over, sprinkle with saffron soaked in 2 tbsp hot water.",
+        "textAr": "اسكب كوباً من مرق اللحم المحفوظ فوق الكل، وزّع الزعفران المنقوع في ملعقتين كبيرتين ماء ساخن."
+      },
+      {
+        "text": "Cover pot tightly, cook over lowest heat 30 minutes.",
+        "textAr": "غطِّ القدر بإحكام، اطبخ على أقل حرارة لمدة 30 دقيقة."
+      },
+      {
+        "text": "Turn off heat, rest 10 minutes.",
+        "textAr": "أطفئ النار، اتركه يرتاح لمدة 10 دقائق."
+      },
+      {
+        "text": "To serve, invert onto large platter or serve layered.",
+        "textAr": "للتقديم، اقلب القدر على طبق كبير أو قدّمه على شكل طبقات."
+      },
+      {
+        "text": "Garnish with fried almonds.",
+        "textAr": "زيّن باللوز المقلي."
+      },
+      {
+        "text": "Pair with carrot salad and hummus on side, and glass of Green Tea.",
+        "textAr": "قدّم مع سلطة جزر وحمص إلى جانبه، وكوب من شاي أخضر."
+      }
+    ]
+  },
+  {
+    "name": "Beef Rendang",
+    "nameAr": "رندانغ لحم",
+    "description": "Jasmine Rice & Spring Rolls",
+    "descriptionAr": "أرز ياسمين ولفائف ربيع",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Beef chuck cubed",
+        "nameAr": "لحم بقر مكعبات",
+        "amount": "1kg",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Coconut milk",
+        "nameAr": "حليب جوز الهند",
+        "amount": "4 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Lemongrass",
+        "nameAr": "عشبة ليمون",
+        "amount": "2 stalks",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Galangal",
+        "nameAr": "خولنجان",
+        "amount": "2 inch",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Kaffir lime leaves",
+        "nameAr": "ورق كفير ليمون",
+        "amount": "6",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Turmeric",
+        "nameAr": "كركم",
+        "amount": "2 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cumin seeds",
+        "nameAr": "حب كمون",
+        "amount": "2 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Coriander seeds",
+        "nameAr": "حب كزبرة",
+        "amount": "2 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Fennel seeds",
+        "nameAr": "حب شمر",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cardamom pods",
+        "nameAr": "حبهان",
+        "amount": "4",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Star anise",
+        "nameAr": "يانسون نجمي",
+        "amount": "2",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cinnamon stick",
+        "nameAr": "عود قرفة",
+        "amount": "2",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Dried chili",
+        "nameAr": "فلفل حار مجفف",
+        "amount": "5",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onion",
+        "nameAr": "بصل",
+        "amount": "2 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Garlic",
+        "nameAr": "ثوم",
+        "amount": "8 cloves",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Ginger",
+        "nameAr": "زنجبيل",
+        "amount": "2 inch",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Coconut oil",
+        "nameAr": "زيت جوز الهند",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Brown sugar",
+        "nameAr": "سكر بني",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Toast cumin seeds, coriander seeds, fennel seeds, cardamom, star anise, cinnamon in dry pan until fragrant.",
+        "textAr": "حمّص حب الكمون، حب الكزبرة، حب الشمر، الحبهان، اليانسون النجمي، والقرفة في مقلاة جافة حتى تفوح رائحتها."
+      },
+      {
+        "text": "Grind to powder.",
+        "textAr": "اطحنها إلى بودرة."
+      },
+      {
+        "text": "Cut beef into large chunks.",
+        "textAr": "قطّع اللحم إلى قطع كبيرة."
+      },
+      {
+        "text": "In large heavy pot, heat coconut oil, brown beef in batches until deep golden.",
+        "textAr": "في قدر كبير ثقيل، سخن زيت جوز الهند، حمّر اللحم على دفعات حتى يصبح ذهبياً غامقاً."
+      },
+      {
+        "text": "Remove beef.",
+        "textAr": "أزل اللحم."
+      },
+      {
+        "text": "In same pot, add sliced onions, cook 8-10 minutes until soft and golden.",
+        "textAr": "في نفس القدر، أضف البصل المقطع شرائح، اطبخ لمدة 8-10 دقائق حتى يلين ويصبح ذهبياً."
+      },
+      {
+        "text": "Add minced garlic, ginger, galangal, lemongrass, cook 2 minutes.",
+        "textAr": "أضف الثوم المفروم، الزنجبيل، الخولنجان، عشبة الليمون، اطبخ لمدة دقيقتين."
+      },
+      {
+        "text": "Add ground spice mixture, turmeric, dried chili, cook 1 minute.",
+        "textAr": "أضف خليط البهارات المطحونة، الكركم، الفلفل الحار المجفف، اطبخ لمدة دقيقة."
+      },
+      {
+        "text": "Return beef to pot, add coconut milk, kaffir lime leaves, salt, brown sugar.",
+        "textAr": "أعد اللحم إلى القدر، أضف حليب جوز الهند، ورق كفير الليمون، الملح، السكر البني."
+      },
+      {
+        "text": "Bring to simmer, reduce heat to lowest, cover and cook 2.5-3 hours until beef is very tender and sauce is thick and reduced, stirring occasionally.",
+        "textAr": "دع المزيج يغلي على نار هادئة، خفف الحرارة إلى أقل درجة، غطّ واتركه على نار هادئة لمدة 2.5-3 ساعات حتى يصبح اللحم طرياً جداً وتثخن الصلصة وتقل، مع التحريك من حين لآخر."
+      },
+      {
+        "text": "Sauce should coat beef generously.",
+        "textAr": "يجب أن تغطي الصلصة اللحم بسخاء."
+      },
+      {
+        "text": "Serve hot with jasmine rice and spring rolls on side, and glass of Coconut Water.",
+        "textAr": "قدّم ساخناً مع أرز ياسمين ولفائف ربيع إلى جانبه، وكوب من ماء جوز الهند."
+      }
+    ]
+  },
+  {
+    "name": "Butter Chicken",
+    "nameAr": "دجاج بالزبدة",
+    "description": "Garlic Naan & Kachumber",
+    "descriptionAr": "نان بالثوم وكاشمبر",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Chicken breast",
+        "nameAr": "صدر دجاج",
+        "amount": "800g",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Butter",
+        "nameAr": "زبدة",
+        "amount": "4 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Heavy cream",
+        "nameAr": "قشطة",
+        "amount": "1 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Tomato puree",
+        "nameAr": "معجون طماطم",
+        "amount": "2 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onion",
+        "nameAr": "بصل",
+        "amount": "1 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Garlic",
+        "nameAr": "ثوم",
+        "amount": "6 cloves",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Ginger",
+        "nameAr": "زنجبيل",
+        "amount": "2 inch",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Green chili",
+        "nameAr": "فلفل حار أخضر",
+        "amount": "2",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cashew nuts",
+        "nameAr": "كاجو",
+        "amount": "1/4 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Garam masala",
+        "nameAr": "غارام ماسالا",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Fenugreek leaves dried",
+        "nameAr": "حلبة مجففة",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cumin",
+        "nameAr": "كمون",
+        "amount": "1 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Coriander",
+        "nameAr": "كزبرة",
+        "amount": "1 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Turmeric",
+        "nameAr": "كركم",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Chili powder",
+        "nameAr": "فلفل حار بودرة",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Vegetable oil",
+        "nameAr": "زيت نباتي",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Sugar",
+        "nameAr": "سكر",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Cut chicken into bite-sized pieces.",
+        "textAr": "قطّع الدجاج إلى قطع بحجم اللقمة."
+      },
+      {
+        "text": "In bowl, mix chicken with salt, pepper, turmeric, chili powder, 1 tbsp garam masala.",
+        "textAr": "في وعاء، اخلط الدجاج مع الملح، الفلفل، الكركم، الفلفل الحار البودرة، ملعقة كبيرة غارام ماسالا."
+      },
+      {
+        "text": "Let marinate 30 minutes.",
+        "textAr": "اتركه منقوعاً لمدة 30 دقيقة."
+      },
+      {
+        "text": "In large skillet, heat 2 tbsp oil, cook marinated chicken until no longer pink, remove and set aside.",
+        "textAr": "في مقلاة كبيرة، سخن ملعقتين كبيرتين زيت، اطبخ الدجاج المتبل حتى لا يبقى وردياً، أزله واتركه جانباً."
+      },
+      {
+        "text": "In same skillet, melt 2 tbsp butter, add finely chopped onion, cook 5-7 minutes until soft.",
+        "textAr": "في نفس المقلاة، ذوّب ملعقتين كبيرتين زبدة، أضف البصل المفروم ناعماً، اطبخ لمدة 5-7 دقائق حتى يلين."
+      },
+      {
+        "text": "Add minced garlic, ginger, green chili, cook 2 minutes.",
+        "textAr": "أضف الثوم المفروم، الزنجبيل، الفلفل الحار الأخضر، اطبخ لمدة دقيقتين."
+      },
+      {
+        "text": "Add tomato puree, cook 5 minutes until slightly reduced.",
+        "textAr": "أضف معجون الطماطم، اطبخ لمدة 5 دقائق حتى يقل قليلاً."
+      },
+      {
+        "text": "Add remaining garam masala, fenugreek leaves, sugar.",
+        "textAr": "أضف ما تبقى من الغارام ماسالا، الحلبة المجففة، السكر."
+      },
+      {
+        "text": "Simmer 5 minutes.",
+        "textAr": "اطبخ على نار هادئة لمدة 5 دقائق."
+      },
+      {
+        "text": "Add cooked chicken, stir.",
+        "textAr": "أضف الدجاج المطبوخ، حرّك."
+      },
+      {
+        "text": "Add heavy cream and remaining 2 tbsp butter, simmer 5 minutes until sauce is creamy and chicken is coated.",
+        "textAr": "أضف القشطة وما تبقى من الزبدة (ملعقتين كبيرتين)، اطبخ على نار هادئة لمدة 5 دقائق حتى تصبح الصلصة كريمية ويغطي الدجاج."
+      },
+      {
+        "text": "Serve hot with garlic naan and kachumber salad on side, and glass of Mango Lassi.",
+        "textAr": "قدّم ساخناً مع نان بالثوم وسلطة كاشمبر إلى جانبه، وكوب من لاسي مانجو."
+      }
+    ]
+  },
+  {
+    "name": "Roast Chicken",
+    "nameAr": "دجاج مشوي",
+    "description": "Roasted Potatoes & Fattoush",
+    "descriptionAr": "بطاطا مشوية وفتوش",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Whole chicken",
+        "nameAr": "دجاجة كاملة",
+        "amount": "1.8kg",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Sumac",
+        "nameAr": "سماق",
+        "amount": "3 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Za'atar",
+        "nameAr": "زعتر",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Garlic",
+        "nameAr": "ثوم",
+        "amount": "8 cloves",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Olive oil",
+        "nameAr": "زيت زيتون",
+        "amount": "1/4 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Potatoes",
+        "nameAr": "بطاطس",
+        "amount": "4 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onions",
+        "nameAr": "بصل",
+        "amount": "3 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Lemon juice",
+        "nameAr": "عصير ليمون",
+        "amount": "1/4 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pepper",
+        "nameAr": "فلفل",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Paprika",
+        "nameAr": "بابريكا",
+        "amount": "1 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Thyme fresh",
+        "nameAr": "زعتر طازج",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Preheat oven to 400°F (200°C).",
+        "textAr": "سخّن الفرن إلى 400°F (200°C)."
+      },
+      {
+        "text": "In small bowl, mix sumac, za'atar, paprika, salt, pepper, minced garlic, olive oil to form paste.",
+        "textAr": "في وعاء صغير، اخلط السماق، الزعتر، البابريكا، الملح، الفلفل، الثوم المفروم، زيت الزيتون لتشكيل معجون."
+      },
+      {
+        "text": "Pat chicken dry, rub paste all over and under skin.",
+        "textAr": "جفف الدجاج بالمناشف الورقية، افرك المعجون على الدجاج بالكامل وتحت الجلد."
+      },
+      {
+        "text": "Let sit 30 minutes.",
+        "textAr": "اتركه لمدة 30 دقيقة."
+      },
+      {
+        "text": "Peel potatoes, cut into wedges.",
+        "textAr": "قشّر البطاطس، قطّعها إلى أصابع (ويجز)."
+      },
+      {
+        "text": "Slice onions into thick rounds.",
+        "textAr": "قطّع البصل إلى شرائح سميكة."
+      },
+      {
+        "text": "Arrange potatoes and onions in roasting pan, drizzle with olive oil, salt.",
+        "textAr": "رتب البطاطس والبصل في صينية التحميص، رشّها بزيت الزيتون والملح."
+      },
+      {
+        "text": "Place chicken on top of vegetables.",
+        "textAr": "ضع الدجاج فوق الخضار."
+      },
+      {
+        "text": "Roast 1 hour 15 minutes, basting occasionally with pan juices, until chicken skin is golden and crisp and juices run clear.",
+        "textAr": "حمّص لمدة ساعة و15 دقيقة، مع التتبيل بعصارة الصينية من حين لآخر، حتى يصبح جلد الدجاج ذهبياً ومقرمشاً وتنضج العصائر (يجب أن تصل الحرارة الداخلية إلى 165°F)."
+      },
+      {
+        "text": "Internal temperature should reach 165°F.",
+        "textAr": "اتركه يرتاح لمدة 15 دقيقة قبل التقطيع."
+      },
+      {
+        "text": "Let rest 15 minutes before carving.",
+        "textAr": "قدّم مع البطاطس المشوية وسلطة فتوش إلى جانبه، وكوب من عصير برتقال."
+      },
+      {
+        "text": "Serve with roasted potatoes and fattoush salad on side, and glass of Orange Juice.",
+        "textAr": ""
+      }
+    ]
+  },
+  {
+    "name": "Seafood Paella",
+    "nameAr": "باييلا",
+    "description": "Garlic Bread & Garden Salad",
+    "descriptionAr": "خبز ثوم وسلطة خضراء",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Short-grain rice",
+        "nameAr": "أرز قصير الحبة",
+        "amount": "3 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Shrimp large",
+        "nameAr": "روبيان كبير",
+        "amount": "500g",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Mussels",
+        "nameAr": "بلح البحر",
+        "amount": "500g",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Calamari rings",
+        "nameAr": "حلقات كاليماري",
+        "amount": "300g",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "White fish fillets",
+        "nameAr": "فيليه سمك أبيض",
+        "amount": "300g",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onion",
+        "nameAr": "بصل",
+        "amount": "1 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Bell peppers",
+        "nameAr": "فليفلة حلوة",
+        "amount": "2",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Tomatoes",
+        "nameAr": "طماطم",
+        "amount": "3",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Garlic",
+        "nameAr": "ثوم",
+        "amount": "6 cloves",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Saffron threads",
+        "nameAr": "زعفران",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Paprika",
+        "nameAr": "بابريكا",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Turmeric",
+        "nameAr": "كركم",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Fish stock",
+        "nameAr": "مرق سمك",
+        "amount": "5 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Olive oil",
+        "nameAr": "زيت زيتون",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pepper",
+        "nameAr": "فلفل",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Lemon wedges",
+        "nameAr": "شرائح ليمون",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Parsley",
+        "nameAr": "بقدونس",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Heat 3 tbsp olive oil in large paella pan or wide skillet over medium.",
+        "textAr": "سخن 3 ملاعق كبيرة زيت زيتون في مقلاة بايلا كبيرة أو مقلاة واسعة على نار متوسطة."
+      },
+      {
+        "text": "Add chopped onion, cook 5 minutes until soft.",
+        "textAr": "أضف البصل المفروم، اطبخ لمدة 5 دقائق حتى يلين."
+      },
+      {
+        "text": "Add minced garlic, cook 1 minute.",
+        "textAr": "أضف الثوم المفروم، اطبخ لمدة دقيقة."
+      },
+      {
+        "text": "Add chopped bell peppers, cook 3 minutes.",
+        "textAr": "أضف الفليفلة الحلوة المفرومة، اطبخ لمدة 3 دقائق."
+      },
+      {
+        "text": "Add grated tomatoes, paprika, saffron, salt, pepper, cook 5 minutes.",
+        "textAr": "أضف الطماطم المبشورة، البابريكا، الزعفران، الملح، الفلفل، اطبخ لمدة 5 دقائق."
+      },
+      {
+        "text": "Add rice, stir to coat with sofrito.",
+        "textAr": "أضف الأرز، حرّك ليتغطى بالصوص (سوفريتو)."
+      },
+      {
+        "text": "Pour in 5 cups hot fish stock, stir once, arrange rice evenly.",
+        "textAr": "اسكب 5 أكواب من مرق السمك الساخن، حرّك مرة واحدة، وزّع الأرز بالتساوي."
+      },
+      {
+        "text": "Bring to boil, reduce heat to medium-low, cook 10 minutes without stirring.",
+        "textAr": "دع المزيج يغلي، خفف الحرارة إلى متوسطة منخفضة، اطبخ لمدة 10 دقائق دون تحريك."
+      },
+      {
+        "text": "Nestle shrimp, mussels, calamari, fish pieces into rice.",
+        "textAr": "أدخل الروبيان، بلح البحر، حلقات الكاليماري، وقطع السمك في الأرز."
+      },
+      {
+        "text": "Cook 8-10 minutes more until rice is tender and seafood is cooked (mussels should open).",
+        "textAr": "اطبخ لمدة 8-10 دقائق إضافية حتى ينضج الأرز وتنضج المأكولات البحرية (يجب أن يفتح بلح البحر)."
+      },
+      {
+        "text": "Remove from heat, cover with foil, rest 5 minutes.",
+        "textAr": "أبعده عن النار، غطِّه بورق قصدير، اتركه يرتاح لمدة 5 دقائق."
+      },
+      {
+        "text": "Garnish with lemon wedges and chopped parsley.",
+        "textAr": "زيّن بشرائح الليمون والبقدونس المفروم."
+      },
+      {
+        "text": "Serve with garlic bread and garden salad on side, and glass of Iced Tea.",
+        "textAr": "قدّم مع خبز ثوم وسلطة خضراء إلى جانبه، وكوب من شاي مثلج."
+      }
+    ]
+  },
+  {
+    "name": "Chicken Shawarma",
+    "nameAr": "شاورما دجاج",
+    "description": "French Fries & Coleslaw",
+    "descriptionAr": "بطاطا مقلية وسلطة كول سلو",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Chicken thighs boneless",
+        "nameAr": "أفخاذ دجاج منزوعة العظم",
+        "amount": "1kg",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Garlic",
+        "nameAr": "ثوم",
+        "amount": "10 cloves",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Lemon juice",
+        "nameAr": "عصير ليمون",
+        "amount": "1/2 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "White vinegar",
+        "nameAr": "خل أبيض",
+        "amount": "1/4 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Olive oil",
+        "nameAr": "زيت زيتون",
+        "amount": "1/2 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "7-spice",
+        "nameAr": "بهار مشكل",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cardamom",
+        "nameAr": "حبهان",
+        "amount": "1 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cinnamon",
+        "nameAr": "قرفة",
+        "amount": "1 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Nutmeg",
+        "nameAr": "جوزة الطيب",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Paprika",
+        "nameAr": "بابريكا",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pepper",
+        "nameAr": "فلفل",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Sumac for serving",
+        "nameAr": "سماق للتقديم",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pickles",
+        "nameAr": "مخللات",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Garlic toum sauce",
+        "nameAr": "ثومية",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Slice chicken thighs into thin strips.",
+        "textAr": "قطّع أفخاذ الدجاج إلى شرائح رفيعة."
+      },
+      {
+        "text": "In large bowl, combine minced garlic, lemon juice, white vinegar, olive oil, 7-spice, cardamom, cinnamon, nutmeg, paprika, salt, pepper.",
+        "textAr": "في وعاء كبير، اخلط الثوم المفروم، عصير الليمون، الخل الأبيض، زيت الزيتون، البهار المشكل، الحبهان، القرفة، جوزة الطيب، البابريكا، الملح، الفلفل."
+      },
+      {
+        "text": "Add chicken, mix well.",
+        "textAr": "أضف الدجاج، اخلط جيداً."
+      },
+      {
+        "text": "Cover and marinate overnight in refrigerator.",
+        "textAr": "غطِّه واتركه منقوعاً في الثلاجة طوال الليل."
+      },
+      {
+        "text": "Heat large skillet or griddle over medium-high.",
+        "textAr": "سخن مقلاة كبيرة أو صينية شواء على نار متوسطة عالية."
+      },
+      {
+        "text": "Cook chicken in batches until golden brown and cooked through, about 5-6 minutes per batch.",
+        "textAr": "اطبخ الدجاج على دفعات حتى يصبح ذهبياً بنياً وينضج تماماً، حوالي 5-6 دقائق لكل دفعة."
+      },
+      {
+        "text": "Do not overcrowd.",
+        "textAr": "لا تزدحم المقلاة."
+      },
+      {
+        "text": "To serve: warm pita bread, spread with garlic toum sauce, add chicken, top with pickles and sprinkle with sumac.",
+        "textAr": "للتقديم: سخن خبز البيتا، ادهنه بالثومية بسخاء، أضف الدجاج، ضع المخللات فوقه ورشّ سماق."
+      },
+      {
+        "text": "Roll tightly.",
+        "textAr": "لفه بإحكام."
+      },
+      {
+        "text": "Serve with french fries and coleslaw on side, and glass of Ayran.",
+        "textAr": "قدّم مع بطاطا مقلية وسلطة كول سلو إلى جانبه، وكوب من عيران."
+      }
+    ]
+  },
+  {
+    "name": "Mixed Grill",
+    "nameAr": "مشاوي مشكلة",
+    "description": "Biwaz Salad & Hummus",
+    "descriptionAr": "سلطة بيواز وحمص",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Lamb shoulder cubes",
+        "nameAr": "مكعبات لحم غنم",
+        "amount": "500g",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Chicken thighs boneless",
+        "nameAr": "أفخاذ دجاج منزوعة العظم",
+        "amount": "500g",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onion",
+        "nameAr": "بصل",
+        "amount": "2 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Fresh parsley",
+        "nameAr": "بقدونس طازج",
+        "amount": "1 bunch",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Fresh cilantro",
+        "nameAr": "كزبرة طازجة",
+        "amount": "1 bunch",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "7-spice",
+        "nameAr": "بهار مشكل",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cardamom",
+        "nameAr": "حبهان",
+        "amount": "1 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cinnamon",
+        "nameAr": "قرفة",
+        "amount": "1 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Olive oil",
+        "nameAr": "زيت زيتون",
+        "amount": "1/2 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Sumac for serving",
+        "nameAr": "سماق للتقديم",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Biwaz salad (onions",
+        "nameAr": "سلطة بيواز (بصل",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "parsley",
+        "nameAr": "بقدونس",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "sumac",
+        "nameAr": "سماق",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "lemon)",
+        "nameAr": "ليمون)",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Arabic bread",
+        "nameAr": "خبز عربي",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Charcoal for grilling",
+        "nameAr": "فحم للشوي",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Cut lamb into 3cm cubes, chicken into similar size.",
+        "textAr": "قطّع لحم الغنم إلى مكعبات بحجم 3سم، والدجاج إلى حجم مماثل."
+      },
+      {
+        "text": "In large bowl, combine finely chopped onion, parsley, cilantro, 7-spice, cardamom, cinnamon, salt, pepper, olive oil.",
+        "textAr": "في وعاء كبير، اخلط البصل المفروم ناعماً، البقدونس، الكزبرة، البهار المشكل، الحبهان، القرفة، الملح، الفلفل، زيت الزيتون."
+      },
+      {
+        "text": "Add meats, mix well.",
+        "textAr": "أضف اللحوم، اخلط جيداً."
+      },
+      {
+        "text": "Cover and marinate 4 hours or overnight.",
+        "textAr": "غطِّها واتركها منقوعة لمدة 4 ساعات أو طوال الليل."
+      },
+      {
+        "text": "Prepare charcoal grill or use grill pan.",
+        "textAr": "حضّر شواية فحم أو استخدم مقلاة شواء."
+      },
+      {
+        "text": "Thread meats onto skewers, alternating lamb and chicken.",
+        "textAr": "أدخل اللحوم في أسياخ، بالتناوب بين لحم الغنم والدجاج."
+      },
+      {
+        "text": "Grill over medium-high heat 8-10 minutes, turning occasionally, until meats are charred outside and cooked through.",
+        "textAr": "اشوِ على نار متوسطة عالية لمدة 8-10 دقائق مع التقليب من حين لآخر، حتى تتحمر اللحوم من الخارج وتنضج من الداخل."
+      },
+      {
+        "text": "Prepare biwaz salad: slice onions thinly, chop parsley, mix with sumac, lemon juice, salt.",
+        "textAr": "حضّر سلطة البيواز: قطّع البصل إلى شرائح رفيعة، افرم البقدونس، اخلطهما مع السماق، عصير الليمون، الملح."
+      },
+      {
+        "text": "To serve: place grilled meats on Arabic bread, drizzle with pan juices, sprinkle with sumac.",
+        "textAr": "للتقديم: ضع اللحوم المشوية على خبز عربي، رشّها بعصارة الأسياخ، انثر السماق."
+      },
+      {
+        "text": "Serve with biwaz salad and hummus on side, and glass of Jallab.",
+        "textAr": "قدّم مع سلطة بيواز وحمص إلى جانبه، وكوب من جلاب."
+      }
+    ]
+  },
+  {
+    "name": "Musakhan",
+    "nameAr": "مسخن",
+    "description": "Plain Yogurt & Soup",
+    "descriptionAr": "زبادي عادي وشوربة",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Chicken thighs bone-in",
+        "nameAr": "أفخاذ دجاج بالعظم",
+        "amount": "1.5kg",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Taboon bread",
+        "nameAr": "خبز طابون",
+        "amount": "4 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onions",
+        "nameAr": "بصل",
+        "amount": "6 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Sumac",
+        "nameAr": "سماق",
+        "amount": "1/2 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Olive oil",
+        "nameAr": "زيت زيتون",
+        "amount": "1 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pine nuts",
+        "nameAr": "صنوبر",
+        "amount": "1/2 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Almonds",
+        "nameAr": "لوز",
+        "amount": "1/2 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "7-spice",
+        "nameAr": "بهار مشكل",
+        "amount": "1 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cardamom",
+        "nameAr": "حبهان",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cinnamon",
+        "nameAr": "قرفة",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pepper",
+        "nameAr": "فلفل",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Chicken stock",
+        "nameAr": "مرق دجاج",
+        "amount": "1 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Slice onions thinly.",
+        "textAr": "قطّع البصل إلى شرائح رفيعة."
+      },
+      {
+        "text": "In large skillet, heat 1 cup olive oil over medium.",
+        "textAr": "في مقلاة كبيرة، سخن كوب زيت زيتون على نار متوسطة."
+      },
+      {
+        "text": "Add onions, cook 20-25 minutes stirring occasionally until very soft and deep golden brown.",
+        "textAr": "أضف البصل، اطبخ لمدة 20-25 دقيقة مع التحريك من حين لآخر حتى يصبح طرياً جداً وذهبيًا غامقاً."
+      },
+      {
+        "text": "Add sumac, stir, cook 2 more minutes.",
+        "textAr": "أضف السماق، حرّك، اطبخ لمدة دقيقتين إضافيتين."
+      },
+      {
+        "text": "Remove from heat.",
+        "textAr": "ارفعه عن النار."
+      },
+      {
+        "text": "Season chicken with salt, pepper, 7-spice.",
+        "textAr": "تبّل الدجاج بالملح، الفلفل، البهار المشكل."
+      },
+      {
+        "text": "In separate pan, brown chicken in oil until golden on all sides.",
+        "textAr": "في مقلاة منفصلة، حمّر الدجاج في الزيت حتى يصبح ذهبياً من جميع الجهات."
+      },
+      {
+        "text": "Preheat oven to 375°F (190°C).",
+        "textAr": "سخّن الفرن إلى 375°F (190°C)."
+      },
+      {
+        "text": "Place taboon bread on baking sheet, spread half the sumac onions over bread.",
+        "textAr": "ضع خبز الطابون في صينية خبز، وزّع نصف كمية بصل السماق فوق الخبز."
+      },
+      {
+        "text": "Place chicken pieces on onions, top with remaining onions.",
+        "textAr": "ضع قطع الدجاج فوق البصل، غطِّها بما تبقى من البصل."
+      },
+      {
+        "text": "Pour 1 cup chicken stock around edges.",
+        "textAr": "اسكب كوباً من مرق الدجاج حول الأطراف."
+      },
+      {
+        "text": "Cover with foil, bake 30 minutes.",
+        "textAr": "غطِّها بورق قصدير، اخبز لمدة 30 دقيقة."
+      },
+      {
+        "text": "Remove foil, bake 10 more minutes.",
+        "textAr": "أزل ورق القصدير، اخبز لمدة 10 دقائق إضافية."
+      },
+      {
+        "text": "Meanwhile, fry pine nuts and almonds in ghee until golden.",
+        "textAr": "في هذه الأثناء، حمّص الصنوبر واللوز في سمنة حتى يصبحا ذهبيين."
+      },
+      {
+        "text": "To serve: place bread on large platter, top with chicken and onions, sprinkle with fried nuts.",
+        "textAr": "للتقديم: ضع الخبز في طبق كبير، ضع الدجاج والبصل فوقه، وزّع المكسرات المقلية."
+      },
+      {
+        "text": "Serve with plain yogurt and soup on side, and glass of Lemonade.",
+        "textAr": "قدّم مع لبن عادي وشوربة إلى جانبه، وكوب من ليموناضة."
+      }
+    ]
+  },
+  {
+    "name": "Lamb Tagine",
+    "nameAr": "طاجين لحم",
+    "description": "Couscous & Roasted Carrots",
+    "descriptionAr": "كسكس وجزر مشوي",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Lamb shoulder",
+        "nameAr": "كتف خروف",
+        "amount": "1.5kg",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Prunes",
+        "nameAr": "برقوق",
+        "amount": "300g",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Dried apricots",
+        "nameAr": "مشمش مجفف",
+        "amount": "200g",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onion",
+        "nameAr": "بصل",
+        "amount": "2 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Garlic",
+        "nameAr": "ثوم",
+        "amount": "6 cloves",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Ginger",
+        "nameAr": "زنجبيل",
+        "amount": "2 inch",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Saffron threads",
+        "nameAr": "زعفران",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cinnamon stick",
+        "nameAr": "عود قرفة",
+        "amount": "2",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cumin",
+        "nameAr": "كمون",
+        "amount": "2 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Coriander",
+        "nameAr": "كزبرة",
+        "amount": "2 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Turmeric",
+        "nameAr": "كركم",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Sesame seeds",
+        "nameAr": "سمسم",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Honey",
+        "nameAr": "عسل",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Olive oil",
+        "nameAr": "زيت زيتون",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pepper",
+        "nameAr": "فلفل",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Chicken stock",
+        "nameAr": "مرق دجاج",
+        "amount": "3 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Cut lamb into large chunks.",
+        "textAr": "قطّع اللحم إلى قطع كبيرة."
+      },
+      {
+        "text": "In large heavy pot, heat 3 tbsp olive oil, brown lamb in batches until deep golden.",
+        "textAr": "في قدر كبير ثقيل، سخن 3 ملاعق كبيرة زيت زيتون، حمّر اللحم على دفعات حتى يصبح ذهبياً غامقاً."
+      },
+      {
+        "text": "Remove lamb.",
+        "textAr": "أزل اللحم."
+      },
+      {
+        "text": "In same pot, add sliced onions, cook 5-7 minutes until soft.",
+        "textAr": "في نفس القدر، أضف البصل المقطع شرائح، اطبخ لمدة 5-7 دقائق حتى يلين."
+      },
+      {
+        "text": "Add minced garlic, ginger, cook 2 minutes.",
+        "textAr": "أضف الثوم المفروم، الزنجبيل، اطبخ لمدة دقيقتين."
+      },
+      {
+        "text": "Add saffron, cinnamon, cumin, coriander, turmeric, stir 1 minute.",
+        "textAr": "أضف الزعفران، القرفة، الكمون، الكزبرة، الكركم، حرّك لمدة دقيقة."
+      },
+      {
+        "text": "Return lamb to pot, add 3 cups chicken stock, bring to boil, reduce heat to lowest, cover and simmer 1.5 hours.",
+        "textAr": "أعد اللحم إلى القدر، أضف 3 أكواب مرق دجاج، دع المزيج يغلي، خفف الحرارة إلى أقل درجة، غطّ واتركه على نار هادئة لمدة 1.5 ساعة."
+      },
+      {
+        "text": "Add prunes and apricots, simmer 30 more minutes until lamb is very tender and fruits are soft.",
+        "textAr": "أضف البرقوق والمشمش المجفف، اطبخ على نار هادئة لمدة 30 دقيقة إضافية حتى يصبح اللحم طرياً جداً وتلين الفواكه."
+      },
+      {
+        "text": "Add honey, sesame seeds, simmer 5 minutes.",
+        "textAr": "أضف العسل وبذور السمسم، اطبخ على نار هادئة لمدة 5 دقائق."
+      },
+      {
+        "text": "Season with salt and pepper.",
+        "textAr": "اضبط الملح والفلفل."
+      },
+      {
+        "text": "Serve hot over couscous, garnished with roasted carrots and more sesame seeds.",
+        "textAr": "قدّم ساخناً فوق كسكس، مع الجزر المشوي والمزيد من السمسم على الوجه للتزيين."
+      },
+      {
+        "text": "Pair with Mint Tea on side.",
+        "textAr": "قدّم مع شاي نعناع إلى جانبه."
+      }
+    ]
+  },
+  {
+    "name": "Shrimp Mandi",
+    "nameAr": "مندي روبيان",
+    "description": "Salsa Roja & Green Salad",
+    "descriptionAr": "صلصة حارة وسلطة خضراء",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Shrimp large",
+        "nameAr": "روبيان كبير",
+        "amount": "1kg",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Basmati rice",
+        "nameAr": "أرز بسمتي",
+        "amount": "4 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onion",
+        "nameAr": "بصل",
+        "amount": "2 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Garlic",
+        "nameAr": "ثوم",
+        "amount": "8 cloves",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Tomatoes",
+        "nameAr": "طماطم",
+        "amount": "4",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Tomato paste",
+        "nameAr": "معجون طماطم",
+        "amount": "3 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Mandi spice blend",
+        "nameAr": "بهار مندي",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cumin",
+        "nameAr": "كمون",
+        "amount": "1 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Coriander",
+        "nameAr": "كزبرة",
+        "amount": "1 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cardamom pods",
+        "nameAr": "حبهان",
+        "amount": "4",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Bay leaves",
+        "nameAr": "ورق غار",
+        "amount": "3",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Vegetable oil",
+        "nameAr": "زيت نباتي",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Charcoal piece for smoking",
+        "nameAr": "قطعة فحم للتبخير",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Butter",
+        "nameAr": "زبدة",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Wash rice thoroughly, soak in water 30 minutes, drain.",
+        "textAr": "اغسل الأرز جيداً، انقعه في الماء لمدة 30 دقيقة، صفّه."
+      },
+      {
+        "text": "In large pot, heat 3 tbsp oil, add sliced onions, cook 5-7 minutes until soft.",
+        "textAr": "في قدر كبير، سخن 3 ملاعق كبيرة زيت، أضف البصل المقطع شرائح، اطبخ لمدة 5-7 دقائق حتى يلين."
+      },
+      {
+        "text": "Add minced garlic, cook 1 minute.",
+        "textAr": "أضف الثوم المفروم، اطبخ لمدة دقيقة."
+      },
+      {
+        "text": "Add grated tomatoes, tomato paste, cook 5 minutes.",
+        "textAr": "أضف الطماطم المبشورة، معجون الطماطم، اطبخ لمدة 5 دقائق."
+      },
+      {
+        "text": "Add mandi spice, cumin, coriander, salt, pepper, 4 cups water.",
+        "textAr": "أضف بهار المندي، الكمون، الكزبرة، الملح، الفلفل، 4 أكواب ماء."
+      },
+      {
+        "text": "Bring to boil.",
+        "textAr": "دع المزيج يغلي."
+      },
+      {
+        "text": "Add drained rice, stir, reduce heat to low, cover and cook 20 minutes until rice is tender.",
+        "textAr": "أضف الأرز المصفى، حرّك، خفف الحرارة إلى منخفضة، غطّ واطبخ لمدة 20 دقيقة حتى ينضج الأرز."
+      },
+      {
+        "text": "Meanwhile, season shrimp with salt and mandi spice.",
+        "textAr": "في هذه الأثناء، تبّل الروبيان بالملح وبهار المندي."
+      },
+      {
+        "text": "In skillet, melt butter, cook shrimp 2-3 minutes per side until pink.",
+        "textAr": "في مقلاة، ذوّب الزبدة، اطبخ الروبيان لمدة 2-3 دقائق لكل جهة حتى يصبح وردياً."
+      },
+      {
+        "text": "Prepare charcoal smoking: wrap piece of charcoal in foil, place directly on stove burner until red hot.",
+        "textAr": "حضّر تبخير الفحم: لف قطعة فحم بورق قصدير، ضعها مباشرة على موقد الغاز حتى تصبح حمراء ملتهبة."
+      },
+      {
+        "text": "Place small foil cup with ghee on top of rice, place hot charcoal in cup, pour few drops water over, immediately cover pot tightly.",
+        "textAr": "ضع كوباً صغيراً من ورق القصدير به سمنة فوق الأرز، ضع الفحم الساخن في الكوب، أسقط بضع قطرات ماء فوقه، غطِّ القدر بإحكام فوراً."
+      },
+      {
+        "text": "Let smoke 10 minutes.",
+        "textAr": "اتركه ليدخن لمدة 10 دقائق."
+      },
+      {
+        "text": "To serve: fluff rice, mound on platter, top with shrimp.",
+        "textAr": "للتقديم: قلّب الأرز بالشوكة، كوّمه في طبق، ضع الروبيان فوقه."
+      },
+      {
+        "text": "Serve with salsa roja and green salad on side, and glass of Fruit Punch.",
+        "textAr": "قدّم مع صلصة حارة وسلطة خضراء إلى جانبه، وكوب من كوكتيل فواكه."
+      }
+    ]
+  },
+  {
+    "name": "Veggie Moussaka",
+    "nameAr": "مصقعة",
+    "description": "Turmeric Rice & Fattoush",
+    "descriptionAr": "أرز كركم وفتوش",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [
+      "Vegetarian"
+    ],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Eggplant",
+        "nameAr": "باذنجان",
+        "amount": "4 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Chickpeas",
+        "nameAr": "حمص",
+        "amount": "2 cups canned",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onion",
+        "nameAr": "بصل",
+        "amount": "2 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Garlic",
+        "nameAr": "ثوم",
+        "amount": "6 cloves",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Tomatoes",
+        "nameAr": "طماطم",
+        "amount": "6 ripe",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Tomato paste",
+        "nameAr": "معجون طماطم",
+        "amount": "3 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cinnamon",
+        "nameAr": "قرفة",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Allspice",
+        "nameAr": "بهار حلو",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cumin",
+        "nameAr": "كمون",
+        "amount": "1 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Olive oil",
+        "nameAr": "زيت زيتون",
+        "amount": "1/2 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pepper",
+        "nameAr": "فلفل",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Fresh parsley for garnish",
+        "nameAr": "بقدونس طازج للتزيين",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Cut eggplant into 2cm cubes, place in colander, sprinkle with salt.",
+        "textAr": "قطّع الباذنجان إلى مكعبات بحجم 2سم، ضعها في مصفاة، رشها بالملح."
+      },
+      {
+        "text": "Let drain 30 minutes.",
+        "textAr": "اتركها لتتصفى لمدة 30 دقيقة."
+      },
+      {
+        "text": "Rinse, pat dry.",
+        "textAr": "اغسلها، جففها بالتربيت."
+      },
+      {
+        "text": "In large skillet, heat 1/2 cup olive oil, fry eggplant in batches until golden brown on all sides.",
+        "textAr": "في مقلاة كبيرة، سخن نصف كوب زيت زيتون، اقلي الباذنجان على دفعات حتى يصبح ذهبياً من جميع الجهات."
+      },
+      {
+        "text": "Drain on paper towel.",
+        "textAr": "صفّه على ورق مطبخ."
+      },
+      {
+        "text": "In same skillet, add sliced onions, cook 5-7 minutes until soft.",
+        "textAr": "في نفس المقلاة، أضف البصل المقطع شرائح، اطبخ لمدة 5-7 دقائق حتى يلين."
+      },
+      {
+        "text": "Add minced garlic, cook 1 minute.",
+        "textAr": "أضف الثوم المفروم، اطبخ لمدة دقيقة."
+      },
+      {
+        "text": "Add cinnamon, allspice, cumin, stir 30 seconds.",
+        "textAr": "أضف القرفة، البهار الحلو، الكمون، حرّك لمدة 30 ثانية."
+      },
+      {
+        "text": "Add grated tomatoes, tomato paste, 1 cup water, salt, pepper.",
+        "textAr": "أضف الطماطم المبشورة، معجون الطماطم، كوب ماء، ملح، فلفل."
+      },
+      {
+        "text": "Simmer 10 minutes.",
+        "textAr": "اطبخ على نار هادئة لمدة 10 دقائق."
+      },
+      {
+        "text": "Add fried eggplant and drained chickpeas, simmer 15 more minutes until flavors meld and sauce thickens.",
+        "textAr": "أضف الباذنجان المقلي والحمص المصفى، اطبخ على نار هادئة لمدة 15 دقيقة إضافية حتى تمتزج النكهات وتثخن الصلصة."
+      },
+      {
+        "text": "Stir in fresh parsley.",
+        "textAr": "أضف البقدونس الطازج المفروم."
+      },
+      {
+        "text": "Serve hot with turmeric rice and fattoush on side, and glass of Hibiscus tea.",
+        "textAr": "قدّم ساخناً مع أرز كركم وفتوش إلى جانبه، وكوب من كركديه."
+      }
+    ]
+  },
+  {
+    "name": "Stuffed Lamb Ribs",
+    "nameAr": "ضلوع لحم محشية",
+    "description": "Spiced Rice & Sambousek",
+    "descriptionAr": "أرز مخلل وسمبوسك",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Lamb ribs",
+        "nameAr": "ضلوع لحم غنم",
+        "amount": "2 racks",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Basmati rice",
+        "nameAr": "أرز بسمتي",
+        "amount": "3 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Lamb mince",
+        "nameAr": "لحم غنم مفروم",
+        "amount": "300g",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onion",
+        "nameAr": "بصل",
+        "amount": "1 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pine nuts",
+        "nameAr": "صنوبر",
+        "amount": "1/3 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Almonds",
+        "nameAr": "لوز",
+        "amount": "1/3 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "7-spice",
+        "nameAr": "بهار مشكل",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cinnamon",
+        "nameAr": "قرفة",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cardamom",
+        "nameAr": "حبهان",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Turmeric",
+        "nameAr": "كركم",
+        "amount": "1 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Tomato paste",
+        "nameAr": "معجون طماطم",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Garlic",
+        "nameAr": "ثوم",
+        "amount": "6 cloves",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Olive oil",
+        "nameAr": "زيت زيتون",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pepper",
+        "nameAr": "فلفل",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Beef stock",
+        "nameAr": "مرق لحم",
+        "amount": "4 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Prepare stuffing: In bowl, combine lamb mince, rinsed raw rice, finely chopped onion, pine nuts, almonds, 7-spice, cinnamon, cardamom, salt, pepper.",
+        "textAr": "حضّر الحشوة: في وعاء، اخلط اللحم المفروم، الأرز النيء المغسول، البصل المفروم ناعماً، الصنوبر، اللوز، البهار المشكل، القرفة، الحبهان، الملح، الفلفل."
+      },
+      {
+        "text": "Mix well.",
+        "textAr": "اخلط جيداً."
+      },
+      {
+        "text": "Prepare lamb ribs: separate into individual ribs.",
+        "textAr": "حضّر ضلوع اللحم: افصل الضلوع إلى ضلوع فردية."
+      },
+      {
+        "text": "Make a cut lengthwise along each rib to create pocket, or butterfly meat away from bone.",
+        "textAr": "اصنع شقاً طولياً على طول كل ضلع لإنشاء جيب، أو افتح اللحم بعيداً عن العظم (مثل الفراشة)."
+      },
+      {
+        "text": "Stuff each pocket with meat mixture, press closed.",
+        "textAr": "احشو كل جيب بخليط اللحم، اضغط ليغلق."
+      },
+      {
+        "text": "Season outside with salt, pepper, turmeric.",
+        "textAr": "تبّل السطح الخارجي بالملح، الفلفل، الكركم."
+      },
+      {
+        "text": "In large heavy pot, heat 3 tbsp oil, brown stuffed ribs in batches until deep golden on all sides.",
+        "textAr": "في قدر كبير ثقيل، سخن 3 ملاعق كبيرة زيت، حمّر الضلوع المحشوة على دفعات حتى تصبح ذهبية غامقة من جميع الجهات."
+      },
+      {
+        "text": "Remove ribs.",
+        "textAr": "أزل الضلوع."
+      },
+      {
+        "text": "In same pot, add sliced garlic, cook 1 minute.",
+        "textAr": "في نفس القدر، أضف شرائح الثوم، اطبخ لمدة دقيقة."
+      },
+      {
+        "text": "Add tomato paste, stir 1 minute.",
+        "textAr": "أضف معجون الطماطم، حرّك لمدة دقيقة."
+      },
+      {
+        "text": "Return ribs to pot, add beef stock to cover, bring to boil.",
+        "textAr": "أعد الضلوع إلى القدر، أضف مرق اللحم ليغمرها، دع المزيج يغلي."
+      },
+      {
+        "text": "Reduce heat to lowest, cover and simmer 4 hours until ribs are very tender and rice inside is cooked.",
+        "textAr": "خفف الحرارة إلى أقل درجة، غطّ واتركه على نار هادئة لمدة 4 ساعات حتى تصبح الضلوع طرية جداً وينضج الأرز بداخلها."
+      },
+      {
+        "text": "Serve hot on platter with spiced rice and sambousek on side, and glass of Arabic coffee.",
+        "textAr": "قدّم ساخناً في طبق مع أرز مخلل وسمبوسك إلى جانبه، وكوب من قهوة عربية."
+      }
+    ]
+  },
+  {
+    "name": "Eggplant Maghmour",
+    "nameAr": "مقلمة",
+    "description": "Fresh Bread & Hummus",
+    "descriptionAr": "خبز طازج وحمص",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [
+      "Vegetarian"
+    ],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Eggplant",
+        "nameAr": "باذنجان",
+        "amount": "3 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onion",
+        "nameAr": "بصل",
+        "amount": "2 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Garlic",
+        "nameAr": "ثوم",
+        "amount": "8 cloves",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Chickpeas",
+        "nameAr": "حمص",
+        "amount": "2 cups canned",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Tomatoes",
+        "nameAr": "طماطم",
+        "amount": "4 ripe",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Tomato paste",
+        "nameAr": "معجون طماطم",
+        "amount": "3 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Fresh mint",
+        "nameAr": "نعناع طازج",
+        "amount": "1 bunch",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Dried mint",
+        "nameAr": "نعناع مجفف",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cumin",
+        "nameAr": "كمون",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Coriander",
+        "nameAr": "كزبرة",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Lemon juice",
+        "nameAr": "عصير ليمون",
+        "amount": "1/4 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Olive oil",
+        "nameAr": "زيت زيتون",
+        "amount": "1/2 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pepper",
+        "nameAr": "فلفل",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pomegranate molasses for drizzling",
+        "nameAr": "دبس رمان للتقديم",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Cut eggplant into 2cm cubes, place in colander, sprinkle with salt.",
+        "textAr": "قطّع الباذنجان إلى مكعبات بحجم 2سم، ضعها في مصفاة، رشها بالملح."
+      },
+      {
+        "text": "Let drain 30 minutes.",
+        "textAr": "اتركها لتتصفى لمدة 30 دقيقة."
+      },
+      {
+        "text": "Rinse, pat dry.",
+        "textAr": "اغسلها، جففها بالتربيت."
+      },
+      {
+        "text": "In large skillet, heat 1/2 cup olive oil, fry eggplant in batches until golden brown.",
+        "textAr": "في مقلاة كبيرة، سخن نصف كوب زيت زيتون، اقلي الباذنجان على دفعات حتى يصبح ذهبياً."
+      },
+      {
+        "text": "Drain on paper towel.",
+        "textAr": "صفّه على ورق مطبخ."
+      },
+      {
+        "text": "In same skillet, add sliced onions, cook 5-7 minutes until soft.",
+        "textAr": "في نفس المقلاة، أضف البصل المقطع شرائح، اطبخ لمدة 5-7 دقائق حتى يلين."
+      },
+      {
+        "text": "Add minced garlic, cook 1 minute.",
+        "textAr": "أضف الثوم المفروم، اطبخ لمدة دقيقة."
+      },
+      {
+        "text": "Add cumin, coriander, stir 30 seconds.",
+        "textAr": "أضف الكمون، الكزبرة، حرّك لمدة 30 ثانية."
+      },
+      {
+        "text": "Add grated tomatoes, tomato paste, 1 cup water, salt, pepper.",
+        "textAr": "أضف الطماطم المبشورة، معجون الطماطم، كوب ماء، ملح، فلفل."
+      },
+      {
+        "text": "Simmer 10 minutes.",
+        "textAr": "اطبخ على نار هادئة لمدة 10 دقائق."
+      },
+      {
+        "text": "Add fried eggplant, drained chickpeas, fresh mint, dried mint.",
+        "textAr": "أضف الباذنجان المقلي، الحمص المصفى، النعناع الطازج، النعناع المجفف."
+      },
+      {
+        "text": "Simmer 15 minutes until thick.",
+        "textAr": "اطبخ على نار هادئة لمدة 15 دقيقة حتى يثخن."
+      },
+      {
+        "text": "Stir in lemon juice.",
+        "textAr": "أضف عصير الليمون."
+      },
+      {
+        "text": "Serve warm or at room temperature, drizzled with pomegranate molasses.",
+        "textAr": "قدّم دافئاً أو في درجة حرارة الغرفة، مع رشّة دبس رمان."
+      },
+      {
+        "text": "Serve with fresh bread and hummus on side, and glass of Rose Water.",
+        "textAr": "قدّم مع خبز طازج وحمص إلى جانبه، وكوب من ماء ورد."
+      }
+    ]
+  },
+  {
+    "name": "Grand Eid Quzi",
+    "nameAr": "قوزي العيد",
+    "description": "Festive Nut Rice & All Sides",
+    "descriptionAr": "أرز بالمكسرات وجميع الأطباق الجانبية",
+    "cuisine": "Middle Eastern",
+    "cuisineAr": "شرق أوسطي",
+    "prepTime": 30,
+    "cookTime": 60,
+    "servings": 4,
+    "dietaryTags": [],
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+      {
+        "name": "Whole baby lamb",
+        "nameAr": "خروف رضيع كامل",
+        "amount": "8-10kg",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Basmati rice",
+        "nameAr": "أرز بسمتي",
+        "amount": "8 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Pine nuts",
+        "nameAr": "صنوبر",
+        "amount": "2 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Almonds",
+        "nameAr": "لوز",
+        "amount": "2 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Raisins",
+        "nameAr": "زبيب",
+        "amount": "2 cups",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Ghee",
+        "nameAr": "سمنة",
+        "amount": "1 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "7-spice",
+        "nameAr": "بهار مشكل",
+        "amount": "1/2 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cardamom",
+        "nameAr": "حبهان",
+        "amount": "2 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Cinnamon sticks",
+        "nameAr": "عود قرفة",
+        "amount": "6",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Bay leaves",
+        "nameAr": "ورق غار",
+        "amount": "10",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Saffron threads",
+        "nameAr": "زعفران",
+        "amount": "2 tsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Onions",
+        "nameAr": "بصل",
+        "amount": "6 large",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Garlic",
+        "nameAr": "ثوم",
+        "amount": "3 heads",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Salt",
+        "nameAr": "ملح",
+        "amount": "1/2 cup",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Black pepper",
+        "nameAr": "فلفل أسود",
+        "amount": "3 tbsp",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      },
+      {
+        "name": "Water for roasting",
+        "nameAr": "ماء للتحمير",
+        "amount": "",
+        "unit": "",
+        "unitAr": "",
+        "preparation": "",
+        "preparationAr": ""
+      }
+    ],
+    "instructions": [
+      {
+        "text": "Clean whole lamb inside and out.",
+        "textAr": "نظّف الخروف الرضيع من الداخل والخارج."
+      },
+      {
+        "text": "In small bowl, mix salt, pepper, 7-spice, cardamom.",
+        "textAr": "في وعاء صغير، اخلط الملح، الفلفل، البهار المشكل، الحبهان."
+      },
+      {
+        "text": "Rub all over lamb inside and out.",
+        "textAr": "افرك الخليط على الخروف من الداخل والخارج."
+      },
+      {
+        "text": "Let sit 2 hours at room temperature.",
+        "textAr": "اتركه لمدة ساعتين في درجة حرارة الغرفة."
+      },
+      {
+        "text": "Place lamb in largest roasting pan, add halved onions, garlic heads, cinnamon sticks, bay leaves, 2 cups water.",
+        "textAr": "ضع الخروف في أكبر صينية تحميص، أضف البصل المقطع أنصاف، رؤوس الثوم، أعواد القرفة، ورق الغار، كوبين ماء."
+      },
+      {
+        "text": "Cover tightly with foil.",
+        "textAr": "غطِّ الصينية بإحكام بورق قصدير."
+      },
+      {
+        "text": "Roast at 325°F (160°C) for 5-6 hours, basting every hour, until meat is very tender and falling off bone.",
+        "textAr": "حمّص على حرارة 325°F (160°C) لمدة 5-6 ساعات، مع التتبيل بالعصارة كل ساعة، حتى يصبح اللحم طرياً جداً وينفصل عن العظم."
+      },
+      {
+        "text": "Remove foil last hour to brown skin.",
+        "textAr": "أزل ورق القصدير في الساعة الأخيرة لتحمير الجلد."
+      },
+      {
+        "text": "Meanwhile, prepare rice: rinse until water runs clear.",
+        "textAr": "في هذه الأثناء، حضّر الأرز: اغسله حتى يصبح الماء صافياً."
+      },
+      {
+        "text": "In large pot, heat ghee, add rice, toast 3 minutes.",
+        "textAr": "في قدر كبير، سخن السمنة، أضف الأرز، حمّصه لمدة 3 دقائق."
+      },
+      {
+        "text": "Add 8 cups water, saffron, salt.",
+        "textAr": "أضف 8 أكواب ماء، زعفران، ملح."
+      },
+      {
+        "text": "Bring to boil, reduce heat, cover and cook 20 minutes.",
+        "textAr": "دع المزيج يغلي، خفف الحرارة، غطّ واطبخ لمدة 20 دقيقة."
+      },
+      {
+        "text": "Fry nuts and raisins in ghee until golden.",
+        "textAr": "حمّص المكسرات والزبيب في سمنة حتى يصبح ذهبياً."
+      },
+      {
+        "text": "To serve: mound spiced rice on giant platter, place whole lamb on top, sprinkle with nuts and raisins.",
+        "textAr": "للتقديم: كوّم الأرز المتبل على طبق عملاق، ضع الخروف كاملاً فوقه، وزّع المكسرات والزبيب."
+      },
+      {
+        "text": "Serve with all sides: fattoush, hummus, sambousek, batata harra, yogurt, and special Eid tea.",
+        "textAr": "قدّم مع جميع الأطباق الجانبية: فتوش، حمص، سمبوسك، بطاطا حارة، لبن، وشاي العيد الخاص."
+      }
+    ]
+  }
+]

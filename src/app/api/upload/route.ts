@@ -31,7 +31,10 @@ export async function POST(req: NextRequest) {
       ContentType: contentType,
     });
 
-    const uploadUrl = await getSignedUrl(r2, command, { expiresIn: 60 });
+    const uploadUrl = await getSignedUrl(r2, command, {
+      expiresIn: 60,
+      unhoistableHeaders: new Set(["x-amz-checksum-crc32"]),
+    });
 
     return NextResponse.json({ uploadUrl, key });
   } catch (err) {
