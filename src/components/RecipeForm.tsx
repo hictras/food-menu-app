@@ -10,65 +10,37 @@ import { useLang } from "./LanguageProvider";
 import { t } from "@/lib/i18n";
 
 type Ingredient = {
-  name: string;
-  nameAr: string;
-  amount: string;
-  unit: string;
-  unitAr: string;
-  preparation: string;
-  preparationAr: string;
+  name: string; nameAr: string; amount: string; unit: string; unitAr: string;
+  preparation: string; preparationAr: string;
 };
 type Step = { text: string; textAr: string };
 
 type InitialData = {
   id: number;
-  name: string;
-  nameAr: string | null;
-  description: string | null;
-  descriptionAr: string | null;
-  cuisine: string | null;
-  cuisineAr: string | null;
-  prepTime: number;
-  cookTime: number;
-  servings: number;
-  dietaryTags: string | null;
-  imageUrl: string | null;
-  videoUrl: string | null;
+  name: string; nameAr: string | null;
+  description: string | null; descriptionAr: string | null;
+  cuisine: string | null; cuisineAr: string | null;
+  servedWith: string | null; servedWithAr: string | null;
+  howToServe: string | null; howToServeAr: string | null;
+  prepTime: number; cookTime: number; servings: number;
+  dietaryTags: string | null; imageUrl: string | null; videoUrl: string | null;
   ingredients: {
-    name: string;
-    nameAr: string | null;
-    amount: string | null;
-    unit: string | null;
-    unitAr: string | null;
-    preparation: string | null;
-    preparationAr: string | null;
+    name: string; nameAr: string | null; amount: string | null;
+    unit: string | null; unitAr: string | null;
+    preparation: string | null; preparationAr: string | null;
   }[];
   instructions: { text: string; textAr: string | null }[];
 };
 
 const TAG_AR: Record<string, string> = {
-  Vegetarian: "نباتي",
-  Vegan: "نباتي صرف",
-  "Gluten-Free": "خالٍ من الغلوتين",
-  "Dairy-Free": "خالٍ من الألبان",
-  "Nut-Free": "خالٍ من المكسرات",
-  Halal: "حلال",
-  Kosher: "كوشير",
-  "Low-Carb": "قليل الكربوهيدرات",
-  Keto: "كيتو",
-  Paleo: "باليو",
-  Spicy: "حار",
-  Quick: "سريع",
+  Vegetarian: "نباتي", Vegan: "نباتي صرف", "Gluten-Free": "خالٍ من الغلوتين",
+  "Dairy-Free": "خالٍ من الألبان", "Nut-Free": "خالٍ من المكسرات",
+  Halal: "حلال", Kosher: "كوشير", "Low-Carb": "قليل الكربوهيدرات",
+  Keto: "كيتو", Paleo: "باليو", Spicy: "حار", Quick: "سريع",
 };
 
 const emptyIngredient: Ingredient = {
-  name: "",
-  nameAr: "",
-  amount: "",
-  unit: "",
-  unitAr: "",
-  preparation: "",
-  preparationAr: "",
+  name: "", nameAr: "", amount: "", unit: "", unitAr: "", preparation: "", preparationAr: "",
 };
 
 export default function RecipeForm({ initial }: { initial?: InitialData }) {
@@ -82,6 +54,10 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
   const [descriptionAr, setDescriptionAr] = useState(initial?.descriptionAr ?? "");
   const [cuisine, setCuisine] = useState(initial?.cuisine ?? "");
   const [cuisineAr, setCuisineAr] = useState(initial?.cuisineAr ?? "");
+  const [servedWith, setServedWith] = useState(initial?.servedWith ?? "");
+  const [servedWithAr, setServedWithAr] = useState(initial?.servedWithAr ?? "");
+  const [howToServe, setHowToServe] = useState(initial?.howToServe ?? "");
+  const [howToServeAr, setHowToServeAr] = useState(initial?.howToServeAr ?? "");
   const [prepTime, setPrepTime] = useState(initial?.prepTime ? String(initial.prepTime) : "");
   const [cookTime, setCookTime] = useState(initial?.cookTime ? String(initial.cookTime) : "");
   const [servings, setServings] = useState(initial?.servings ? String(initial.servings) : "4");
@@ -95,13 +71,9 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
   const [ingredientsList, setIngredientsList] = useState<Ingredient[]>(
     initial?.ingredients?.length
       ? initial.ingredients.map((i) => ({
-          name: i.name,
-          nameAr: i.nameAr ?? "",
-          amount: i.amount ?? "",
-          unit: i.unit ?? "",
-          unitAr: i.unitAr ?? "",
-          preparation: i.preparation ?? "",
-          preparationAr: i.preparationAr ?? "",
+          name: i.name, nameAr: i.nameAr ?? "", amount: i.amount ?? "",
+          unit: i.unit ?? "", unitAr: i.unitAr ?? "",
+          preparation: i.preparation ?? "", preparationAr: i.preparationAr ?? "",
         }))
       : [{ ...emptyIngredient }]
   );
@@ -147,18 +119,10 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
     if (parsed.length === 0) return;
     setIngredientsList((prev) => {
       const cleaned = prev.filter((i) => i.name.trim() || i.nameAr.trim() || i.amount.trim());
-      return [
-        ...cleaned,
-        ...parsed.map((p) => ({
-          name: p.name,
-          nameAr: "",
-          amount: p.amount,
-          unit: p.unit,
-          unitAr: "",
-          preparation: p.preparation,
-          preparationAr: "",
-        })),
-      ];
+      return [...cleaned, ...parsed.map((p) => ({
+        name: p.name, nameAr: "", amount: p.amount, unit: p.unit,
+        unitAr: "", preparation: p.preparation, preparationAr: "",
+      }))];
     });
     setBulkIngredients("");
     setShowBulkIng(false);
@@ -196,17 +160,15 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: name.trim() || nameAr.trim(),
-          nameAr,
-          description,
-          descriptionAr,
-          cuisine,
-          cuisineAr,
+          name: name.trim() || nameAr.trim(), nameAr,
+          description, descriptionAr,
+          cuisine, cuisineAr,
+          servedWith, servedWithAr,
+          howToServe, howToServeAr,
           prepTime: parseInt(prepTime) || 0,
           cookTime: parseInt(cookTime) || 0,
           servings: parseInt(servings) || 1,
-          dietaryTags: tags,
-          imageUrl,
+          dietaryTags: tags, imageUrl,
           videoUrl: videoUrl.trim() || null,
           ingredients: ingredientsList.filter((i) => i.name.trim() || i.nameAr.trim()),
           instructions: steps.filter((s) => s.text.trim() || s.textAr.trim()),
@@ -268,6 +230,52 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
           <div className="field">
             <label>المطبخ (AR)</label>
             <input type="text" value={cuisineAr} onChange={(e) => setCuisineAr(e.target.value)} dir="rtl" />
+          </div>
+        </div>
+      </section>
+
+      <section className="form-section">
+        <h2>Serving</h2>
+
+        <div className="field-pair">
+          <div className="field">
+            <label>Served with (EN)</label>
+            <textarea
+              value={servedWith}
+              onChange={(e) => setServedWith(e.target.value)}
+              dir="ltr"
+              placeholder="e.g. Fattoush salad and warm Lentil soup"
+            />
+          </div>
+          <div className="field">
+            <label>يقدم مع (AR)</label>
+            <textarea
+              value={servedWithAr}
+              onChange={(e) => setServedWithAr(e.target.value)}
+              dir="rtl"
+              placeholder="مثال: سلطة فتوش وشوربة عدس دافئة"
+            />
+          </div>
+        </div>
+
+        <div className="field-pair">
+          <div className="field">
+            <label>How to serve (EN)</label>
+            <textarea
+              value={howToServe}
+              onChange={(e) => setHowToServe(e.target.value)}
+              dir="ltr"
+              placeholder="e.g. Serve hot in a large platter, garnish with pine nuts"
+            />
+          </div>
+          <div className="field">
+            <label>طريقة التقديم (AR)</label>
+            <textarea
+              value={howToServeAr}
+              onChange={(e) => setHowToServeAr(e.target.value)}
+              dir="rtl"
+              placeholder="مثال: يقدم ساخناً في طبق كبير مع تزيينه بالصنوبر"
+            />
           </div>
         </div>
       </section>

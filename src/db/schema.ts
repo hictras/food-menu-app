@@ -12,6 +12,10 @@ export const recipes = sqliteTable("recipes", {
   servings: integer("servings").notNull(),
   cuisine: text("cuisine"),
   cuisineAr: text("cuisine_ar"),
+  servedWith: text("served_with"),
+  servedWithAr: text("served_with_ar"),
+  howToServe: text("how_to_serve"),
+  howToServeAr: text("how_to_serve_ar"),
   dietaryTags: text("dietary_tags"),
   imageUrl: text("image_url"),
   videoUrl: text("video_url"),
@@ -42,11 +46,6 @@ export const instructions = sqliteTable("instructions", {
   textAr: text("text_ar"),
 });
 
-export type Recipe = typeof recipes.$inferSelect;
-export type NewRecipe = typeof recipes.$inferInsert;
-export type Ingredient = typeof ingredients.$inferSelect;
-export type Instruction = typeof instructions.$inferSelect;
-
 export const pushSubscriptions = sqliteTable("push_subscriptions", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   endpoint: text("endpoint").notNull().unique(),
@@ -54,3 +53,8 @@ export const pushSubscriptions = sqliteTable("push_subscriptions", {
   auth: text("auth").notNull(),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
+
+export type Recipe = typeof recipes.$inferSelect;
+export type NewRecipe = typeof recipes.$inferInsert;
+export type Ingredient = typeof ingredients.$inferSelect;
+export type Instruction = typeof instructions.$inferSelect;

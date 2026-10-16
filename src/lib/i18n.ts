@@ -25,6 +25,8 @@ export const translations = {
     description_ar_label: "Short description (Arabic)",
     cuisine: "Cuisine",
     cuisine_ar_label: "Cuisine (Arabic)",
+    served_with: "Served with (EN)",
+    served_with_ar: "يقدم مع (AR)",
     time_servings: "Time & Servings",
     prep: "Prep (min)",
     cook: "Cook (min)",
@@ -93,6 +95,8 @@ export const translations = {
     description_ar_label: "وصف مختصر (بالعربية)",
     cuisine: "المطبخ",
     cuisine_ar_label: "المطبخ (بالعربية)",
+    served_with: "يقدم مع",
+    served_with_ar: "يقدم مع",
     time_servings: "الوقت والحصص",
     prep: "التحضير (دقيقة)",
     cook: "الطهي (دقيقة)",
@@ -145,7 +149,6 @@ export function t(lang: Lang, key: TranslationKey): string {
   return translations[lang][key] ?? translations.en[key] ?? key;
 }
 
-/** Pick content based on current language, with fallback to the other language. */
 export function pick(
   lang: Lang,
   en: string | null | undefined,

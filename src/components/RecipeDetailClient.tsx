@@ -9,6 +9,8 @@ type RecipeRow = {
   id: number; name: string; nameAr: string | null;
   description: string | null; descriptionAr: string | null;
   cuisine: string | null; cuisineAr: string | null;
+  servedWith: string | null; servedWithAr: string | null;
+  howToServe: string | null; howToServeAr: string | null;
   prepTime: number; cookTime: number; servings: number;
   dietaryTags: string | null; imageUrl: string | null; videoUrl: string | null;
 };
@@ -42,6 +44,8 @@ export default function RecipeDetailClient({
   const displayName = pick(lang, recipe.name, recipe.nameAr);
   const displayDesc = pick(lang, recipe.description, recipe.descriptionAr);
   const displayCuisine = pick(lang, recipe.cuisine, recipe.cuisineAr);
+  const displayServedWith = pick(lang, recipe.servedWith, recipe.servedWithAr);
+  const displayHowToServe = pick(lang, recipe.howToServe, recipe.howToServeAr);
 
   return (
     <>
@@ -73,6 +77,24 @@ export default function RecipeDetailClient({
             <div className="meta-item"><span className="meta-label">{t(lang, "cuisine")}</span><span className="meta-value">{displayCuisine}</span></div>
           )}
         </div>
+
+        {displayServedWith && (
+          <div style={{ marginTop: 20, padding: "14px 18px", background: "var(--accent-soft)", borderInlineStart: "4px solid var(--accent)", borderRadius: 10 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--accent)", marginBottom: 4 }}>
+              {lang === "ar" ? "يقدم مع" : "Served with"}
+            </div>
+            <div style={{ fontSize: 15, lineHeight: 1.6 }}>{displayServedWith}</div>
+          </div>
+        )}
+
+        {displayHowToServe && (
+          <div style={{ marginTop: 12, padding: "14px 18px", background: "#f4f8f2", borderInlineStart: "4px solid var(--olive)", borderRadius: 10 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--olive)", marginBottom: 4 }}>
+              {lang === "ar" ? "طريقة التقديم" : "How to serve"}
+            </div>
+            <div style={{ fontSize: 15, lineHeight: 1.6 }}>{displayHowToServe}</div>
+          </div>
+        )}
 
         {tags.length > 0 && (
           <div className="chips" style={{ marginTop: 16 }}>
