@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useLang } from "./LanguageProvider";
+import { useTheme } from "./ThemeProvider";
 import { t } from "@/lib/i18n";
 import PushSubscribe from "./PushSubscribe";
 
 export default function Nav() {
-  const { lang, toggle } = useLang();
+  const { lang, toggle: toggleLang } = useLang();
+  const { theme, toggle: toggleTheme } = useTheme();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
@@ -30,7 +32,7 @@ export default function Nav() {
         <Link href="/" className="brand">
           {t(lang, "brand")}<span>.</span>
         </Link>
-        <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
           <Link href="/recipes">{t(lang, "nav_recipes")}</Link>
 
           {loaded && isAdmin && (
@@ -55,7 +57,18 @@ export default function Nav() {
 
           <PushSubscribe />
 
-          <button type="button" onClick={toggle} className="btn btn-ghost">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="btn btn-ghost"
+            aria-label="Toggle theme"
+            title={theme === "dark" ? "Switch to light" : "Switch to dark"}
+            style={{ padding: "7px 10px" }}
+          >
+            {theme === "dark" ? "☀" : "☾"}
+          </button>
+
+          <button type="button" onClick={toggleLang} className="btn btn-ghost">
             🌐 {t(lang, "lang_toggle")}
           </button>
         </div>

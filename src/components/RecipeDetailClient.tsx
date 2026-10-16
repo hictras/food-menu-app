@@ -49,7 +49,7 @@ export default function RecipeDetailClient({
 
   return (
     <>
-      <div style={{ margin: "24px 0" }}>
+      <div style={{ margin: "20px 0" }}>
         <Link href="/" className="btn btn-ghost">{t(lang, "back_cookbook")}</Link>
       </div>
 
@@ -79,20 +79,16 @@ export default function RecipeDetailClient({
         </div>
 
         {displayServedWith && (
-          <div style={{ marginTop: 20, padding: "14px 18px", background: "var(--accent-soft)", borderInlineStart: "4px solid var(--accent)", borderRadius: 10 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--accent)", marginBottom: 4 }}>
-              {lang === "ar" ? "يقدم مع" : "Served with"}
-            </div>
-            <div style={{ fontSize: 15, lineHeight: 1.6 }}>{displayServedWith}</div>
+          <div className="serve-note">
+            <div className="serve-label">{lang === "ar" ? "يقدم مع" : "Served with"}</div>
+            <div className="serve-value">{displayServedWith}</div>
           </div>
         )}
 
         {displayHowToServe && (
-          <div style={{ marginTop: 12, padding: "14px 18px", background: "#f4f8f2", borderInlineStart: "4px solid var(--olive)", borderRadius: 10 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--olive)", marginBottom: 4 }}>
-              {lang === "ar" ? "طريقة التقديم" : "How to serve"}
-            </div>
-            <div style={{ fontSize: 15, lineHeight: 1.6 }}>{displayHowToServe}</div>
+          <div className="serve-note">
+            <div className="serve-label">{lang === "ar" ? "طريقة التقديم" : "How to serve"}</div>
+            <div className="serve-value">{displayHowToServe}</div>
           </div>
         )}
 
