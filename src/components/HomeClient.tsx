@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useLang } from "./LanguageProvider";
 import { t, pick } from "@/lib/i18n";
-import { cuisineFlag } from "@/lib/cuisine-flag";
+import { cuisineFlagUrl } from "@/lib/cuisine-flag";
 
 type RecipeRow = {
   id: number;
@@ -54,36 +54,39 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
             const tags: string[] = r.dietaryTags ? JSON.parse(r.dietaryTags) : [];
             const displayName = pick(lang, r.name, r.nameAr);
             const displayCuisine = pick(lang, r.cuisine, r.cuisineAr);
-            const flag = cuisineFlag(r.cuisine) || cuisineFlag(r.cuisineAr);
+            const flagUrl = cuisineFlagUrl(r.cuisine) || cuisineFlagUrl(r.cuisineAr);
 
             return (
               <Link key={r.id} href={`/recipes/${r.id}`} className="recipe-card">
-                <div className="recipe-card-img-wrap">
-                  {r.imageUrl ? (
-                    <img src={r.imageUrl} alt={displayName} className="recipe-card-img" />
-                  ) : (
-                    <div className="recipe-card-img" />
-                  )}
-                  {flag && (
-                    <span className="recipe-card-flag" title={displayCuisine}>
-                      {flag}
-                    </span>
-                  )}
-                </div>
+                {r.imageUrl ? (
+                  <img src={r.imageUrl} alt={displayName} className="recipe-card-img" />
+                ) : (
+                  <div className="recipe-card-img" />
+                )}
+
                 <div className="recipe-card-body">
-                  <div className="recipe-card-title-row">
-                    <h3>{displayName}</h3>
-                    {displayCuisine && (
-                      <span className="recipe-card-cuisine">
-                        {flag && <span className="recipe-card-cuisine-flag">{flag}</span>}
-                        {displayCuisine}
-                      </span>
+                  <div className="recipe-card-head">
+                    <div className="recipe-card-text">
+                      <h3>{displayName}</h3>
+                      {displayCuisine && (
+                        <span className="recipe-card-cuisine">{displayCuisine}</span>
+                      )}
+                    </div>
+                    {flagUrl && (
+                      <img
+                        src={flagUrl}
+                        alt={displayCuisine}
+                        className="recipe-card-flag"
+                        loading="lazy"
+                      />
                     )}
                   </div>
+
                   <div className="recipe-card-meta">
                     <span>⏱ {r.prepTime + r.cookTime} {lang === "ar" ? "د" : "min"}</span>
                     <span>🍽 {r.servings}</span>
                   </div>
+
                   {tags.length > 0 && (
                     <div className="recipe-card-tags">
                       {tags.slice(0, 3).map((tag) => (
