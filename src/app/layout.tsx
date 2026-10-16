@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import "./globals.css";
+import { LanguageProvider } from "@/components/LanguageProvider";
+import Nav from "@/components/Nav";
 
 export const metadata: Metadata = {
   title: "Menu — Recipes",
@@ -15,20 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <nav className="nav">
-          <div className="nav-inner">
-            <Link href="/" className="brand">
-              Menu<span>.</span>
-            </Link>
-            <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
-              <Link href="/recipes">Recipes</Link>
-              <Link href="/recipes/new" className="btn btn-primary">
-                + Add Recipe
-              </Link>
-            </div>
-          </div>
-        </nav>
-        {children}
+        <LanguageProvider>
+          <Nav />
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   );

@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap");
+
 :root {
   --bg: #faf7f2;
   --surface: #ffffff;
@@ -9,8 +11,14 @@
   --olive: #4a5d23;
   --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06);
   --radius: 14px;
-  --font-head: Georgia, "Times New Roman", serif;
+  --font-head: "Playfair Display", Georgia, "Times New Roman", serif;
   --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-ar: "Cairo", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+html[lang="ar"] {
+  --font-head: var(--font-ar);
+  --font-body: var(--font-ar);
 }
 
 * { box-sizing: border-box; }
@@ -22,14 +30,18 @@ html, body {
   color: var(--ink);
   font-family: var(--font-body);
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-h1, h2, h3 { font-family: var(--font-head); font-weight: 700; letter-spacing: -0.01em; }
+h1, h2, h3 {
+  font-family: var(--font-head);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
 
 button { font-family: inherit; cursor: pointer; }
 input, textarea, select { font-family: inherit; font-size: 1rem; }
@@ -51,6 +63,8 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
   padding: 16px 24px;
   max-width: 1100px;
   margin: 0 auto;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 .brand {
   font-family: var(--font-head);
@@ -82,11 +96,10 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-ghost {
   background: transparent;
-  border-color: var(--line);
+  border: 1px solid var(--line);
   color: var(--ink);
 }
 .btn-ghost:hover { border-color: var(--ink); }
-.btn-danger { color: var(--accent); background: transparent; border: none; padding: 6px 10px; }
 
 /* Form */
 .form-card {
@@ -131,10 +144,9 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
 }
 .field textarea { min-height: 90px; resize: vertical; }
 .field-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.error-text { color: var(--accent); font-size: 13px; margin-top: 6px; }
 .helper { color: var(--muted); font-size: 13px; margin-top: 6px; }
 
-/* Tag chips */
+/* Chips */
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip {
   padding: 7px 14px;
@@ -153,14 +165,14 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
   color: var(--accent);
 }
 
-/* Row list (ingredients / instructions) */
+/* Rows */
 .row-list { display: flex; flex-direction: column; gap: 10px; }
 .row {
   display: flex;
   gap: 10px;
   align-items: flex-start;
 }
-.row input[type="text"], .row input[type="number"], .row textarea {
+.row input[type="text"], .row textarea {
   padding: 10px 12px;
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -172,7 +184,6 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
   border-color: var(--accent);
   background: white;
 }
-.row-ing { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; }
 .row-step { display: grid; grid-template-columns: 44px 1fr auto; gap: 10px; align-items: flex-start; }
 .step-num {
   width: 34px; height: 34px;
@@ -184,6 +195,7 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
   justify-content: center;
   font-weight: 700;
   margin-top: 4px;
+  flex-shrink: 0;
 }
 .row textarea { min-height: 60px; resize: vertical; }
 .icon-btn {
@@ -209,7 +221,7 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
 }
 .add-row:hover { border-color: var(--accent); color: var(--accent); }
 
-/* Action bar */
+/* Actions */
 .form-actions {
   display: flex;
   gap: 12px;
@@ -217,6 +229,7 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
   padding-top: 24px;
   border-top: 1px solid var(--line);
 }
+html[dir="rtl"] .form-actions { flex-direction: row-reverse; }
 
 /* Recipe grid */
 .recipe-grid {
@@ -266,7 +279,7 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
 }
 .recipe-card-tags .chip { font-size: 11px; padding: 4px 10px; }
 
-/* Empty state */
+/* Empty */
 .empty {
   text-align: center;
   padding: 80px 20px;
@@ -275,7 +288,7 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
 .empty h2 { color: var(--ink); font-size: 24px; margin-bottom: 8px; }
 .empty p { margin-bottom: 24px; }
 
-/* Page heading */
+/* Page head */
 .page-head {
   display: flex;
   align-items: center;
@@ -318,10 +331,10 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
   border-radius: 999px;
   font-size: 13px;
   font-weight: 600;
-  margin-left: 12px;
+  margin-inline-start: 12px;
 }
 
-/* Detail page */
+/* Detail */
 .detail-hero {
   width: 100%;
   max-height: 420px;
@@ -330,20 +343,9 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
   margin: 8px 0 32px;
   box-shadow: var(--shadow);
 }
-
 .detail-head { margin-bottom: 40px; }
-.detail-head h1 {
-  font-size: 42px;
-  line-height: 1.15;
-  margin: 0 0 12px;
-}
-.detail-desc {
-  font-size: 17px;
-  color: var(--muted);
-  max-width: 60ch;
-  margin: 0 0 24px;
-}
-
+.detail-head h1 { font-size: 42px; line-height: 1.15; margin: 0 0 12px; }
+.detail-desc { font-size: 17px; color: var(--muted); max-width: 60ch; margin: 0 0 24px; }
 .detail-meta {
   display: flex;
   flex-wrap: wrap;
@@ -360,12 +362,7 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
   text-transform: uppercase;
   color: var(--muted);
 }
-.meta-value {
-  font-family: var(--font-head);
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--ink);
-}
+.meta-value { font-family: var(--font-head); font-size: 20px; font-weight: 700; color: var(--ink); }
 
 .detail-cols {
   display: grid;
@@ -386,11 +383,7 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
   display: inline-block;
 }
 
-.ing-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
+.ing-list { list-style: none; padding: 0; margin: 0; }
 .ing-list li {
   padding: 12px 0;
   border-bottom: 1px dashed var(--line);
@@ -406,12 +399,7 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
 }
 .ing-name { flex: 1; }
 
-.steps-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  counter-reset: step;
-}
+.steps-list { list-style: none; padding: 0; margin: 0; }
 .steps-list li {
   display: grid;
   grid-template-columns: 40px 1fr;
@@ -419,24 +407,10 @@ input, textarea, select { font-family: inherit; font-size: 1rem; }
   margin-bottom: 20px;
   align-items: flex-start;
 }
-.steps-list .step-num {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-.steps-list p {
-  margin: 4px 0 0;
-  line-height: 1.6;
-}
+.steps-list .step-num { margin-top: 0; }
+.steps-list p { margin: 4px 0 0; line-height: 1.6; }
 
-/* Video section */
+/* Video */
 .video-section { margin: 0 0 40px; }
 .video-section h2 {
   font-size: 20px;
