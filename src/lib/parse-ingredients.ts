@@ -1,6 +1,7 @@
 const UNITS = [
   "tablespoons", "tablespoon", "tbsp", "tbs",
   "teaspoons", "teaspoon", "tsp",
+  "spoons", "spoon", "spn",
   "cups", "cup",
   "grams", "gram", "gr", "g",
   "kilograms", "kilogram", "kg",
@@ -18,6 +19,13 @@ const UNITS = [
   "heads", "head",
   "dashes", "dash",
   "handfuls", "handful",
+  "portions", "portion",
+  "servings", "serving",
+  "pieces", "piece",
+  "packs", "pack",
+  "pockets", "pocket",
+  "bottles", "bottle",
+  "drops", "drop",
 ];
 
 const AMOUNT_RE = /^(\d+\s*[-–]\s*\d+|\d+\/\d+|\d+(?:[.,]\d+)?|[½¼¾⅓⅔⅛⅜⅝⅞])/;
