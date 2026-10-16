@@ -48,6 +48,7 @@ async function EditLoader({ params }: { params: Promise<{ id: string }> }) {
           name: i.name,
           amount: i.amount,
           unit: i.unit,
+          preparation: i.preparation,
         })),
         instructions: steps.map((s) => ({ text: s.text })),
       }}

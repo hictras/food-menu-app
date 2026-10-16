@@ -22,6 +22,7 @@ export const ingredients = sqliteTable("ingredients", {
   name: text("name").notNull(),
   amount: text("amount"),
   unit: text("unit"),
+  preparation: text("preparation"),
 });
 
 export const instructions = sqliteTable("instructions", {

@@ -4,8 +4,14 @@ import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ImageUpload from "./ImageUpload";
 import { DIETARY_TAGS } from "@/lib/dietary-tags";
+import { parseIngredientsBulk } from "@/lib/parse-ingredients";
 
-type Ingredient = { name: string; amount: string; unit: string };
+type Ingredient = {
+  name: string;
+  amount: string;
+  unit: string;
+  preparation: string;
+};
 type Step = { text: string };
 
 type InitialData = {
@@ -18,7 +24,12 @@ type InitialData = {
   servings: number;
   dietaryTags: string | null;
   imageUrl: string | null;
-  ingredients: { name: string; amount: string | null; unit: string | null }[];
+  ingredients: {
+    name: string;
+    amount: string | null;
+    unit: string | null;
+    preparation: string | null;
+  }[];
   instructions: { text: string }[];
 };
 
@@ -56,8 +67,9 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
           name: i.name,
           amount: i.amount ?? "",
           unit: i.unit ?? "",
+          preparation: i.preparation ?? "",
         }))
-      : [{ name: "", amount: "", unit: "" }]
+      : [{ name: "", amount: "", unit: "", preparation: "" }]
   );
 
   const [steps, setSteps] = useState<Step[]>(
@@ -65,6 +77,11 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
       ? initial.instructions.map((s) => ({ text: s.text }))
       : [{ text: "" }]
   );
+
+  const [bulkIngredients, setBulkIngredients] = useState("");
+  const [bulkSteps, setBulkSteps] = useState("");
+  const [showBulkIng, setShowBulkIng] = useState(false);
+  const [showBulkStep, setShowBulkStep] = useState(false);
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -98,13 +115,27 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
   }
 
   function addIngredient() {
-    setIngredientsList((l) => [...l, { name: "", amount: "", unit: "" }]);
+    setIngredientsList((l) => [
+      ...l,
+      { name: "", amount: "", unit: "", preparation: "" },
+    ]);
   }
 
   function removeIngredient(i: number) {
     setIngredientsList((l) =>
       l.length === 1 ? l : l.filter((_, idx) => idx !== i)
     );
+  }
+
+  function applyBulkIngredients() {
+    const parsed = parseIngredientsBulk(bulkIngredients);
+    if (parsed.length === 0) return;
+    setIngredientsList((prev) => {
+      const cleaned = prev.filter((i) => i.name.trim() || i.amount.trim());
+      return [...cleaned, ...parsed];
+    });
+    setBulkIngredients("");
+    setShowBulkIng(false);
   }
 
   function updateStep(i: number, text: string) {
@@ -117,6 +148,20 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
 
   function removeStep(i: number) {
     setSteps((s) => (s.length === 1 ? s : s.filter((_, idx) => idx !== i)));
+  }
+
+  function applyBulkSteps() {
+    const lines = bulkSteps
+      .split(/\r?\n/)
+      .map((l) => l.replace(/^[\s•·●○▪▫■□◆◇♦→*\-–—]+/, "").trim())
+      .filter(Boolean);
+    if (lines.length === 0) return;
+    setSteps((prev) => {
+      const cleaned = prev.filter((s) => s.text.trim());
+      return [...cleaned, ...lines.map((text) => ({ text }))];
+    });
+    setBulkSteps("");
+    setShowBulkStep(false);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -145,7 +190,14 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
           servings: parseInt(servings) || 1,
           dietaryTags: tags,
           imageUrl,
-          ingredients: ingredientsList.filter((i) => i.name.trim()),
+          ingredients: ingredientsList
+            .filter((i) => i.name.trim())
+            .map((i) => ({
+              name: i.name,
+              amount: i.amount,
+              unit: i.unit,
+              preparation: i.preparation,
+            })),
           instructions: steps.filter((s) => s.text.trim()),
         }),
       });
@@ -283,23 +335,26 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
 
       <section className="form-section">
         <h2>Photo</h2>
-        <ImageUpload onUploaded={setImageUrl} initialUrl={imageUrl ?? undefined} />
-        <p className="helper">
-          Optional. Uploads go straight to Cloudflare R2.
-        </p>
+        <ImageUpload
+          onUploaded={setImageUrl}
+          initialUrl={imageUrl ?? undefined}
+        />
+        <p className="helper">Optional. Uploads go straight to Cloudflare R2.</p>
       </section>
 
       <section className="form-section">
         <h2>Ingredients</h2>
         <div className="row-list">
           {ingredientsList.map((ing, i) => (
-            <div className="row row-ing" key={i}>
-              <input
-                type="text"
-                placeholder="Ingredient"
-                value={ing.name}
-                onChange={(e) => updateIngredient(i, { name: e.target.value })}
-              />
+            <div
+              className="row"
+              key={i}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "60px 80px 1fr 130px auto",
+                gap: 10,
+              }}
+            >
               <input
                 type="text"
                 placeholder="Qty"
@@ -314,6 +369,20 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
                 value={ing.unit}
                 onChange={(e) => updateIngredient(i, { unit: e.target.value })}
               />
+              <input
+                type="text"
+                placeholder="Ingredient"
+                value={ing.name}
+                onChange={(e) => updateIngredient(i, { name: e.target.value })}
+              />
+              <input
+                type="text"
+                placeholder="Prep (minced…)"
+                value={ing.preparation}
+                onChange={(e) =>
+                  updateIngredient(i, { preparation: e.target.value })
+                }
+              />
               <button
                 type="button"
                 className="icon-btn"
@@ -326,9 +395,61 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
             </div>
           ))}
         </div>
-        <button type="button" className="add-row" onClick={addIngredient}>
-          + Add ingredient
-        </button>
+
+        <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+          <button type="button" className="add-row" onClick={addIngredient}>
+            + Add ingredient
+          </button>
+          <button
+            type="button"
+            className="add-row"
+            onClick={() => setShowBulkIng((v) => !v)}
+            style={{ maxWidth: 200 }}
+          >
+            📋 Paste in bulk
+          </button>
+        </div>
+
+        {showBulkIng && (
+          <div style={{ marginTop: 12 }}>
+            <textarea
+              placeholder={
+                "Paste one ingredient per line, e.g.\n• 2-3 cloves garlic (minced)\n• 1 medium onion (finely chopped)\n• 1 cup white rice"
+              }
+              value={bulkIngredients}
+              onChange={(e) => setBulkIngredients(e.target.value)}
+              style={{
+                width: "100%",
+                minHeight: 140,
+                padding: 12,
+                border: "1px solid var(--line)",
+                borderRadius: 10,
+                background: "var(--bg)",
+                fontFamily: "inherit",
+                fontSize: 14,
+              }}
+            />
+            <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={applyBulkIngredients}
+              >
+                Parse &amp; add
+              </button>
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => {
+                  setBulkIngredients("");
+                  setShowBulkIng(false);
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
       </section>
 
       <section className="form-section">
@@ -354,9 +475,61 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
             </div>
           ))}
         </div>
-        <button type="button" className="add-row" onClick={addStep}>
-          + Add step
-        </button>
+
+        <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+          <button type="button" className="add-row" onClick={addStep}>
+            + Add step
+          </button>
+          <button
+            type="button"
+            className="add-row"
+            onClick={() => setShowBulkStep((v) => !v)}
+            style={{ maxWidth: 200 }}
+          >
+            📋 Paste in bulk
+          </button>
+        </div>
+
+        {showBulkStep && (
+          <div style={{ marginTop: 12 }}>
+            <textarea
+              placeholder={
+                "Paste one step per line, e.g.\nHeat oil in a pan\nAdd onions and cook until soft\nStir in garlic"
+              }
+              value={bulkSteps}
+              onChange={(e) => setBulkSteps(e.target.value)}
+              style={{
+                width: "100%",
+                minHeight: 140,
+                padding: 12,
+                border: "1px solid var(--line)",
+                borderRadius: 10,
+                background: "var(--bg)",
+                fontFamily: "inherit",
+                fontSize: 14,
+              }}
+            />
+            <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={applyBulkSteps}
+              >
+                Parse &amp; add
+              </button>
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => {
+                  setBulkSteps("");
+                  setShowBulkStep(false);
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
       </section>
 
       <div className="form-actions">

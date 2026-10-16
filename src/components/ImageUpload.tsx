@@ -20,20 +20,15 @@ export default function ImageUpload({ onUploaded, initialUrl }: Props) {
     setUploading(true);
 
     try {
-      // 1. Get presigned URL from our API
       const res = await fetch("/api/upload", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          filename: file.name,
-          contentType: file.type,
-        }),
+        body: JSON.stringify({ filename: file.name, contentType: file.type }),
       });
 
       if (!res.ok) throw new Error("Failed to get upload URL");
       const { uploadUrl, key } = await res.json();
 
-      // 2. Upload directly to R2
       const put = await fetch(uploadUrl, {
         method: "PUT",
         body: file,
@@ -42,7 +37,6 @@ export default function ImageUpload({ onUploaded, initialUrl }: Props) {
 
       if (!put.ok) throw new Error("Upload to R2 failed");
 
-      // 3. Build the public URL
       const base = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
       const publicUrl = `${base}/${key}`;
 
@@ -64,10 +58,8 @@ export default function ImageUpload({ onUploaded, initialUrl }: Props) {
         disabled={uploading}
         className="block w-full text-sm"
       />
-
       {uploading && <p className="text-sm text-gray-500">Uploading…</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}
-
       {preview && (
         <img
           src={preview}

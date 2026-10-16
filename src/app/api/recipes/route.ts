@@ -11,12 +11,17 @@ type Payload = {
   servings: number;
   dietaryTags: string[];
   imageUrl: string | null;
-  ingredients: { name: string; amount: string; unit: string }[];
+  ingredients: {
+    name: string;
+    amount: string;
+    unit: string;
+    preparation: string;
+  }[];
   instructions: { text: string }[];
 };
 
 export async function POST(req: NextRequest) {
- const db = getDb();
+  const db = getDb();
   try {
     const body: Payload = await req.json();
 
@@ -50,6 +55,7 @@ export async function POST(req: NextRequest) {
             name: i.name.trim(),
             amount: i.amount?.trim() || null,
             unit: i.unit?.trim() || null,
+            preparation: i.preparation?.trim() || null,
           }))
       );
     }

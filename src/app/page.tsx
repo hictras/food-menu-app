@@ -5,7 +5,7 @@ import { recipes } from "@/db/schema";
 import { desc } from "drizzle-orm";
 
 async function RecipeList() {
-const db = getDb();
+  const db = getDb();
   const all = await db.select().from(recipes).orderBy(desc(recipes.createdAt));
 
   if (all.length === 0) {

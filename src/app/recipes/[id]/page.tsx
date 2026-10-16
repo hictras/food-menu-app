@@ -43,9 +43,21 @@ async function RecipeDetail({ id }: { id: number }) {
       )}
 
       <header className="detail-head">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16 }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            gap: 16,
+          }}
+        >
           <h1 style={{ margin: 0 }}>{recipe.name}</h1>
-          <Link href={`/recipes/${recipe.id}/edit`} className="btn btn-ghost">✎ Edit</Link>
+          <Link
+            href={`/recipes/${recipe.id}/edit`}
+            className="btn btn-ghost"
+          >
+            ✎ Edit
+          </Link>
         </div>
         {recipe.description && (
           <p className="detail-desc">{recipe.description}</p>
@@ -101,7 +113,19 @@ async function RecipeDetail({ id }: { id: number }) {
                   <span className="ing-amount">
                     {[i.amount, i.unit].filter(Boolean).join(" ")}
                   </span>
-                  <span className="ing-name">{i.name}</span>
+                  <span className="ing-name">
+                    {i.name}
+                    {i.preparation && (
+                      <span
+                        style={{
+                          color: "var(--muted)",
+                          fontStyle: "italic",
+                        }}
+                      >
+                        , {i.preparation}
+                      </span>
+                    )}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -128,18 +152,6 @@ async function RecipeDetail({ id }: { id: number }) {
   );
 }
 
-// Async component that awaits params INSIDE a Suspense boundary
-async function RecipeResolver({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  const numericId = Number(id);
-  if (Number.isNaN(numericId)) notFound();
-  return <RecipeDetail id={numericId} />;
-}
-
 function DetailSkeleton() {
   return (
     <>
@@ -158,6 +170,17 @@ function DetailSkeleton() {
       />
     </>
   );
+}
+
+async function RecipeResolver({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const numericId = Number(id);
+  if (Number.isNaN(numericId)) notFound();
+  return <RecipeDetail id={numericId} />;
 }
 
 export default function RecipePage({

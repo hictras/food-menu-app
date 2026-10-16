@@ -15,7 +15,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Only allow image types
     if (!contentType.startsWith("image/")) {
       return NextResponse.json(
         { error: "Only image uploads are allowed" },

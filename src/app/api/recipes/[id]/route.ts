@@ -12,7 +12,12 @@ type Payload = {
   servings: number;
   dietaryTags: string[];
   imageUrl: string | null;
-  ingredients: { name: string; amount: string; unit: string }[];
+  ingredients: {
+    name: string;
+    amount: string;
+    unit: string;
+    preparation: string;
+  }[];
   instructions: { text: string }[];
 };
 
@@ -20,6 +25,7 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const db = getDb();
   try {
     const { id } = await params;
     const recipeId = Number(id);
@@ -35,8 +41,6 @@ export async function PUT(
       );
     }
 
-    const db = getDb();
-
     await db
       .update(recipes)
       .set({
@@ -51,7 +55,6 @@ export async function PUT(
       })
       .where(eq(recipes.id, recipeId));
 
-    // Replace ingredients and instructions
     await db.delete(ingredients).where(eq(ingredients.recipeId, recipeId));
     await db.delete(instructions).where(eq(instructions.recipeId, recipeId));
 
@@ -64,6 +67,7 @@ export async function PUT(
             name: i.name.trim(),
             amount: i.amount?.trim() || null,
             unit: i.unit?.trim() || null,
+            preparation: i.preparation?.trim() || null,
           }))
       );
     }
@@ -94,6 +98,7 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const db = getDb();
   try {
     const { id } = await params;
     const recipeId = Number(id);
@@ -101,9 +106,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     }
 
-    const db = getDb();
     await db.delete(recipes).where(eq(recipes.id, recipeId));
-
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("Delete recipe error:", err);
