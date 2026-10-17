@@ -2,28 +2,16 @@
 Stack: Next.js 16 + Turso (Drizzle) + Cloudflare R2 + Render
 Repo: https://github.com/hictras/food-menu-app
 
-=== FEATURES BUILT ===
-- Bilingual recipes (EN/AR) with RTL support
-- Recipe fields: name, description, cuisine, prep, cook, servings, tags,
-  image (R2), video (YouTube), servedWith, howToServe (all bilingual)
-- Ingredients: amount, unit, name, preparation (all bilingual)
-- Instructions: numbered steps (bilingual)
-- Bulk paste parser for ingredients & instructions
-- Add / edit / delete recipes
-- Admin login (env-based, cookie session)
-- Push notifications (VAPID, admin-only send)
-- 30 Ramadan recipes imported
-- PWA-ready
-
 === FILE TREE ===
 public/file.svg
 public/globe.svg
 public/next.svg
-public/sw.js
 public/vercel.svg
 public/window.svg
 scripts/extract-ramadan.js
+scripts/import-lebanese.js
 scripts/import-to-db.js
+scripts/lebanese-recipes.json
 scripts/ramadan-recipes.json
 src/app/admin/page.tsx
 src/app/api/auth/login/route.ts
@@ -36,54 +24,59 @@ src/app/api/push/unsubscribe/route.ts
 src/app/api/recipes/[id]/route.ts
 src/app/api/recipes/bulk/route.ts
 src/app/api/recipes/route.ts
+src/app/api/share/whatsapp/route.ts
 src/app/api/test-db/route.ts
 src/app/api/upload/route.ts
 src/app/favicon.ico
 src/app/globals.css
 src/app/layout.tsx
 src/app/login/page.tsx
-src/app/page.module.css
 src/app/page.tsx
 src/app/recipes/[id]/edit/page.tsx
 src/app/recipes/[id]/page.tsx
-src/app/recipes/[id]/page.tsx.bak
 src/app/recipes/new/page.tsx
 src/app/recipes/page.tsx
 src/app/test-upload/page.tsx
 src/components/AdminSender.tsx
+src/components/AutoTranslate.tsx
 src/components/EditRecipeShell.tsx
 src/components/HomeClient.tsx
 src/components/ImageUpload.tsx
 src/components/LanguageProvider.tsx
 src/components/Nav.tsx
 src/components/NewRecipeShell.tsx
+src/components/PickerDropdown.tsx
 src/components/PushSubscribe.tsx
 src/components/RecipeDetailClient.tsx
 src/components/RecipeForm.tsx
+src/components/ThemeProvider.tsx
 src/db/index.ts
 src/db/schema.ts
 src/lib/auth.ts
+src/lib/categories.ts
+src/lib/cuisine-flag.ts
 src/lib/dietary-tags.ts
 src/lib/i18n.ts
 src/lib/parse-ingredients.ts
+src/lib/pickers.ts
 src/lib/r2.ts
 src/lib/youtube.ts
 
-=== ENV VAR NAMES (values redacted) ===
-TURSO_DATABASE_URL
-TURSO_AUTH_TOKEN
-R2_ACCOUNT_ID
-R2_ACCESS_KEY_ID
-R2_SECRET_ACCESS_KEY
-R2_BUCKET_NAME
-R2_PUBLIC_URL
-NEXT_PUBLIC_R2_PUBLIC_URL
-NEXT_PUBLIC_VAPID_PUBLIC_KEY
-VAPID_PRIVATE_KEY
-VAPID_SUBJECT
-ADMIN_USERNAME
+=== ENV NAMES ===
 ADMIN_PASSWORD
 ADMIN_SESSION_SECRET
+ADMIN_USERNAME
+NEXT_PUBLIC_R2_PUBLIC_URL
+NEXT_PUBLIC_VAPID_PUBLIC_KEY
+R2_ACCESS_KEY_ID
+R2_ACCOUNT_ID
+R2_BUCKET_NAME
+R2_PUBLIC_URL
+R2_SECRET_ACCESS_KEY
+TURSO_AUTH_TOKEN
+TURSO_DATABASE_URL
+VAPID_PRIVATE_KEY
+VAPID_SUBJECT
 
 === SCHEMA ===
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
@@ -100,6 +93,8 @@ export const recipes = sqliteTable("recipes", {
   servings: integer("servings").notNull(),
   cuisine: text("cuisine"),
   cuisineAr: text("cuisine_ar"),
+  category: text("category"),
+  categoryAr: text("category_ar"),
   servedWith: text("served_with"),
   servedWithAr: text("served_with_ar"),
   howToServe: text("how_to_serve"),
@@ -147,60 +142,14 @@ export type NewRecipe = typeof recipes.$inferInsert;
 export type Ingredient = typeof ingredients.$inferSelect;
 export type Instruction = typeof instructions.$inferSelect;
 
-=== PACKAGE.JSON ===
-{
-  "name": "food-menu-app",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
-  },
-  "dependencies": {
-    "@aws-sdk/client-s3": "^3.726.1",
-    "@aws-sdk/s3-request-presigner": "^3.726.1",
-    "@libsql/client": "^0.18.0",
-    "drizzle-orm": "^0.45.4",
-    "next": "16.4.2",
-    "next-pwa": "^5.6.0",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
-    "web-push": "^3.6.7"
-  },
-  "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@types/web-push": "^3.6.4",
-    "dotenv": "^18.0.8",
-    "drizzle-kit": "^0.31.11",
-    "typescript": "^5"
-  }
-}
-
-=== RECENT GIT LOG ===
-f0fd983 Force full reload on login/logout so nav refreshes
-6e6523e Load VAPID keys from env per request
-feebf6b Add push notifications with subscribe/unsubscribe and admin sender
-387e6b6 recipe
-3c10f0a Add bilingual EN/AR content for recipes, ingredients, and steps
-71612ed Add bilingual EN/AR content for recipes, ingredients, and steps
-c3e86f0 Add full Arabic translation with RTL support
-b02c6cc Add YouTube video support
-3102078 Add preparation column, bulk paste parsing, extended units
-7f5d0f2 Add preparation column, bulk paste for ingredients and instructions
-b4fc2b9 Add recipe edit and delete functionality
-62ec7a3 Remove blueprint, use web service
-ad80928 Add render.yaml and health check
-85f4bc1 Add recipe form, list, and detail pages
-163e0bb Initial commit
-
-=== KNOWN ISSUES / PENDING ===
-- Login works locally, needed ADMIN_USERNAME/ADMIN_PASSWORD/ADMIN_SESSION_SECRET
-  added to Render environment + redeploy
-- Login/logout needs full page reload (window.location.href) so Nav refreshes
-- R2 CORS: no trailing slash on AllowedOrigins
-- AWS SDK checksum: use unhoistableHeaders + requestChecksumCalculation WHEN_REQUIRED
-- Next.js 16 Cache Components enabled — requires Suspense around async data,
-  cookies(), params
+=== COMMITS ===
+6726f5b Add category grouping, filter/search, categories + protein tags, video fix
+180b4be Add protein tags and recipe categories with filter
+04ba91c Fix video sizing with padding-bottom aspect ratio
+c43816b Fix video sizing with padding-bottom aspect ratio
+88937e0 Import 24 Lebanese recipes + restore bulk auth
+95378e7 Save: theme toggle, pickers, auto-translate, flags, WhatsApp share
+dd1c539 Add auto-translate icon and country flags on recipe cards
+73c87af Add light/dark theme toggle with system preference detection
+0c37564 Remove stray backup and unused css
+e26be26 Snapshot before new chat

@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const target = process.argv[2] || "http://localhost:3000";
+const target = process.argv[2] || "http://127.0.0.1:3000";
 const filePath = path.join(__dirname, "lebanese-recipes.json");
 
 if (!fs.existsSync(filePath)) {
@@ -10,7 +10,7 @@ if (!fs.existsSync(filePath)) {
 }
 
 const raw = JSON.parse(fs.readFileSync(filePath, "utf8"));
-const list = Array.isArray(raw) ? raw : raw.lebanese_recipes;
+const list = Array.isArray(raw) ? raw : raw.lebanese_recipes || raw.recipes || [raw];
 
 if (!Array.isArray(list) || list.length === 0) {
   console.error("❌ No recipes found in the file");
@@ -41,12 +41,31 @@ function parseMinutes(s) {
 
 function splitAmountUnit(s) {
   if (!s) return { amount: "", unit: "", name: "" };
+  if (typeof s !== "string") return { amount: "", unit: "", name: String(s) };
   const m = s.match(/^([½¼¾⅓⅔⅛⅜⅝⅞]|\d+(?:[.,]\d+)?(?:\s*[-–]\s*\d+(?:[.,]\d+)?)?|\d+\/\d+)\s*([a-zA-Z\u0600-\u06FF]+)?\s*(.*)$/);
   if (!m) return { amount: "", unit: "", name: s };
   return { amount: (m[1] || "").trim(), unit: (m[2] || "").trim(), name: (m[3] || "").trim() };
 }
 
+/**
+ * Accepts ingredients in either shape:
+ *   - String:  "250g fine brown burghul"
+ *   - Object:  { name, nameAr, amount, unit, unitAr, preparation, preparationAr }
+ */
 function makeIngredient(en, ar) {
+  // Object shape — pass through directly
+  if (typeof en === "object" && en !== null) {
+    return {
+      name: en.name || en.name_en || "",
+      nameAr: en.nameAr || en.name_ar || "",
+      amount: String(en.amount || ""),
+      unit: en.unit || en.unit_en || "",
+      unitAr: en.unitAr || en.unit_ar || "",
+      preparation: en.preparation || en.notes || "",
+      preparationAr: en.preparationAr || en.preparation_ar || "",
+    };
+  }
+  // String shape — parse
   const e = splitAmountUnit(en);
   const a = splitAmountUnit(ar);
   return {
@@ -62,51 +81,87 @@ function makeIngredient(en, ar) {
 
 function flattenIngredients(ing, ingAr) {
   const out = [];
+
+  // Array of objects OR array of strings
   if (Array.isArray(ing)) {
     const ar = Array.isArray(ingAr) ? ingAr : [];
     const len = Math.max(ing.length, ar.length);
     for (let i = 0; i < len; i++) {
-      const e = (ing[i] || "").trim(), a = (ar[i] || "").trim();
-      if (e || a) out.push(makeIngredient(e, a));
+      const e = ing[i];
+      const a = ar[i];
+      if (e == null && a == null) continue;
+      if (typeof e === "object" && e !== null) {
+        out.push(makeIngredient(e, a));
+      } else {
+        const es = (e || "").toString().trim();
+        const as = (a || "").toString().trim();
+        if (es || as) out.push(makeIngredient(es, as));
+      }
     }
     return out;
   }
+
+  // Sectioned object: { base: [...], base_arabic: [...] }
   if (ing && typeof ing === "object") {
     for (const sec of Object.keys(ing).filter((k) => !k.endsWith("_arabic"))) {
-      const en = ing[sec] || [], ar = ing[sec + "_arabic"] || [];
+      const en = ing[sec] || [];
+      const ar = ing[sec + "_arabic"] || [];
       const len = Math.max(en.length, ar.length);
       for (let i = 0; i < len; i++) {
-        const e = (en[i] || "").trim(), a = (ar[i] || "").trim();
-        if (e || a) out.push(makeIngredient(e, a));
+        const e = en[i];
+        const a = ar[i];
+        if (e == null && a == null) continue;
+        if (typeof e === "object" && e !== null) {
+          out.push(makeIngredient(e, a));
+        } else {
+          const es = (e || "").toString().trim();
+          const as = (a || "").toString().trim();
+          if (es || as) out.push(makeIngredient(es, as));
+        }
       }
     }
   }
+
   return out;
 }
 
-const recipes = list.map((r) => ({
-  name: r.name || r.name_arabic || "",
-  nameAr: r.name_arabic || "",
-  description: r.description || "",
-  descriptionAr: r.description_arabic || "",
-  cuisine: "Lebanese",
-  cuisineAr: "لبناني",
-  servedWith: "",
-  servedWithAr: "",
-  howToServe: "",
-  howToServeAr: "",
-  prepTime: parseMinutes(r.preparation_time),
-  cookTime: 0,
-  servings: parseServings(r.servings),
-  dietaryTags: [],
-  imageUrl: null,
-  videoUrl: null,
-  ingredients: flattenIngredients(r.ingredients, r.ingredients_arabic),
-  instructions: (r.preparation || []).map((t, i) => ({
-    text: t,
-    textAr: (r.preparation_arabic || [])[i] || "",
-  })),
-}));
+const recipes = list.map((r) => {
+  const totalTime =
+    Number(r.prepTime) || Number(r.prep_time_minutes) || parseMinutes(r.preparation_time) || 0;
+  const cookTime =
+    Number(r.cookTime) || Number(r.cook_time_minutes) || 0;
+  const servings =
+    Number(r.servings) || parseServings(r.servings);
+
+  return {
+    name: r.name || r.name_en || r.title_en || r.title || r.name_arabic || r.nameAr || "",
+    nameAr: r.nameAr || r.name_arabic || r.title || "",
+    description: r.description || r.description_en || "",
+    descriptionAr: r.descriptionAr || r.description_arabic || (r.title ? r.description : "") || "",
+    cuisine: r.cuisine || "Lebanese",
+    cuisineAr: r.cuisineAr || "لبناني",
+    category: r.category || "Main Dish",
+    categoryAr: r.categoryAr || r.category_ar || "",
+    servedWith: r.servedWith || r.served_with || "",
+    servedWithAr: r.servedWithAr || r.served_with_ar || "",
+    howToServe: r.howToServe || r.how_to_serve || "",
+    howToServeAr: r.howToServeAr || r.how_to_serve_ar || "",
+    prepTime: totalTime,
+    cookTime,
+    servings,
+    dietaryTags: r.dietaryTags || r.dietary_tags || [],
+    imageUrl: r.imageUrl || r.image_url || null,
+    videoUrl: r.videoUrl || r.video_url || null,
+    ingredients: flattenIngredients(r.ingredients, r.ingredients_arabic || r.ingredientsAr),
+    instructions: (r.instructions || r.preparation || []).map((s) => {
+      if (typeof s === "string") return { text: s, textAr: "" };
+      return {
+        text: s.text || s.text_en || s.step || "",
+        textAr: s.textAr || s.text_ar || "",
+      };
+    }),
+  };
+});
 
 console.log(`Sending ${recipes.length} recipes to ${target}/api/recipes/bulk ...`);
 

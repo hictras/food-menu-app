@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { useLang } from "./LanguageProvider";
 import { t, pick } from "@/lib/i18n";
 import { cuisineFlagUrl } from "@/lib/cuisine-flag";
-import { categoryIcon, categoryLabel, CATEGORIES } from "@/lib/categories";
+import { categoryIcon, CATEGORIES } from "@/lib/categories";
 
 type RecipeRow = {
   id: number;
@@ -97,6 +97,52 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
 
     return list;
   }, [recipes, query, cuisineFilter, categoryFilter, tagFilter, sort, lang]);
+
+  const grouped = useMemo(() => {
+    const groups: { key: string; icon: string; label: string; items: RecipeRow[] }[] = [];
+
+    for (const c of CATEGORIES) {
+      const items = filtered.filter(
+        (r) =>
+          (r.category || "") === c.value ||
+          (r.categoryAr || "") === c.valueAr ||
+          (r.category || "") === c.valueAr ||
+          (r.categoryAr || "") === c.value
+      );
+      if (items.length > 0) {
+        groups.push({
+          key: c.value,
+          icon: c.icon,
+          label: lang === "ar" ? c.valueAr : c.value,
+          items,
+        });
+      }
+    }
+
+    const uncategorized = filtered.filter((r) => {
+      const cat = (r.category || "").trim();
+      const catAr = (r.categoryAr || "").trim();
+      if (!cat && !catAr) return true;
+      return !CATEGORIES.some(
+        (c) =>
+          c.value === cat ||
+          c.valueAr === cat ||
+          c.value === catAr ||
+          c.valueAr === catAr
+      );
+    });
+
+    if (uncategorized.length > 0) {
+      groups.push({
+        key: "__other__",
+        icon: "🍴",
+        label: lang === "ar" ? "أخرى" : "Other",
+        items: uncategorized,
+      });
+    }
+
+    return groups;
+  }, [filtered, lang]);
 
   const hasFilters = query || cuisineFilter || categoryFilter || tagFilter;
   const total = recipes.length;
@@ -190,55 +236,66 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
           <button type="button" className="btn btn-ghost" onClick={clearFilters}>{lang === "ar" ? "مسح الفلاتر" : "Clear filters"}</button>
         </div>
       ) : (
-        <div className="recipe-grid">
-          {filtered.map((r) => {
-            const tags: string[] = r.dietaryTags ? JSON.parse(r.dietaryTags) : [];
-            const displayName = pick(lang, r.name, r.nameAr);
-            const displayCuisine = pick(lang, r.cuisine, r.cuisineAr);
-            const flagUrl = cuisineFlagUrl(r.cuisine) || cuisineFlagUrl(r.cuisineAr);
-            const catIcon = categoryIcon(r.category) || categoryIcon(r.categoryAr);
-            const catLabel = categoryLabel(r.category, lang) || categoryLabel(r.categoryAr, lang);
+        <div className="category-sections">
+          {grouped.map((group) => (
+            <section key={group.key} className="category-section">
+              <div className="category-section-head">
+                <h2 className="category-section-title">
+                  <span className="category-section-icon">{group.icon}</span>
+                  <span>{group.label}</span>
+                </h2>
+                <span className="category-section-count">{group.items.length}</span>
+              </div>
+              <div className="category-section-line" />
+              <div className="recipe-grid">
+                {group.items.map((r) => {
+                  const tags: string[] = r.dietaryTags ? JSON.parse(r.dietaryTags) : [];
+                  const displayName = pick(lang, r.name, r.nameAr);
+                  const displayCuisine = pick(lang, r.cuisine, r.cuisineAr);
+                  const flagUrl = cuisineFlagUrl(r.cuisine) || cuisineFlagUrl(r.cuisineAr);
 
-            return (
-              <Link key={r.id} href={`/recipes/${r.id}`} className="recipe-card">
-                {r.imageUrl ? (
-                  <img src={r.imageUrl} alt={displayName} className="recipe-card-img" />
-                ) : (
-                  <div className="recipe-card-img" />
-                )}
+                  return (
+                    <Link key={r.id} href={`/recipes/${r.id}`} className="recipe-card">
+                      {r.imageUrl ? (
+                        <img src={r.imageUrl} alt={displayName} className="recipe-card-img" />
+                      ) : (
+                        <div className="recipe-card-img" />
+                      )}
 
-                <div className="recipe-card-body">
-                  <div className="recipe-card-head">
-                    <div className="recipe-card-text">
-                      <h3>{displayName}</h3>
-                      <span className="recipe-card-cuisine">
-                        {catIcon && <span style={{ marginInlineEnd: 4 }}>{catIcon}</span>}
-                        {catLabel || displayCuisine}
-                      </span>
-                    </div>
-                    {flagUrl && (
-                      <img src={flagUrl} alt={displayCuisine} className="recipe-card-flag" loading="lazy" />
-                    )}
-                  </div>
+                      <div className="recipe-card-body">
+                        <div className="recipe-card-head">
+                          <div className="recipe-card-text">
+                            <h3>{displayName}</h3>
+                            {displayCuisine && (
+                              <span className="recipe-card-cuisine">{displayCuisine}</span>
+                            )}
+                          </div>
+                          {flagUrl && (
+                            <img src={flagUrl} alt={displayCuisine} className="recipe-card-flag" loading="lazy" />
+                          )}
+                        </div>
 
-                  <div className="recipe-card-meta">
-                    <span>⏱ {r.prepTime + r.cookTime} {lang === "ar" ? "د" : "min"}</span>
-                    <span>🍽 {r.servings}</span>
-                  </div>
+                        <div className="recipe-card-meta">
+                          <span>⏱ {r.prepTime + r.cookTime} {lang === "ar" ? "د" : "min"}</span>
+                          <span>🍽 {r.servings}</span>
+                        </div>
 
-                  {tags.length > 0 && (
-                    <div className="recipe-card-tags">
-                      {tags.slice(0, 3).map((tag) => (
-                        <span key={tag} className="chip">
-                          {lang === "ar" ? TAG_AR[tag] ?? tag : tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </Link>
-            );
-          })}
+                        {tags.length > 0 && (
+                          <div className="recipe-card-tags">
+                            {tags.slice(0, 3).map((tag) => (
+                              <span key={tag} className="chip">
+                                {lang === "ar" ? TAG_AR[tag] ?? tag : tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </section>
+          ))}
         </div>
       )}
     </>
