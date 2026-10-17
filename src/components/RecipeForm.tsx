@@ -230,20 +230,11 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
             <label>Cuisine (EN)</label>
             <div className="input-with-tools">
               <input type="text" value={cuisine} onChange={(e) => setCuisine(e.target.value)} dir="ltr" />
-              <AutoTranslate
-                kind="cuisine"
-                value={cuisine}
-                sourceIsAr={false}
-                onTranslated={setCuisineAr}
-                title={lang === "ar" ? "ترجمة تلقائية إلى العربية" : "Auto-translate to Arabic"}
-              />
+              <AutoTranslate kind="cuisine" value={cuisine} sourceIsAr={false} onTranslated={setCuisineAr} />
               <PickerDropdown
                 items={CUISINES}
                 title={lang === "ar" ? "اختر المطبخ" : "Pick cuisine"}
-                onPick={(en, ar) => {
-                  setCuisine(en);
-                  setCuisineAr(ar);
-                }}
+                onPick={(en, ar) => { setCuisine(en); setCuisineAr(ar); }}
               />
             </div>
           </div>
@@ -251,13 +242,7 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
             <label>المطبخ (AR)</label>
             <div className="input-with-tools">
               <input type="text" value={cuisineAr} onChange={(e) => setCuisineAr(e.target.value)} dir="rtl" />
-              <AutoTranslate
-                kind="cuisine"
-                value={cuisineAr}
-                sourceIsAr={true}
-                onTranslated={setCuisine}
-                title={lang === "ar" ? "ترجمة تلقائية إلى الإنجليزية" : "Auto-translate to English"}
-              />
+              <AutoTranslate kind="cuisine" value={cuisineAr} sourceIsAr={true} onTranslated={setCuisine} />
             </div>
           </div>
         </div>
@@ -343,68 +328,57 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
 
       <section className="form-section">
         <h2>{t(lang, "ingredients")}</h2>
-        <div className="row-list">
+
+        <div className="ing-stack-list">
           {ingredientsList.map((ing, i) => (
-            <div className="ing-row" key={i}>
-              <input className="cell-qty" type="text" placeholder={t(lang, "qty")} value={ing.amount} onChange={(e) => updateIngredient(i, { amount: e.target.value })} dir="ltr" />
-
-              <div className="input-with-tools">
-                <input className="cell-unit" type="text" placeholder={t(lang, "unit")} value={ing.unit} onChange={(e) => updateIngredient(i, { unit: e.target.value })} dir="ltr" />
-                <AutoTranslate
-                  kind="unit"
-                  value={ing.unit}
-                  sourceIsAr={false}
-                  onTranslated={(val) => updateIngredient(i, { unitAr: val })}
-                />
-                <PickerDropdown
-                  items={UNITS}
-                  title={lang === "ar" ? "اختر الوحدة" : "Pick unit"}
-                  onPick={(en, ar) => updateIngredient(i, { unit: en, unitAr: ar })}
-                />
+            <div className="ing-stack" key={i}>
+              <div className="ing-stack-head">
+                <span className="ing-stack-num">{i + 1}</span>
+                <span className="ing-stack-label">{lang === "ar" ? "إنجليزي" : "English"}</span>
+                <button
+                  type="button"
+                  className="icon-btn"
+                  onClick={() => removeIngredient(i)}
+                  disabled={ingredientsList.length === 1}
+                  title={lang === "ar" ? "حذف" : "Remove"}
+                >
+                  ✕
+                </button>
               </div>
 
-              <div className="input-with-tools">
-                <input className="cell-unit" type="text" placeholder={t(lang, "unit_ar_label")} value={ing.unitAr} onChange={(e) => updateIngredient(i, { unitAr: e.target.value })} dir="rtl" />
-                <AutoTranslate
-                  kind="unit"
-                  value={ing.unitAr}
-                  sourceIsAr={true}
-                  onTranslated={(val) => updateIngredient(i, { unit: val })}
-                />
+              <div className="ing-stack-en">
+                <input className="cell-qty" type="text" placeholder={t(lang, "qty")} value={ing.amount} onChange={(e) => updateIngredient(i, { amount: e.target.value })} dir="ltr" />
+                <div className="input-with-tools">
+                  <input className="cell-unit" type="text" placeholder={t(lang, "unit")} value={ing.unit} onChange={(e) => updateIngredient(i, { unit: e.target.value })} dir="ltr" />
+                  <AutoTranslate kind="unit" value={ing.unit} sourceIsAr={false} onTranslated={(v) => updateIngredient(i, { unitAr: v })} />
+                  <PickerDropdown items={UNITS} title={lang === "ar" ? "اختر الوحدة" : "Pick unit"} onPick={(en, ar) => updateIngredient(i, { unit: en, unitAr: ar })} />
+                </div>
+                <input className="cell-name" type="text" placeholder={t(lang, "ingredient")} value={ing.name} onChange={(e) => updateIngredient(i, { name: e.target.value })} dir="ltr" />
+                <div className="input-with-tools">
+                  <input className="cell-prep" type="text" placeholder={t(lang, "prep_short")} value={ing.preparation} onChange={(e) => updateIngredient(i, { preparation: e.target.value })} dir="ltr" />
+                  <AutoTranslate kind="prep" value={ing.preparation} sourceIsAr={false} onTranslated={(v) => updateIngredient(i, { preparationAr: v })} />
+                  <PickerDropdown items={PREPARATIONS} title={lang === "ar" ? "اختر التحضير" : "Pick preparation"} onPick={(en, ar) => updateIngredient(i, { preparation: en, preparationAr: ar })} />
+                </div>
               </div>
 
-              <input className="cell-name" type="text" placeholder={t(lang, "ingredient")} value={ing.name} onChange={(e) => updateIngredient(i, { name: e.target.value })} dir="ltr" />
-              <input className="cell-name" type="text" placeholder={t(lang, "ingredient_ar_label")} value={ing.nameAr} onChange={(e) => updateIngredient(i, { nameAr: e.target.value })} dir="rtl" />
+              <div className="ing-stack-divider" />
 
-              <div className="input-with-tools">
-                <input className="cell-prep" type="text" placeholder={t(lang, "prep_short")} value={ing.preparation} onChange={(e) => updateIngredient(i, { preparation: e.target.value })} dir="ltr" />
-                <AutoTranslate
-                  kind="prep"
-                  value={ing.preparation}
-                  sourceIsAr={false}
-                  onTranslated={(val) => updateIngredient(i, { preparationAr: val })}
-                />
-                <PickerDropdown
-                  items={PREPARATIONS}
-                  title={lang === "ar" ? "اختر التحضير" : "Pick preparation"}
-                  onPick={(en, ar) => updateIngredient(i, { preparation: en, preparationAr: ar })}
-                />
+              <div className="ing-stack-ar">
+                <span className="ing-stack-tag">AR</span>
+                <div className="input-with-tools">
+                  <input className="cell-unit" type="text" placeholder={t(lang, "unit_ar_label")} value={ing.unitAr} onChange={(e) => updateIngredient(i, { unitAr: e.target.value })} dir="rtl" />
+                  <AutoTranslate kind="unit" value={ing.unitAr} sourceIsAr={true} onTranslated={(v) => updateIngredient(i, { unit: v })} />
+                </div>
+                <input className="cell-name" type="text" placeholder={t(lang, "ingredient_ar_label")} value={ing.nameAr} onChange={(e) => updateIngredient(i, { nameAr: e.target.value })} dir="rtl" />
+                <div className="input-with-tools">
+                  <input className="cell-prep" type="text" placeholder={t(lang, "prep_short_ar")} value={ing.preparationAr} onChange={(e) => updateIngredient(i, { preparationAr: e.target.value })} dir="rtl" />
+                  <AutoTranslate kind="prep" value={ing.preparationAr} sourceIsAr={true} onTranslated={(v) => updateIngredient(i, { preparation: v })} />
+                </div>
               </div>
-
-              <div className="input-with-tools">
-                <input className="cell-prep" type="text" placeholder={t(lang, "prep_short_ar")} value={ing.preparationAr} onChange={(e) => updateIngredient(i, { preparationAr: e.target.value })} dir="rtl" />
-                <AutoTranslate
-                  kind="prep"
-                  value={ing.preparationAr}
-                  sourceIsAr={true}
-                  onTranslated={(val) => updateIngredient(i, { preparation: val })}
-                />
-              </div>
-
-              <button type="button" className="icon-btn" onClick={() => removeIngredient(i)} disabled={ingredientsList.length === 1}>✕</button>
             </div>
           ))}
         </div>
+
         <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
           <button type="button" className="add-row" onClick={addIngredient}>{t(lang, "add_ingredient")}</button>
           <button type="button" className="add-row" onClick={() => setShowBulkIng((v) => !v)} style={{ maxWidth: 220 }}>{t(lang, "bulk_paste")}</button>
@@ -422,13 +396,20 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
 
       <section className="form-section">
         <h2>{t(lang, "instructions")}</h2>
-        <div className="row-list">
+        <div className="step-stack-list">
           {steps.map((st, i) => (
-            <div className="step-pair" key={i}>
-              <div className="step-num">{i + 1}</div>
+            <div className="step-stack" key={i}>
+              <div className="step-stack-head">
+                <span className="step-stack-num">{i + 1}</span>
+                <span className="step-stack-label">{lang === "ar" ? "إنجليزي" : "English"}</span>
+                <button type="button" className="icon-btn" onClick={() => removeStep(i)} disabled={steps.length === 1}>✕</button>
+              </div>
               <textarea placeholder={t(lang, "step_en")} value={st.text} onChange={(e) => updateStep(i, { text: e.target.value })} dir="ltr" />
-              <textarea placeholder={t(lang, "step_ar")} value={st.textAr} onChange={(e) => updateStep(i, { textAr: e.target.value })} dir="rtl" />
-              <button type="button" className="icon-btn" onClick={() => removeStep(i)} disabled={steps.length === 1}>✕</button>
+              <div className="step-stack-divider" />
+              <div className="step-stack-ar">
+                <span className="ing-stack-tag">AR</span>
+                <textarea placeholder={t(lang, "step_ar")} value={st.textAr} onChange={(e) => updateStep(i, { textAr: e.target.value })} dir="rtl" />
+              </div>
             </div>
           ))}
         </div>

@@ -988,3 +988,195 @@ html[dir="rtl"] .input-with-tools .picker-btn {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.06);
   margin-top: 2px;
 }
+
+/* ---------- INGREDIENT STACKED ROWS ---------- */
+.ing-stack-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ing-stack {
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px;
+}
+html[data-theme="light"] .ing-stack {
+  background: rgba(255, 255, 255, 0.6);
+}
+.ing-stack-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.ing-stack-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.ing-stack-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  flex: 1;
+}
+.ing-stack-en,
+.ing-stack-ar {
+  display: grid;
+  grid-template-columns: 60px 1fr 2fr 1.2fr;
+  gap: 6px;
+  align-items: center;
+}
+.ing-stack-ar {
+  grid-template-columns: 60px 1fr 2fr 1.2fr;
+}
+@media (max-width: 780px) {
+  .ing-stack-en,
+  .ing-stack-ar {
+    grid-template-columns: 1fr 1fr;
+  }
+  .ing-stack-en .cell-name,
+  .ing-stack-ar .cell-name {
+    grid-column: span 2;
+  }
+}
+.ing-stack-en input,
+.ing-stack-ar input {
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--input-bg);
+  font-size: 12.5px;
+  color: var(--ink);
+  min-width: 0;
+}
+.ing-stack-en input:focus,
+.ing-stack-ar input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--input-bg-focus);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.ing-stack-divider {
+  height: 1px;
+  background: var(--line);
+  margin: 10px 0;
+}
+.ing-stack-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+/* ---------- STEP STACKED ROWS ---------- */
+.step-stack-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.step-stack {
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px;
+}
+html[data-theme="light"] .step-stack {
+  background: rgba(255, 255, 255, 0.6);
+}
+.step-stack-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.step-stack-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.step-stack-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  flex: 1;
+}
+.step-stack textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--input-bg);
+  font-family: inherit;
+  font-size: 12.5px;
+  color: var(--ink);
+  min-height: 60px;
+  resize: vertical;
+  line-height: 1.55;
+}
+.step-stack textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--input-bg-focus);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.step-stack-divider {
+  height: 1px;
+  background: var(--line);
+  margin: 10px 0;
+}
+.step-stack-ar {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+/* ========== VIDEO FINAL FIX ========== */
+.video-wrap {
+  position: relative !important;
+  width: 100% !important;
+  height: 0 !important;
+  padding-bottom: 56.25% !important;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: #000;
+  aspect-ratio: auto !important;
+}
+.video-wrap > iframe {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border: 0 !important;
+}
