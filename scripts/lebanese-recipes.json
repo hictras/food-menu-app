@@ -1,173 +1,107 @@
 {
-  "name": "Kousa Ablama with Potato, Lemon and Dried Mint (Split & Stuffed, No Rice)",
-  "nameAr": "كوسا قبلمى وبطاط بحامض ونعنع يابس (مقصوصة ومحشية لحم بدون رز)",
-  "description": "A Lebanese-style stuffed zucchini dish (ablama) where the zucchini are split lengthwise, hollowed and filled with a spiced meat and onion mixture — no rice in the stuffing — then simmered over potato slices in a tangy lemon and dried mint broth. Served with rice on the side.",
-  "descriptionAr": "طبق كوسا محشية على الطريقة اللبنانية (قبلمى) حيث تُقسم الكوسا طولياً وتُحفر وتُحشى بخليط اللحم المفروم والبصل المتبل — من دون رز في الحشوة — ثم تُطهى فوق شرائح البطاطا بمرق حامض بالنعنع اليابس. يُقدّم مع الأرز على الجانب.",
+  "name": "Beiruti Mudardara",
+  "nameAr": "المدردرة البيروتية",
+  "description": "A classic Lebanese lentil and rice dish, known as mudardara or mujadara. This Beiruti-style version features tender brown lentils and rice, topped with a generous amount of crispy, caramelized onions. It is a comforting, nutritious, and naturally vegan meal, often served with a side of yogurt or fresh salad.",
+  "descriptionAr": "طبق لبناني تقليدي من العدس والأرز، يُعرف بالمدردرة أو المجدرة. تتميز هذه الوصفة البيروتية بالعدس البني والأرز الطري، وتُزيّن بكمية وفيرة من البصل المقلي المقرمش. إنها وجبة مريحة ومغذية ونباتية بطبيعتها، وغالباً ما تُقدّم مع اللبن أو السلطة الطازجة.",
   "cuisine": "Lebanese",
   "cuisineAr": "لبنانية",
   "category": "Main Course",
   "categoryAr": "طبق رئيسي",
-  "prepTime": 30,
-  "cookTime": 40,
-  "servings": 4,
-  "dietaryTags": [],
-  "servedWith": "Served with vermicelli rice or plain white rice on the side.",
-  "servedWithAr": "يُقدّم مع أرز بالشعيرية أو أرز أبيض على الجانب.",
-  "howToServe": "Arrange the stuffed zucchini halves and potato slices on a plate, spoon the tangy broth over them, and serve alongside warm rice. Garnish with extra dried mint if desired.",
-  "howToServeAr": "رتّب أنصاف الكوسا المحشوة وشرائح البطاطا في طبق، اسكب المرق الحامض فوقها، وقدّمها إلى جانب الأرز الدافئ. زيّن بالمزيد من النعنع اليابس حسب الرغبة.",
+  "prepTime": 15,
+  "cookTime": 45,
+  "servings": 6,
+  "dietaryTags": ["vegan", "vegetarian", "dairy-free"],
+  "servedWith": "Yogurt, fresh salad, or pickles",
+  "servedWithAr": "لبن، سلطة طازجة، أو مخللات",
+  "howToServe": "Serve hot, garnished with the crispy fried onions. Accompany with a side of plain yogurt or a simple Lebanese salad.",
+  "howToServeAr": "تُقدّم ساخنة، مزينة بالبصل المقلي المقرمش. تُرافق مع طبق جانبي من اللبن أو سلطة لبنانية بسيطة.",
   "imageUrl": null,
   "videoUrl": null,
   "ingredients": [
     {
-      "name": "Small zucchini (kousa)",
-      "nameAr": "كوسا صغيرة",
+      "name": "Brown lentils",
+      "nameAr": "عدس بني",
       "amount": 1,
-      "unit": "kg",
-      "unitAr": "كيلوغرام",
-      "preparation": "halved lengthwise and hollowed out",
-      "preparationAr": "مقصوصة طولياً ومحفورة"
-    },
-    {
-      "name": "Potatoes",
-      "nameAr": "بطاطا",
-      "amount": 2,
-      "unit": "medium",
-      "unitAr": "حبة متوسطة",
-      "preparation": "peeled and sliced into rounds",
-      "preparationAr": "مقشرة ومقطعة حلقات"
-    },
-    {
-      "name": "Minced lamb or beef",
-      "nameAr": "لحم مفروم (غنم أو بقر)",
-      "amount": 400,
-      "unit": "g",
-      "unitAr": "غرام",
-      "preparation": null,
-      "preparationAr": null
-    },
-    {
-      "name": "Onion",
-      "nameAr": "بصل",
-      "amount": 1,
-      "unit": "large",
-      "unitAr": "حبة كبيرة",
-      "preparation": "finely chopped",
-      "preparationAr": "مفروم ناعم"
-    },
-    {
-      "name": "Garlic",
-      "nameAr": "ثوم",
-      "amount": 4,
-      "unit": "cloves",
-      "unitAr": "فص",
-      "preparation": "crushed",
-      "preparationAr": "مهروس"
-    },
-    {
-      "name": "Dried mint",
-      "nameAr": "نعنع يابس",
-      "amount": 2,
-      "unit": "tbsp",
-      "unitAr": "ملعقة كبيرة",
-      "preparation": "divided",
-      "preparationAr": "مقسم"
-    },
-    {
-      "name": "Lemon juice",
-      "nameAr": "عصير ليمون",
-      "amount": 0.5,
       "unit": "cup",
       "unitAr": "كوب",
-      "preparation": "freshly squeezed",
-      "preparationAr": "معصور طازج"
+      "preparation": "Rinsed and picked over",
+      "preparationAr": "مغسول ومنقى"
+    },
+    {
+      "name": "Basmati rice",
+      "nameAr": "أرز بسمتي",
+      "amount": 1,
+      "unit": "cup",
+      "unitAr": "كوب",
+      "preparation": "Rinsed and soaked for 15 minutes",
+      "preparationAr": "مغسول ومنقوع لمدة ١٥ دقيقة"
+    },
+    {
+      "name": "Onions",
+      "nameAr": "بصل",
+      "amount": 3,
+      "unit": "large",
+      "unitAr": "حبة كبيرة",
+      "preparation": "Sliced into thin rings",
+      "preparationAr": "مقطع إلى حلقات رفيعة"
     },
     {
       "name": "Olive oil",
       "nameAr": "زيت زيتون",
-      "amount": 3,
-      "unit": "tbsp",
-      "unitAr": "ملعقة كبيرة",
-      "preparation": "divided",
+      "amount": 0.5,
+      "unit": "cup",
+      "unitAr": "كوب",
+      "preparation": "Divided",
       "preparationAr": "مقسم"
     },
     {
-      "name": "Ground cinnamon",
-      "nameAr": "قرفة مطحونة",
-      "amount": 0.5,
-      "unit": "tsp",
-      "unitAr": "ملعقة صغيرة",
-      "preparation": null,
-      "preparationAr": null
-    },
-    {
-      "name": "Ground allspice",
-      "nameAr": "بهار حلو مطحون",
-      "amount": 0.5,
-      "unit": "tsp",
-      "unitAr": "ملعقة صغيرة",
+      "name": "Water",
+      "nameAr": "ماء",
+      "amount": 4,
+      "unit": "cups",
+      "unitAr": "كوب",
       "preparation": null,
       "preparationAr": null
     },
     {
       "name": "Salt",
       "nameAr": "ملح",
-      "amount": null,
-      "unit": "to taste",
-      "unitAr": "حسب الرغبة",
-      "preparation": null,
-      "preparationAr": null
-    },
-    {
-      "name": "Black pepper",
-      "nameAr": "فلفل أسود",
-      "amount": 0.25,
+      "amount": 1.5,
       "unit": "tsp",
       "unitAr": "ملعقة صغيرة",
-      "preparation": null,
-      "preparationAr": null
+      "preparation": "Or to taste",
+      "preparationAr": "أو حسب الرغبة"
     },
     {
-      "name": "Water",
-      "nameAr": "ماء",
-      "amount": 2,
-      "unit": "cups",
-      "unitAr": "كوب",
-      "preparation": "or as needed to almost cover",
-      "preparationAr": "أو حسب الحاجة لتغطية الكوسا تقريباً"
+      "name": "Cumin",
+      "nameAr": "كمون",
+      "amount": 0.5,
+      "unit": "tsp",
+      "unitAr": "ملعقة صغيرة",
+      "preparation": "Optional",
+      "preparationAr": "اختياري"
     }
   ],
   "instructions": [
     {
-      "text": "Prepare the zucchini: Wash the zucchini and cut each one in half lengthwise. Using a spoon or small knife, scoop out the flesh to form a shallow boat, leaving a border of about 5 mm. Reserve the scooped flesh for another use or discard.",
-      "textAr": "حضّر الكوسا: اغسل الكوسا واقطع كل حبة نصفين طولياً. باستخدام ملعقة أو سكين صغير، احفر اللب لتشكيل قارب ضحل مع ترك حافة بسماكة 5 مم تقريباً. احتفظ باللب المحفور لاستخدام آخر أو تخلص منه."
+      "text": "Rinse the lentils thoroughly. In a large pot, combine the lentils with 4 cups of water and bring to a boil. Reduce heat and simmer for 20 minutes, or until the lentils are partially cooked.",
+      "textAr": "اغسل العدس جيداً. في قدر كبير، ضع العدس مع ٤ أكواب من الماء واتركه حتى يغلي. خفف النار واتركه ينضج لمدة ٢٠ دقيقة، أو حتى ينضج العدس جزئياً."
     },
     {
-      "text": "Prepare the filling: In a bowl, combine the minced meat, chopped onion, cinnamon, allspice, salt, and black pepper. Mix well with your hands until evenly blended. The filling stays juicy without rice.",
-      "textAr": "حضّر الحشوة: في وعاء، اخلط اللحم المفروم والبصل المفروم والقرفة والبهار الحلو والملح والفلفل الأسود. اخلط جيداً بيديك حتى يتجانس الخليط. تبقى الحشوة طريّة من دون رز."
+      "text": "While the lentils cook, heat half of the olive oil in a large skillet over medium-high heat. Add the sliced onions and fry, stirring frequently, until they are deeply golden brown and crispy. This may take 15-20 minutes. Remove the onions with a slotted spoon and set aside on a paper towel to drain.",
+      "textAr": "أثناء طهي العدس، سخن نصف كمية زيت الزيتون في مقلاة كبيرة على نار متوسطة إلى عالية. أضف البصل المقطع واقلبه باستمرار حتى يصبح لونه بنياً ذهبياً ومقرمشاً. قد يستغرق هذا ١٥-٢٠ دقيقة. أخرج البصل بمصفاة واتركه جانباً على مناديل ورقية لتصفيته."
     },
     {
-      "text": "Stuff the zucchini halves: Fill each zucchini boat with the meat mixture, pressing gently so it holds together but leaving it slightly mounded. Do not overfill.",
-      "textAr": "احشُ أنصاف الكوسا: املأ كل قارب كوسا بخليط اللحم، مع الضغط برفق ليتماسك مع ترك سطح الحشوة مرتفعاً قليلاً. لا تفرط في الحشو."
+      "text": "Drain the soaked rice. Add the rice, salt, and cumin (if using) to the pot with the lentils. Stir gently to combine. Bring to a boil, then reduce heat to low, cover, and simmer for 20-25 minutes, or until the rice is fully cooked and the water is absorbed.",
+      "textAr": "صفّ الأرز المنقوع. أضف الأرز والملح والكمون (إذا كنت تستخدمه) إلى القدر مع العدس. حرك بلطف حتى تمتزج المكونات. اتركه حتى يغلي، ثم خفف النار إلى منخفضة، وغطّ القدر، واتركه ينضج لمدة ٢٠-٢٥ دقيقة، أو حتى ينضج الأرز تماماً ويمتص الماء."
     },
     {
-      "text": "Layer the pot: Arrange the potato slices in an even layer at the bottom of a heavy pot. Place the stuffed zucchini halves on top of the potatoes in a single layer, stuffed side up.",
-      "textAr": "رتّب القدر: رصّ شرائح البطاطا في طبقة متساوية في قاع قدر ثقيل. ضع أنصاف الكوسا المحشوة فوق البطاطا في طبقة واحدة، بحيث تكون جهة الحشوة للأعلى."
+      "text": "Once the rice and lentils are cooked, fluff the mixture with a fork. Drizzle the remaining olive oil over the top and gently fold it in.",
+      "textAr": "بمجرد أن ينضج الأرز والعدس، حرك الخليط بشوكة. رش ما تبقى من زيت الزيتون فوقه وقلبه بلطف."
     },
     {
-      "text": "Make the broth: In a small bowl, mix the lemon juice, 1 tablespoon of dried mint, half of the crushed garlic, and a pinch of salt. Pour this mixture over the zucchini, then add enough water to come about three-quarters of the way up the zucchini halves.",
-      "textAr": "حضّر المرق: في وعاء صغير، اخلط عصير الليمون وملعقة كبيرة من النعنع اليابس ونصف الثوم المهروس ورشة ملح. اسكب هذا الخليط فوق الكوسا، ثم أضف ما يكفي من الماء ليصل إلى حوالي ثلاثة أرباع ارتفاع أنصاف الكوسا."
-    },
-    {
-      "text": "Simmer the dish: Drizzle 2 tablespoons of olive oil over the top. Bring to a boil, then reduce the heat to low, cover the pot, and simmer for 30–40 minutes until the zucchini and potatoes are tender and the meat filling is cooked through.",
-      "textAr": "اطهُ الطبق: رشّ ملعقتين كبيرتين من زيت الزيتون فوق السطح. اتركه يغلي، ثم خفف النار، غطِّ القدر، واطهُ لمدة 30-40 دقيقة حتى تنضج الكوسا والبطاطا والحشوة."
-    },
-    {
-      "text": "Prepare the mint-garlic topping: In a small pan, heat the remaining 1 tablespoon of olive oil over low heat. Add the remaining crushed garlic and 1 tablespoon of dried mint, and stir for about 30 seconds until fragrant. Remove from heat immediately to avoid burning.",
-      "textAr": "حضّر تقلية النعنع والثوم: في مقلاة صغيرة، سخّن ملعقة زيت الزيتون المتبقية على نار هادئة. أضف ما تبقى من الثوم المهروس وملعقة النعنع اليابس، وحرّك لمدة 30 ثانية تقريباً حتى تفوح الرائحة. ارفع عن النار فوراً لتجنب الاحتراق."
-    },
-    {
-      "text": "Finish and serve: Drizzle the garlic-mint oil over the dish. Taste the broth and adjust salt or lemon if needed. Serve hot with vermicelli rice or plain white rice on the side.",
-      "textAr": "أنهِ وقدّم: رشّ زيت الثوم والنعنع فوق الطبق. تذوّق المرق وعدّل الملح أو الليمون إذا لزم الأمر. قدّم ساخناً مع أرز بالشعيرية أو أرز أبيض على الجانب."
+      "text": "Transfer the mudardara to a serving platter. Generously top with the reserved crispy fried onions. Serve hot with yogurt or salad on the side.",
+      "textAr": "انقل المدردرة إلى طبق تقديم. زينها بسخاء بالبصل المقلي المقرمش المحتفظ به. قدمها ساخنة مع اللبن أو السلطة على الجانب."
     }
   ]
 }

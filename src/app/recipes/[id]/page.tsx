@@ -1,5 +1,3 @@
-export const dynamic = "force-dynamic";
-// src/app/recipes/[id]/page.tsx
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import type { Metadata } from "next";
@@ -37,14 +35,33 @@ export async function generateMetadata({
   if (!recipe) return { title: "Recipe not found" };
 
   return {
+    metadataBase: new URL(BASE_URL),
     title: recipe.name,
     description: recipe.description || undefined,
     openGraph: {
       title: recipe.name,
       description: recipe.description || undefined,
-      url: `${BASE_URL}/recipes/${recipe.id}`,
+      url: `/recipes/${recipe.id}`,
       siteName: "Menu — your cookbook",
+      ...(recipe.imageUrl
+        ? {
+            images: [
+              {
+                url: recipe.imageUrl,
+                width: 1200,
+                height: 630,
+                alt: recipe.name,
+              },
+            ],
+          }
+        : {}),
       type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: recipe.name,
+      description: recipe.description || undefined,
+      ...(recipe.imageUrl ? { images: [recipe.imageUrl] } : {}),
     },
   };
 }
