@@ -1,40 +1,58 @@
 {
-  "name": "Lebanese Yogurt Pasta with Dried Mint",
-  "nameAr": "معكرونة بلبن مع نعنع يابس لبنانية",
-  "description": "A refreshing Lebanese pasta dish featuring cooked pasta tossed in a garlicky yogurt sauce, finished with dried mint and a drizzle of olive oil. It is simple, tangy, and perfect for warm weather.",
-  "descriptionAr": "طبق معكرونة لبناني منعش، تُخلط المعكرونة المسلوقة مع صلصة اللبن بالثوم، وتُزيّن بالنعنع اليابس وزيت الزيتون. طبق بسيط، حامض، ومثالي للأجواء الدافئة.",
+  "name": "Lebanese Artichoke, Potato and Rice Stew",
+  "nameAr": "ارضي شوكي وبطاطا ورز لبنانية",
+  "description": "A comforting Lebanese stew of tender artichoke hearts, potatoes, and carrots simmered in a lemony sauce, served over fluffy rice. A bright, vegetarian-friendly dish perfect for a home-cooked meal.",
+  "descriptionAr": "يخنة لبنانية دافئة من قلوب الأرضي شوكي الطرية والبطاطا والجزر المطهوة بصلصة الليمون، تُقدّم فوق أرز مفلفل. طبق نباتي منعش ومثالي للوجبات المنزلية.",
   "cuisine": "Lebanese",
   "cuisineAr": "لبنانية",
   "category": "Main Course",
   "categoryAr": "طبق رئيسي",
-  "prepTime": 10,
-  "cookTime": 15,
+  "prepTime": 20,
+  "cookTime": 35,
   "servings": 4,
   "dietaryTags": ["vegetarian"],
-  "servedWith": "Serve as a main dish or alongside grilled meats.",
-  "servedWithAr": "يُقدّم كطبق رئيسي أو إلى جانب اللحوم المشوية.",
-  "howToServe": "Serve immediately at room temperature or slightly chilled. Garnish with extra dried mint and a drizzle of olive oil.",
-  "howToServeAr": "يُقدّم فوراً بدرجة حرارة الغرفة أو مبرّداً قليلاً. يُزيّن بالمزيد من النعنع اليابس ورشة زيت زيتون.",
+  "servedWith": "Serve with Lebanese vermicelli rice (riz bi sh'ariyeh) or plain white rice.",
+  "servedWithAr": "يُقدّم مع الأرز المفلفل بالشعيرية أو الأرز الأبيض.",
+  "howToServe": "Ladle the stew over a bed of warm rice and squeeze extra lemon juice on top if desired.",
+  "howToServeAr": "يُسكب اليخنة فوق طبق من الأرز الدافئ ويُعصر عليها المزيد من الليمون حسب الرغبة.",
   "imageUrl": null,
   "videoUrl": null,
   "ingredients": [
     {
-      "name": "Pasta (spaghetti or short shape)",
-      "nameAr": "معكرونة (سباغيتي أو شكل قصير)",
+      "name": "Artichoke hearts (frozen or fresh)",
+      "nameAr": "قلوب أرضي شوكي (مجمدة أو طازجة)",
       "amount": 400,
       "unit": "g",
       "unitAr": "غرام",
-      "preparation": null,
-      "preparationAr": null
+      "preparation": "thawed if frozen, halved if large",
+      "preparationAr": "مذابة إذا كانت مجمدة، مقطعة نصفين إذا كانت كبيرة"
     },
     {
-      "name": "Plain yogurt",
-      "nameAr": "لبن زبادي",
-      "amount": 500,
-      "unit": "g",
-      "unitAr": "غرام",
-      "preparation": "at room temperature",
-      "preparationAr": "بدرجة حرارة الغرفة"
+      "name": "Potatoes",
+      "nameAr": "بطاطا",
+      "amount": 3,
+      "unit": "medium",
+      "unitAr": "حبة متوسطة",
+      "preparation": "peeled and cut into cubes",
+      "preparationAr": "مقشرة ومقطعة مكعبات"
+    },
+    {
+      "name": "Carrots",
+      "nameAr": "جزر",
+      "amount": 2,
+      "unit": "medium",
+      "unitAr": "حبة متوسطة",
+      "preparation": "peeled and sliced into rounds",
+      "preparationAr": "مقشرة ومقطعة حلقات"
+    },
+    {
+      "name": "Onion",
+      "nameAr": "بصل",
+      "amount": 1,
+      "unit": "large",
+      "unitAr": "حبة كبيرة",
+      "preparation": "finely chopped",
+      "preparationAr": "مفروم ناعم"
     },
     {
       "name": "Garlic",
@@ -42,17 +60,44 @@
       "amount": 2,
       "unit": "cloves",
       "unitAr": "فص",
-      "preparation": "minced or crushed",
-      "preparationAr": "مهروس أو مدقوق"
+      "preparation": "minced",
+      "preparationAr": "مهروس"
     },
     {
-      "name": "Dried mint",
-      "nameAr": "نعنع يابس",
-      "amount": 1,
+      "name": "All-purpose flour",
+      "nameAr": "طحين",
+      "amount": 2,
       "unit": "tbsp",
       "unitAr": "ملعقة كبيرة",
       "preparation": null,
       "preparationAr": null
+    },
+    {
+      "name": "Butter or olive oil",
+      "nameAr": "زبدة أو زيت زيتون",
+      "amount": 2,
+      "unit": "tbsp",
+      "unitAr": "ملعقة كبيرة",
+      "preparation": null,
+      "preparationAr": null
+    },
+    {
+      "name": "Water or vegetable stock",
+      "nameAr": "ماء أو مرق خضار",
+      "amount": 3,
+      "unit": "cups",
+      "unitAr": "كوب",
+      "preparation": null,
+      "preparationAr": null
+    },
+    {
+      "name": "Lemon juice",
+      "nameAr": "عصير ليمون",
+      "amount": 1,
+      "unit": "large lemon",
+      "unitAr": "حبة كبيرة",
+      "preparation": "freshly squeezed",
+      "preparationAr": "معصور طازج"
     },
     {
       "name": "Salt",
@@ -64,31 +109,39 @@
       "preparationAr": null
     },
     {
-      "name": "Olive oil",
-      "nameAr": "زيت زيتون",
-      "amount": 2,
-      "unit": "tbsp",
-      "unitAr": "ملعقة كبيرة",
-      "preparation": "for drizzling",
-      "preparationAr": "للرش"
+      "name": "White pepper",
+      "nameAr": "فلفل أبيض",
+      "amount": 0.5,
+      "unit": "tsp",
+      "unitAr": "ملعقة صغيرة",
+      "preparation": null,
+      "preparationAr": null
     }
   ],
   "instructions": [
     {
-      "text": "Cook the pasta in salted boiling water until al dente. Drain and set aside to cool slightly.",
-      "textAr": "اسلق المعكرونة في ماء مغلي مملح حتى تنضج. صفّها واتركها تبرد قليلاً."
+      "text": "In a large pot, melt the butter or heat the olive oil over medium heat. Add the chopped onion and cook until soft and translucent, about 5 minutes.",
+      "textAr": "في قدر كبير، ذوّب الزبدة أو سخّن زيت الزيتون على نار متوسطة. أضف البصل المفروم واطهُ حتى يذبل ويصبح شفافاً، حوالي 5 دقائق."
     },
     {
-      "text": "In a large bowl, mix the yogurt, minced garlic, and salt until well combined.",
-      "textAr": "في وعاء كبير، اخلط اللبن الزبادي مع الثوم المهروس والملح حتى يتجانس الخليط."
+      "text": "Add the minced garlic and cook for another minute until fragrant. Sprinkle the flour over the onions and stir continuously for 1–2 minutes to form a light roux.",
+      "textAr": "أضف الثوم المهروس واطهُ لمدة دقيقة أخرى حتى تفوح رائحته. انثر الطحين فوق البصل وقلّب باستمرار لمدة 1-2 دقيقة لتشكيل خليط طحين خفيف."
     },
     {
-      "text": "Add the cooked pasta to the yogurt mixture and toss until the pasta is evenly coated.",
-      "textAr": "أضف المعكرونة المسلوقة إلى خليط اللبن وقلّب حتى تتغلف المعكرونة بالتساوي."
+      "text": "Gradually pour in the water or stock while whisking constantly to prevent lumps. Bring the mixture to a gentle simmer.",
+      "textAr": "اسكب الماء أو المرق تدريجياً مع التحريك المستمر بواسطة الخفاقة لمنع التكتل. اترك الخليط يغلي على نار هادئة."
     },
     {
-      "text": "Drizzle with olive oil and sprinkle the dried mint on top. Mix gently and serve.",
-      "textAr": "رش زيت الزيتون وانثر النعنع اليابس على الوجه. قلّب برفق وقدّم الطبق."
+      "text": "Add the artichoke hearts, potato cubes, and carrot slices to the pot. Season with salt and white pepper. Cover and simmer on low heat for 25–30 minutes, or until the vegetables are tender.",
+      "textAr": "أضف قلوب الأرضي شوكي ومكعبات البطاطا وحلقات الجزر إلى القدر. تبّل بالملح والفلفل الأبيض. غطِّ القدر واطهُ على نار هادئة لمدة 25-30 دقيقة، أو حتى تنضج الخضار."
+    },
+    {
+      "text": "Stir in the fresh lemon juice during the last 5 minutes of cooking. Taste and adjust seasoning if needed.",
+      "textAr": "أضف عصير الليمون الطازج في الدقائق الخمس الأخيرة من الطهي. تذوّق وعدّل الملح إذا لزم الأمر."
+    },
+    {
+      "text": "Serve hot over a bed of Lebanese vermicelli rice or plain white rice.",
+      "textAr": "قدّمها ساخنة فوق طبق من الأرز المفلفل بالشعيرية أو الأرز الأبيض."
     }
   ]
 }
