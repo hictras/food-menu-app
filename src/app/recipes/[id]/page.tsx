@@ -13,10 +13,12 @@ const BASE_URL =
 
 type PageProps = {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: PageProps): Promise<Metadata> {
   const { id } = await params;
   const numericId = Number(id);
@@ -34,14 +36,22 @@ export async function generateMetadata({
 
   if (!recipe) return { title: "Recipe not found" };
 
+  const sp = await searchParams;
+  const isToday = sp.today !== undefined;
+
+  const title = isToday ? "Hicham Today Recipe" : recipe.name;
+  const description = isToday
+    ? recipe.name
+    : recipe.description || undefined;
+
   return {
     metadataBase: new URL(BASE_URL),
-    title: recipe.name,
-    description: recipe.description || undefined,
+    title,
+    description,
     openGraph: {
-      title: recipe.name,
-      description: recipe.description || undefined,
-      url: `/recipes/${recipe.id}`,
+      title,
+      description,
+      url: `/recipes/${recipe.id}${isToday ? "?today" : ""}`,
       siteName: "Menu — your cookbook",
       ...(recipe.imageUrl
         ? {
@@ -59,8 +69,8 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: recipe.name,
-      description: recipe.description || undefined,
+      title,
+      description,
       ...(recipe.imageUrl ? { images: [recipe.imageUrl] } : {}),
     },
   };
@@ -118,14 +128,18 @@ function DetailSkeleton() {
   );
 }
 
-async function RecipeResolver({ params }: PageProps) {
+async function RecipeResolver({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const numericId = Number(id);
   if (Number.isNaN(numericId)) notFound();
   return <RecipeDetail id={numericId} />;
 }
 
-export default function RecipePage({ params }: PageProps) {
+export default function RecipePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   return (
     <main className="container">
       <Suspense fallback={<DetailSkeleton />}>
