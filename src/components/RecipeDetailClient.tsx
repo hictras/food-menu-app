@@ -6,11 +6,13 @@ import { useState } from "react";
 import { useLang } from "./LanguageProvider";
 import { t, pick } from "@/lib/i18n";
 import { extractYouTubeId } from "@/lib/youtube";
+import { categoryIcon, categoryLabel } from "@/lib/categories";
 
 type RecipeRow = {
   id: number; name: string; nameAr: string | null;
   description: string | null; descriptionAr: string | null;
   cuisine: string | null; cuisineAr: string | null;
+  category: string | null; categoryAr: string | null;
   servedWith: string | null; servedWithAr: string | null;
   howToServe: string | null; howToServeAr: string | null;
   prepTime: number; cookTime: number; servings: number;
@@ -24,10 +26,13 @@ type IngredientRow = {
 type InstructionRow = { id: number; stepNumber: number; text: string; textAr: string | null };
 
 const TAG_AR: Record<string, string> = {
-  Vegetarian: "نباتي", Vegan: "نباتي صرف", "Gluten-Free": "خالٍ من الغلوتين",
-  "Dairy-Free": "خالٍ من الألبان", "Nut-Free": "خالٍ من المكسرات",
-  Halal: "حلال", Kosher: "كوشير", "Low-Carb": "قليل الكربوهيدرات",
-  Keto: "كيتو", Paleo: "باليو", Spicy: "حار", Quick: "سريع",
+  Vegetarian: "نباتي", Vegan: "نباتي صرف", Pescatarian: "بيسكاتاري",
+  "Gluten-Free": "خالٍ من الغلوتين", "Dairy-Free": "خالٍ من الألبان",
+  "Nut-Free": "خالٍ من المكسرات", Halal: "حلال", Kosher: "كوشير",
+  "Low-Carb": "قليل الكربوهيدرات", Keto: "كيتو", Paleo: "باليو",
+  Meat: "لحوم", Chicken: "دجاج", Seafood: "مأكولات بحرية",
+  Fish: "سمك", Lamb: "لحم غنم", Beef: "لحم بقري",
+  Legumes: "بقوليات", Spicy: "حار", Quick: "سريع",
 };
 
 export default function RecipeDetailClient({
@@ -51,6 +56,8 @@ export default function RecipeDetailClient({
   const displayCuisine = pick(lang, recipe.cuisine, recipe.cuisineAr);
   const displayServedWith = pick(lang, recipe.servedWith, recipe.servedWithAr);
   const displayHowToServe = pick(lang, recipe.howToServe, recipe.howToServeAr);
+  const catIcon = categoryIcon(recipe.category) || categoryIcon(recipe.categoryAr);
+  const catLabel = categoryLabel(recipe.category, lang) || categoryLabel(recipe.categoryAr, lang);
 
   async function shareWhatsApp() {
     try {
@@ -69,12 +76,10 @@ export default function RecipeDetailClient({
         : `Delete "${displayName}"? This cannot be undone.`
     );
     if (!ok) return;
-
     setDeleting(true);
     try {
       const res = await fetch(`/api/recipes/${recipe.id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Delete failed");
-      // Use router to preserve theme + language state
       router.push("/");
       router.refresh();
     } catch (err) {
@@ -98,26 +103,13 @@ export default function RecipeDetailClient({
           <h1 style={{ margin: 0 }}>{displayName}</h1>
 
           <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
-            <button
-              type="button"
-              className="btn btn-ghost"
-              onClick={shareWhatsApp}
-              title={lang === "ar" ? "مشاركة عبر واتساب" : "Share on WhatsApp"}
-            >
+            <button type="button" className="btn btn-ghost" onClick={shareWhatsApp}>
               💬 {lang === "ar" ? "مشاركة" : "Share"}
             </button>
-
             {isAdmin && (
               <>
-                <Link href={`/recipes/${recipe.id}/edit`} className="btn btn-ghost">
-                  {t(lang, "edit")}
-                </Link>
-                <button
-                  type="button"
-                  className="btn btn-danger"
-                  onClick={handleDelete}
-                  disabled={deleting}
-                >
+                <Link href={`/recipes/${recipe.id}/edit`} className="btn btn-ghost">{t(lang, "edit")}</Link>
+                <button type="button" className="btn btn-danger" onClick={handleDelete} disabled={deleting}>
                   {deleting ? "…" : lang === "ar" ? "🗑 حذف" : "🗑 Delete"}
                 </button>
               </>
@@ -128,6 +120,12 @@ export default function RecipeDetailClient({
         {displayDesc && <p className="detail-desc">{displayDesc}</p>}
 
         <div className="detail-meta">
+          {catLabel && (
+            <div className="meta-item">
+              <span className="meta-label">{lang === "ar" ? "الفئة" : "Category"}</span>
+              <span className="meta-value">{catIcon} {catLabel}</span>
+            </div>
+          )}
           <div className="meta-item"><span className="meta-label">{t(lang, "prep")}</span><span className="meta-value">{recipe.prepTime} {minLabel}</span></div>
           <div className="meta-item"><span className="meta-label">{t(lang, "cook")}</span><span className="meta-value">{recipe.cookTime} {minLabel}</span></div>
           <div className="meta-item"><span className="meta-label">{t(lang, "min_total")}</span><span className="meta-value">{recipe.prepTime + recipe.cookTime} {minLabel}</span></div>
@@ -164,12 +162,7 @@ export default function RecipeDetailClient({
         <section className="video-section">
           <h2>{t(lang, "video")}</h2>
           <div className="video-wrap">
-            <iframe
-              src={`https://www.youtube.com/embed/${youtubeId}`}
-              title="Recipe video"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+            <iframe src={`https://www.youtube.com/embed/${youtubeId}`} title="Recipe video" allowFullScreen />
           </div>
         </section>
       )}

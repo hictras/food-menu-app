@@ -12,6 +12,8 @@ export const recipes = sqliteTable("recipes", {
   servings: integer("servings").notNull(),
   cuisine: text("cuisine"),
   cuisineAr: text("cuisine_ar"),
+  category: text("category"),
+  categoryAr: text("category_ar"),
   servedWith: text("served_with"),
   servedWithAr: text("served_with_ar"),
   howToServe: text("how_to_serve"),

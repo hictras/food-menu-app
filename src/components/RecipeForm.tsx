@@ -11,6 +11,7 @@ import { extractYouTubeId } from "@/lib/youtube";
 import { useLang } from "./LanguageProvider";
 import { t } from "@/lib/i18n";
 import { CUISINES, UNITS, PREPARATIONS } from "@/lib/pickers";
+import { CATEGORIES } from "@/lib/categories";
 
 type Ingredient = {
   name: string; nameAr: string; amount: string; unit: string; unitAr: string;
@@ -23,6 +24,7 @@ type InitialData = {
   name: string; nameAr: string | null;
   description: string | null; descriptionAr: string | null;
   cuisine: string | null; cuisineAr: string | null;
+  category: string | null; categoryAr: string | null;
   servedWith: string | null; servedWithAr: string | null;
   howToServe: string | null; howToServeAr: string | null;
   prepTime: number; cookTime: number; servings: number;
@@ -36,10 +38,13 @@ type InitialData = {
 };
 
 const TAG_AR: Record<string, string> = {
-  Vegetarian: "نباتي", Vegan: "نباتي صرف", "Gluten-Free": "خالٍ من الغلوتين",
-  "Dairy-Free": "خالٍ من الألبان", "Nut-Free": "خالٍ من المكسرات",
-  Halal: "حلال", Kosher: "كوشير", "Low-Carb": "قليل الكربوهيدرات",
-  Keto: "كيتو", Paleo: "باليو", Spicy: "حار", Quick: "سريع",
+  Vegetarian: "نباتي", Vegan: "نباتي صرف", Pescatarian: "بيسكاتاري",
+  "Gluten-Free": "خالٍ من الغلوتين", "Dairy-Free": "خالٍ من الألبان",
+  "Nut-Free": "خالٍ من المكسرات", Halal: "حلال", Kosher: "كوشير",
+  "Low-Carb": "قليل الكربوهيدرات", Keto: "كيتو", Paleo: "باليو",
+  Meat: "لحوم", Chicken: "دجاج", Seafood: "مأكولات بحرية",
+  Fish: "سمك", Lamb: "لحم غنم", Beef: "لحم بقري",
+  Legumes: "بقوليات", Spicy: "حار", Quick: "سريع",
 };
 
 const emptyIngredient: Ingredient = {
@@ -57,6 +62,8 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
   const [descriptionAr, setDescriptionAr] = useState(initial?.descriptionAr ?? "");
   const [cuisine, setCuisine] = useState(initial?.cuisine ?? "");
   const [cuisineAr, setCuisineAr] = useState(initial?.cuisineAr ?? "");
+  const [category, setCategory] = useState(initial?.category ?? "");
+  const [categoryAr, setCategoryAr] = useState(initial?.categoryAr ?? "");
   const [servedWith, setServedWith] = useState(initial?.servedWith ?? "");
   const [servedWithAr, setServedWithAr] = useState(initial?.servedWithAr ?? "");
   const [howToServe, setHowToServe] = useState(initial?.howToServe ?? "");
@@ -166,6 +173,7 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
           name: name.trim() || nameAr.trim(), nameAr,
           description, descriptionAr,
           cuisine, cuisineAr,
+          category, categoryAr,
           servedWith, servedWithAr,
           howToServe, howToServeAr,
           prepTime: parseInt(prepTime) || 0,
@@ -244,6 +252,29 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
               <input type="text" value={cuisineAr} onChange={(e) => setCuisineAr(e.target.value)} dir="rtl" />
               <AutoTranslate kind="cuisine" value={cuisineAr} sourceIsAr={true} onTranslated={setCuisine} />
             </div>
+          </div>
+        </div>
+
+        <div className="field-pair">
+          <div className="field">
+            <label>Category (EN)</label>
+            <div className="input-with-tools">
+              <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} dir="ltr" placeholder="Main Dish, Stew, Dessert..." />
+              <PickerDropdown
+                items={CATEGORIES.map((c) => ({
+                  value: c.value,
+                  valueAr: c.valueAr,
+                  label: c.value,
+                  icon: c.icon,
+                }))}
+                title={lang === "ar" ? "اختر الفئة" : "Pick category"}
+                onPick={(en, ar) => { setCategory(en); setCategoryAr(ar); }}
+              />
+            </div>
+          </div>
+          <div className="field">
+            <label>الفئة (AR)</label>
+            <input type="text" value={categoryAr} onChange={(e) => setCategoryAr(e.target.value)} dir="rtl" />
           </div>
         </div>
       </section>
@@ -335,15 +366,7 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
               <div className="ing-stack-head">
                 <span className="ing-stack-num">{i + 1}</span>
                 <span className="ing-stack-label">{lang === "ar" ? "إنجليزي" : "English"}</span>
-                <button
-                  type="button"
-                  className="icon-btn"
-                  onClick={() => removeIngredient(i)}
-                  disabled={ingredientsList.length === 1}
-                  title={lang === "ar" ? "حذف" : "Remove"}
-                >
-                  ✕
-                </button>
+                <button type="button" className="icon-btn" onClick={() => removeIngredient(i)} disabled={ingredientsList.length === 1}>✕</button>
               </div>
 
               <div className="ing-stack-en">

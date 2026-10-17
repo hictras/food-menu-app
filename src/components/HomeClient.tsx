@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { useLang } from "./LanguageProvider";
 import { t, pick } from "@/lib/i18n";
 import { cuisineFlagUrl } from "@/lib/cuisine-flag";
+import { categoryIcon, categoryLabel, CATEGORIES } from "@/lib/categories";
 
 type RecipeRow = {
   id: number;
@@ -12,6 +13,8 @@ type RecipeRow = {
   nameAr: string | null;
   cuisine: string | null;
   cuisineAr: string | null;
+  category: string | null;
+  categoryAr: string | null;
   prepTime: number;
   cookTime: number;
   servings: number;
@@ -20,10 +23,13 @@ type RecipeRow = {
 };
 
 const TAG_AR: Record<string, string> = {
-  Vegetarian: "نباتي", Vegan: "نباتي صرف", "Gluten-Free": "خالٍ من الغلوتين",
-  "Dairy-Free": "خالٍ من الألبان", "Nut-Free": "خالٍ من المكسرات",
-  Halal: "حلال", Kosher: "كوشير", "Low-Carb": "قليل الكربوهيدرات",
-  Keto: "كيتو", Paleo: "باليو", Spicy: "حار", Quick: "سريع",
+  Vegetarian: "نباتي", Vegan: "نباتي صرف", Pescatarian: "بيسكاتاري",
+  "Gluten-Free": "خالٍ من الغلوتين", "Dairy-Free": "خالٍ من الألبان",
+  "Nut-Free": "خالٍ من المكسرات", Halal: "حلال", Kosher: "كوشير",
+  "Low-Carb": "قليل الكربوهيدرات", Keto: "كيتو", Paleo: "باليو",
+  Meat: "لحوم", Chicken: "دجاج", Seafood: "مأكولات بحرية",
+  Fish: "سمك", Lamb: "لحم غنم", Beef: "لحم بقري",
+  Legumes: "بقوليات", Spicy: "حار", Quick: "سريع",
 };
 
 type SortKey = "newest" | "name-asc" | "name-desc" | "time-asc" | "time-desc";
@@ -33,10 +39,10 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
 
   const [query, setQuery] = useState("");
   const [cuisineFilter, setCuisineFilter] = useState<string>("");
+  const [categoryFilter, setCategoryFilter] = useState<string>("");
   const [tagFilter, setTagFilter] = useState<string>("");
   const [sort, setSort] = useState<SortKey>("newest");
 
-  // Collect distinct cuisines and tags from the data
   const allCuisines = useMemo(() => {
     const set = new Set<string>();
     for (const r of recipes) {
@@ -58,7 +64,6 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
     return Array.from(set).sort();
   }, [recipes]);
 
-  // Apply filters + sort
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
 
@@ -68,6 +73,7 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
 
       if (q && !name.includes(q) && !cuisine.includes(q)) return false;
       if (cuisineFilter && (r.cuisine || r.cuisineAr) !== cuisineFilter) return false;
+      if (categoryFilter && (r.category || r.categoryAr) !== categoryFilter) return false;
 
       if (tagFilter) {
         if (!r.dietaryTags) return false;
@@ -82,35 +88,23 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
     });
 
     list = [...list].sort((a, b) => {
-      if (sort === "name-asc") {
-        return (pick(lang, a.name, a.nameAr) || "").localeCompare(
-          pick(lang, b.name, b.nameAr) || ""
-        );
-      }
-      if (sort === "name-desc") {
-        return (pick(lang, b.name, b.nameAr) || "").localeCompare(
-          pick(lang, a.name, a.nameAr) || ""
-        );
-      }
-      if (sort === "time-asc") {
-        return a.prepTime + a.cookTime - (b.prepTime + b.cookTime);
-      }
-      if (sort === "time-desc") {
-        return b.prepTime + b.cookTime - (a.prepTime + a.cookTime);
-      }
-      // newest (default) — assume incoming order is newest-first from DB
+      if (sort === "name-asc") return (pick(lang, a.name, a.nameAr) || "").localeCompare(pick(lang, b.name, b.nameAr) || "");
+      if (sort === "name-desc") return (pick(lang, b.name, b.nameAr) || "").localeCompare(pick(lang, a.name, a.nameAr) || "");
+      if (sort === "time-asc") return a.prepTime + a.cookTime - (b.prepTime + b.cookTime);
+      if (sort === "time-desc") return b.prepTime + b.cookTime - (a.prepTime + a.cookTime);
       return 0;
     });
 
     return list;
-  }, [recipes, query, cuisineFilter, tagFilter, sort, lang]);
+  }, [recipes, query, cuisineFilter, categoryFilter, tagFilter, sort, lang]);
 
-  const hasFilters = query || cuisineFilter || tagFilter;
+  const hasFilters = query || cuisineFilter || categoryFilter || tagFilter;
   const total = recipes.length;
 
   function clearFilters() {
     setQuery("");
     setCuisineFilter("");
+    setCategoryFilter("");
     setTagFilter("");
     setSort("newest");
   }
@@ -144,52 +138,32 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
               onChange={(e) => setQuery(e.target.value)}
             />
             {query && (
-              <button
-                type="button"
-                className="search-clear"
-                onClick={() => setQuery("")}
-                aria-label="Clear search"
-              >
-                ✕
-              </button>
+              <button type="button" className="search-clear" onClick={() => setQuery("")} aria-label="Clear search">✕</button>
             )}
           </div>
 
-          <select
-            className="filter-select"
-            value={cuisineFilter}
-            onChange={(e) => setCuisineFilter(e.target.value)}
-          >
-            <option value="">
-              {lang === "ar" ? "كل المطابخ" : "All cuisines"}
-            </option>
+          <select className="filter-select" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+            <option value="">{lang === "ar" ? "كل الفئات" : "All categories"}</option>
+            {CATEGORIES.map((c) => (
+              <option key={c.value} value={c.value}>{c.icon} {lang === "ar" ? c.valueAr : c.value}</option>
+            ))}
+          </select>
+
+          <select className="filter-select" value={cuisineFilter} onChange={(e) => setCuisineFilter(e.target.value)}>
+            <option value="">{lang === "ar" ? "كل المطابخ" : "All cuisines"}</option>
             {allCuisines.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
+              <option key={c} value={c}>{c}</option>
             ))}
           </select>
 
-          <select
-            className="filter-select"
-            value={tagFilter}
-            onChange={(e) => setTagFilter(e.target.value)}
-          >
-            <option value="">
-              {lang === "ar" ? "كل الوسوم" : "All tags"}
-            </option>
+          <select className="filter-select" value={tagFilter} onChange={(e) => setTagFilter(e.target.value)}>
+            <option value="">{lang === "ar" ? "كل الوسوم" : "All tags"}</option>
             {allTags.map((tag) => (
-              <option key={tag} value={tag}>
-                {lang === "ar" ? TAG_AR[tag] ?? tag : tag}
-              </option>
+              <option key={tag} value={tag}>{lang === "ar" ? TAG_AR[tag] ?? tag : tag}</option>
             ))}
           </select>
 
-          <select
-            className="filter-select"
-            value={sort}
-            onChange={(e) => setSort(e.target.value as SortKey)}
-          >
+          <select className="filter-select" value={sort} onChange={(e) => setSort(e.target.value as SortKey)}>
             <option value="newest">{lang === "ar" ? "الأحدث" : "Newest"}</option>
             <option value="name-asc">{lang === "ar" ? "الاسم أ-ي" : "Name A–Z"}</option>
             <option value="name-desc">{lang === "ar" ? "الاسم ي-أ" : "Name Z–A"}</option>
@@ -198,9 +172,7 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
           </select>
 
           {hasFilters && (
-            <button type="button" className="filter-clear" onClick={clearFilters}>
-              {lang === "ar" ? "مسح" : "Clear"}
-            </button>
+            <button type="button" className="filter-clear" onClick={clearFilters}>{lang === "ar" ? "مسح" : "Clear"}</button>
           )}
         </div>
       )}
@@ -209,21 +181,13 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
         <div className="empty">
           <h2>{t(lang, "home_empty_title")}</h2>
           <p>{t(lang, "home_empty_text")}</p>
-          <Link href="/recipes/new" className="btn btn-primary">
-            {t(lang, "home_empty_cta")}
-          </Link>
+          <Link href="/recipes/new" className="btn btn-primary">{t(lang, "home_empty_cta")}</Link>
         </div>
       ) : filtered.length === 0 ? (
         <div className="empty">
           <h2>{lang === "ar" ? "لا نتائج" : "No results"}</h2>
-          <p>
-            {lang === "ar"
-              ? "جرّب كلمات أخرى أو امسح الفلاتر."
-              : "Try different keywords or clear your filters."}
-          </p>
-          <button type="button" className="btn btn-ghost" onClick={clearFilters}>
-            {lang === "ar" ? "مسح الفلاتر" : "Clear filters"}
-          </button>
+          <p>{lang === "ar" ? "جرّب كلمات أخرى أو امسح الفلاتر." : "Try different keywords or clear your filters."}</p>
+          <button type="button" className="btn btn-ghost" onClick={clearFilters}>{lang === "ar" ? "مسح الفلاتر" : "Clear filters"}</button>
         </div>
       ) : (
         <div className="recipe-grid">
@@ -232,6 +196,8 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
             const displayName = pick(lang, r.name, r.nameAr);
             const displayCuisine = pick(lang, r.cuisine, r.cuisineAr);
             const flagUrl = cuisineFlagUrl(r.cuisine) || cuisineFlagUrl(r.cuisineAr);
+            const catIcon = categoryIcon(r.category) || categoryIcon(r.categoryAr);
+            const catLabel = categoryLabel(r.category, lang) || categoryLabel(r.categoryAr, lang);
 
             return (
               <Link key={r.id} href={`/recipes/${r.id}`} className="recipe-card">
@@ -245,9 +211,10 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
                   <div className="recipe-card-head">
                     <div className="recipe-card-text">
                       <h3>{displayName}</h3>
-                      {displayCuisine && (
-                        <span className="recipe-card-cuisine">{displayCuisine}</span>
-                      )}
+                      <span className="recipe-card-cuisine">
+                        {catIcon && <span style={{ marginInlineEnd: 4 }}>{catIcon}</span>}
+                        {catLabel || displayCuisine}
+                      </span>
                     </div>
                     {flagUrl && (
                       <img src={flagUrl} alt={displayCuisine} className="recipe-card-flag" loading="lazy" />

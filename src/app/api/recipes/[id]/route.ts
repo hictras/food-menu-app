@@ -8,6 +8,7 @@ type Payload = {
   name: string; nameAr: string;
   description: string; descriptionAr: string;
   cuisine: string; cuisineAr: string;
+  category: string; categoryAr: string;
   servedWith: string; servedWithAr: string;
   howToServe: string; howToServeAr: string;
   prepTime: number; cookTime: number; servings: number;
@@ -35,6 +36,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       descriptionAr: body.descriptionAr?.trim() || null,
       cuisine: body.cuisine?.trim() || null,
       cuisineAr: body.cuisineAr?.trim() || null,
+      category: body.category?.trim() || null,
+      categoryAr: body.categoryAr?.trim() || null,
       servedWith: body.servedWith?.trim() || null,
       servedWithAr: body.servedWithAr?.trim() || null,
       howToServe: body.howToServe?.trim() || null,

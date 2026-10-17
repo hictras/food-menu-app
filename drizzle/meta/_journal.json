@@ -50,6 +50,13 @@
       "when": 1792182271326,
       "tag": "0006_public_stingray",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1792227141219,
+      "tag": "0007_flaky_fixer",
+      "breakpoints": true
     }
   ]
 }

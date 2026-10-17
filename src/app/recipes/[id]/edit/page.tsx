@@ -34,6 +34,8 @@ async function EditLoader({ params }: { params: Promise<{ id: string }> }) {
         descriptionAr: recipe.descriptionAr,
         cuisine: recipe.cuisine,
         cuisineAr: recipe.cuisineAr,
+        category: recipe.category,
+        categoryAr: recipe.categoryAr,
         servedWith: recipe.servedWith,
         servedWithAr: recipe.servedWithAr,
         howToServe: recipe.howToServe,

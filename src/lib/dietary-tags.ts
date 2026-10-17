@@ -1,6 +1,8 @@
 export const DIETARY_TAGS = [
+  // Diet style
   "Vegetarian",
   "Vegan",
+  "Pescatarian",
   "Gluten-Free",
   "Dairy-Free",
   "Nut-Free",
@@ -9,6 +11,15 @@ export const DIETARY_TAGS = [
   "Low-Carb",
   "Keto",
   "Paleo",
+  // Protein / main ingredient
+  "Meat",
+  "Chicken",
+  "Seafood",
+  "Fish",
+  "Lamb",
+  "Beef",
+  "Legumes",
+  // Other
   "Spicy",
   "Quick",
 ] as const;
