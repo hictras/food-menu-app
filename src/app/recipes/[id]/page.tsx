@@ -39,7 +39,7 @@ export async function generateMetadata({
   const sp = await searchParams;
   const isToday = sp.today !== undefined;
 
-  const title = isToday ? "Hicham Today Recipe" : recipe.name;
+  const title = isToday ? "Hicham Today Main Dish" : recipe.name;
   const description = isToday
     ? recipe.name
     : recipe.description || undefined;
