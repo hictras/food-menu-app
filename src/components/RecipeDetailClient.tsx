@@ -117,7 +117,12 @@ export default function RecipeDetailClient({
           </div>
         </div>
 
-        {displayDesc && <p className="detail-desc">{displayDesc}</p>}
+        {displayDesc && (
+  <>
+    <div className="detail-desc-divider" />
+    <p className="detail-desc">{displayDesc}</p>
+  </>
+)}
 
         <div className="detail-meta">
           {catLabel && (
@@ -158,14 +163,36 @@ export default function RecipeDetailClient({
         )}
       </header>
 
-      {youtubeId && (
-        <section className="video-section">
-          <h2>{t(lang, "video")}</h2>
-          <div className="video-wrap">
-            <iframe src={`https://www.youtube.com/embed/${youtubeId}`} title="Recipe video" allowFullScreen />
-          </div>
-        </section>
-      )}
+{recipe.videoUrl && (
+  <section className="video-section">
+    <h2>{t(lang, "video")}</h2>
+    {youtubeId ? (
+      <div className="video-wrap">
+        <iframe
+          src={`https://www.youtube.com/embed/${youtubeId}`}
+          title="Recipe video"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+    ) : (
+      <video
+        src={recipe.videoUrl}
+        controls
+        preload="metadata"
+        playsInline
+        style={{
+          width: "100%",
+          borderRadius: "var(--radius)",
+          border: "1px solid var(--line)",
+          background: "#000",
+          aspectRatio: "16 / 9",
+          objectFit: "contain",
+        }}
+      />
+    )}
+  </section>
+)}
 
       <div className="detail-cols">
         <section className="detail-section">

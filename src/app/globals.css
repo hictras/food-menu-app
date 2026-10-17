@@ -1535,3 +1535,170 @@ html[dir="rtl"] .filter-select {
     margin: 24px 0 48px;
   }
 }
+
+/* ========== RECIPE CARD VIDEO ICON ========== */
+.recipe-card-video-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-inline-start: 6px;
+  font-size: 12px;
+  vertical-align: middle;
+  opacity: 0.85;
+  transition: opacity 0.15s, transform 0.15s;
+}
+.recipe-card:hover .recipe-card-video-icon {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* ========== VIDEO ICON NEXT TO TITLE ========== */
+.recipe-card-video-icon {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  margin-inline-start: 6px;
+  font-size: 12px;
+  vertical-align: middle;
+  opacity: 0.85;
+  transition: opacity 0.15s, transform 0.15s;
+}
+.recipe-card:hover .recipe-card-video-icon {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* Hide the old photo badge if any CSS remains */
+.recipe-card-video-badge {
+  display: none !important;
+}
+
+/* ========== 🎬 EMOJI ON PHOTO ========== */
+.recipe-card-img-wrap {
+  position: relative;
+  width: 100%;
+  display: block;
+}
+
+.recipe-card-video-emoji {
+  position: absolute;
+  top: 8px;
+  inset-inline-end: 8px;
+  font-size: 22px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  pointer-events: none;
+  z-index: 2;
+  transition: transform 0.2s ease;
+}
+
+.recipe-card:hover .recipe-card-video-emoji {
+  transform: scale(1.15);
+}
+
+/* Ensure any leftover badge/triangle stays hidden */
+.recipe-card-video-badge,
+.recipe-card-video-icon {
+  display: none !important;
+}
+
+/* ========== ARABIC TITLE — REDUCE HEIGHT ========== */
+html[lang="ar"] .detail-head h1 {
+  font-size: 26px !important;
+  line-height: 1.2 !important;
+  font-family: "Cairo", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 0 !important;
+  margin: 0 0 4px 0 !important;
+  padding: 0 !important;
+  height: auto !important;
+}
+
+/* Also tame any inline h1 or h1 in the title row */
+html[lang="ar"] .detail-title,
+html[lang="ar"] header.detail-head > div:first-child h1 {
+  font-size: 26px !important;
+  line-height: 1.2 !important;
+  font-family: "Cairo", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  height: auto !important;
+}
+
+/* ========== DESCRIPTION DIVIDER + SPACING ========== */
+.detail-desc-divider {
+  height: 1px;
+  background: var(--line);
+  margin: 28px 0 20px 0;
+  width: 100%;
+}
+
+.detail-desc {
+  margin-top: 0 !important;
+  margin-bottom: 28px !important;
+  font-size: 14px;
+  color: var(--ink-soft);
+  max-width: 62ch;
+  line-height: 1.55;
+}
+
+/* Arabic variant — a bit more breathing room */
+html[lang="ar"] .detail-desc-divider {
+  margin: 24px 0 18px 0;
+}
+
+/* ========== VIDEO OPTIONS (upload or YouTube) ========== */
+.video-options {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.video-option {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.video-option-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+}
+
+.video-option-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.video-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.video-divider::before,
+.video-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}

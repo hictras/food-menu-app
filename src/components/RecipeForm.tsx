@@ -12,6 +12,7 @@ import { useLang } from "./LanguageProvider";
 import { t } from "@/lib/i18n";
 import { CUISINES, UNITS, PREPARATIONS } from "@/lib/pickers";
 import { CATEGORIES } from "@/lib/categories";
+import VideoUpload from "./VideoUpload";
 
 type Ingredient = {
   name: string; nameAr: string; amount: string; unit: string; unitAr: string;
@@ -344,18 +345,54 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
         <ImageUpload onUploaded={setImageUrl} initialUrl={imageUrl ?? undefined} />
       </section>
 
-      <section className="form-section">
-        <h2>{t(lang, "video")}</h2>
-        <div className="field">
-          <label>{t(lang, "video_label")}</label>
-          <input type="text" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="https://youtube.com/watch?v=..." dir="ltr" />
+<section className="form-section">
+  <h2>{t(lang, "video")}</h2>
+
+  <div className="video-options">
+    {/* Option 1 — upload MP4 */}
+    <div className="video-option">
+      <div className="video-option-label">
+        <span className="video-option-num">1</span>
+        <span>{lang === "ar" ? "رفع فيديو (MP4)" : "Upload video (MP4)"}</span>
+      </div>
+      <VideoUpload
+        onUploaded={(url) => setVideoUrl(url)}
+        initialUrl={videoUrl && !videoUrl.includes("youtube") && !videoUrl.includes("youtu.be") ? videoUrl : undefined}
+      />
+      <p className="helper">
+        {lang === "ar"
+          ? "ارفع فيديو من جهازك — يرفع مباشرة إلى R2."
+          : "Upload a video from your device — goes straight to R2."}
+      </p>
+    </div>
+
+    <div className="video-divider">
+      <span>{lang === "ar" ? "أو" : "OR"}</span>
+    </div>
+
+    {/* Option 2 — YouTube URL */}
+    <div className="video-option">
+      <div className="video-option-label">
+        <span className="video-option-num">2</span>
+        <span>{lang === "ar" ? "رابط يوتيوب" : "YouTube link"}</span>
+      </div>
+      <input
+        type="text"
+        value={videoUrl}
+        onChange={(e) => setVideoUrl(e.target.value)}
+        placeholder="https://www.youtube.com/watch?v=..."
+        dir="ltr"
+        style={{ width: "100%", padding: "9px 12px", border: "1px solid var(--line)", borderRadius: 8, background: "var(--input-bg)", color: "var(--ink)", fontSize: 13 }}
+      />
+      <p className="helper">{t(lang, "video_hint")}</p>
+      {videoPreviewId && (
+        <div className="video-wrap" style={{ marginTop: 12 }}>
+          <iframe src={`https://www.youtube.com/embed/${videoPreviewId}`} title="Preview" allowFullScreen />
         </div>
-        {videoPreviewId && (
-          <div className="video-wrap" style={{ marginTop: 12 }}>
-            <iframe src={`https://www.youtube.com/embed/${videoPreviewId}`} title="Preview" allowFullScreen />
-          </div>
-        )}
-      </section>
+      )}
+    </div>
+  </div>
+</section>
 
       <section className="form-section">
         <h2>{t(lang, "ingredients")}</h2>

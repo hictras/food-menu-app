@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { useLang } from "./LanguageProvider";
 import { t, pick } from "@/lib/i18n";
 import { cuisineFlagUrl } from "@/lib/cuisine-flag";
-import { categoryIcon, CATEGORIES } from "@/lib/categories";
+import { CATEGORIES } from "@/lib/categories";
 
 type RecipeRow = {
   id: number;
@@ -19,6 +19,7 @@ type RecipeRow = {
   cookTime: number;
   servings: number;
   imageUrl: string | null;
+  videoUrl: string | null;
   dietaryTags: string | null;
 };
 
@@ -253,14 +254,25 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
                   const displayName = pick(lang, r.name, r.nameAr);
                   const displayCuisine = pick(lang, r.cuisine, r.cuisineAr);
                   const flagUrl = cuisineFlagUrl(r.cuisine) || cuisineFlagUrl(r.cuisineAr);
+                  const hasVideo = !!(r.videoUrl && r.videoUrl.trim());
 
                   return (
                     <Link key={r.id} href={`/recipes/${r.id}`} className="recipe-card">
-                      {r.imageUrl ? (
-                        <img src={r.imageUrl} alt={displayName} className="recipe-card-img" />
-                      ) : (
-                        <div className="recipe-card-img" />
-                      )}
+                      <div className="recipe-card-img-wrap">
+                        {r.imageUrl ? (
+                          <img src={r.imageUrl} alt={displayName} className="recipe-card-img" />
+                        ) : (
+                          <div className="recipe-card-img" />
+                        )}
+                        {hasVideo && (
+                          <span
+                            className="recipe-card-video-emoji"
+                            title={lang === "ar" ? "يحتوي على فيديو" : "Has video"}
+                          >
+                            🎬
+                          </span>
+                        )}
+                      </div>
 
                       <div className="recipe-card-body">
                         <div className="recipe-card-head">
