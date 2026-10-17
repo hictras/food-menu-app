@@ -36,8 +36,6 @@ export async function generateMetadata({
 
   if (!recipe) return { title: "Recipe not found" };
 
-  const imageUrl = recipe.imageUrl || `${BASE_URL}/og-default.jpg`;
-
   return {
     title: recipe.name,
     description: recipe.description || undefined,
@@ -46,21 +44,7 @@ export async function generateMetadata({
       description: recipe.description || undefined,
       url: `${BASE_URL}/recipes/${recipe.id}`,
       siteName: "Menu — your cookbook",
-      images: [
-        {
-          url: imageUrl,
-          width: 1200,
-          height: 630,
-          alt: recipe.name,
-        },
-      ],
       type: "article",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: recipe.name,
-      description: recipe.description || undefined,
-      images: [imageUrl],
     },
   };
 }
