@@ -59,14 +59,11 @@ export default function RecipeDetailClient({
   const catIcon = categoryIcon(recipe.category) || categoryIcon(recipe.categoryAr);
   const catLabel = categoryLabel(recipe.category, lang) || categoryLabel(recipe.categoryAr, lang);
 
-  async function shareWhatsApp() {
-    try {
-      const res = await fetch(`/api/share/whatsapp?id=${recipe.id}&lang=${lang}`);
-      const data = await res.json();
-      if (data.url) window.open(data.url, "_blank");
-    } catch (err) {
-      console.error("Share failed:", err);
-    }
+  function shareToWhatsApp(withToday: boolean) {
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const url = `${origin}/recipes/${recipe.id}${withToday ? "?today" : ""}`;
+    const waUrl = `https://wa.me/?text=${encodeURIComponent(url)}`;
+    window.open(waUrl, "_blank");
   }
 
   async function handleDelete() {
@@ -103,11 +100,14 @@ export default function RecipeDetailClient({
           <h1 style={{ margin: 0 }}>{displayName}</h1>
 
           <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
-            <button type="button" className="btn btn-ghost" onClick={shareWhatsApp}>
+            <button type="button" className="btn btn-ghost" onClick={() => shareToWhatsApp(false)}>
               💬 {lang === "ar" ? "مشاركة" : "Share"}
             </button>
             {isAdmin && (
               <>
+                <button type="button" className="btn btn-ghost" onClick={() => shareToWhatsApp(true)}>
+                  ✨ {lang === "ar" ? "مشاركة كوصفة اليوم" : "Share as Today"}
+                </button>
                 <Link href={`/recipes/${recipe.id}/edit`} className="btn btn-ghost">{t(lang, "edit")}</Link>
                 <button type="button" className="btn btn-danger" onClick={handleDelete} disabled={deleting}>
                   {deleting ? "…" : lang === "ar" ? "🗑 حذف" : "🗑 Delete"}
@@ -118,11 +118,11 @@ export default function RecipeDetailClient({
         </div>
 
         {displayDesc && (
-  <>
-    <div className="detail-desc-divider" />
-    <p className="detail-desc">{displayDesc}</p>
-  </>
-)}
+          <>
+            <div className="detail-desc-divider" />
+            <p className="detail-desc">{displayDesc}</p>
+          </>
+        )}
 
         <div className="detail-meta">
           {catLabel && (
@@ -163,36 +163,36 @@ export default function RecipeDetailClient({
         )}
       </header>
 
-{recipe.videoUrl && (
-  <section className="video-section">
-    <h2>{t(lang, "video")}</h2>
-    {youtubeId ? (
-      <div className="video-wrap">
-        <iframe
-          src={`https://www.youtube.com/embed/${youtubeId}`}
-          title="Recipe video"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
-      </div>
-    ) : (
-      <video
-        src={recipe.videoUrl}
-        controls
-        preload="metadata"
-        playsInline
-        style={{
-          width: "100%",
-          borderRadius: "var(--radius)",
-          border: "1px solid var(--line)",
-          background: "#000",
-          aspectRatio: "16 / 9",
-          objectFit: "contain",
-        }}
-      />
-    )}
-  </section>
-)}
+      {recipe.videoUrl && (
+        <section className="video-section">
+          <h2>{t(lang, "video")}</h2>
+          {youtubeId ? (
+            <div className="video-wrap">
+              <iframe
+                src={`https://www.youtube.com/embed/${youtubeId}`}
+                title="Recipe video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          ) : (
+            <video
+              src={recipe.videoUrl}
+              controls
+              preload="metadata"
+              playsInline
+              style={{
+                width: "100%",
+                borderRadius: "var(--radius)",
+                border: "1px solid var(--line)",
+                background: "#000",
+                aspectRatio: "16 / 9",
+                objectFit: "contain",
+              }}
+            />
+          )}
+        </section>
+      )}
 
       <div className="detail-cols">
         <section className="detail-section">
