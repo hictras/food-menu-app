@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo, useState } from "react";
 import { useLang } from "./LanguageProvider";
 import { t, pick } from "@/lib/i18n";
 import { cuisineFlagUrl } from "@/lib/cuisine-flag";
@@ -25,9 +26,94 @@ const TAG_AR: Record<string, string> = {
   Keto: "كيتو", Paleo: "باليو", Spicy: "حار", Quick: "سريع",
 };
 
+type SortKey = "newest" | "name-asc" | "name-desc" | "time-asc" | "time-desc";
+
 export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
   const { lang } = useLang();
-  const count = recipes.length;
+
+  const [query, setQuery] = useState("");
+  const [cuisineFilter, setCuisineFilter] = useState<string>("");
+  const [tagFilter, setTagFilter] = useState<string>("");
+  const [sort, setSort] = useState<SortKey>("newest");
+
+  // Collect distinct cuisines and tags from the data
+  const allCuisines = useMemo(() => {
+    const set = new Set<string>();
+    for (const r of recipes) {
+      if (r.cuisine) set.add(r.cuisine);
+      if (r.cuisineAr && !r.cuisine) set.add(r.cuisineAr);
+    }
+    return Array.from(set).sort();
+  }, [recipes]);
+
+  const allTags = useMemo(() => {
+    const set = new Set<string>();
+    for (const r of recipes) {
+      if (!r.dietaryTags) continue;
+      try {
+        const tags = JSON.parse(r.dietaryTags);
+        if (Array.isArray(tags)) tags.forEach((tag) => set.add(tag));
+      } catch {}
+    }
+    return Array.from(set).sort();
+  }, [recipes]);
+
+  // Apply filters + sort
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+
+    let list = recipes.filter((r) => {
+      const name = (pick(lang, r.name, r.nameAr) || "").toLowerCase();
+      const cuisine = (pick(lang, r.cuisine, r.cuisineAr) || "").toLowerCase();
+
+      if (q && !name.includes(q) && !cuisine.includes(q)) return false;
+      if (cuisineFilter && (r.cuisine || r.cuisineAr) !== cuisineFilter) return false;
+
+      if (tagFilter) {
+        if (!r.dietaryTags) return false;
+        try {
+          const tags = JSON.parse(r.dietaryTags);
+          if (!Array.isArray(tags) || !tags.includes(tagFilter)) return false;
+        } catch {
+          return false;
+        }
+      }
+      return true;
+    });
+
+    list = [...list].sort((a, b) => {
+      if (sort === "name-asc") {
+        return (pick(lang, a.name, a.nameAr) || "").localeCompare(
+          pick(lang, b.name, b.nameAr) || ""
+        );
+      }
+      if (sort === "name-desc") {
+        return (pick(lang, b.name, b.nameAr) || "").localeCompare(
+          pick(lang, a.name, a.nameAr) || ""
+        );
+      }
+      if (sort === "time-asc") {
+        return a.prepTime + a.cookTime - (b.prepTime + b.cookTime);
+      }
+      if (sort === "time-desc") {
+        return b.prepTime + b.cookTime - (a.prepTime + a.cookTime);
+      }
+      // newest (default) — assume incoming order is newest-first from DB
+      return 0;
+    });
+
+    return list;
+  }, [recipes, query, cuisineFilter, tagFilter, sort, lang]);
+
+  const hasFilters = query || cuisineFilter || tagFilter;
+  const total = recipes.length;
+
+  function clearFilters() {
+    setQuery("");
+    setCuisineFilter("");
+    setTagFilter("");
+    setSort("newest");
+  }
 
   return (
     <>
@@ -35,22 +121,113 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
         <h1>{t(lang, "home_title")}</h1>
       </div>
       <p className="page-sub">
-        {count === 0
+        {total === 0
           ? ""
-          : count === 1
+          : hasFilters
+          ? lang === "ar"
+            ? `${filtered.length} من ${total} وصفة`
+            : `${filtered.length} of ${total} recipes`
+          : total === 1
           ? t(lang, "recipe_count_one")
-          : t(lang, "recipe_count").replace("{n}", String(count))}
+          : t(lang, "recipe_count").replace("{n}", String(total))}
       </p>
 
-      {count === 0 ? (
+      {total > 0 && (
+        <div className="filter-bar">
+          <div className="search-wrap">
+            <span className="search-icon">🔍</span>
+            <input
+              type="text"
+              className="search-input"
+              placeholder={lang === "ar" ? "ابحث عن وصفة..." : "Search recipes..."}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            {query && (
+              <button
+                type="button"
+                className="search-clear"
+                onClick={() => setQuery("")}
+                aria-label="Clear search"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          <select
+            className="filter-select"
+            value={cuisineFilter}
+            onChange={(e) => setCuisineFilter(e.target.value)}
+          >
+            <option value="">
+              {lang === "ar" ? "كل المطابخ" : "All cuisines"}
+            </option>
+            {allCuisines.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+
+          <select
+            className="filter-select"
+            value={tagFilter}
+            onChange={(e) => setTagFilter(e.target.value)}
+          >
+            <option value="">
+              {lang === "ar" ? "كل الوسوم" : "All tags"}
+            </option>
+            {allTags.map((tag) => (
+              <option key={tag} value={tag}>
+                {lang === "ar" ? TAG_AR[tag] ?? tag : tag}
+              </option>
+            ))}
+          </select>
+
+          <select
+            className="filter-select"
+            value={sort}
+            onChange={(e) => setSort(e.target.value as SortKey)}
+          >
+            <option value="newest">{lang === "ar" ? "الأحدث" : "Newest"}</option>
+            <option value="name-asc">{lang === "ar" ? "الاسم أ-ي" : "Name A–Z"}</option>
+            <option value="name-desc">{lang === "ar" ? "الاسم ي-أ" : "Name Z–A"}</option>
+            <option value="time-asc">{lang === "ar" ? "الأسرع أولاً" : "Fastest first"}</option>
+            <option value="time-desc">{lang === "ar" ? "الأطول أولاً" : "Longest first"}</option>
+          </select>
+
+          {hasFilters && (
+            <button type="button" className="filter-clear" onClick={clearFilters}>
+              {lang === "ar" ? "مسح" : "Clear"}
+            </button>
+          )}
+        </div>
+      )}
+
+      {total === 0 ? (
         <div className="empty">
           <h2>{t(lang, "home_empty_title")}</h2>
           <p>{t(lang, "home_empty_text")}</p>
-          <Link href="/recipes/new" className="btn btn-primary">{t(lang, "home_empty_cta")}</Link>
+          <Link href="/recipes/new" className="btn btn-primary">
+            {t(lang, "home_empty_cta")}
+          </Link>
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="empty">
+          <h2>{lang === "ar" ? "لا نتائج" : "No results"}</h2>
+          <p>
+            {lang === "ar"
+              ? "جرّب كلمات أخرى أو امسح الفلاتر."
+              : "Try different keywords or clear your filters."}
+          </p>
+          <button type="button" className="btn btn-ghost" onClick={clearFilters}>
+            {lang === "ar" ? "مسح الفلاتر" : "Clear filters"}
+          </button>
         </div>
       ) : (
         <div className="recipe-grid">
-          {recipes.map((r) => {
+          {filtered.map((r) => {
             const tags: string[] = r.dietaryTags ? JSON.parse(r.dietaryTags) : [];
             const displayName = pick(lang, r.name, r.nameAr);
             const displayCuisine = pick(lang, r.cuisine, r.cuisineAr);
@@ -73,12 +250,7 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
                       )}
                     </div>
                     {flagUrl && (
-                      <img
-                        src={flagUrl}
-                        alt={displayCuisine}
-                        className="recipe-card-flag"
-                        loading="lazy"
-                      />
+                      <img src={flagUrl} alt={displayCuisine} className="recipe-card-flag" loading="lazy" />
                     )}
                   </div>
 

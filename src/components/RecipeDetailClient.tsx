@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useLang } from "./LanguageProvider";
 import { t, pick } from "@/lib/i18n";
 import { extractYouTubeId } from "@/lib/youtube";
@@ -37,6 +39,9 @@ export default function RecipeDetailClient({
   isAdmin: boolean;
 }) {
   const { lang } = useLang();
+  const router = useRouter();
+  const [deleting, setDeleting] = useState(false);
+
   const tags: string[] = recipe.dietaryTags ? JSON.parse(recipe.dietaryTags) : [];
   const youtubeId = extractYouTubeId(recipe.videoUrl);
   const minLabel = lang === "ar" ? "د" : "min";
@@ -46,6 +51,37 @@ export default function RecipeDetailClient({
   const displayCuisine = pick(lang, recipe.cuisine, recipe.cuisineAr);
   const displayServedWith = pick(lang, recipe.servedWith, recipe.servedWithAr);
   const displayHowToServe = pick(lang, recipe.howToServe, recipe.howToServeAr);
+
+  async function shareWhatsApp() {
+    try {
+      const res = await fetch(`/api/share/whatsapp?id=${recipe.id}&lang=${lang}`);
+      const data = await res.json();
+      if (data.url) window.open(data.url, "_blank");
+    } catch (err) {
+      console.error("Share failed:", err);
+    }
+  }
+
+  async function handleDelete() {
+    const ok = window.confirm(
+      lang === "ar"
+        ? `هل أنت متأكد من حذف "${displayName}"؟ لا يمكن التراجع.`
+        : `Delete "${displayName}"? This cannot be undone.`
+    );
+    if (!ok) return;
+
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/recipes/${recipe.id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Delete failed");
+      // Use router to preserve theme + language state
+      router.push("/");
+      router.refresh();
+    } catch (err) {
+      alert(lang === "ar" ? "فشل الحذف" : "Delete failed");
+      setDeleting(false);
+    }
+  }
 
   return (
     <>
@@ -58,27 +94,39 @@ export default function RecipeDetailClient({
       )}
 
       <header className="detail-head">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
           <h1 style={{ margin: 0 }}>{displayName}</h1>
-          {isAdmin && (
-            <Link href={`/recipes/${recipe.id}/edit`} className="btn btn-ghost">
-              {t(lang, "edit")}
-            </Link>
-          )}
+
+          <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={shareWhatsApp}
+              title={lang === "ar" ? "مشاركة عبر واتساب" : "Share on WhatsApp"}
+            >
+              💬 {lang === "ar" ? "مشاركة" : "Share"}
+            </button>
+
+            {isAdmin && (
+              <>
+                <Link href={`/recipes/${recipe.id}/edit`} className="btn btn-ghost">
+                  {t(lang, "edit")}
+                </Link>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={handleDelete}
+                  disabled={deleting}
+                >
+                  {deleting ? "…" : lang === "ar" ? "🗑 حذف" : "🗑 Delete"}
+                </button>
+              </>
+            )}
+          </div>
         </div>
+
         {displayDesc && <p className="detail-desc">{displayDesc}</p>}
-<button
-  type="button"
-  className="btn btn-ghost"
-  onClick={async () => {
-    const res = await fetch(`/api/share/whatsapp?id=${recipe.id}&lang=${lang}`);
-    const data = await res.json();
-    window.open(data.url, "_blank");
-  }}
->
-  <span style={{ fontSize: 14 }}>💬</span>
-  {lang === "ar" ? "مشاركة واتساب" : "Share"}
-</button>
+
         <div className="detail-meta">
           <div className="meta-item"><span className="meta-label">{t(lang, "prep")}</span><span className="meta-value">{recipe.prepTime} {minLabel}</span></div>
           <div className="meta-item"><span className="meta-label">{t(lang, "cook")}</span><span className="meta-value">{recipe.cookTime} {minLabel}</span></div>
@@ -116,7 +164,12 @@ export default function RecipeDetailClient({
         <section className="video-section">
           <h2>{t(lang, "video")}</h2>
           <div className="video-wrap">
-            <iframe src={`https://www.youtube.com/embed/${youtubeId}`} title="Recipe video" allowFullScreen />
+            <iframe
+              src={`https://www.youtube.com/embed/${youtubeId}`}
+              title="Recipe video"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
           </div>
         </section>
       )}

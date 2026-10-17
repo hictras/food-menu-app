@@ -32,25 +32,28 @@ export default function Nav() {
         <Link href="/" className="brand">
           {t(lang, "brand")}<span>.</span>
         </Link>
-        <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-          <Link href="/recipes">{t(lang, "nav_recipes")}</Link>
+
+        <div className="nav-links">
+          <Link href="/recipes" className="nav-link">
+            {t(lang, "nav_recipes")}
+          </Link>
 
           {loaded && isAdmin && (
             <>
-              <Link href="/recipes/new" className="btn btn-primary">
+              <Link href="/recipes/new" className="nav-cta">
                 {t(lang, "nav_add")}
               </Link>
-              <Link href="/admin" className="btn btn-ghost">
+              <Link href="/admin" className="nav-link">
                 {lang === "ar" ? "🔔 إشعار" : "🔔 Push"}
               </Link>
-              <button type="button" onClick={logout} className="btn btn-ghost">
+              <button type="button" onClick={logout} className="nav-link nav-button">
                 {lang === "ar" ? "خروج" : "Logout"}
               </button>
             </>
           )}
 
           {loaded && !isAdmin && (
-            <Link href="/login" className="btn btn-ghost">
+            <Link href="/login" className="nav-link">
               {lang === "ar" ? "دخول" : "Login"}
             </Link>
           )}
@@ -60,16 +63,20 @@ export default function Nav() {
           <button
             type="button"
             onClick={toggleTheme}
-            className="btn btn-ghost"
+            className="nav-icon-btn"
             aria-label="Toggle theme"
             title={theme === "dark" ? "Switch to light" : "Switch to dark"}
-            style={{ padding: "7px 10px" }}
           >
             {theme === "dark" ? "☀" : "☾"}
           </button>
 
-          <button type="button" onClick={toggleLang} className="btn btn-ghost">
-            🌐 {t(lang, "lang_toggle")}
+          <button
+            type="button"
+            onClick={toggleLang}
+            className="nav-icon-btn nav-lang"
+            aria-label="Toggle language"
+          >
+            🌐 <span>{t(lang, "lang_toggle")}</span>
           </button>
         </div>
       </div>
