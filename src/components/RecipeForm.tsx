@@ -104,26 +104,32 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
-  const totalTime = useMemo(() => (parseInt(prepTime) || 0) + (parseInt(cookTime) || 0), [prepTime, cookTime]);
-  const videoPreviewId = useMemo(() => extractYouTubeId(videoUrl), [videoUrl]);
+  const [dirty, setDirty] = useState(false);
 
   useEffect(() => {
+    if (!isEdit) return;
     const handler = (e: BeforeUnloadEvent) => {
-      if (name || description) { e.preventDefault(); e.returnValue = ""; }
+      if (dirty) { e.preventDefault(); e.returnValue = ""; }
     };
     window.addEventListener("beforeunload", handler);
     return () => window.removeEventListener("beforeunload", handler);
-  }, [name, description]);
+  }, [dirty, isEdit]);
+
+  const totalTime = useMemo(() => (parseInt(prepTime) || 0) + (parseInt(cookTime) || 0), [prepTime, cookTime]);
+  const videoPreviewId = useMemo(() => extractYouTubeId(videoUrl), [videoUrl]);
 
   function toggleTag(tag: string) {
     setTags((tags) => (tags.includes(tag) ? tags.filter((x) => x !== tag) : [...tags, tag]));
+    setDirty(true);
   }
   function updateIngredient(i: number, patch: Partial<Ingredient>) {
     setIngredientsList((list) => list.map((ing, idx) => (idx === i ? { ...ing, ...patch } : ing)));
+    setDirty(true);
   }
-  function addIngredient() { setIngredientsList((l) => [...l, { ...emptyIngredient }]); }
+  function addIngredient() { setIngredientsList((l) => [...l, { ...emptyIngredient }]); setDirty(true); }
   function removeIngredient(i: number) {
     setIngredientsList((l) => (l.length === 1 ? l : l.filter((_, idx) => idx !== i)));
+    setDirty(true);
   }
   function applyBulkIngredients() {
     const parsed = parseIngredientsBulk(bulkIngredients);
@@ -137,13 +143,16 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
     });
     setBulkIngredients("");
     setShowBulkIng(false);
+    setDirty(true);
   }
   function updateStep(i: number, patch: Partial<Step>) {
     setSteps((s) => s.map((st, idx) => (idx === i ? { ...st, ...patch } : st)));
+    setDirty(true);
   }
-  function addStep() { setSteps((s) => [...s, { text: "", textAr: "" }]); }
+  function addStep() { setSteps((s) => [...s, { text: "", textAr: "" }]); setDirty(true); }
   function removeStep(i: number) {
     setSteps((s) => (s.length === 1 ? s : s.filter((_, idx) => idx !== i)));
+    setDirty(true);
   }
   function applyBulkSteps() {
     const lines = bulkSteps.split(/\r?\n/)
@@ -156,6 +165,7 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
     });
     setBulkSteps("");
     setShowBulkStep(false);
+    setDirty(true);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -192,6 +202,7 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
         throw new Error(data.error || "Failed to save recipe");
       }
 
+      setDirty(false);
       setToast(isEdit ? t(lang, "recipe_updated") : t(lang, "recipe_saved"));
       const dest = isEdit ? `/recipes/${initial!.id}` : "/";
       setTimeout(() => router.push(dest), 700);
@@ -200,6 +211,8 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
       setSubmitting(false);
     }
   }
+
+  const markDirty = () => { if (!dirty) setDirty(true); };
 
   return (
     <form className="form-card" onSubmit={handleSubmit}>
@@ -215,22 +228,22 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
         <div className="field-pair">
           <div className="field">
             <label>Recipe name (EN)</label>
-            <input type="text" value={name} onChange={(e) => setName(e.target.value)} dir="ltr" />
+            <input type="text" value={name} onChange={(e) => { setName(e.target.value); markDirty(); }} dir="ltr" />
           </div>
           <div className="field">
             <label>اسم الوصفة (AR)</label>
-            <input type="text" value={nameAr} onChange={(e) => setNameAr(e.target.value)} dir="rtl" />
+            <input type="text" value={nameAr} onChange={(e) => { setNameAr(e.target.value); markDirty(); }} dir="rtl" />
           </div>
         </div>
 
         <div className="field-pair">
           <div className="field">
             <label>Description (EN)</label>
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} dir="ltr" />
+            <textarea value={description} onChange={(e) => { setDescription(e.target.value); markDirty(); }} dir="ltr" />
           </div>
           <div className="field">
             <label>الوصف (AR)</label>
-            <textarea value={descriptionAr} onChange={(e) => setDescriptionAr(e.target.value)} dir="rtl" />
+            <textarea value={descriptionAr} onChange={(e) => { setDescriptionAr(e.target.value); markDirty(); }} dir="rtl" />
           </div>
         </div>
 
@@ -238,20 +251,20 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
           <div className="field">
             <label>Cuisine (EN)</label>
             <div className="input-with-tools">
-              <input type="text" value={cuisine} onChange={(e) => setCuisine(e.target.value)} dir="ltr" />
-              <AutoTranslate kind="cuisine" value={cuisine} sourceIsAr={false} onTranslated={setCuisineAr} />
+              <input type="text" value={cuisine} onChange={(e) => { setCuisine(e.target.value); markDirty(); }} dir="ltr" />
+              <AutoTranslate kind="cuisine" value={cuisine} sourceIsAr={false} onTranslated={(v) => { setCuisineAr(v); markDirty(); }} />
               <PickerDropdown
                 items={CUISINES}
                 title={lang === "ar" ? "اختر المطبخ" : "Pick cuisine"}
-                onPick={(en, ar) => { setCuisine(en); setCuisineAr(ar); }}
+                onPick={(en, ar) => { setCuisine(en); setCuisineAr(ar); markDirty(); }}
               />
             </div>
           </div>
           <div className="field">
             <label>المطبخ (AR)</label>
             <div className="input-with-tools">
-              <input type="text" value={cuisineAr} onChange={(e) => setCuisineAr(e.target.value)} dir="rtl" />
-              <AutoTranslate kind="cuisine" value={cuisineAr} sourceIsAr={true} onTranslated={setCuisine} />
+              <input type="text" value={cuisineAr} onChange={(e) => { setCuisineAr(e.target.value); markDirty(); }} dir="rtl" />
+              <AutoTranslate kind="cuisine" value={cuisineAr} sourceIsAr={true} onTranslated={(v) => { setCuisine(v); markDirty(); }} />
             </div>
           </div>
         </div>
@@ -260,7 +273,7 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
           <div className="field">
             <label>Category (EN)</label>
             <div className="input-with-tools">
-              <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} dir="ltr" placeholder="Main Dish, Stew, Dessert..." />
+              <input type="text" value={category} onChange={(e) => { setCategory(e.target.value); markDirty(); }} dir="ltr" placeholder="Main Dish, Stew, Dessert..." />
               <PickerDropdown
                 items={CATEGORIES.map((c) => ({
                   value: c.value,
@@ -269,13 +282,13 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
                   icon: c.icon,
                 }))}
                 title={lang === "ar" ? "اختر الفئة" : "Pick category"}
-                onPick={(en, ar) => { setCategory(en); setCategoryAr(ar); }}
+                onPick={(en, ar) => { setCategory(en); setCategoryAr(ar); markDirty(); }}
               />
             </div>
           </div>
           <div className="field">
             <label>الفئة (AR)</label>
-            <input type="text" value={categoryAr} onChange={(e) => setCategoryAr(e.target.value)} dir="rtl" />
+            <input type="text" value={categoryAr} onChange={(e) => { setCategoryAr(e.target.value); markDirty(); }} dir="rtl" />
           </div>
         </div>
       </section>
@@ -286,22 +299,22 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
         <div className="field-pair">
           <div className="field">
             <label>Served with (EN)</label>
-            <textarea value={servedWith} onChange={(e) => setServedWith(e.target.value)} dir="ltr" placeholder="e.g. Fattoush salad and warm Lentil soup" />
+            <textarea value={servedWith} onChange={(e) => { setServedWith(e.target.value); markDirty(); }} dir="ltr" placeholder="e.g. Fattoush salad and warm Lentil soup" />
           </div>
           <div className="field">
             <label>يقدم مع (AR)</label>
-            <textarea value={servedWithAr} onChange={(e) => setServedWithAr(e.target.value)} dir="rtl" placeholder="مثال: سلطة فتوش وشوربة عدس" />
+            <textarea value={servedWithAr} onChange={(e) => { setServedWithAr(e.target.value); markDirty(); }} dir="rtl" placeholder="مثال: سلطة فتوش وشوربة عدس" />
           </div>
         </div>
 
         <div className="field-pair">
           <div className="field">
             <label>How to serve (EN)</label>
-            <textarea value={howToServe} onChange={(e) => setHowToServe(e.target.value)} dir="ltr" placeholder="e.g. Serve hot in a large platter" />
+            <textarea value={howToServe} onChange={(e) => { setHowToServe(e.target.value); markDirty(); }} dir="ltr" placeholder="e.g. Serve hot in a large platter" />
           </div>
           <div className="field">
             <label>طريقة التقديم (AR)</label>
-            <textarea value={howToServeAr} onChange={(e) => setHowToServeAr(e.target.value)} dir="rtl" placeholder="مثال: يقدم ساخناً في طبق كبير" />
+            <textarea value={howToServeAr} onChange={(e) => { setHowToServeAr(e.target.value); markDirty(); }} dir="rtl" placeholder="مثال: يقدم ساخناً في طبق كبير" />
           </div>
         </div>
       </section>
@@ -315,15 +328,15 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
         <div className="field-row">
           <div className="field">
             <label>{t(lang, "prep")}</label>
-            <input type="number" min="0" value={prepTime} onChange={(e) => setPrepTime(e.target.value)} />
+            <input type="number" min="0" value={prepTime} onChange={(e) => { setPrepTime(e.target.value); markDirty(); }} />
           </div>
           <div className="field">
             <label>{t(lang, "cook")}</label>
-            <input type="number" min="0" value={cookTime} onChange={(e) => setCookTime(e.target.value)} />
+            <input type="number" min="0" value={cookTime} onChange={(e) => { setCookTime(e.target.value); markDirty(); }} />
           </div>
           <div className="field">
             <label>{t(lang, "servings")}</label>
-            <input type="number" min="1" value={servings} onChange={(e) => setServings(e.target.value)} />
+            <input type="number" min="1" value={servings} onChange={(e) => { setServings(e.target.value); markDirty(); }} />
           </div>
         </div>
       </section>
@@ -342,57 +355,55 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
 
       <section className="form-section">
         <h2>{t(lang, "photo")}</h2>
-        <ImageUpload onUploaded={setImageUrl} initialUrl={imageUrl ?? undefined} />
+        <ImageUpload onUploaded={(u) => { setImageUrl(u); markDirty(); }} initialUrl={imageUrl ?? undefined} />
       </section>
 
-<section className="form-section">
-  <h2>{t(lang, "video")}</h2>
+      <section className="form-section">
+        <h2>{t(lang, "video")}</h2>
 
-  <div className="video-options">
-    {/* Option 1 — upload MP4 */}
-    <div className="video-option">
-      <div className="video-option-label">
-        <span className="video-option-num">1</span>
-        <span>{lang === "ar" ? "رفع فيديو (MP4)" : "Upload video (MP4)"}</span>
-      </div>
-      <VideoUpload
-        onUploaded={(url) => setVideoUrl(url)}
-        initialUrl={videoUrl && !videoUrl.includes("youtube") && !videoUrl.includes("youtu.be") ? videoUrl : undefined}
-      />
-      <p className="helper">
-        {lang === "ar"
-          ? "ارفع فيديو من جهازك — يرفع مباشرة إلى R2."
-          : "Upload a video from your device — goes straight to R2."}
-      </p>
-    </div>
+        <div className="video-options">
+          <div className="video-option">
+            <div className="video-option-label">
+              <span className="video-option-num">1</span>
+              <span>{lang === "ar" ? "رفع فيديو (MP4)" : "Upload video (MP4)"}</span>
+            </div>
+            <VideoUpload
+              onUploaded={(url) => { setVideoUrl(url); markDirty(); }}
+              initialUrl={videoUrl && !videoUrl.includes("youtube") && !videoUrl.includes("youtu.be") ? videoUrl : undefined}
+            />
+            <p className="helper">
+              {lang === "ar"
+                ? "ارفع فيديو من جهازك — يرفع مباشرة إلى R2."
+                : "Upload a video from your device — goes straight to R2."}
+            </p>
+          </div>
 
-    <div className="video-divider">
-      <span>{lang === "ar" ? "أو" : "OR"}</span>
-    </div>
+          <div className="video-divider">
+            <span>{lang === "ar" ? "أو" : "OR"}</span>
+          </div>
 
-    {/* Option 2 — YouTube URL */}
-    <div className="video-option">
-      <div className="video-option-label">
-        <span className="video-option-num">2</span>
-        <span>{lang === "ar" ? "رابط يوتيوب" : "YouTube link"}</span>
-      </div>
-      <input
-        type="text"
-        value={videoUrl}
-        onChange={(e) => setVideoUrl(e.target.value)}
-        placeholder="https://www.youtube.com/watch?v=..."
-        dir="ltr"
-        style={{ width: "100%", padding: "9px 12px", border: "1px solid var(--line)", borderRadius: 8, background: "var(--input-bg)", color: "var(--ink)", fontSize: 13 }}
-      />
-      <p className="helper">{t(lang, "video_hint")}</p>
-      {videoPreviewId && (
-        <div className="video-wrap" style={{ marginTop: 12 }}>
-          <iframe src={`https://www.youtube.com/embed/${videoPreviewId}`} title="Preview" allowFullScreen />
+          <div className="video-option">
+            <div className="video-option-label">
+              <span className="video-option-num">2</span>
+              <span>{lang === "ar" ? "رابط يوتيوب" : "YouTube link"}</span>
+            </div>
+            <input
+              type="text"
+              value={videoUrl}
+              onChange={(e) => { setVideoUrl(e.target.value); markDirty(); }}
+              placeholder="https://www.youtube.com/watch?v=..."
+              dir="ltr"
+              style={{ width: "100%", padding: "9px 12px", border: "1px solid var(--line)", borderRadius: 8, background: "var(--input-bg)", color: "var(--ink)", fontSize: 13 }}
+            />
+            <p className="helper">{t(lang, "video_hint")}</p>
+            {videoPreviewId && (
+              <div className="video-wrap" style={{ marginTop: 12 }}>
+                <iframe src={`https://www.youtube.com/embed/${videoPreviewId}`} title="Preview" allowFullScreen />
+              </div>
+            )}
+          </div>
         </div>
-      )}
-    </div>
-  </div>
-</section>
+      </section>
 
       <section className="form-section">
         <h2>{t(lang, "ingredients")}</h2>

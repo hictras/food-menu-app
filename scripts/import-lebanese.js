@@ -17,6 +17,24 @@ if (!Array.isArray(list) || list.length === 0) {
   process.exit(1);
 }
 
+const ADMIN_USER = process.env.ADMIN_USERNAME;
+const ADMIN_PASS = process.env.ADMIN_PASSWORD;
+
+async function getSessionCookie() {
+  if (!ADMIN_USER || !ADMIN_PASS) {
+    console.warn("⚠️  ADMIN_USERNAME/ADMIN_PASSWORD not set — request will likely 401.");
+    return "";
+  }
+  const res = await fetch(`${target}/api/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username: ADMIN_USER, password: ADMIN_PASS }),
+  });
+  if (!res.ok) throw new Error(`Login failed: ${res.status}`);
+  const m = (res.headers.get("set-cookie") || "").match(/admin_session=[^;]+/);
+  return m ? m[0] : "";
+}
+
 console.log(`Found ${list.length} recipes\n`);
 
 function parseServings(s) {
@@ -47,13 +65,7 @@ function splitAmountUnit(s) {
   return { amount: (m[1] || "").trim(), unit: (m[2] || "").trim(), name: (m[3] || "").trim() };
 }
 
-/**
- * Accepts ingredients in either shape:
- *   - String:  "250g fine brown burghul"
- *   - Object:  { name, nameAr, amount, unit, unitAr, preparation, preparationAr }
- */
 function makeIngredient(en, ar) {
-  // Object shape — pass through directly
   if (typeof en === "object" && en !== null) {
     return {
       name: en.name || en.name_en || "",
@@ -65,7 +77,6 @@ function makeIngredient(en, ar) {
       preparationAr: en.preparationAr || en.preparation_ar || "",
     };
   }
-  // String shape — parse
   const e = splitAmountUnit(en);
   const a = splitAmountUnit(ar);
   return {
@@ -82,7 +93,6 @@ function makeIngredient(en, ar) {
 function flattenIngredients(ing, ingAr) {
   const out = [];
 
-  // Array of objects OR array of strings
   if (Array.isArray(ing)) {
     const ar = Array.isArray(ingAr) ? ingAr : [];
     const len = Math.max(ing.length, ar.length);
@@ -101,7 +111,6 @@ function flattenIngredients(ing, ingAr) {
     return out;
   }
 
-  // Sectioned object: { base: [...], base_arabic: [...] }
   if (ing && typeof ing === "object") {
     for (const sec of Object.keys(ing).filter((k) => !k.endsWith("_arabic"))) {
       const en = ing[sec] || [];
@@ -163,22 +172,26 @@ const recipes = list.map((r) => {
   };
 });
 
-console.log(`Sending ${recipes.length} recipes to ${target}/api/recipes/bulk ...`);
-
-fetch(`${target}/api/recipes/bulk`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(recipes),
-})
-  .then((r) => r.json().then((d) => ({ status: r.status, data: d })))
-  .then(({ status, data }) => {
-    if (status >= 400) {
-      console.error("❌ Failed:", status, JSON.stringify(data, null, 2));
+(async () => {
+  try {
+    const cookie = await getSessionCookie();
+    console.log(`Sending ${recipes.length} recipes to ${target}/api/recipes/bulk ...`);
+    const res = await fetch(`${target}/api/recipes/bulk`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(cookie ? { Cookie: cookie } : {}),
+      },
+      body: JSON.stringify(recipes),
+    });
+    const data = await res.json();
+    if (res.status >= 400) {
+      console.error("❌ Failed:", res.status, JSON.stringify(data, null, 2));
       process.exit(1);
     }
     console.log("✅ Succeeded:", data);
-  })
-  .catch((err) => {
+  } catch (err) {
     console.error("❌ Network:", err.message);
     process.exit(1);
-  });
+  }
+})();

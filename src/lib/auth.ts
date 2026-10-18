@@ -6,7 +6,14 @@ const COOKIE = "admin_session";
 const MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 
 function secret() {
-  return process.env.ADMIN_SESSION_SECRET || "dev-insecure-secret";
+  const s = process.env.ADMIN_SESSION_SECRET;
+  if (!s) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("ADMIN_SESSION_SECRET must be set in production");
+    }
+    return "dev-insecure-secret";
+  }
+  return s;
 }
 
 function sign(value: string) {
@@ -32,9 +39,7 @@ export function verifyToken(token: string | undefined): boolean {
 }
 
 export async function isAdmin(): Promise<boolean> {
-  // This tells Next.js 16 this function requires a live request
   await connection();
-  
   const store = await cookies();
   return verifyToken(store.get(COOKIE)?.value);
 }

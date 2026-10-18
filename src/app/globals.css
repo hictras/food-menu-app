@@ -688,14 +688,26 @@ html[dir="rtl"] .form-actions { flex-direction: row-reverse; }
   border-bottom: 1px solid var(--line);
   display: block;
 }
+
+/* ========== VIDEO FINAL FIX (single instance) ========== */
 .video-wrap {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
+  position: relative !important;
+  width: 100% !important;
+  height: 0 !important;
+  padding-bottom: 56.25% !important;
   border-radius: var(--radius);
   overflow: hidden;
   border: 1px solid var(--line);
   background: #000;
+  aspect-ratio: auto !important;
+}
+.video-wrap > iframe {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border: 0 !important;
 }
 
 /* ---------- LOGIN ---------- */
@@ -738,7 +750,7 @@ html[dir="rtl"] .form-section h2 { text-align: right; }
 }
 .input-with-picker > input {
   flex: 1;
-  padding-right: 32px; /* room for the ▾ button */
+  padding-right: 32px;
 }
 html[dir="rtl"] .input-with-picker > input {
   padding-right: 12px;
@@ -861,7 +873,6 @@ html[dir="rtl"] .picker-btn {
 }
 
 /* ---------- RECIPE CARD FLAG ---------- */
-
 .recipe-card-title-row {
   display: flex;
   flex-direction: column;
@@ -891,7 +902,7 @@ html[dir="rtl"] .picker-btn {
 }
 .input-with-tools > input {
   flex: 1;
-  padding-inline-end: 60px; /* room for ⇄ + ▾ */
+  padding-inline-end: 60px;
 }
 html[dir="rtl"] .input-with-tools > input {
   padding-inline-end: 60px;
@@ -971,13 +982,6 @@ html[dir="rtl"] .input-with-tools .picker-btn {
   gap: 2px;
   min-width: 0;
   flex: 1;
-}
-.recipe-card-cuisine {
-  font-size: 10.5px;
-  color: var(--muted);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
 }
 .recipe-card-flag {
   width: 26px;
@@ -1160,27 +1164,6 @@ html[data-theme="light"] .step-stack {
   align-items: flex-start;
 }
 
-/* ========== VIDEO FINAL FIX ========== */
-.video-wrap {
-  position: relative !important;
-  width: 100% !important;
-  height: 0 !important;
-  padding-bottom: 56.25% !important;
-  border-radius: var(--radius);
-  overflow: hidden;
-  border: 1px solid var(--line);
-  background: #000;
-  aspect-ratio: auto !important;
-}
-.video-wrap > iframe {
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  border: 0 !important;
-}
-
 /* ========== NAV CLEANUP ========== */
 .nav-links {
   display: flex;
@@ -1214,7 +1197,6 @@ html[data-theme="light"] .step-stack {
   font-family: inherit;
 }
 
-/* The "+ Add Recipe" button — a clean, compact pill */
 .nav-cta {
   display: inline-flex;
   align-items: center;
@@ -1243,7 +1225,6 @@ html[data-theme="light"] .step-stack {
   transform: scale(0.97);
 }
 
-/* Small icon buttons (theme + language) */
 .nav-icon-btn {
   display: inline-flex;
   align-items: center;
@@ -1266,7 +1247,6 @@ html[data-theme="light"] .step-stack {
   background: var(--surface-2);
 }
 
-/* Language button is wider to fit the label */
 .nav-icon-btn.nav-lang {
   width: auto;
   padding: 0 10px;
@@ -1302,27 +1282,6 @@ html[data-theme="light"] .step-stack {
 .btn-danger:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-/* ========== VIDEO FINAL FIX ========== */
-.video-wrap {
-  position: relative !important;
-  width: 100% !important;
-  height: 0 !important;
-  padding-bottom: 56.25% !important;
-  border-radius: var(--radius);
-  overflow: hidden;
-  border: 1px solid var(--line);
-  background: #000;
-  aspect-ratio: auto !important;
-}
-.video-wrap > iframe {
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  border: 0 !important;
 }
 
 /* ========== FILTER BAR ========== */
@@ -1521,7 +1480,6 @@ html[dir="rtl"] .filter-select {
   margin-top: -4px;
 }
 
-/* Tighten the grid inside sections */
 .category-section .recipe-grid {
   margin: 0;
 }
@@ -1534,43 +1492,6 @@ html[dir="rtl"] .filter-select {
     gap: 36px;
     margin: 24px 0 48px;
   }
-}
-
-/* ========== RECIPE CARD VIDEO ICON ========== */
-.recipe-card-video-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-inline-start: 6px;
-  font-size: 12px;
-  vertical-align: middle;
-  opacity: 0.85;
-  transition: opacity 0.15s, transform 0.15s;
-}
-.recipe-card:hover .recipe-card-video-icon {
-  opacity: 1;
-  transform: scale(1.1);
-}
-
-/* ========== VIDEO ICON NEXT TO TITLE ========== */
-.recipe-card-video-icon {
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-  margin-inline-start: 6px;
-  font-size: 12px;
-  vertical-align: middle;
-  opacity: 0.85;
-  transition: opacity 0.15s, transform 0.15s;
-}
-.recipe-card:hover .recipe-card-video-icon {
-  opacity: 1;
-  transform: scale(1.1);
-}
-
-/* Hide the old photo badge if any CSS remains */
-.recipe-card-video-badge {
-  display: none !important;
 }
 
 /* ========== 🎬 EMOJI ON PHOTO ========== */
@@ -1596,12 +1517,6 @@ html[dir="rtl"] .filter-select {
   transform: scale(1.15);
 }
 
-/* Ensure any leftover badge/triangle stays hidden */
-.recipe-card-video-badge,
-.recipe-card-video-icon {
-  display: none !important;
-}
-
 /* ========== ARABIC TITLE — REDUCE HEIGHT ========== */
 html[lang="ar"] .detail-head h1 {
   font-size: 26px !important;
@@ -1614,7 +1529,6 @@ html[lang="ar"] .detail-head h1 {
   height: auto !important;
 }
 
-/* Also tame any inline h1 or h1 in the title row */
 html[lang="ar"] .detail-title,
 html[lang="ar"] header.detail-head > div:first-child h1 {
   font-size: 26px !important;
@@ -1644,7 +1558,6 @@ html[lang="ar"] header.detail-head > div:first-child h1 {
   line-height: 1.55;
 }
 
-/* Arabic variant — a bit more breathing room */
 html[lang="ar"] .detail-desc-divider {
   margin: 24px 0 18px 0;
 }
@@ -1702,12 +1615,11 @@ html[lang="ar"] .detail-desc-divider {
   height: 1px;
   background: var(--line);
 }
+
 /* ========== CUSTOM THEME COLORS ========== */
 .custom-color-text {
-  /* Default to light mode color */
   color: var(--custom-light) !important;
 }
 html[data-theme="dark"] .custom-color-text {
-  /* Switch to dark mode color */
   color: var(--custom-dark) !important;
 }

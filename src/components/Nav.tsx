@@ -34,16 +34,14 @@ export default function Nav() {
         </Link>
 
         <div className="nav-links">
-          <Link href="/recipes" className="nav-link">
+          <Link href="/" className="nav-link">
             {t(lang, "nav_recipes")}
           </Link>
 
-          {/* EVERYONE CAN SEE THE INBOX */}
           <Link href="/inbox" className="nav-link">
             {lang === "ar" ? "📥 الرسائل" : "📥 Inbox"}
           </Link>
 
-          {/* ONLY ADMIN CAN SEE ADD, PUSH, AND LOGOUT */}
           {loaded && isAdmin && (
             <>
               <Link href="/recipes/new" className="nav-cta">
@@ -67,7 +65,6 @@ export default function Nav() {
             </>
           )}
 
-          {/* ONLY NON-ADMINS SEE THE LOGIN BUTTON */}
           {loaded && !isAdmin && (
             <Link href="/login" className="nav-link">
               {lang === "ar" ? "دخول" : "Login"}

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/db";
 import { recipes, ingredients, instructions } from "@/db/schema";
+import { isAdmin } from "@/lib/auth";
 
 type BulkRecipe = {
   name: string;
@@ -9,6 +10,12 @@ type BulkRecipe = {
   descriptionAr?: string;
   cuisine?: string;
   cuisineAr?: string;
+  category?: string;
+  categoryAr?: string;
+  servedWith?: string;
+  servedWithAr?: string;
+  howToServe?: string;
+  howToServeAr?: string;
   prepTime?: number;
   cookTime?: number;
   servings?: number;
@@ -28,6 +35,10 @@ type BulkRecipe = {
 };
 
 export async function POST(req: NextRequest) {
+  if (!(await isAdmin())) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const db = getDb();
   try {
     const body = await req.json();
@@ -51,6 +62,12 @@ export async function POST(req: NextRequest) {
           descriptionAr: r.descriptionAr?.trim() || null,
           cuisine: r.cuisine?.trim() || null,
           cuisineAr: r.cuisineAr?.trim() || null,
+          category: r.category?.trim() || null,
+          categoryAr: r.categoryAr?.trim() || null,
+          servedWith: r.servedWith?.trim() || null,
+          servedWithAr: r.servedWithAr?.trim() || null,
+          howToServe: r.howToServe?.trim() || null,
+          howToServeAr: r.howToServeAr?.trim() || null,
           prepTime: Number(r.prepTime) || 0,
           cookTime: Number(r.cookTime) || 0,
           servings: Number(r.servings) || 4,
