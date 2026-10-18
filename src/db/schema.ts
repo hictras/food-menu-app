@@ -53,8 +53,8 @@ export const pushSubscriptions = sqliteTable("push_subscriptions", {
   endpoint: text("endpoint").notNull().unique(),
   p256dh: text("p256dh").notNull(),
   auth: text("auth").notNull(),
-  phoneNumber: text("phone_number").notNull(), // Make required
-  name: text("name"), // NEW: Editable name
+  phoneNumber: text("phone_number").notNull(),
+  name: text("name"),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
@@ -65,6 +65,7 @@ export const notifications = sqliteTable("notifications", {
   url: text("url"),
   previewImage: text("preview_image"),
   previewTitle: text("preview_title"),
+  targetPhone: text("target_phone").notNull().default("all"),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 

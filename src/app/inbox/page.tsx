@@ -11,6 +11,7 @@ type Notification = {
   url: string | null;
   previewImage: string | null;
   previewTitle: string | null;
+  targetPhone: string | null;
   createdAt: string;
 };
 
@@ -19,7 +20,7 @@ export default function InboxPage() {
   const [items, setItems] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
-  
+
   const [colors, setColors] = useState({
     inbox_title_color_light: "#e2543a",
     inbox_title_color_dark: "#ff6b4a",
@@ -58,18 +59,17 @@ export default function InboxPage() {
   }
 
   function renderPreviewTitle(title: string) {
-    // Check if title contains the hyphen split (e.g., "Hicham's... - Musakhan")
     if (title.includes(" - ")) {
       const [mainTitle, recipeName] = title.split(" - ");
       return (
         <span style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <span 
+          <span
             className="custom-color-text"
             style={{ "--custom-light": colors.inbox_title_color_light, "--custom-dark": colors.inbox_title_color_dark, fontWeight: 700 } as React.CSSProperties}
           >
             {mainTitle}
           </span>
-          <span 
+          <span
             className="custom-color-text"
             style={{ "--custom-light": colors.inbox_recipe_color_light, "--custom-dark": colors.inbox_recipe_color_dark, fontWeight: 500, fontSize: 12 } as React.CSSProperties}
           >
@@ -99,7 +99,37 @@ export default function InboxPage() {
           {items.map((item) => (
             <div key={item.id} style={{ background: "var(--surface)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16 }}>
-                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: "var(--ink)" }}>{item.title}</h3>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                  <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: "var(--ink)" }}>{item.title}</h3>
+                  {isAdmin && item.targetPhone && item.targetPhone !== "all" && (
+                    <span style={{
+                      fontSize: 10,
+                      fontWeight: 600,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.06em",
+                      color: "var(--accent)",
+                      background: "var(--accent-soft)",
+                      padding: "2px 8px",
+                      borderRadius: 999,
+                    }}>
+                      → {item.targetPhone}
+                    </span>
+                  )}
+                  {isAdmin && item.targetPhone === "all" && (
+                    <span style={{
+                      fontSize: 10,
+                      fontWeight: 600,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.06em",
+                      color: "var(--muted)",
+                      background: "var(--surface-2)",
+                      padding: "2px 8px",
+                      borderRadius: 999,
+                    }}>
+                      {lang === "ar" ? "الجميع" : "All"}
+                    </span>
+                  )}
+                </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <span style={{ fontSize: 11, color: "var(--muted)" }}>
                     {new Date(item.createdAt).toLocaleDateString()}
@@ -111,7 +141,6 @@ export default function InboxPage() {
               </div>
               <p style={{ margin: 0, fontSize: 13, color: "var(--ink-soft)" }}>{item.body}</p>
 
-              {/* Show Image Preview Card (if it exists) */}
               {item.url && item.previewImage ? (
                 <Link href={item.url} style={{ display: "flex", alignItems: "center", gap: 12, padding: 10, background: "var(--bg)", border: "1px solid var(--line)", borderRadius: 8, textDecoration: "none", color: "inherit", marginTop: 4 }}>
                   <img src={item.previewImage} alt="Preview" style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 6 }} />
@@ -121,7 +150,6 @@ export default function InboxPage() {
                   </div>
                 </Link>
               ) : (
-                /* Only show the button if there is NO image preview */
                 item.url && item.url !== "/inbox" && (
                   <Link href={item.url} className="btn btn-ghost" style={{ alignSelf: "flex-start", marginTop: 4 }}>
                     {lang === "ar" ? "عرض الصفحة" : "View Page"} →

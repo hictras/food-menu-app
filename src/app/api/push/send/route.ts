@@ -15,7 +15,7 @@ function initWebPush() {
 
 export async function POST(req: NextRequest) {
   if (!(await isAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  
+
   try {
     initWebPush();
     const db = getDb();
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     const title = body.title || "Menu";
     const text = body.body || "New recipe added";
     const url = body.url || "/inbox";
-    const targetPhone = body.targetPhone || "all"; 
+    const targetPhone = body.targetPhone || "all";
 
     let previewImage = null;
     let previewTitle = null;
@@ -42,10 +42,17 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    await db.insert(notifications).values({ title, body: text, url, previewImage, previewTitle });
+    await db.insert(notifications).values({
+      title,
+      body: text,
+      url,
+      previewImage,
+      previewTitle,
+      targetPhone,
+    });
 
     const payload = JSON.stringify({ title, body: text, url: "/inbox" });
-    
+
     let subs;
     if (targetPhone === "all") {
       subs = await db.select().from(pushSubscriptions);
@@ -54,7 +61,7 @@ export async function POST(req: NextRequest) {
       if (phones.length === 0) subs = await db.select().from(pushSubscriptions);
       else subs = await db.select().from(pushSubscriptions).where(inArray(pushSubscriptions.phoneNumber, phones));
     }
-    
+
     if (subs.length === 0) {
       return NextResponse.json({ error: "No subscriptions found" }, { status: 404 });
     }
