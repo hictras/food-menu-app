@@ -46,6 +46,9 @@ export default function Nav() {
           {/* ONLY ADMIN CAN SEE ADD, PUSH, AND LOGOUT */}
           {loaded && isAdmin && (
             <>
+	      <Link href="/settings" className="nav-link">
+ 	       ⚙️ {lang === "ar" ? "الإعدادات" : "Settings"}
+	      </Link>
               <Link href="/recipes/new" className="nav-cta">
                 {t(lang, "nav_add")}
               </Link>

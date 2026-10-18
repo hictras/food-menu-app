@@ -1702,3 +1702,12 @@ html[lang="ar"] .detail-desc-divider {
   height: 1px;
   background: var(--line);
 }
+/* ========== CUSTOM THEME COLORS ========== */
+.custom-color-text {
+  /* Default to light mode color */
+  color: var(--custom-light) !important;
+}
+html[data-theme="dark"] .custom-color-text {
+  /* Switch to dark mode color */
+  color: var(--custom-dark) !important;
+}

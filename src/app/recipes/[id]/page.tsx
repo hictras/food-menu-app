@@ -1,16 +1,14 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { getDb } from "@/db";
-import { recipes, ingredients, instructions } from "@/db/schema";
+import { recipes, ingredients, instructions, settings } from "@/db/schema";
 import { eq, asc } from "drizzle-orm";
 import RecipeDetailClient from "@/components/RecipeDetailClient";
 import { isAdmin } from "@/lib/auth";
 import type { Metadata } from "next";
 
-// --- Meta Tags for WhatsApp/Facebook Preview ---
 export async function generateMetadata({ 
-  params, 
-  searchParams 
+  params, searchParams 
 }: { 
   params: Promise<{ id: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -22,57 +20,63 @@ export async function generateMetadata({
 
   const db = getDb();
   const [recipe] = await db.select().from(recipes).where(eq(recipes.id, numericId)).limit(1);
-
   if (!recipe) return { title: "Recipe Not Found" };
 
-  // 1. Check if ?today is in the URL
+  const settingsRows = await db.select().from(settings);
+  const s = Object.fromEntries(settingsRows.map((r) => [r.key, r.value]));
+
   const isToday = "today" in search;
-  const title = isToday ? `Hicham's Main Dish of the day - ${recipe.name}` : recipe.name;
+  const customTitle = s.today_text || "Hicham's Main Dish of the day";
   
+  const title = isToday ? `${customTitle} - ${recipe.name}` : recipe.name;
   const description = recipe.description || "View this recipe on Menu.";
   const image = recipe.imageUrl || "https://food-menu-app-xxww.onrender.com/icon-192.png";
 
   return {
-    title: title,
-    description: description,
-    openGraph: {
-      title: title,
-      description: description,
-      images: [{ url: image }],
-      type: "article",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: title,
-      description: description,
-      images: [image],
-    },
+    title,
+    description,
+    openGraph: { title, description, images: [{ url: image }], type: "article" },
+    twitter: { card: "summary_large_image", title, description, images: [image] },
   };
 }
 
-// --- Detail Page Logic ---
-async function RecipeDetail({ 
-  id, 
-  isToday 
-}: { 
-  id: number; 
-  isToday: boolean;
-}) {
+async function RecipeDetail({ id, isToday }: { id: number; isToday: boolean; }) {
   const db = getDb();
   
-  // Fetch the recipe
+  const settingsRows = await db.select().from(settings);
+  const s = Object.fromEntries(settingsRows.map((r) => [r.key, r.value]));
+
   const [recipe] = await db.select().from(recipes).where(eq(recipes.id, id)).limit(1);
   if (!recipe) notFound();
 
-  // Override the name if ?today is present using JSX
+  const customTitle = s.today_text || "Hicham's Main Dish of the day";
+
   const displayRecipe = isToday 
     ? { 
         ...recipe, 
         name: (
           <>
-            Hicham's Main Dish of the day
+            <span 
+              className="custom-color-text"
+              style={{ 
+                "--custom-light": s.today_color_light || "#e2543a",
+                "--custom-dark": s.today_color_dark || "#ff6b4a"
+              } as React.CSSProperties}
+            >
+              {customTitle}
+            </span>
             <br />
-            <span style={{ fontSize: "0.75em", fontWeight: 400, color: "var(--muted)", display: "block", marginTop: 8 }}>
+            <span 
+              className="custom-color-text"
+              style={{ 
+                "--custom-light": s.recipe_name_color_light || "#52525b",
+                "--custom-dark": s.recipe_name_color_dark || "#a1a1aa",
+                fontSize: "0.75em", 
+                fontWeight: 400, 
+                display: "block", 
+                marginTop: 8 
+              } as React.CSSProperties}
+            >
               {recipe.name}
             </span>
           </>
@@ -86,7 +90,6 @@ async function RecipeDetail({
 
   return (
     <RecipeDetailClient
-      // We pass the overridden name as a ReactNode
       recipe={displayRecipe as any}
       ingredients={ings}
       instructions={steps}
@@ -104,28 +107,15 @@ function DetailSkeleton() {
   );
 }
 
-async function RecipeResolver({ 
-  params, 
-  searchParams 
-}: { 
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
+async function RecipeResolver({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ [key: string]: string | string[] | undefined }>; }) {
   const { id } = await params;
   const search = await searchParams;
   const numericId = Number(id);
   if (Number.isNaN(numericId)) notFound();
-  
   return <RecipeDetail id={numericId} isToday={"today" in search} />;
 }
 
-export default function RecipePage({ 
-  params, 
-  searchParams 
-}: { 
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
+export default function RecipePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ [key: string]: string | string[] | undefined }>; }) {
   return (
     <main className="container">
       <Suspense fallback={<DetailSkeleton />}>
