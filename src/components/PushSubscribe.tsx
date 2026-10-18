@@ -9,7 +9,6 @@ export default function PushSubscribe() {
   const [subscribed, setSubscribed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
-  const [deviceName, setDeviceName] = useState("");
 
   useEffect(() => {
     if ("serviceWorker" in navigator && "PushManager" in window) {
@@ -21,11 +20,6 @@ export default function PushSubscribe() {
   }, []);
 
   async function subscribe() {
-    if (!deviceName.trim()) {
-      setMsg("Please enter a name for your device first.");
-      return;
-    }
-
     setBusy(true);
     setMsg("");
     try {
@@ -44,14 +38,15 @@ export default function PushSubscribe() {
         applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!),
       });
 
+      // We no longer need to pass a deviceName
       await fetch("/api/push/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subscription: sub, deviceName }),
+        body: JSON.stringify({ subscription: sub }),
       });
 
       setSubscribed(true);
-      setMsg("Subscribed!");
+      setMsg("Subscribed successfully!");
     } catch (err) {
       setMsg(err instanceof Error ? err.message : "Error");
     } finally {
@@ -93,13 +88,6 @@ export default function PushSubscribe() {
 
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-      <input 
-        type="text" 
-        placeholder="Your name (e.g. Hicham)" 
-        value={deviceName}
-        onChange={(e) => setDeviceName(e.target.value)}
-        style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid var(--line)", fontSize: 12, background: "var(--input-bg)", color: "var(--ink)" }}
-      />
       <button type="button" className="btn btn-ghost" onClick={subscribe} disabled={busy}>
         🔔 Enable
       </button>

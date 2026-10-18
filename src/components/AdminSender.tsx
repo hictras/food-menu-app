@@ -7,6 +7,7 @@ type Recipe = {
   id: number;
   name: string;
   nameAr: string | null;
+  imageUrl: string | null;
 };
 
 export default function AdminSender() {
@@ -16,13 +17,13 @@ export default function AdminSender() {
   
   const [title, setTitle] = useState("Menu");
   const [body, setBody] = useState("New recipe added!");
-  const [url, setUrl] = useState("/inbox");
-  const [targetDevice, setTargetDevice] = useState("");
+  const [url, setUrl] = useState(""); // Empty by default
 
-  // Recipe Search State
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
+
+  const baseUrl = "https://food-menu-app-xxww.onrender.com";
 
   useEffect(() => {
     fetch("/api/recipes")
@@ -50,10 +51,12 @@ export default function AdminSender() {
     setBusy(true);
     setResult("");
     try {
+      const fullUrl = url.trim().startsWith("/") ? `${baseUrl}${url}` : url.trim();
+
       const res = await fetch("/api/push/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, body, url, targetDevice }),
+        body: JSON.stringify({ title, body, url: fullUrl }),
       });
       const data = await res.json();
       setResult(JSON.stringify(data, null, 2));
@@ -64,24 +67,17 @@ export default function AdminSender() {
     }
   }
 
+  const previewRecipe = useMemo(() => {
+    const match = url.match(/\/recipes\/(\d+)/);
+    if (match) return recipes.find(r => r.id === parseInt(match[1]));
+    return null;
+  }, [url, recipes]);
+
   return (
     <main className="container" style={{ paddingTop: 40 }}>
       <h1>{lang === "ar" ? "إرسال إشعار" : "Send Push Notification"}</h1>
       
       <div className="form-card">
-        {/* Device Targeting */}
-        <div className="field">
-          <label>{lang === "ar" ? "جهاز محدد (اختياري)" : "Target Device (Optional)"}</label>
-          <input
-            type="text"
-            value={targetDevice}
-            onChange={(e) => setTargetDevice(e.target.value)}
-            placeholder="e.g. Hicham's iPhone (leave blank to send to all)"
-            style={{ width: "100%", padding: 8, marginBottom: 12 }}
-          />
-        </div>
-
-        {/* Message Fields */}
         <div className="field">
           <label>{lang === "ar" ? "العنوان" : "Title"}</label>
           <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} style={{ width: "100%", padding: 8, marginBottom: 12 }} />
@@ -91,9 +87,8 @@ export default function AdminSender() {
           <input type="text" value={body} onChange={(e) => setBody(e.target.value)} style={{ width: "100%", padding: 8, marginBottom: 12 }} />
         </div>
 
-        {/* Recipe Search & Link Auto-fill */}
         <div className="field" style={{ position: "relative" }}>
-          <label>{lang === "ar" ? "ابحث عن وصفة لربطها" : "Search Recipe to Auto-fill Link"}</label>
+          <label>{lang === "ar" ? "ابحث عن وصفة لربطها (اختياري)" : "Search Recipe (Optional)"}</label>
           <input 
             type="text" 
             placeholder="Type recipe name..." 
@@ -111,13 +106,7 @@ export default function AdminSender() {
                   <div style={{ padding: 12, color: "var(--muted)", fontSize: 13 }}>No recipes found</div>
                 ) : (
                   filteredRecipes.map((r) => (
-                    <div 
-                      key={r.id}
-                      onClick={() => selectRecipe(r.id)}
-                      style={{ padding: "10px 12px", cursor: "pointer", borderBottom: "1px solid var(--line)", fontSize: 14, color: "var(--ink)" }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = "var(--surface-2)"}
-                      onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
-                    >
+                    <div key={r.id} onClick={() => selectRecipe(r.id)} style={{ padding: "10px 12px", cursor: "pointer", borderBottom: "1px solid var(--line)", fontSize: 14, color: "var(--ink)" }} onMouseEnter={(e) => e.currentTarget.style.background = "var(--surface-2)"} onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
                       {lang === "ar" && r.nameAr ? r.nameAr : r.name}
                     </div>
                   ))
@@ -128,19 +117,35 @@ export default function AdminSender() {
         </div>
 
         <div className="field">
-          <label>{lang === "ar" ? "الرابط" : "URL"}</label>
-          <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} style={{ width: "100%", padding: 8, marginBottom: 12 }} />
+          <label>{lang === "ar" ? "الرابط (اختياري)" : "URL (Optional)"}</label>
+          <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Leave empty to send text only" style={{ width: "100%", padding: 8, marginBottom: 12 }} />
         </div>
+
+        {url.trim() !== "" && (
+          <div style={{ marginBottom: 24 }}>
+            <label style={{ display: "block", marginBottom: 8, fontSize: 13, fontWeight: 600, color: "var(--muted)" }}>Inbox Preview</label>
+            <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: 16 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                <h3 style={{ margin: 0, fontSize: 15, fontWeight: 600 }}>{title}</h3>
+                <span style={{ fontSize: 11, color: "var(--muted)" }}>Just now</span>
+              </div>
+              <p style={{ margin: "0 0 12px 0", fontSize: 13, color: "var(--ink-soft)" }}>{body}</p>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, padding: 10, background: "var(--surface)", border: "1px solid var(--line)", borderRadius: 8 }}>
+                {previewRecipe?.imageUrl ? <img src={previewRecipe.imageUrl} alt="Preview" style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 6 }} /> : <div style={{ width: 60, height: 60, borderRadius: 6, background: "var(--line)" }} />}
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <strong style={{ fontSize: 13, color: "var(--accent)" }}>{previewRecipe ? previewRecipe.name : "View Link"}</strong>
+                  <span style={{ fontSize: 11, color: "var(--muted)" }}>{url}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         
         <button className="btn btn-primary" onClick={send} disabled={busy} style={{ width: "100%", padding: 12 }}>
-          {busy ? "Sending..." : lang === "ar" ? "إرسال" : "Send"}
+          {busy ? "Sending..." : "Send"}
         </button>
 
-        {result && (
-          <pre style={{ marginTop: 16, fontSize: 13, background: "#f5f5f5", padding: 12, borderRadius: 8 }}>
-            {result}
-          </pre>
-        )}
+        {result && <pre style={{ marginTop: 16, fontSize: 13, background: "#f5f5f5", padding: 12, borderRadius: 8 }}>{result}</pre>}
       </div>
     </main>
   );

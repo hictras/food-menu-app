@@ -20,7 +20,6 @@ export default function InboxPage() {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   
-  // Default colors
   const [colors, setColors] = useState({
     inbox_title_color_light: "#e2543a",
     inbox_title_color_dark: "#ff6b4a",
@@ -30,11 +29,9 @@ export default function InboxPage() {
 
   useEffect(() => {
     fetch("/api/auth/me").then((res) => res.json()).then((data) => setIsAdmin(!!data.admin)).catch(() => setIsAdmin(false));
-    
     fetch("/api/settings").then(res => res.json()).then(data => {
       if (data.inbox_title_color_light) setColors(prev => ({ ...prev, ...data }));
     });
-
     loadMessages();
   }, []);
 
@@ -61,28 +58,20 @@ export default function InboxPage() {
   }
 
   function renderPreviewTitle(title: string) {
+    // Check if title contains the hyphen split (e.g., "Hicham's... - Musakhan")
     if (title.includes(" - ")) {
       const [mainTitle, recipeName] = title.split(" - ");
       return (
         <span style={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <span 
             className="custom-color-text"
-            style={{ 
-              "--custom-light": colors.inbox_title_color_light,
-              "--custom-dark": colors.inbox_title_color_dark,
-              fontWeight: 700 
-            } as React.CSSProperties}
+            style={{ "--custom-light": colors.inbox_title_color_light, "--custom-dark": colors.inbox_title_color_dark, fontWeight: 700 } as React.CSSProperties}
           >
             {mainTitle}
           </span>
           <span 
             className="custom-color-text"
-            style={{ 
-              "--custom-light": colors.inbox_recipe_color_light,
-              "--custom-dark": colors.inbox_recipe_color_dark,
-              fontWeight: 500, 
-              fontSize: 12 
-            } as React.CSSProperties}
+            style={{ "--custom-light": colors.inbox_recipe_color_light, "--custom-dark": colors.inbox_recipe_color_dark, fontWeight: 500, fontSize: 12 } as React.CSSProperties}
           >
             {recipeName}
           </span>
@@ -122,7 +111,8 @@ export default function InboxPage() {
               </div>
               <p style={{ margin: 0, fontSize: 13, color: "var(--ink-soft)" }}>{item.body}</p>
 
-              {item.url && item.previewImage && (
+              {/* Show Image Preview Card (if it exists) */}
+              {item.url && item.previewImage ? (
                 <Link href={item.url} style={{ display: "flex", alignItems: "center", gap: 12, padding: 10, background: "var(--bg)", border: "1px solid var(--line)", borderRadius: 8, textDecoration: "none", color: "inherit", marginTop: 4 }}>
                   <img src={item.previewImage} alt="Preview" style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 6 }} />
                   <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -130,12 +120,13 @@ export default function InboxPage() {
                     <span style={{ fontSize: 11, color: "var(--muted)", marginTop: 2 }}>{item.url.replace("https://", "")}</span>
                   </div>
                 </Link>
-              )}
-
-              {item.url && item.url !== "/inbox" && (
-                <Link href={item.url} className="btn btn-ghost" style={{ alignSelf: "flex-start", marginTop: 4 }}>
-                  {lang === "ar" ? "عرض الصفحة" : "View Page"} →
-                </Link>
+              ) : (
+                /* Only show the button if there is NO image preview */
+                item.url && item.url !== "/inbox" && (
+                  <Link href={item.url} className="btn btn-ghost" style={{ alignSelf: "flex-start", marginTop: 4 }}>
+                    {lang === "ar" ? "عرض الصفحة" : "View Page"} →
+                  </Link>
+                )
               )}
             </div>
           ))}
