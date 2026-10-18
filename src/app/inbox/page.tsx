@@ -9,6 +9,8 @@ type Notification = {
   title: string;
   body: string;
   url: string | null;
+  previewImage: string | null;
+  previewTitle: string | null;
   createdAt: string;
 };
 
@@ -16,8 +18,18 @@ export default function InboxPage() {
   const { lang } = useLang();
   const [items, setItems] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((data) => setIsAdmin(!!data.admin))
+      .catch(() => setIsAdmin(false));
+
+    loadMessages();
+  }, []);
+
+  function loadMessages() {
     fetch("/api/notifications")
       .then((res) => res.json())
       .then((data) => {
@@ -25,7 +37,22 @@ export default function InboxPage() {
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, []);
+  }
+
+  async function handleDelete(id: number) {
+    const confirmDelete = window.confirm(
+      lang === "ar" ? "هل أنت متأكد من حذف هذه الرسالة؟" : "Are you sure you want to delete this message?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch(`/api/notifications/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed");
+      setItems((prev) => prev.filter((item) => item.id !== id));
+    } catch (err) {
+      alert(lang === "ar" ? "فشل الحذف" : "Delete failed");
+    }
+  }
 
   return (
     <main className="container" style={{ paddingTop: 40, paddingBottom: 80 }}>
@@ -44,7 +71,7 @@ export default function InboxPage() {
           <p>{lang === "ar" ? "عندما نرسل تحديثاً، سيظهر هنا." : "When we send an update, it will appear here."}</p>
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 24 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 24 }}>
           {items.map((item) => (
             <div
               key={item.id}
@@ -55,32 +82,68 @@ export default function InboxPage() {
                 padding: 16,
                 display: "flex",
                 flexDirection: "column",
-                gap: 8,
+                gap: 12,
               }}
             >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16 }}>
                 <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: "var(--ink)" }}>
                   {item.title}
                 </h3>
-                <span style={{ fontSize: 11, color: "var(--muted)", whiteSpace: "nowrap" }}>
-                  {new Date(item.createdAt).toLocaleDateString(lang === "ar" ? "ar-EG" : "en-US", {
-                    month: "short",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <span style={{ fontSize: 11, color: "var(--muted)", whiteSpace: "nowrap" }}>
+                    {new Date(item.createdAt).toLocaleDateString(lang === "ar" ? "ar-EG" : "en-US", {
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                  {isAdmin && (
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      style={{ background: "transparent", border: "none", color: "var(--accent)", cursor: "pointer", fontSize: 14 }}
+                      title="Delete"
+                    >
+                      🗑
+                    </button>
+                  )}
+                </div>
               </div>
+              
               <p style={{ margin: 0, fontSize: 13, color: "var(--ink-soft)", lineHeight: 1.5 }}>
                 {item.body}
               </p>
-              {item.url && item.url !== "/inbox" && (
+
+              {/* Link Preview Card */}
+              {item.previewImage && item.url && (
                 <Link
                   href={item.url}
-                  className="btn btn-ghost"
-                  style={{ alignSelf: "flex-start", marginTop: 4 }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
+                    padding: 10,
+                    background: "var(--bg)",
+                    border: "1px solid var(--line)",
+                    borderRadius: 8,
+                    textDecoration: "none",
+                    color: "inherit",
+                    marginTop: 4,
+                  }}
                 >
-                  {lang === "ar" ? "عرض" : "View"} →
+                  <img
+                    src={item.previewImage}
+                    alt="Preview"
+                    style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 6 }}
+                  />
+                  <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                    <strong style={{ fontSize: 13, color: "var(--ink)" }}>
+                      {item.previewTitle || "View Recipe"}
+                    </strong>
+                    <span style={{ fontSize: 11, color: "var(--muted)", wordBreak: "break-all" }}>
+                      {item.url.replace("https://", "")}
+                    </span>
+                  </div>
                 </Link>
               )}
             </div>

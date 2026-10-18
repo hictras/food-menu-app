@@ -61,5 +61,7 @@ export const notifications = sqliteTable("notifications", {
   title: text("title").notNull(),
   body: text("body").notNull(),
   url: text("url"),
+  previewImage: text("preview_image"), // NEW
+  previewTitle: text("preview_title"), // NEW
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
