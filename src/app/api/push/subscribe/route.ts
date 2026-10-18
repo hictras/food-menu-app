@@ -7,8 +7,9 @@ export async function POST(req: NextRequest) {
     const db = getDb();
     const body = await req.json();
     
-    // The frontend sends { subscription: sub }, so we unwrap it here
+    // The frontend sends { subscription: sub, phoneNumber: "123" }
     const sub = body.subscription || body;
+    const phoneNumber = body.phoneNumber || "unknown";
 
     if (!sub?.endpoint || !sub?.keys?.p256dh || !sub?.keys?.auth) {
       return NextResponse.json({ error: "Invalid subscription data" }, { status: 400 });
@@ -20,10 +21,15 @@ export async function POST(req: NextRequest) {
         endpoint: sub.endpoint,
         p256dh: sub.keys.p256dh,
         auth: sub.keys.auth,
+        phoneNumber: phoneNumber, // <--- Added here
       })
       .onConflictDoUpdate({
         target: pushSubscriptions.endpoint,
-        set: { p256dh: sub.keys.p256dh, auth: sub.keys.auth },
+        set: { 
+          p256dh: sub.keys.p256dh, 
+          auth: sub.keys.auth,
+          phoneNumber: phoneNumber
+        },
       });
 
     return NextResponse.json({ ok: true });
