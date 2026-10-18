@@ -5,10 +5,13 @@ import { pushSubscriptions } from "@/db/schema";
 export async function POST(req: NextRequest) {
   try {
     const db = getDb();
-    const sub = await req.json();
+    const body = await req.json();
+    
+    // The frontend sends { subscription: sub }, so we unwrap it here
+    const sub = body.subscription || body;
 
     if (!sub?.endpoint || !sub?.keys?.p256dh || !sub?.keys?.auth) {
-      return NextResponse.json({ error: "Invalid subscription" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid subscription data" }, { status: 400 });
     }
 
     await db

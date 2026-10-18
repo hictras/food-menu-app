@@ -38,12 +38,15 @@ export default function PushSubscribe() {
         applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!),
       });
 
-      // We no longer need to pass a deviceName
-      await fetch("/api/push/subscribe", {
+      const res = await fetch("/api/push/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ subscription: sub }),
       });
+
+      if (!res.ok) {
+        throw new Error("Server rejected the subscription");
+      }
 
       setSubscribed(true);
       setMsg("Subscribed successfully!");
