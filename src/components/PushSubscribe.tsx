@@ -21,30 +21,31 @@ export default function PushSubscribe() {
 
   async function subscribe() {
     setMsg("");
-    
-    // 1. ASK FOR PHONE NUMBER FIRST
-    const phoneNumber = window.prompt(
-      lang === "ar" 
-        ? "أدخل رقم هاتفك (مثال: 96170123456)" 
-        : "Enter your phone number (e.g. 96170123456)"
-    );
-
-    // If they click Cancel or leave it empty, stop.
-    if (!phoneNumber || !phoneNumber.trim()) {
-      setMsg(lang === "ar" ? "رقم الهاتف مطلوب" : "Phone number is required");
-      return;
-    }
-
-    // 2. THEN ASK FOR PERMISSION
     setBusy(true);
+
     try {
+      // 1. Ask for notification permission FIRST (mobile blocks this if delayed)
       const permission = await Notification.requestPermission();
       if (permission !== "granted") {
-        setMsg("Permission denied");
+        setMsg(lang === "ar" ? "تم رفض الإذن" : "Permission denied");
         setBusy(false);
         return;
       }
 
+      // 2. Ask for the phone number AFTER permission is granted
+      const phoneNumber = window.prompt(
+        lang === "ar" 
+          ? "أدخل رقم هاتفك (مثال: 96170123456)" 
+          : "Enter your phone number (e.g. 96170123456)"
+      );
+
+      if (!phoneNumber || !phoneNumber.trim()) {
+        setMsg(lang === "ar" ? "رقم الهاتف مطلوب" : "Phone number is required");
+        setBusy(false);
+        return;
+      }
+
+      // 3. Subscribe to push
       const reg = await navigator.serviceWorker.register("/sw.js");
       await navigator.serviceWorker.ready;
 
@@ -53,6 +54,7 @@ export default function PushSubscribe() {
         applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!),
       });
 
+      // 4. Send to server
       const res = await fetch("/api/push/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -60,11 +62,12 @@ export default function PushSubscribe() {
       });
 
       if (!res.ok) {
-        throw new Error("Server rejected the subscription");
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Server rejected the subscription");
       }
 
       setSubscribed(true);
-      setMsg("Subscribed successfully!");
+      setMsg(lang === "ar" ? "تم التفعيل بنجاح!" : "Subscribed successfully!");
     } catch (err) {
       setMsg(err instanceof Error ? err.message : "Error");
     } finally {
