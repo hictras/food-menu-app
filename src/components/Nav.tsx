@@ -38,13 +38,19 @@ export default function Nav() {
             {t(lang, "nav_recipes")}
           </Link>
 
+          {/* EVERYONE CAN SEE THE INBOX */}
+          <Link href="/inbox" className="nav-link">
+            {lang === "ar" ? "📥 الرسائل" : "📥 Inbox"}
+          </Link>
+
+          {/* ONLY ADMIN CAN SEE ADD, PUSH, AND LOGOUT */}
           {loaded && isAdmin && (
             <>
               <Link href="/recipes/new" className="nav-cta">
                 {t(lang, "nav_add")}
               </Link>
               <Link href="/admin" className="nav-link">
-                {lang === "ar" ? "🔔 إشعار" : "🔔 Push"}
+                {lang === "ar" ? "🔔 إرسال إشعار" : "🔔 Send Push"}
               </Link>
               <button type="button" onClick={logout} className="nav-link nav-button">
                 {lang === "ar" ? "خروج" : "Logout"}
@@ -52,6 +58,7 @@ export default function Nav() {
             </>
           )}
 
+          {/* ONLY NON-ADMINS SEE THE LOGIN BUTTON */}
           {loaded && !isAdmin && (
             <Link href="/login" className="nav-link">
               {lang === "ar" ? "دخول" : "Login"}

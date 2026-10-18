@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import webpush from "web-push";
 import { getDb } from "@/db";
-import { pushSubscriptions } from "@/db/schema";
+import { pushSubscriptions, notifications } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { isAdmin } from "@/lib/auth";
 
@@ -17,18 +17,27 @@ function initWebPush() {
 
 export async function POST(req: NextRequest) {
   if (!(await isAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  
   try {
     initWebPush();
     const db = getDb();
     const body = await req.json();
 
-    const payload = JSON.stringify({
-      title: body.title || "Menu",
-      body: body.body || "New recipe added",
-      url: body.url || "/",
+    const title = body.title || "Menu";
+    const text = body.body || "New recipe added";
+    const url = body.url || "/inbox"; // Default to Inbox instead of home
+
+    // 1. Save to database first
+    await db.insert(notifications).values({
+      title,
+      body: text,
+      url,
     });
 
+    // 2. Send the push
+    const payload = JSON.stringify({ title, body: text, url });
     const subs = await db.select().from(pushSubscriptions);
+    
     const results = await Promise.allSettled(
       subs.map((s) =>
         webpush.sendNotification(
@@ -38,6 +47,7 @@ export async function POST(req: NextRequest) {
       )
     );
 
+    // Clean up dead subscriptions
     for (let i = 0; i < results.length; i++) {
       const r = results[i];
       if (r.status === "rejected" && (r.reason as any)?.statusCode === 410) {

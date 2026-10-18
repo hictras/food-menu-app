@@ -56,7 +56,10 @@ export const pushSubscriptions = sqliteTable("push_subscriptions", {
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
-export type Recipe = typeof recipes.$inferSelect;
-export type NewRecipe = typeof recipes.$inferInsert;
-export type Ingredient = typeof ingredients.$inferSelect;
-export type Instruction = typeof instructions.$inferSelect;
+export const notifications = sqliteTable("notifications", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  title: text("title").notNull(),
+  body: text("body").notNull(),
+  url: text("url"),
+  createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
+});
