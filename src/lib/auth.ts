@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 import crypto from "crypto";
 
 const COOKIE = "admin_session";
@@ -31,6 +32,9 @@ export function verifyToken(token: string | undefined): boolean {
 }
 
 export async function isAdmin(): Promise<boolean> {
+  // This tells Next.js 16 this function requires a live request
+  await connection();
+  
   const store = await cookies();
   return verifyToken(store.get(COOKIE)?.value);
 }
