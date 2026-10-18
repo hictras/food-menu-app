@@ -53,6 +53,7 @@ export const pushSubscriptions = sqliteTable("push_subscriptions", {
   endpoint: text("endpoint").notNull().unique(),
   p256dh: text("p256dh").notNull(),
   auth: text("auth").notNull(),
+  deviceName: text("device_name"), // NEW COLUMN
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 

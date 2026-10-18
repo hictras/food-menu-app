@@ -24,41 +24,27 @@ export async function POST(req: NextRequest) {
     const title = body.title || "Menu";
     const text = body.body || "New recipe added";
     const url = body.url || "/inbox";
+    const targetDevice = body.targetDevice || ""; // <-- TARGET DEVICE
 
-    let previewImage = null;
-    let previewTitle = null;
-
-    if (url.startsWith("http") || url.startsWith("/")) {
-      try {
-        const baseUrl = "https://food-menu-app-xxww.onrender.com";
-        const fullUrl = url.startsWith("/") ? `${baseUrl}${url}` : url;
-        
-        const res = await fetch(fullUrl);
-        const html = await res.text();
-
-        const imgMatch = html.match(/<meta\s+property="og:image"\s+content="([^"]+)"/i);
-        if (imgMatch) previewImage = imgMatch[1];
-
-        const titleMatch = html.match(/<meta\s+property="og:title"\s+content="([^"]+)"/i);
-        if (titleMatch) {
-          // Fix the apostrophe encoding
-          previewTitle = titleMatch[1].replace(/&#x27;/g, "'").replace(/&quot;/g, '"');
-        }
-      } catch (err) {
-        console.error("Failed to fetch link preview:", err);
-      }
+    // 1. Get subscriptions (either all, or specific device)
+    let subs;
+    if (targetDevice) {
+      subs = await db.select().from(pushSubscriptions).where(eq(pushSubscriptions.deviceName, targetDevice));
+    } else {
+      subs = await db.select().from(pushSubscriptions);
     }
 
+    if (subs.length === 0) {
+      return NextResponse.json({ error: "No subscriptions found for this device." }, { status: 404 });
+    }
+
+    // 2. Save to database
     await db.insert(notifications).values({
-      title,
-      body: text,
-      url,
-      previewImage,
-      previewTitle,
+      title, body: text, url,
     });
 
+    // 3. Send push
     const payload = JSON.stringify({ title, body: text, url: "/inbox" });
-    const subs = await db.select().from(pushSubscriptions);
     
     const results = await Promise.allSettled(
       subs.map((s) =>
@@ -69,6 +55,7 @@ export async function POST(req: NextRequest) {
       )
     );
 
+    // 4. Clean up dead subscriptions
     for (let i = 0; i < results.length; i++) {
       const r = results[i];
       if (r.status === "rejected" && (r.reason as any)?.statusCode === 410) {

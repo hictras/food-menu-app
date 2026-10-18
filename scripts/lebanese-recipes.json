@@ -1,47 +1,134 @@
 {
-  "lebanese_recipes": [
-    {
-      "name": "The Legendary Late-Night Hayalla",
-      "name_arabic": "الحيّ الله الأسطوري",
-      "description": "A culinary survival strategy born from exhaustion, resilience, and whatever mysterious containers have been lurking in the back of the fridge since Tuesday.",
-      "description_arabic": "استراتيجية بقاء طهوية وُلدت من التعب والصمود وأي حاويات غامضة كانت تختبئ في مؤخرة الثلاجة منذ يوم الثلاثاء.",
-      "servings": "4",
-      "servings_arabic": "4 أشخاص",
-      "preparation_time": "3 minutes",
-      "preparation_time_arabic": "3 دقائق",
-      "ingredients": {
-        "base": [
-          "1 vague aspiration of a meal (whatever protein is defrosting on the counter)",
-          "3 mysterious Tupperware containers (contents require an archaeological dig to identify)",
-          "A handful of wilted herbs (parsley or mint with a fighting spirit)",
-          "1 tablespoon of leftover fridge magic",
-          "A generous pinch of resourcefulness",
-          "Salt, pepper, and dramatic sighs (add sighs liberally)"
-        ],
-        "base_arabic": [
-          "1 طموح غامض لوجبة (أي بروتين يذوب على الطاولة)",
-          "3 حاويات غامضة (محتوياتها تتطلب حفراً أثرياً لتحديدها)",
-          "حفنة من الأعشاب الذابلة (بقدونس أو نعناع لا يزال لديه روح قتالية)",
-          "1 ملعقة كبيرة من سحر الثلاجة المتبقي",
-          "رشة سخية من الدهاء والتدبير",
-          "ملح، فلفل، وتنهيدات درامية (أضف التنهيدات بسخاء)"
-        ]
-      },
-      "preparation": [
-        "The Extraction Phase: Open the refrigerator door and stare blankly into the cold abyss for at least forty-five seconds, hoping a roasted lamb will appear. Grab three random bowls.",
-        "The Fusion Experiment: Combine leftover rice with half a can of chickpeas and a lonely chicken thigh. In Hayalla, rules do not apply; only survival does.",
-        "The Heating Ritual: Toss everything into a skillet with olive oil. Turn the heat to high and stir frantically while muttering prayers.",
-        "The Seasoning of Love and Despair: Sprinkle imaginary spices. Tell anyone walking by it is an 'exclusive, traditional family recipe'.",
-        "The Final Verdict: Serve piping hot with a side of pita bread used as a shovel. If they don't like it, they can forage for themselves."
-      ],
-      "preparation_arabic": [
-        "مرحلة الاستخراج: افتح باب الثلاجة وحدّق في الهاوية الباردة لمدة 45 ثانية على الأقل، آملاً أن يظهر خروف مشوي. خذ 3 أطباق عشوائية.",
-        "تجربة الاندماج: اخلط الأرز المتبقي مع نصف علبة حمص وفخذ دجاج وحيد. في الحيّ الله، القواعد لا تنطبق؛ البقاء فقط.",
-        "طقس التسخين: ارمِ كل شيء في مقلاة مع زيت زيتون. ارفع النار وحرّك بجنون مع تلاوة صلوات الطهي.",
-        "توابل الحب واليأس: رش البهارات الخيالية. أخبر أي شخص يمر أن هذه 'وصفة عائلية تقليدية حصرية'.",
-        "الحكم النهائي: قدمها ساخنة جداً مع خبز بيتا كمجرفة. لا تقبل النقد؛ إذا لم تعجبهم، فليبحثوا عن طعامهم بأنفسهم."
-      ],
-      "source": "Midnight Survival Manual"
-    }
-  ]
+    "name": "Lebanese Yellow Lentil Soup",
+    "nameAr": "شوربة عدس صفراء لبنانية",
+    "description": "A creamy, comforting soup made from yellow lentils simmered with onions, potatoes, and warm spices like cumin. Often garnished with fresh parsley and served with crispy pita bread and a squeeze of lemon, it is a staple in Lebanese cuisine, especially popular during Ramadan.",
+    "descriptionAr": "شوربة كريمية ودافئة مصنوعة من العدس الأصفر المطهو مع البصل والبطاطا والتوابل الدافئة مثل الكمون. غالباً ما تزين بالبقدونس الطازج وتقدم مع الخبز المحمص وعصير الليمون، وهي طبق أساسي في المطبخ اللبناني، خاصة خلال شهر رمضان.",
+    "cuisine": "Lebanese",
+    "cuisineAr": "لبنانية",
+    "category": "Soup",
+    "categoryAr": "شوربة",
+    "prepTime": 10,
+    "cookTime": 35,
+    "servings": 4,
+    "dietaryTags": ["Vegan", "Vegetarian", "Gluten-Free"],
+    "servedWith": "Crispy pita bread and lemon wedges",
+    "servedWithAr": "خبز عربي محمص وأرباع ليمون",
+    "howToServe": "Ladle the hot soup into bowls. Garnish with chopped fresh parsley. Serve with a squeeze of fresh lemon juice and crispy toasted pita bread on the side or on top.",
+    "howToServeAr": "تُسكب الشوربة الساخنة في أوعية. تُزين بالبقدونس الطازج المفروم. تُقدم مع عصرة من عصير الليمون الطازج والخبز العربي المحمص على الجانب أو على الوجه.",
+    "imageUrl": null,
+    "videoUrl": null,
+    "ingredients": [
+        {
+            "name": "Yellow Lentils",
+            "nameAr": "عدس أصفر",
+            "amount": 1,
+            "unit": "cup",
+            "unitAr": "كوب",
+            "preparation": "Rinsed and drained",
+            "preparationAr": "مغسول ومصفى"
+        },
+        {
+            "name": "Onion",
+            "nameAr": "بصل",
+            "amount": 1,
+            "unit": "medium",
+            "unitAr": "حبة وسط",
+            "preparation": "Finely diced",
+            "preparationAr": "مفروم ناعم"
+        },
+        {
+            "name": "Carrot",
+            "nameAr": "جزر",
+            "amount": 1,
+            "unit": "large",
+            "unitAr": "حبة كبيرة",
+            "preparation": "Grated",
+            "preparationAr": "مبشور"
+        },
+        {
+            "name": "Garlic",
+            "nameAr": "ثوم",
+            "amount": 2,
+            "unit": "cloves",
+            "unitAr": "فص",
+            "preparation": "Crushed",
+            "preparationAr": "مهروس"
+        },
+        {
+            "name": "Olive Oil",
+            "nameAr": "زيت زيتون",
+            "amount": 2,
+            "unit": "tablespoons",
+            "unitAr": "ملعقة كبيرة",
+            "preparation": null,
+            "preparationAr": null
+        },
+        {
+            "name": "Water",
+            "nameAr": "ماء",
+            "amount": 6,
+            "unit": "cups",
+            "unitAr": "كوب",
+            "preparation": null,
+            "preparationAr": null
+        },
+        {
+            "name": "Ground Cumin",
+            "nameAr": "كمون مطحون",
+            "amount": 1,
+            "unit": "teaspoon",
+            "unitAr": "ملعقة صغيرة",
+            "preparation": null,
+            "preparationAr": null
+        },
+        {
+            "name": "Salt",
+            "nameAr": "ملح",
+            "amount": 1,
+            "unit": "teaspoon",
+            "unitAr": "ملعقة صغيرة",
+            "preparation": null,
+            "preparationAr": null
+        },
+        {
+            "name": "White Pepper",
+            "nameAr": "فلفل أبيض",
+            "amount": 0.25,
+            "unit": "teaspoon",
+            "unitAr": "ملعقة صغيرة",
+            "preparation": null,
+            "preparationAr": null
+        },
+        {
+            "name": "Fresh Parsley",
+            "nameAr": "بقدونس طازج",
+            "amount": 2,
+            "unit": "tablespoons",
+            "unitAr": "ملعقة كبيرة",
+            "preparation": "Chopped, for garnish",
+            "preparationAr": "مفروم، للتزيين"
+        }
+    ],
+    "instructions": [
+        {
+            "text": "Heat olive oil in a large pot over medium heat. Sauté the diced onion and crushed garlic for 4-5 minutes until translucent and fragrant.",
+            "textAr": "سخني زيت الزيتون في قدر كبير على نار متوسطة. قلبي البصل المفروم والثوم المهروس لمدة 4-5 دقائق حتى يصبحا شفافين وذو رائحة عطرية."
+        },
+        {
+            "text": "Rinse the yellow lentils thoroughly under cold water. Add them to the pot along with the grated carrot and 6 cups of water. Bring to a boil, then reduce heat and simmer for 20 minutes.",
+            "textAr": "اغسلي العدس الأصفر جيداً تحت الماء البارد. أضيفيه إلى القدر مع الجزر المبشور و6 أكواب من الماء. اتركيه يغلي ثم خففي النار واتركيه ينضج لمدة 20 دقيقة."
+        },
+        {
+            "text": "Once the lentils are tender, season with ground cumin, salt, and white pepper. Simmer for another 10 minutes to allow the flavors to meld.",
+            "textAr": "بعد أن ينضج العدس، تبليه بالكمون المطحون والملح والفلفل الأبيض. اتركيه ينضج لمدة 10 دقائق إضافية حتى تمتزج النكهات."
+        },
+        {
+            "text": "For a smoother texture, blend the soup using an immersion blender until desired consistency is reached. If the soup is too thick, add a little hot water.",
+            "textAr": "للحصول على قوام أكثر نعومة، اضربي الشوربة بالخلاط اليدوي حتى تصل إلى القوام المرغوب. إذا كانت الشوربة كثيفة جداً، أضيفي القليل من الماء الساخن."
+        },
+        {
+            "text": "Ladle into serving bowls, garnish with fresh chopped parsley, and serve hot with lemon wedges and crispy pita bread.",
+            "textAr": "اسكبي الشوربة في أوعية التقديم، زينيها بالبقدونس الطازج المفروم، وقدميها ساخنة مع أرباع الليمون والخبز العربي المحمص."
+        }
+    ]
 }

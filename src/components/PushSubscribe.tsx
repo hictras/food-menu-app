@@ -9,25 +9,29 @@ export default function PushSubscribe() {
   const [subscribed, setSubscribed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  const [deviceName, setDeviceName] = useState("");
 
   useEffect(() => {
     if ("serviceWorker" in navigator && "PushManager" in window) {
       setSupported(true);
       navigator.serviceWorker.ready.then((reg) => {
-        reg.pushManager.getSubscription().then((sub) => {
-          setSubscribed(!!sub);
-        });
+        reg.pushManager.getSubscription().then((sub) => setSubscribed(!!sub));
       });
     }
   }, []);
 
   async function subscribe() {
+    if (!deviceName.trim()) {
+      setMsg("Please enter a name for your device first.");
+      return;
+    }
+
     setBusy(true);
     setMsg("");
     try {
       const permission = await Notification.requestPermission();
       if (permission !== "granted") {
-        setMsg(lang === "ar" ? "تم رفض الإذن" : "Permission denied");
+        setMsg("Permission denied");
         setBusy(false);
         return;
       }
@@ -37,21 +41,18 @@ export default function PushSubscribe() {
 
       const sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(
-          process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!
-        ),
+        applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!),
       });
 
       await fetch("/api/push/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(sub),
+        body: JSON.stringify({ subscription: sub, deviceName }),
       });
 
       setSubscribed(true);
-      setMsg(lang === "ar" ? "تم التفعيل!" : "Subscribed!");
+      setMsg("Subscribed!");
     } catch (err) {
-      console.error(err);
       setMsg(err instanceof Error ? err.message : "Error");
     } finally {
       setBusy(false);
@@ -60,7 +61,6 @@ export default function PushSubscribe() {
 
   async function unsubscribe() {
     setBusy(true);
-    setMsg("");
     try {
       const reg = await navigator.serviceWorker.ready;
       const sub = await reg.pushManager.getSubscription();
@@ -73,9 +73,8 @@ export default function PushSubscribe() {
         await sub.unsubscribe();
       }
       setSubscribed(false);
-      setMsg(lang === "ar" ? "تم الإيقاف" : "Unsubscribed");
+      setMsg("Unsubscribed");
     } catch (err) {
-      console.error(err);
       setMsg(err instanceof Error ? err.message : "Error");
     } finally {
       setBusy(false);
@@ -84,30 +83,27 @@ export default function PushSubscribe() {
 
   if (!supported) return null;
 
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-      <button
-        type="button"
-        className={subscribed ? "btn btn-ghost" : "btn btn-primary"}
-        onClick={subscribed ? unsubscribe : subscribe}
-        disabled={busy}
-        title={subscribed ? "Click to disable" : "Click to enable"}
-      >
-        {busy
-          ? "…"
-          : subscribed
-          ? lang === "ar"
-            ? "🔕 إيقاف الإشعارات"
-            : "🔕 Disable notifications"
-          : lang === "ar"
-          ? "🔔 تفعيل الإشعارات"
-          : "🔔 Enable notifications"}
+  if (subscribed) {
+    return (
+      <button type="button" className="btn btn-ghost" onClick={unsubscribe} disabled={busy}>
+        🔕 Disable
       </button>
-      {msg && (
-        <span className="helper" style={{ fontSize: 12 }}>
-          {msg}
-        </span>
-      )}
+    );
+  }
+
+  return (
+    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+      <input 
+        type="text" 
+        placeholder="Your name (e.g. Hicham)" 
+        value={deviceName}
+        onChange={(e) => setDeviceName(e.target.value)}
+        style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid var(--line)", fontSize: 12, background: "var(--input-bg)", color: "var(--ink)" }}
+      />
+      <button type="button" className="btn btn-ghost" onClick={subscribe} disabled={busy}>
+        🔔 Enable
+      </button>
+      {msg && <span style={{ fontSize: 11, color: "var(--accent)" }}>{msg}</span>}
     </div>
   );
 }
