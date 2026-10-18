@@ -54,6 +54,22 @@ export default function InboxPage() {
     }
   }
 
+  // Helper to split the title and color the parts
+  function renderPreviewTitle(title: string) {
+    // If it's the "today" title, split it at the hyphen
+    if (title.includes(" - ")) {
+      const [mainTitle, recipeName] = title.split(" - ");
+      return (
+        <span style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <span style={{ color: "var(--accent)", fontWeight: 700 }}>{mainTitle}</span>
+          <span style={{ color: "var(--ink)", fontWeight: 500, fontSize: 12 }}>{recipeName}</span>
+        </span>
+      );
+    }
+    // Normal title
+    return <strong style={{ fontSize: 13, color: "var(--ink)" }}>{title}</strong>;
+  }
+
   return (
     <main className="container" style={{ paddingTop: 40, paddingBottom: 80 }}>
       <div className="page-head">
@@ -114,7 +130,6 @@ export default function InboxPage() {
                 {item.body}
               </p>
 
-              {/* Show image card if there is an image */}
               {item.url && item.previewImage && (
                 <Link
                   href={item.url}
@@ -137,17 +152,16 @@ export default function InboxPage() {
                     style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 6 }}
                   />
                   <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                    <strong style={{ fontSize: 13, color: "var(--accent)" }}>
-                      {item.previewTitle || "View Recipe"}
-                    </strong>
-                    <span style={{ fontSize: 11, color: "var(--muted)", wordBreak: "break-all" }}>
+                    {/* Render the custom split title here */}
+                    {item.previewTitle ? renderPreviewTitle(item.previewTitle) : <strong>View Recipe</strong>}
+                    
+                    <span style={{ fontSize: 11, color: "var(--muted)", wordBreak: "break-all", marginTop: 2 }}>
                       {item.url.replace("https://", "")}
                     </span>
                   </div>
                 </Link>
               )}
 
-              {/* Show View Button if there is a URL, even if there is no image */}
               {item.url && item.url !== "/inbox" && (
                 <Link
                   href={item.url}
