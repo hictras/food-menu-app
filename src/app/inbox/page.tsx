@@ -137,7 +137,7 @@ export default function InboxPage() {
                     style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 6 }}
                   />
                   <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                    <strong style={{ fontSize: 13, color: "var(--ink)" }}>
+                    <strong style={{ fontSize: 13, color: "var(--accent)" }}>
                       {item.previewTitle || "View Recipe"}
                     </strong>
                     <span style={{ fontSize: 11, color: "var(--muted)", wordBreak: "break-all" }}>
