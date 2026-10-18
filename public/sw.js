@@ -14,7 +14,7 @@ self.addEventListener("push", function (event) {
     icon: "/icon-192.png",
     badge: "/icon-192.png",
     vibrate: [200, 100, 200, 100, 200],
-    data: { url: "/inbox" }, // Always open inbox
+    data: { url: "/inbox" },
   };
 
   event.waitUntil(

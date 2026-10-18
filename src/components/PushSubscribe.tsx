@@ -20,8 +20,23 @@ export default function PushSubscribe() {
   }, []);
 
   async function subscribe() {
-    setBusy(true);
     setMsg("");
+    
+    // 1. ASK FOR PHONE NUMBER FIRST
+    const phoneNumber = window.prompt(
+      lang === "ar" 
+        ? "أدخل رقم هاتفك (مثال: 96170123456)" 
+        : "Enter your phone number (e.g. 96170123456)"
+    );
+
+    // If they click Cancel or leave it empty, stop.
+    if (!phoneNumber || !phoneNumber.trim()) {
+      setMsg(lang === "ar" ? "رقم الهاتف مطلوب" : "Phone number is required");
+      return;
+    }
+
+    // 2. THEN ASK FOR PERMISSION
+    setBusy(true);
     try {
       const permission = await Notification.requestPermission();
       if (permission !== "granted") {
@@ -41,7 +56,7 @@ export default function PushSubscribe() {
       const res = await fetch("/api/push/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subscription: sub }),
+        body: JSON.stringify({ subscription: sub, phoneNumber }),
       });
 
       if (!res.ok) {
@@ -84,7 +99,7 @@ export default function PushSubscribe() {
   if (subscribed) {
     return (
       <button type="button" className="btn btn-ghost" onClick={unsubscribe} disabled={busy}>
-        🔕 Disable
+        🔕 {lang === "ar" ? "إيقاف" : "Disable"}
       </button>
     );
   }
@@ -92,7 +107,7 @@ export default function PushSubscribe() {
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
       <button type="button" className="btn btn-ghost" onClick={subscribe} disabled={busy}>
-        🔔 Enable
+        🔔 {lang === "ar" ? "تفعيل" : "Enable"}
       </button>
       {msg && <span style={{ fontSize: 11, color: "var(--accent)" }}>{msg}</span>}
     </div>
