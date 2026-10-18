@@ -7,9 +7,16 @@ import RecipeDetailClient from "@/components/RecipeDetailClient";
 import { isAdmin } from "@/lib/auth";
 import type { Metadata } from "next";
 
-// --- NEW: Meta Tags for WhatsApp/Facebook Preview ---
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+// --- Meta Tags for WhatsApp/Facebook Preview ---
+export async function generateMetadata({ 
+  params, 
+  searchParams 
+}: { 
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}): Promise<Metadata> {
   const { id } = await params;
+  const search = await searchParams;
   const numericId = Number(id);
   if (Number.isNaN(numericId)) return { title: "Recipe Not Found" };
 
@@ -18,7 +25,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   if (!recipe) return { title: "Recipe Not Found" };
 
-  const title = recipe.name;
+  // 1. Check if ?today is in the URL. If yes, use the special title.
+  const isToday = "today" in search;
+  const title = isToday ? "Hicham's Main Dish of the day" : recipe.name;
+  
   const description = recipe.description || "View this recipe on Menu.";
   const image = recipe.imageUrl || "https://food-menu-app-xxww.onrender.com/icon-192.png";
 
@@ -40,11 +50,24 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   };
 }
 
-// --- Existing Detail Page Logic ---
-async function RecipeDetail({ id }: { id: number }) {
+// --- Detail Page Logic ---
+async function RecipeDetail({ 
+  id, 
+  isToday 
+}: { 
+  id: number; 
+  isToday: boolean;
+}) {
   const db = getDb();
+  
+  // Fetch the recipe
   const [recipe] = await db.select().from(recipes).where(eq(recipes.id, id)).limit(1);
   if (!recipe) notFound();
+
+  // Override the name if ?today is present
+  const displayRecipe = isToday 
+    ? { ...recipe, name: "Hicham's Main Dish of the day" } 
+    : recipe;
 
   const ings = await db.select().from(ingredients).where(eq(ingredients.recipeId, id)).orderBy(asc(ingredients.id));
   const steps = await db.select().from(instructions).where(eq(instructions.recipeId, id)).orderBy(asc(instructions.stepNumber));
@@ -52,7 +75,7 @@ async function RecipeDetail({ id }: { id: number }) {
 
   return (
     <RecipeDetailClient
-      recipe={recipe}
+      recipe={displayRecipe}
       ingredients={ings}
       instructions={steps}
       isAdmin={admin}
@@ -69,18 +92,32 @@ function DetailSkeleton() {
   );
 }
 
-async function RecipeResolver({ params }: { params: Promise<{ id: string }> }) {
+async function RecipeResolver({ 
+  params, 
+  searchParams 
+}: { 
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const { id } = await params;
+  const search = await searchParams;
   const numericId = Number(id);
   if (Number.isNaN(numericId)) notFound();
-  return <RecipeDetail id={numericId} />;
+  
+  return <RecipeDetail id={numericId} isToday={"today" in search} />;
 }
 
-export default function RecipePage({ params }: { params: Promise<{ id: string }> }) {
+export default function RecipePage({ 
+  params, 
+  searchParams 
+}: { 
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   return (
     <main className="container">
       <Suspense fallback={<DetailSkeleton />}>
-        <RecipeResolver params={params} />
+        <RecipeResolver params={params} searchParams={searchParams} />
       </Suspense>
     </main>
   );
