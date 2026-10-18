@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import webpush from "web-push";
 import { getDb } from "@/db";
 import { pushSubscriptions, notifications } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { inArray } from "drizzle-orm";
 import { isAdmin } from "@/lib/auth";
 
 function initWebPush() {
@@ -24,11 +24,11 @@ export async function POST(req: NextRequest) {
     const title = body.title || "Menu";
     const text = body.body || "New recipe added";
     const url = body.url || "/inbox";
+    const targetPhone = body.targetPhone || "all"; 
 
     let previewImage = null;
     let previewTitle = null;
 
-    // Only fetch preview if a valid URL is provided
     if (url.startsWith("http")) {
       try {
         const res = await fetch(url);
@@ -45,18 +45,23 @@ export async function POST(req: NextRequest) {
     await db.insert(notifications).values({ title, body: text, url, previewImage, previewTitle });
 
     const payload = JSON.stringify({ title, body: text, url: "/inbox" });
-    const subs = await db.select().from(pushSubscriptions);
     
+    let subs;
+    if (targetPhone === "all") {
+      subs = await db.select().from(pushSubscriptions);
+    } else {
+      const phones = targetPhone.split(",").map((p: string) => p.trim()).filter(Boolean);
+      if (phones.length === 0) subs = await db.select().from(pushSubscriptions);
+      else subs = await db.select().from(pushSubscriptions).where(inArray(pushSubscriptions.phoneNumber, phones));
+    }
+    
+    if (subs.length === 0) {
+      return NextResponse.json({ error: "No subscriptions found" }, { status: 404 });
+    }
+
     const results = await Promise.allSettled(
       subs.map((s) => webpush.sendNotification({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }, payload))
     );
-
-    for (let i = 0; i < results.length; i++) {
-      const r = results[i];
-      if (r.status === "rejected" && (r.reason as any)?.statusCode === 410) {
-        await db.delete(pushSubscriptions).where(eq(pushSubscriptions.endpoint, subs[i].endpoint));
-      }
-    }
 
     return NextResponse.json({ sent: results.filter((r) => r.status === "fulfilled").length, total: subs.length });
   } catch (err) {

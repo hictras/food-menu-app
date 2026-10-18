@@ -53,7 +53,8 @@ export const pushSubscriptions = sqliteTable("push_subscriptions", {
   endpoint: text("endpoint").notNull().unique(),
   p256dh: text("p256dh").notNull(),
   auth: text("auth").notNull(),
-  deviceName: text("device_name"),
+  phoneNumber: text("phone_number").notNull(), // Make required
+  name: text("name"), // NEW: Editable name
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 

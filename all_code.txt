@@ -7231,10 +7231,13 @@ import { pushSubscriptions } from "@/db/schema";
 export async function POST(req: NextRequest) {
   try {
     const db = getDb();
-    const sub = await req.json();
+    const body = await req.json();
+    
+    // The frontend sends { subscription: sub }, so we unwrap it here
+    const sub = body.subscription || body;
 
     if (!sub?.endpoint || !sub?.keys?.p256dh || !sub?.keys?.auth) {
-      return NextResponse.json({ error: "Invalid subscription" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid subscription data" }, { status: 400 });
     }
 
     await db
@@ -11223,12 +11226,15 @@ export default function PushSubscribe() {
         applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!),
       });
 
-      // We no longer need to pass a deviceName
-      await fetch("/api/push/subscribe", {
+      const res = await fetch("/api/push/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ subscription: sub }),
       });
+
+      if (!res.ok) {
+        throw new Error("Server rejected the subscription");
+      }
 
       setSubscribed(true);
       setMsg("Subscribed successfully!");
@@ -12562,6 +12568,7 @@ export const settings = sqliteTable("settings", {
 
 --- FILE: src/lib/auth.ts ---
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 import crypto from "crypto";
 
 const COOKIE = "admin_session";
@@ -12594,6 +12601,9 @@ export function verifyToken(token: string | undefined): boolean {
 }
 
 export async function isAdmin(): Promise<boolean> {
+  // This tells Next.js 16 this function requires a live request
+  await connection();
+  
   const store = await cookies();
   return verifyToken(store.get(COOKIE)?.value);
 }
