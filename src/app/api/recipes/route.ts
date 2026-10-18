@@ -2,7 +2,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/db";
 import { recipes, ingredients, instructions } from "@/db/schema";
 import { isAdmin } from "@/lib/auth";
+import { desc } from "drizzle-orm";
 
+// --- ADDED GET ROUTE FOR WHATSAPP SENDER ---
+export async function GET() {
+  try {
+    const db = getDb();
+    const all = await db.select().from(recipes).orderBy(desc(recipes.createdAt));
+    return NextResponse.json(all);
+  } catch (err) {
+    return NextResponse.json({ error: "Failed to load" }, { status: 500 });
+  }
+}
+
+// --- EXISTING POST ROUTE ---
 type Payload = {
   name: string; nameAr: string;
   description: string; descriptionAr: string;

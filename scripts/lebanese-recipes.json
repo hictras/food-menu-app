@@ -1,138 +1,47 @@
 {
-  "name": "Red Vermicelli and Chicken Soup",
-  "nameAr": "شوربة شعيرية ودجاج حمراء",
-  "description": "A comforting Lebanese-style red soup made with a tomato-based broth, shredded chicken, and toasted vermicelli noodles. Warming, simple, and satisfying.",
-  "descriptionAr": "شوربة لبنانية دافئة بنكهة الطماطم، تحتوي على الدجاج المفتت والشعيرية المحمصة. طبق بسيط ومغذٍ ومريح.",
-  "cuisine": "Lebanese",
-  "cuisineAr": "لبنانية",
-  "category": "Soup",
-  "categoryAr": "شوربة",
-  "prepTime": 15,
-  "cookTime": 35,
-  "servings": 4,
-  "dietaryTags": [],
-  "servedWith": "Lemon wedges and fresh parsley",
-  "servedWithAr": "شرائح ليمون وبقدونس طازج",
-  "howToServe": "Ladle the hot soup into bowls and serve with lemon wedges on the side for squeezing. Garnish with fresh chopped parsley if desired.",
-  "howToServeAr": "تسكب الشوربة الساخنة في أطباق وتقدم مع شرائح الليمون للعصر. تزين بالبقدونس الطازج المفروم حسب الرغبة.",
-  "imageUrl": null,
-  "videoUrl": null,
-  "ingredients": [
+  "lebanese_recipes": [
     {
-      "name": "Chicken breasts",
-      "nameAr": "صدور دجاج",
-      "amount": 2,
-      "unit": "pieces",
-      "unitAr": "قطعة",
-      "preparation": "Boneless, skinless",
-      "preparationAr": "منزوعة العظم والجلد"
-    },
-    {
-      "name": "Vermicelli noodles",
-      "nameAr": "شعيرية",
-      "amount": 1,
-      "unit": "cup",
-      "unitAr": "كوب",
-      "preparation": "Broken into short pieces",
-      "preparationAr": "مكسرة إلى قطع قصيرة"
-    },
-    {
-      "name": "Onion",
-      "nameAr": "بصل",
-      "amount": 1,
-      "unit": "medium",
-      "unitAr": "حبة متوسطة",
-      "preparation": "Finely chopped",
-      "preparationAr": "مفروم ناعم"
-    },
-    {
-      "name": "Garlic",
-      "nameAr": "ثوم",
-      "amount": 3,
-      "unit": "cloves",
-      "unitAr": "فصوص",
-      "preparation": "Minced",
-      "preparationAr": "مهروس"
-    },
-    {
-      "name": "Tomato paste",
-      "nameAr": "معجون طماطم",
-      "amount": 2,
-      "unit": "tbsp",
-      "unitAr": "ملعقة كبيرة",
-      "preparation": "",
-      "preparationAr": ""
-    },
-    {
-      "name": "Vegetable oil",
-      "nameAr": "زيت نباتي",
-      "amount": 2,
-      "unit": "tbsp",
-      "unitAr": "ملعقة كبيرة",
-      "preparation": "For toasting vermicelli and sautéing",
-      "preparationAr": "لتحمير الشعيرية والتحميس"
-    },
-    {
-      "name": "Chicken broth",
-      "nameAr": "مرق دجاج",
-      "amount": 6,
-      "unit": "cups",
-      "unitAr": "أكواب",
-      "preparation": "Reserved from boiling the chicken",
-      "preparationAr": "محتفظ به من سلق الدجاج"
-    },
-    {
-      "name": "Salt",
-      "nameAr": "ملح",
-      "amount": 1,
-      "unit": "tsp",
-      "unitAr": "ملعقة صغيرة",
-      "preparation": "Or to taste",
-      "preparationAr": "أو حسب الرغبة"
-    },
-    {
-      "name": "Black pepper",
-      "nameAr": "فلفل أسود",
-      "amount": 0.5,
-      "unit": "tsp",
-      "unitAr": "ملعقة صغيرة",
-      "preparation": "Ground",
-      "preparationAr": "مطحون"
-    },
-    {
-      "name": "Lemon juice",
-      "nameAr": "عصير ليمون",
-      "amount": 2,
-      "unit": "tbsp",
-      "unitAr": "ملعقة كبيرة",
-      "preparation": "Freshly squeezed, or to taste",
-      "preparationAr": "طازج معصور، أو حسب الرغبة"
-    }
-  ],
-  "instructions": [
-    {
-      "text": "Place the chicken breasts in a pot, cover with water, and bring to a boil. Skim off any foam, then simmer until the chicken is fully cooked, about 20 minutes. Reserve the broth and shred the chicken into small pieces.",
-      "textAr": "توضع صدور الدجاج في قدر وتغطى بالماء وتترك حتى تغلي. تزال الرغوة عن السطح ثم تترك على نار هادئة حتى ينضج الدجاج تماماً، حوالي 20 دقيقة. يحتفظ بالمرق ويفتت الدجاج إلى قطع صغيرة."
-    },
-    {
-      "text": "In a separate large pot, heat the vegetable oil over medium heat. Add the broken vermicelli and stir continuously until golden brown and toasted. Be careful not to burn them.",
-      "textAr": "في قدر كبير منفصل، يسخن الزيت النباتي على نار متوسطة. تضاف الشعيرية المكسرة وتقلب باستمرار حتى تصبح ذهبية اللون ومحمصة. يجب الحرص على عدم حرقها."
-    },
-    {
-      "text": "Add the chopped onion and minced garlic to the pot with the vermicelli. Sauté until the onion is soft and fragrant, about 3-4 minutes.",
-      "textAr": "يضاف البصل المفروم والثوم المهروس إلى القدر مع الشعيرية. يقلب حتى يذبل البصل وتفوح رائحته، حوالي 3-4 دقائق."
-    },
-    {
-      "text": "Stir in the tomato paste and cook for another minute until it darkens slightly and releases its aroma.",
-      "textAr": "يضاف معجون الطماطم ويقلب ويترك لمدة دقيقة أخرى حتى يغمق لونه قليلاً وتظهر رائحته."
-    },
-    {
-      "text": "Pour in the reserved chicken broth and add the shredded chicken, salt, and black pepper. Bring the soup to a boil, then reduce the heat and simmer for 10-15 minutes until the vermicelli is tender and the flavors have melded.",
-      "textAr": "يسكب مرق الدجاج المحتفظ به ويضاف الدجاج المفتت والملح والفلفل الأسود. تترك الشوربة حتى تغلي ثم تخفف النار وتترك على نار هادئة لمدة 10-15 دقيقة حتى تنضج الشعيرية وتتجانس النكهات."
-    },
-    {
-      "text": "Stir in the fresh lemon juice just before serving. Taste and adjust salt if needed. Serve hot.",
-      "textAr": "يضاف عصير الليمون الطازج قبل التقديم مباشرة. يتم تذوق الشوربة وتعديل الملح حسب الرغبة. تقدم ساخنة."
+      "name": "The Legendary Late-Night Hayalla",
+      "name_arabic": "الحيّ الله الأسطوري",
+      "description": "A culinary survival strategy born from exhaustion, resilience, and whatever mysterious containers have been lurking in the back of the fridge since Tuesday.",
+      "description_arabic": "استراتيجية بقاء طهوية وُلدت من التعب والصمود وأي حاويات غامضة كانت تختبئ في مؤخرة الثلاجة منذ يوم الثلاثاء.",
+      "servings": "4",
+      "servings_arabic": "4 أشخاص",
+      "preparation_time": "3 minutes",
+      "preparation_time_arabic": "3 دقائق",
+      "ingredients": {
+        "base": [
+          "1 vague aspiration of a meal (whatever protein is defrosting on the counter)",
+          "3 mysterious Tupperware containers (contents require an archaeological dig to identify)",
+          "A handful of wilted herbs (parsley or mint with a fighting spirit)",
+          "1 tablespoon of leftover fridge magic",
+          "A generous pinch of resourcefulness",
+          "Salt, pepper, and dramatic sighs (add sighs liberally)"
+        ],
+        "base_arabic": [
+          "1 طموح غامض لوجبة (أي بروتين يذوب على الطاولة)",
+          "3 حاويات غامضة (محتوياتها تتطلب حفراً أثرياً لتحديدها)",
+          "حفنة من الأعشاب الذابلة (بقدونس أو نعناع لا يزال لديه روح قتالية)",
+          "1 ملعقة كبيرة من سحر الثلاجة المتبقي",
+          "رشة سخية من الدهاء والتدبير",
+          "ملح، فلفل، وتنهيدات درامية (أضف التنهيدات بسخاء)"
+        ]
+      },
+      "preparation": [
+        "The Extraction Phase: Open the refrigerator door and stare blankly into the cold abyss for at least forty-five seconds, hoping a roasted lamb will appear. Grab three random bowls.",
+        "The Fusion Experiment: Combine leftover rice with half a can of chickpeas and a lonely chicken thigh. In Hayalla, rules do not apply; only survival does.",
+        "The Heating Ritual: Toss everything into a skillet with olive oil. Turn the heat to high and stir frantically while muttering prayers.",
+        "The Seasoning of Love and Despair: Sprinkle imaginary spices. Tell anyone walking by it is an 'exclusive, traditional family recipe'.",
+        "The Final Verdict: Serve piping hot with a side of pita bread used as a shovel. If they don't like it, they can forage for themselves."
+      ],
+      "preparation_arabic": [
+        "مرحلة الاستخراج: افتح باب الثلاجة وحدّق في الهاوية الباردة لمدة 45 ثانية على الأقل، آملاً أن يظهر خروف مشوي. خذ 3 أطباق عشوائية.",
+        "تجربة الاندماج: اخلط الأرز المتبقي مع نصف علبة حمص وفخذ دجاج وحيد. في الحيّ الله، القواعد لا تنطبق؛ البقاء فقط.",
+        "طقس التسخين: ارمِ كل شيء في مقلاة مع زيت زيتون. ارفع النار وحرّك بجنون مع تلاوة صلوات الطهي.",
+        "توابل الحب واليأس: رش البهارات الخيالية. أخبر أي شخص يمر أن هذه 'وصفة عائلية تقليدية حصرية'.",
+        "الحكم النهائي: قدمها ساخنة جداً مع خبز بيتا كمجرفة. لا تقبل النقد؛ إذا لم تعجبهم، فليبحثوا عن طعامهم بأنفسهم."
+      ],
+      "source": "Midnight Survival Manual"
     }
   ]
 }

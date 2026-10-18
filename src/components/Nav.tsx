@@ -44,22 +44,25 @@ export default function Nav() {
           </Link>
 
           {/* ONLY ADMIN CAN SEE ADD, PUSH, AND LOGOUT */}
-          {loaded && isAdmin && (
-            <>
-	      <Link href="/settings" className="nav-link">
- 	       ⚙️ {lang === "ar" ? "الإعدادات" : "Settings"}
-	      </Link>
-              <Link href="/recipes/new" className="nav-cta">
-                {t(lang, "nav_add")}
-              </Link>
-              <Link href="/admin" className="nav-link">
-                {lang === "ar" ? "🔔 إرسال إشعار" : "🔔 Send Push"}
-              </Link>
-              <button type="button" onClick={logout} className="nav-link nav-button">
-                {lang === "ar" ? "خروج" : "Logout"}
-              </button>
-            </>
-          )}
+{loaded && isAdmin && (
+  <>
+    <Link href="/recipes/new" className="nav-cta">
+      {t(lang, "nav_add")}
+    </Link>
+    <Link href="/admin" className="nav-link">
+      {lang === "ar" ? "🔔 إشعار" : "🔔 Push"}
+    </Link>
+    <Link href="/whatsapp" className="nav-link">
+      💬 {lang === "ar" ? "واتساب" : "WhatsApp"}
+    </Link>
+    <Link href="/settings" className="nav-link">
+      ⚙️ {lang === "ar" ? "الإعدادات" : "Settings"}
+    </Link>
+    <button type="button" onClick={logout} className="nav-link nav-button">
+      {lang === "ar" ? "خروج" : "Logout"}
+    </button>
+  </>
+)}
 
           {/* ONLY NON-ADMINS SEE THE LOGIN BUTTON */}
           {loaded && !isAdmin && (

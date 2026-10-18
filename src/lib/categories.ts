@@ -21,6 +21,7 @@ export const CATEGORIES: Category[] = [
   { value: "Snack",         valueAr: "وجبة خفيفة",    icon: "🍿" },
   { value: "Dessert",       valueAr: "حلويات",         icon: "🍰" },
   { value: "Drink",         valueAr: "مشروب",          icon: "🥤" },
+  { value: "Joke Recipe",   valueAr: "وصفة مزحة",      icon: "😂" }, // <--- ADDED HERE
 ];
 
 export function categoryIcon(value: string | null | undefined): string {
