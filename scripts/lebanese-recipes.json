@@ -1,107 +1,138 @@
 {
-  "name": "Beiruti Mudardara",
-  "nameAr": "المدردرة البيروتية",
-  "description": "A classic Lebanese lentil and rice dish, known as mudardara or mujadara. This Beiruti-style version features tender brown lentils and rice, topped with a generous amount of crispy, caramelized onions. It is a comforting, nutritious, and naturally vegan meal, often served with a side of yogurt or fresh salad.",
-  "descriptionAr": "طبق لبناني تقليدي من العدس والأرز، يُعرف بالمدردرة أو المجدرة. تتميز هذه الوصفة البيروتية بالعدس البني والأرز الطري، وتُزيّن بكمية وفيرة من البصل المقلي المقرمش. إنها وجبة مريحة ومغذية ونباتية بطبيعتها، وغالباً ما تُقدّم مع اللبن أو السلطة الطازجة.",
+  "name": "Red Vermicelli and Chicken Soup",
+  "nameAr": "شوربة شعيرية ودجاج حمراء",
+  "description": "A comforting Lebanese-style red soup made with a tomato-based broth, shredded chicken, and toasted vermicelli noodles. Warming, simple, and satisfying.",
+  "descriptionAr": "شوربة لبنانية دافئة بنكهة الطماطم، تحتوي على الدجاج المفتت والشعيرية المحمصة. طبق بسيط ومغذٍ ومريح.",
   "cuisine": "Lebanese",
   "cuisineAr": "لبنانية",
-  "category": "Main Course",
-  "categoryAr": "طبق رئيسي",
+  "category": "Soup",
+  "categoryAr": "شوربة",
   "prepTime": 15,
-  "cookTime": 45,
-  "servings": 6,
-  "dietaryTags": ["vegan", "vegetarian", "dairy-free"],
-  "servedWith": "Yogurt, fresh salad, or pickles",
-  "servedWithAr": "لبن، سلطة طازجة، أو مخللات",
-  "howToServe": "Serve hot, garnished with the crispy fried onions. Accompany with a side of plain yogurt or a simple Lebanese salad.",
-  "howToServeAr": "تُقدّم ساخنة، مزينة بالبصل المقلي المقرمش. تُرافق مع طبق جانبي من اللبن أو سلطة لبنانية بسيطة.",
+  "cookTime": 35,
+  "servings": 4,
+  "dietaryTags": [],
+  "servedWith": "Lemon wedges and fresh parsley",
+  "servedWithAr": "شرائح ليمون وبقدونس طازج",
+  "howToServe": "Ladle the hot soup into bowls and serve with lemon wedges on the side for squeezing. Garnish with fresh chopped parsley if desired.",
+  "howToServeAr": "تسكب الشوربة الساخنة في أطباق وتقدم مع شرائح الليمون للعصر. تزين بالبقدونس الطازج المفروم حسب الرغبة.",
   "imageUrl": null,
   "videoUrl": null,
   "ingredients": [
     {
-      "name": "Brown lentils",
-      "nameAr": "عدس بني",
+      "name": "Chicken breasts",
+      "nameAr": "صدور دجاج",
+      "amount": 2,
+      "unit": "pieces",
+      "unitAr": "قطعة",
+      "preparation": "Boneless, skinless",
+      "preparationAr": "منزوعة العظم والجلد"
+    },
+    {
+      "name": "Vermicelli noodles",
+      "nameAr": "شعيرية",
       "amount": 1,
       "unit": "cup",
       "unitAr": "كوب",
-      "preparation": "Rinsed and picked over",
-      "preparationAr": "مغسول ومنقى"
+      "preparation": "Broken into short pieces",
+      "preparationAr": "مكسرة إلى قطع قصيرة"
     },
     {
-      "name": "Basmati rice",
-      "nameAr": "أرز بسمتي",
-      "amount": 1,
-      "unit": "cup",
-      "unitAr": "كوب",
-      "preparation": "Rinsed and soaked for 15 minutes",
-      "preparationAr": "مغسول ومنقوع لمدة ١٥ دقيقة"
-    },
-    {
-      "name": "Onions",
+      "name": "Onion",
       "nameAr": "بصل",
+      "amount": 1,
+      "unit": "medium",
+      "unitAr": "حبة متوسطة",
+      "preparation": "Finely chopped",
+      "preparationAr": "مفروم ناعم"
+    },
+    {
+      "name": "Garlic",
+      "nameAr": "ثوم",
       "amount": 3,
-      "unit": "large",
-      "unitAr": "حبة كبيرة",
-      "preparation": "Sliced into thin rings",
-      "preparationAr": "مقطع إلى حلقات رفيعة"
+      "unit": "cloves",
+      "unitAr": "فصوص",
+      "preparation": "Minced",
+      "preparationAr": "مهروس"
     },
     {
-      "name": "Olive oil",
-      "nameAr": "زيت زيتون",
-      "amount": 0.5,
-      "unit": "cup",
-      "unitAr": "كوب",
-      "preparation": "Divided",
-      "preparationAr": "مقسم"
+      "name": "Tomato paste",
+      "nameAr": "معجون طماطم",
+      "amount": 2,
+      "unit": "tbsp",
+      "unitAr": "ملعقة كبيرة",
+      "preparation": "",
+      "preparationAr": ""
     },
     {
-      "name": "Water",
-      "nameAr": "ماء",
-      "amount": 4,
+      "name": "Vegetable oil",
+      "nameAr": "زيت نباتي",
+      "amount": 2,
+      "unit": "tbsp",
+      "unitAr": "ملعقة كبيرة",
+      "preparation": "For toasting vermicelli and sautéing",
+      "preparationAr": "لتحمير الشعيرية والتحميس"
+    },
+    {
+      "name": "Chicken broth",
+      "nameAr": "مرق دجاج",
+      "amount": 6,
       "unit": "cups",
-      "unitAr": "كوب",
-      "preparation": null,
-      "preparationAr": null
+      "unitAr": "أكواب",
+      "preparation": "Reserved from boiling the chicken",
+      "preparationAr": "محتفظ به من سلق الدجاج"
     },
     {
       "name": "Salt",
       "nameAr": "ملح",
-      "amount": 1.5,
+      "amount": 1,
       "unit": "tsp",
       "unitAr": "ملعقة صغيرة",
       "preparation": "Or to taste",
       "preparationAr": "أو حسب الرغبة"
     },
     {
-      "name": "Cumin",
-      "nameAr": "كمون",
+      "name": "Black pepper",
+      "nameAr": "فلفل أسود",
       "amount": 0.5,
       "unit": "tsp",
       "unitAr": "ملعقة صغيرة",
-      "preparation": "Optional",
-      "preparationAr": "اختياري"
+      "preparation": "Ground",
+      "preparationAr": "مطحون"
+    },
+    {
+      "name": "Lemon juice",
+      "nameAr": "عصير ليمون",
+      "amount": 2,
+      "unit": "tbsp",
+      "unitAr": "ملعقة كبيرة",
+      "preparation": "Freshly squeezed, or to taste",
+      "preparationAr": "طازج معصور، أو حسب الرغبة"
     }
   ],
   "instructions": [
     {
-      "text": "Rinse the lentils thoroughly. In a large pot, combine the lentils with 4 cups of water and bring to a boil. Reduce heat and simmer for 20 minutes, or until the lentils are partially cooked.",
-      "textAr": "اغسل العدس جيداً. في قدر كبير، ضع العدس مع ٤ أكواب من الماء واتركه حتى يغلي. خفف النار واتركه ينضج لمدة ٢٠ دقيقة، أو حتى ينضج العدس جزئياً."
+      "text": "Place the chicken breasts in a pot, cover with water, and bring to a boil. Skim off any foam, then simmer until the chicken is fully cooked, about 20 minutes. Reserve the broth and shred the chicken into small pieces.",
+      "textAr": "توضع صدور الدجاج في قدر وتغطى بالماء وتترك حتى تغلي. تزال الرغوة عن السطح ثم تترك على نار هادئة حتى ينضج الدجاج تماماً، حوالي 20 دقيقة. يحتفظ بالمرق ويفتت الدجاج إلى قطع صغيرة."
     },
     {
-      "text": "While the lentils cook, heat half of the olive oil in a large skillet over medium-high heat. Add the sliced onions and fry, stirring frequently, until they are deeply golden brown and crispy. This may take 15-20 minutes. Remove the onions with a slotted spoon and set aside on a paper towel to drain.",
-      "textAr": "أثناء طهي العدس، سخن نصف كمية زيت الزيتون في مقلاة كبيرة على نار متوسطة إلى عالية. أضف البصل المقطع واقلبه باستمرار حتى يصبح لونه بنياً ذهبياً ومقرمشاً. قد يستغرق هذا ١٥-٢٠ دقيقة. أخرج البصل بمصفاة واتركه جانباً على مناديل ورقية لتصفيته."
+      "text": "In a separate large pot, heat the vegetable oil over medium heat. Add the broken vermicelli and stir continuously until golden brown and toasted. Be careful not to burn them.",
+      "textAr": "في قدر كبير منفصل، يسخن الزيت النباتي على نار متوسطة. تضاف الشعيرية المكسرة وتقلب باستمرار حتى تصبح ذهبية اللون ومحمصة. يجب الحرص على عدم حرقها."
     },
     {
-      "text": "Drain the soaked rice. Add the rice, salt, and cumin (if using) to the pot with the lentils. Stir gently to combine. Bring to a boil, then reduce heat to low, cover, and simmer for 20-25 minutes, or until the rice is fully cooked and the water is absorbed.",
-      "textAr": "صفّ الأرز المنقوع. أضف الأرز والملح والكمون (إذا كنت تستخدمه) إلى القدر مع العدس. حرك بلطف حتى تمتزج المكونات. اتركه حتى يغلي، ثم خفف النار إلى منخفضة، وغطّ القدر، واتركه ينضج لمدة ٢٠-٢٥ دقيقة، أو حتى ينضج الأرز تماماً ويمتص الماء."
+      "text": "Add the chopped onion and minced garlic to the pot with the vermicelli. Sauté until the onion is soft and fragrant, about 3-4 minutes.",
+      "textAr": "يضاف البصل المفروم والثوم المهروس إلى القدر مع الشعيرية. يقلب حتى يذبل البصل وتفوح رائحته، حوالي 3-4 دقائق."
     },
     {
-      "text": "Once the rice and lentils are cooked, fluff the mixture with a fork. Drizzle the remaining olive oil over the top and gently fold it in.",
-      "textAr": "بمجرد أن ينضج الأرز والعدس، حرك الخليط بشوكة. رش ما تبقى من زيت الزيتون فوقه وقلبه بلطف."
+      "text": "Stir in the tomato paste and cook for another minute until it darkens slightly and releases its aroma.",
+      "textAr": "يضاف معجون الطماطم ويقلب ويترك لمدة دقيقة أخرى حتى يغمق لونه قليلاً وتظهر رائحته."
     },
     {
-      "text": "Transfer the mudardara to a serving platter. Generously top with the reserved crispy fried onions. Serve hot with yogurt or salad on the side.",
-      "textAr": "انقل المدردرة إلى طبق تقديم. زينها بسخاء بالبصل المقلي المقرمش المحتفظ به. قدمها ساخنة مع اللبن أو السلطة على الجانب."
+      "text": "Pour in the reserved chicken broth and add the shredded chicken, salt, and black pepper. Bring the soup to a boil, then reduce the heat and simmer for 10-15 minutes until the vermicelli is tender and the flavors have melded.",
+      "textAr": "يسكب مرق الدجاج المحتفظ به ويضاف الدجاج المفتت والملح والفلفل الأسود. تترك الشوربة حتى تغلي ثم تخفف النار وتترك على نار هادئة لمدة 10-15 دقيقة حتى تنضج الشعيرية وتتجانس النكهات."
+    },
+    {
+      "text": "Stir in the fresh lemon juice just before serving. Taste and adjust salt if needed. Serve hot.",
+      "textAr": "يضاف عصير الليمون الطازج قبل التقديم مباشرة. يتم تذوق الشوربة وتعديل الملح حسب الرغبة. تقدم ساخنة."
     }
   ]
 }
