@@ -114,8 +114,8 @@ export default function InboxPage() {
                 {item.body}
               </p>
 
-              {/* Link Preview Card */}
-              {item.previewImage && item.url && (
+              {/* Show image card if there is an image */}
+              {item.url && item.previewImage && (
                 <Link
                   href={item.url}
                   style={{
@@ -146,6 +146,18 @@ export default function InboxPage() {
                   </div>
                 </Link>
               )}
+
+              {/* Show View Button if there is a URL, even if there is no image */}
+              {item.url && item.url !== "/inbox" && (
+                <Link
+                  href={item.url}
+                  className="btn btn-ghost"
+                  style={{ alignSelf: "flex-start", marginTop: 4 }}
+                >
+                  {lang === "ar" ? "عرض الصفحة" : "View Page"} →
+                </Link>
+              )}
+              
             </div>
           ))}
         </div>
