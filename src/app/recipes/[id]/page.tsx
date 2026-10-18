@@ -25,9 +25,9 @@ export async function generateMetadata({
 
   if (!recipe) return { title: "Recipe Not Found" };
 
-  // 1. Check if ?today is in the URL. If yes, use the special title.
+  // 1. Check if ?today is in the URL
   const isToday = "today" in search;
-  const title = isToday ? "Hicham's Main Dish of the day" : recipe.name;
+  const title = isToday ? `Hicham's Main Dish of the day - ${recipe.name}` : recipe.name;
   
   const description = recipe.description || "View this recipe on Menu.";
   const image = recipe.imageUrl || "https://food-menu-app-xxww.onrender.com/icon-192.png";
@@ -64,9 +64,20 @@ async function RecipeDetail({
   const [recipe] = await db.select().from(recipes).where(eq(recipes.id, id)).limit(1);
   if (!recipe) notFound();
 
-  // Override the name if ?today is present
+  // Override the name if ?today is present using JSX
   const displayRecipe = isToday 
-    ? { ...recipe, name: "Hicham's Main Dish of the day" } 
+    ? { 
+        ...recipe, 
+        name: (
+          <>
+            Hicham's Main Dish of the day
+            <br />
+            <span style={{ fontSize: "0.75em", fontWeight: 400, color: "var(--muted)", display: "block", marginTop: 8 }}>
+              {recipe.name}
+            </span>
+          </>
+        ) 
+      } 
     : recipe;
 
   const ings = await db.select().from(ingredients).where(eq(ingredients.recipeId, id)).orderBy(asc(ingredients.id));
@@ -75,7 +86,8 @@ async function RecipeDetail({
 
   return (
     <RecipeDetailClient
-      recipe={displayRecipe}
+      // We pass the overridden name as a ReactNode
+      recipe={displayRecipe as any}
       ingredients={ings}
       instructions={steps}
       isAdmin={admin}

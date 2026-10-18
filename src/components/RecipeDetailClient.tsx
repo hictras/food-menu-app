@@ -51,7 +51,9 @@ export default function RecipeDetailClient({
   const youtubeId = extractYouTubeId(recipe.videoUrl);
   const minLabel = lang === "ar" ? "د" : "min";
 
-  const displayName = pick(lang, recipe.name, recipe.nameAr);
+  const displayName = typeof recipe.name === "string" 
+  ? pick(lang, recipe.name, recipe.nameAr) 
+  : recipe.name;
   const displayDesc = pick(lang, recipe.description, recipe.descriptionAr);
   const displayCuisine = pick(lang, recipe.cuisine, recipe.cuisineAr);
   const displayServedWith = pick(lang, recipe.servedWith, recipe.servedWithAr);
