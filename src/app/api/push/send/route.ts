@@ -50,10 +50,12 @@ export async function POST(req: NextRequest) {
       previewImage,
       previewTitle,
       targetPhone,
+      pollUrl: null,
     }).returning();
 
     let pollId: number | null = null;
-    let pollUrl = url;
+    let pollUrl: string | null = null;
+    let pushUrl = url;
 
     if (pollQuestion) {
       const [poll] = await db.insert(polls).values({
@@ -63,12 +65,19 @@ export async function POST(req: NextRequest) {
       }).returning();
       pollId = poll.id;
       pollUrl = `/poll/${poll.id}`;
+      pushUrl = pollUrl;
+
+      // Save pollUrl on the notification row
+      await db.update(notifications).set({ pollUrl }).where(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (await import("drizzle-orm")).eq(notifications.id, inserted.id) as any
+      );
     }
 
     const payload = JSON.stringify({
       title: pollQuestion || title,
       body: pollQuestion ? `Tap to RSVP: ${text}` : text,
-      url: pollUrl,
+      url: pushUrl,
     });
 
     let subs;

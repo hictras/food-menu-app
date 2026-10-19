@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useLang } from "@/components/LanguageProvider";
 
@@ -11,6 +12,7 @@ type PollData = {
   title: string;
   body: string;
   targetPhone: string | null;
+  recipeUrl: string | null;
   yesCount: number;
   noCount: number;
   myAnswer: "yes" | "no" | null;
@@ -130,6 +132,7 @@ export default function PollPage() {
 
   const total = poll.yesCount + poll.noCount;
   const yesPct = total > 0 ? Math.round((poll.yesCount / total) * 100) : 0;
+  const hasRecipe = poll.recipeUrl && poll.recipeUrl !== "/inbox" && !poll.recipeUrl.startsWith("/poll/");
 
   return (
     <main className="container" style={{ paddingTop: 40, paddingBottom: 80, maxWidth: 640 }}>
@@ -153,7 +156,6 @@ export default function PollPage() {
           </p>
         )}
 
-        {/* Tally */}
         <div style={{ marginBottom: 24 }}>
           <div style={{ display: "flex", gap: 16, marginBottom: 10, fontSize: 13, color: "var(--ink-soft)" }}>
             <span>
@@ -176,14 +178,12 @@ export default function PollPage() {
           )}
         </div>
 
-        {/* Not open */}
         {!poll.isOpen && (
           <div style={{ padding: "10px 14px", background: "var(--surface-2)", border: "1px solid var(--line)", borderRadius: 8, fontSize: 13, color: "var(--muted)", marginBottom: 16 }}>
             {lang === "ar" ? "التصويت مغلق" : "Voting is closed"}
           </div>
         )}
 
-        {/* No phone cookie → inline verify */}
         {poll.isOpen && !poll.hasPhoneCookie && (
           <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: 10, padding: 16, marginBottom: 16 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)", marginBottom: 8 }}>
@@ -213,14 +213,12 @@ export default function PollPage() {
           </div>
         )}
 
-        {/* Has cookie but not invited */}
         {poll.isOpen && poll.hasPhoneCookie && !poll.isTargetedToMe && (
           <div style={{ padding: "10px 14px", background: "var(--surface-2)", border: "1px solid var(--line)", borderRadius: 8, fontSize: 13, color: "var(--muted)", marginBottom: 16 }}>
             {lang === "ar" ? "أنت غير مدعو لهذا الاستطلاع" : "You are not invited to this poll"}
           </div>
         )}
 
-        {/* Vote buttons */}
         {poll.isOpen && poll.canVote && (
           <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
             <button
@@ -278,7 +276,7 @@ export default function PollPage() {
           <p style={{ fontSize: 12, color: "var(--accent)", marginTop: 12 }}>{error}</p>
         )}
 
-        <div style={{ marginTop: 24, paddingTop: 16, borderTop: "1px solid var(--line)" }}>
+        <div style={{ marginTop: 24, paddingTop: 16, borderTop: "1px solid var(--line)", display: "flex", flexWrap: "wrap", gap: 8 }}>
           <button
             type="button"
             className="btn btn-ghost"
@@ -287,6 +285,15 @@ export default function PollPage() {
           >
             {lang === "ar" ? "→ العودة إلى صندوق الرسائل" : "→ Back to inbox"}
           </button>
+          {hasRecipe && (
+            <Link
+              href={poll.recipeUrl!}
+              className="btn btn-ghost"
+              style={{ fontSize: 12 }}
+            >
+              🍽 {lang === "ar" ? "عرض الوصفة" : "View recipe"} →
+            </Link>
+          )}
         </div>
       </div>
     </main>

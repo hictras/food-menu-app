@@ -66,6 +66,7 @@ export const notifications = sqliteTable("notifications", {
   previewImage: text("preview_image"),
   previewTitle: text("preview_title"),
   targetPhone: text("target_phone").notNull().default("all"),
+  pollUrl: text("poll_url"),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 

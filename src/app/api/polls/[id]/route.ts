@@ -44,6 +44,11 @@ export async function GET(
     const targetPhones = parseTargetPhones(notification?.targetPhone || null);
     const isTargetedToMe = !targetPhones.length || (viewerPhone && targetPhones.includes(viewerPhone));
 
+    const recipeUrl =
+      notification?.url && notification.url !== "/inbox" && !notification.url.startsWith("/poll/")
+        ? notification.url
+        : null;
+
     return NextResponse.json({
       id: poll.id,
       question: poll.question,
@@ -51,6 +56,7 @@ export async function GET(
       title: notification?.title || poll.question,
       body: notification?.body || "",
       targetPhone: notification?.targetPhone || "all",
+      recipeUrl,
       yesCount: yes.length,
       noCount: no.length,
       myAnswer: myResponse ? myResponse.answer : null,

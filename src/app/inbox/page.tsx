@@ -16,6 +16,7 @@ type Notification = {
   pollId: number | null;
   pollQuestion: string | null;
   pollIsOpen: number | null;
+  pollUrl: string | null;
 };
 
 type PollResponses = {
@@ -258,24 +259,9 @@ export default function InboxPage() {
           </button>
         </div>
 
-        {renderGroup(
-          lang === "ar" ? "نعم" : "Yes",
-          "var(--olive)",
-          "var(--olive-soft)",
-          r.yes
-        )}
-        {renderGroup(
-          lang === "ar" ? "لا" : "No",
-          "var(--accent)",
-          "var(--accent-soft)",
-          r.no
-        )}
-        {renderGroup(
-          lang === "ar" ? "لم يصوت" : "Pending",
-          "var(--muted)",
-          "var(--surface-2)",
-          r.pending
-        )}
+        {renderGroup(lang === "ar" ? "نعم" : "Yes", "var(--olive)", "var(--olive-soft)", r.yes)}
+        {renderGroup(lang === "ar" ? "لا" : "No", "var(--accent)", "var(--accent-soft)", r.no)}
+        {renderGroup(lang === "ar" ? "لم يصوت" : "Pending", "var(--muted)", "var(--surface-2)", r.pending)}
 
         {item.pollQuestion && (
           <div style={{ fontSize: 11, color: "var(--muted)", paddingTop: 8, borderTop: "1px solid var(--line)" }}>
@@ -284,6 +270,14 @@ export default function InboxPage() {
         )}
       </div>
     );
+  }
+
+  function hasRecipeLink(item: Notification): boolean {
+    if (!item.url) return false;
+    if (item.url === "/inbox") return false;
+    if (item.url.startsWith("/poll/")) return false;
+    if (item.pollUrl && item.url === item.pollUrl) return false;
+    return true;
   }
 
   return (
@@ -313,6 +307,7 @@ export default function InboxPage() {
             const isOpen = isAdmin && openId === item.id;
             const clickable = isAdmin;
             const hasPoll = !!item.pollId;
+            const showRecipe = hasRecipeLink(item);
 
             return (
               <div
@@ -386,7 +381,7 @@ export default function InboxPage() {
 
                 {hasPoll && isAdmin && renderPollTally(item)}
 
-                {item.url && item.previewImage && (
+                {item.previewImage && item.url && (
                   <Link
                     href={item.url}
                     onClick={(e) => e.stopPropagation()}
@@ -400,9 +395,9 @@ export default function InboxPage() {
                   </Link>
                 )}
 
-                {!item.previewImage && item.url && item.url !== "/inbox" && !item.url.startsWith("/poll/") && (
+                {showRecipe && !item.previewImage && (
                   <Link
-                    href={item.url}
+                    href={item.url!}
                     onClick={(e) => e.stopPropagation()}
                     className="btn btn-ghost"
                     style={{ alignSelf: "flex-start", marginTop: 4 }}
@@ -411,15 +406,26 @@ export default function InboxPage() {
                   </Link>
                 )}
 
-                {hasPoll && item.url && (
-                  <Link
-                    href={item.url}
-                    onClick={(e) => e.stopPropagation()}
-                    className="btn btn-ghost"
-                    style={{ alignSelf: "flex-start", marginTop: 4, fontSize: 12 }}
-                  >
-                    📊 {lang === "ar" ? "فتح الاستطلاع" : "Open poll"} →
-                  </Link>
+                {/* Poll action buttons — shown to everyone (admin + recipient) */}
+                {hasPoll && (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 6 }} onClick={(e) => e.stopPropagation()}>
+                    <Link
+                      href={item.pollUrl || `/poll/${item.pollId}`}
+                      className="btn btn-primary"
+                      style={{ fontSize: 12 }}
+                    >
+                      📊 {lang === "ar" ? "فتح الاستطلاع" : "Open poll"} →
+                    </Link>
+                    {showRecipe && (
+                      <Link
+                        href={item.url!}
+                        className="btn btn-ghost"
+                        style={{ fontSize: 12 }}
+                      >
+                        🍽 {lang === "ar" ? "عرض الوصفة" : "View recipe"} →
+                      </Link>
+                    )}
+                  </div>
                 )}
 
                 {isAdmin && isOpen && (
