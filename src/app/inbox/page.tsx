@@ -452,7 +452,7 @@ export default function InboxPage() {
                     onClick={(e) => e.stopPropagation()}
                     style={{ display: "flex", alignItems: "center", gap: 12, padding: 10, background: "var(--bg)", border: "1px solid var(--line)", borderRadius: 8, textDecoration: "none", color: "inherit", marginTop: 4 }}
                   >
-                    <img src={item.previewImage} alt="Preview" style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 6 }} />
+                    <img src={item.previewImage} alt="Preview" loading="lazy" decoding="async" style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 6 }} />
                     <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                       {item.previewTitle ? renderPreviewTitle(item.previewTitle) : <strong>View Recipe</strong>}
                       <span style={{ fontSize: 11, color: "var(--muted)", marginTop: 2 }}>{relUrl.replace(/^https?:\/\//, "")}</span>

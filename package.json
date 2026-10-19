@@ -11,6 +11,7 @@
     "@aws-sdk/client-s3": "^3.726.1",
     "@aws-sdk/s3-request-presigner": "^3.726.1",
     "@libsql/client": "^0.18.0",
+    "browser-image-compression": "^2.0.2",
     "drizzle-orm": "^0.45.4",
     "next": "16.4.2",
     "next-pwa": "^5.6.0",

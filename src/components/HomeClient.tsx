@@ -260,7 +260,7 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
                     <Link key={r.id} href={`/recipes/${r.id}`} className="recipe-card">
                       <div className="recipe-card-img-wrap">
                         {r.imageUrl ? (
-                          <img src={r.imageUrl} alt={displayName} className="recipe-card-img" />
+                          <img src={r.imageUrl} alt={displayName} className="recipe-card-img" loading="lazy" decoding="async" />
                         ) : (
                           <div className="recipe-card-img" />
                         )}

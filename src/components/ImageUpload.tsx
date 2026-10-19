@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import imageCompression from "browser-image-compression";
 
 type Props = {
   onUploaded: (publicUrl: string) => void;
@@ -10,6 +11,7 @@ type Props = {
 export default function ImageUpload({ onUploaded, initialUrl }: Props) {
   const [preview, setPreview] = useState<string | null>(initialUrl ?? null);
   const [uploading, setUploading] = useState(false);
+  const [status, setStatus] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -18,12 +20,34 @@ export default function ImageUpload({ onUploaded, initialUrl }: Props) {
 
     setError(null);
     setUploading(true);
+    setStatus("Compressing...");
 
     try {
+      let uploadFile: File | Blob = file;
+
+      if (file.type.startsWith("image/") && file.size > 200 * 1024) {
+        try {
+          uploadFile = await imageCompression(file, {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 1600,
+            useWebWorker: true,
+            initialQuality: 0.82,
+          });
+        } catch (err) {
+          console.warn("Compression failed, uploading original:", err);
+          uploadFile = file;
+        }
+      }
+
+      const finalName = file.name;
+      const finalType = file.type || "image/jpeg";
+
+      setStatus("Uploading...");
+
       const res = await fetch("/api/upload", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ filename: file.name, contentType: file.type }),
+        body: JSON.stringify({ filename: finalName, contentType: finalType }),
       });
 
       if (!res.ok) throw new Error("Failed to get upload URL");
@@ -31,8 +55,8 @@ export default function ImageUpload({ onUploaded, initialUrl }: Props) {
 
       const put = await fetch(uploadUrl, {
         method: "PUT",
-        body: file,
-        headers: { "Content-Type": file.type },
+        body: uploadFile,
+        headers: { "Content-Type": finalType },
       });
 
       if (!put.ok) throw new Error("Upload to R2 failed");
@@ -42,8 +66,10 @@ export default function ImageUpload({ onUploaded, initialUrl }: Props) {
 
       setPreview(publicUrl);
       onUploaded(publicUrl);
+      setStatus("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
+      setStatus("");
     } finally {
       setUploading(false);
     }
@@ -58,12 +84,13 @@ export default function ImageUpload({ onUploaded, initialUrl }: Props) {
         disabled={uploading}
         className="block w-full text-sm"
       />
-      {uploading && <p className="text-sm text-gray-500">Uploading…</p>}
+      {status && <p className="text-sm text-gray-500">{status}</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}
       {preview && (
         <img
           src={preview}
           alt="Recipe preview"
+          loading="lazy"
           className="w-48 h-48 object-cover rounded-lg border"
         />
       )}

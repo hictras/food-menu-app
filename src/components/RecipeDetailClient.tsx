@@ -94,7 +94,7 @@ export default function RecipeDetailClient({
       </div>
 
       {recipe.imageUrl && (
-        <img src={recipe.imageUrl} alt={displayName} className="detail-hero" />
+        <img src={recipe.imageUrl} alt={displayName} className="detail-hero" loading="eager" decoding="async" />
       )}
 
       <header className="detail-head">
