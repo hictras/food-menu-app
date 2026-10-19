@@ -1,4 +1,8 @@
-self.addEventListener("install", () => self.skipWaiting());
+// version: 2.0.1
+self.addEventListener("install", () => {
+  console.log("[sw] v2.0.1");
+  self.skipWaiting();
+});
 self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
 
 self.addEventListener("push", function (event) {
@@ -29,31 +33,25 @@ self.addEventListener("notificationclick", function (event) {
 
   event.waitUntil(
     clients.matchAll({ type: "window", includeUncontrolled: true }).then(function (clientList) {
-      // Prefer an existing same-origin window
       for (const client of clientList) {
         if (!client.url.startsWith(self.location.origin)) continue;
 
-        // Already on the target page — just focus
         if (client.url === absoluteUrl) {
           return client.focus ? client.focus() : Promise.resolve();
         }
 
-        // Try to navigate the existing window
         if ("navigate" in client) {
           return client.navigate(absoluteUrl).then(function (navigated) {
             if (navigated && "focus" in navigated) return navigated.focus();
-            // Navigate returned null — fall back to opening
             return clients.openWindow(absoluteUrl);
           }).catch(function () {
             return clients.openWindow(absoluteUrl);
           });
         }
 
-        // No navigate support — just focus
         return client.focus ? client.focus() : Promise.resolve();
       }
 
-      // No existing window — open a new one
       if (clients.openWindow) return clients.openWindow(absoluteUrl);
     })
   );
