@@ -9,21 +9,22 @@ export default function DynamicFavicon() {
       .then((data) => {
         if (!data.logo_url) return;
 
-        // Remove any existing icon links
-        document.querySelectorAll("link[rel*='icon']").forEach((el) => el.remove());
+        // Only remove icons we previously added (safe)
+        document.querySelectorAll("link[data-dynamic='true']").forEach((el) => el.remove());
 
-        // Add new icon link
-        const link = document.createElement("link");
-        link.rel = "icon";
-        link.type = "image/png";
-        link.href = data.logo_url;
-        document.head.appendChild(link);
+        // Add new icon links
+        const icon = document.createElement("link");
+        icon.rel = "icon";
+        icon.type = "image/png";
+        icon.href = data.logo_url;
+        icon.setAttribute("data-dynamic", "true");
+        document.head.appendChild(icon);
 
-        // Also update apple-touch-icon for iOS home screen
-        const appleLink = document.createElement("link");
-        appleLink.rel = "apple-touch-icon";
-        appleLink.href = data.logo_url;
-        document.head.appendChild(appleLink);
+        const appleIcon = document.createElement("link");
+        appleIcon.rel = "apple-touch-icon";
+        appleIcon.href = data.logo_url;
+        appleIcon.setAttribute("data-dynamic", "true");
+        document.head.appendChild(appleIcon);
       })
       .catch(() => {});
   }, []);
