@@ -4,6 +4,7 @@ import { getDb } from "@/db";
 import { recipes } from "@/db/schema";
 import { desc } from "drizzle-orm";
 import HomeClient from "@/components/HomeClient";
+import HomeWrapper from "@/components/HomeWrapper";
 
 async function RecipeList() {
   await connection();
@@ -14,8 +15,8 @@ async function RecipeList() {
 
 export default function HomePage() {
   return (
-    <main className="container">
+    <HomeWrapper>
       <RecipeList />
-    </main>
+    </HomeWrapper>
   );
 }

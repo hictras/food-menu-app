@@ -1724,3 +1724,129 @@ html[data-theme="dark"] .custom-color-text {
   .brand { font-size: 16px; }
   .nav-link { padding: 5px 6px; font-size: 11.5px; }
 }
+
+/* ========== HOME BACKGROUND ========== */
+
+.home-background {
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.35;
+  z-index: 0;
+  pointer-events: none;
+}
+
+html[data-theme="dark"] .home-background {
+  opacity: 0.25;
+}
+
+.home-background::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%);
+}
+
+html[data-theme="light"] .home-background::after {
+  background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.7) 100%);
+}
+
+/* ========== WELCOME OVERLAY ========== */
+
+.welcome-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 10, 11, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 24px;
+}
+
+.welcome-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  animation: welcomeFadeIn 0.5s ease;
+}
+
+@keyframes welcomeFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.welcome-logo {
+  max-width: 200px;
+  max-height: 120px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
+}
+
+.welcome-title {
+  font-family: var(--font-head);
+  font-size: 42px;
+  line-height: 1.15;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: white;
+  margin: 0;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+html[lang="ar"] .welcome-title {
+  font-family: var(--font-ar);
+  font-weight: 700;
+  font-size: 34px;
+}
+
+.welcome-enter-btn {
+  padding: 16px 48px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  letter-spacing: 0.01em;
+  box-shadow: 0 8px 24px rgba(226, 84, 58, 0.4);
+  transition: all 0.15s ease;
+  min-width: 160px;
+}
+
+.welcome-enter-btn:hover {
+  background: var(--accent-2);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(226, 84, 58, 0.5);
+}
+
+.welcome-enter-btn:active {
+  transform: translateY(0);
+}
+
+/* ========== NAV LOGO ========== */
+
+.nav-logo {
+  height: 32px;
+  width: auto;
+  max-width: 150px;
+  object-fit: contain;
+  display: block;
+}
+
+@media (max-width: 640px) {
+  .nav-logo {
+    height: 26px;
+    max-width: 110px;
+  }
+}

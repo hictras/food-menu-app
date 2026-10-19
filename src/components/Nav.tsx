@@ -13,6 +13,7 @@ export default function Nav() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [logoUrl, setLogoUrl] = useState<string>("");
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -20,6 +21,13 @@ export default function Nav() {
       .then((data) => setIsAdmin(!!data.admin))
       .catch(() => setIsAdmin(false))
       .finally(() => setLoaded(true));
+
+    fetch("/api/settings")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.logo_url) setLogoUrl(data.logo_url);
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -47,7 +55,11 @@ export default function Nav() {
     <nav className="nav">
       <div className="nav-inner">
         <Link href="/" className="brand" onClick={closeMenu}>
-          {t(lang, "brand")}<span>.</span>
+          {logoUrl ? (
+            <img src={logoUrl} alt="Logo" className="nav-logo" />
+          ) : (
+            <>{t(lang, "brand")}<span>.</span></>
+          )}
         </Link>
 
         <div className="nav-links">
@@ -75,7 +87,7 @@ export default function Nav() {
                 {menuOpen && (
                   <div className="nav-menu">
                     <Link href="/admin/import" className="nav-menu-item" onClick={closeMenu}>
-                      📥 Import recipes
+                      📥 {lang === "ar" ? "استيراد وصفات" : "Import recipes"}
                     </Link>
                     <Link href="/recipes/new" className="nav-menu-item" onClick={closeMenu}>
                       ✚ {t(lang, "nav_add")}
