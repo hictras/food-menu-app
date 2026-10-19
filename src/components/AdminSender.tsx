@@ -28,8 +28,6 @@ export default function AdminSender() {
   const [recipeSearch, setRecipeSearch] = useState("");
   const [showRecipeDropdown, setShowRecipeDropdown] = useState(false);
 
-  const baseUrl = "https://food-menu-app-xxww.onrender.com";
-
   useEffect(() => {
     fetch("/api/recipes").then(res => res.json()).then(data => setRecipes(Array.isArray(data) ? data : []));
     fetch("/api/recipients").then(res => res.json()).then(data => setRecipients(Array.isArray(data) ? data : []));
@@ -56,6 +54,7 @@ export default function AdminSender() {
   }
 
   function selectRecipe(id: number) {
+    // Store RELATIVE url — no baseUrl prefix
     setUrl(`/recipes/${id}?today`);
     setRecipeSearch("");
     setShowRecipeDropdown(false);
@@ -70,10 +69,10 @@ export default function AdminSender() {
     setBusy(true);
     setResult("");
     try {
-      const fullUrl = url.trim().startsWith("/") ? `${baseUrl}${url}` : url.trim();
       const target = selectedPhones.length > 0 ? selectedPhones.join(",") : "all";
 
-      const payload: any = { title, body, url: fullUrl, targetPhone: target };
+      // Send url as-is. Relative paths stay relative. Absolute stays absolute.
+      const payload: Record<string, unknown> = { title, body, url: url.trim(), targetPhone: target };
       if (pollEnabled && pollQuestion.trim()) {
         payload.poll = { question: pollQuestion.trim() };
       }
@@ -161,7 +160,6 @@ export default function AdminSender() {
           <input type="text" value={body} onChange={(e) => setBody(e.target.value)} style={{ width: "100%", padding: 8, marginBottom: 12 }} />
         </div>
 
-        {/* Poll toggle */}
         <div style={{ marginBottom: 16, padding: 14, background: "var(--bg)", border: pollEnabled ? "1px solid var(--accent)" : "1px solid var(--line)", borderRadius: 10, transition: "border-color 0.15s" }}>
           <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", margin: 0 }}>
             <input
@@ -186,8 +184,8 @@ export default function AdminSender() {
               />
               <p className="helper" style={{ marginTop: 6 }}>
                 {lang === "ar"
-                  ? "سيظهر السؤال كعنوان الإشعار. المستلمون سيتلقون زر نعم/لا في صفحة التصويت."
-                  : "The question becomes the notification title. Recipients get Yes/No buttons on the poll page."}
+                  ? "سيظهر السؤال كعنوان الإشعار."
+                  : "The question becomes the notification title."}
               </p>
             </div>
           )}
@@ -224,7 +222,7 @@ export default function AdminSender() {
 
         <div className="field">
           <label>{lang === "ar" ? "الرابط (اختياري)" : "URL (Optional)"}</label>
-          <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Leave empty to send text only" style={{ width: "100%", padding: 8, marginBottom: 12 }} />
+          <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="/recipes/3 or leave empty" style={{ width: "100%", padding: 8, marginBottom: 12 }} />
         </div>
 
         {url.trim() !== "" && !pollEnabled && (

@@ -7,6 +7,23 @@ import { isAdmin } from "@/lib/auth";
 
 const VIEWER_PHONE_COOKIE = "viewer_phone";
 
+const ORIGINS_TO_STRIP = [
+  "https://food-menu-app-xxww.onrender.com",
+  "https://food-menu-app-xet2.onrender.com",
+  "http://localhost:3000",
+];
+
+function toRelative(url: string | null | undefined): string | null {
+  if (!url) return null;
+  for (const origin of ORIGINS_TO_STRIP) {
+    if (url.startsWith(origin)) {
+      const stripped = url.slice(origin.length);
+      return stripped.startsWith("/") ? stripped : `/${stripped}`;
+    }
+  }
+  return url;
+}
+
 function parseTargetPhones(targetPhone: string | null): string[] {
   if (!targetPhone || targetPhone === "all") return [];
   return targetPhone.split(",").map((s) => s.trim()).filter(Boolean);
@@ -44,9 +61,11 @@ export async function GET(
     const targetPhones = parseTargetPhones(notification?.targetPhone || null);
     const isTargetedToMe = !targetPhones.length || (viewerPhone && targetPhones.includes(viewerPhone));
 
+    const rawUrl = notification?.url || null;
+    const relUrl = toRelative(rawUrl);
     const recipeUrl =
-      notification?.url && notification.url !== "/inbox" && !notification.url.startsWith("/poll/")
-        ? notification.url
+      relUrl && relUrl !== "/inbox" && !relUrl.startsWith("/poll/")
+        ? relUrl
         : null;
 
     return NextResponse.json({

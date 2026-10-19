@@ -29,6 +29,23 @@ type PollResponses = {
   counts: { yes: number; no: number; pending: number; total: number };
 };
 
+const ORIGINS_TO_STRIP = [
+  "https://food-menu-app-xxww.onrender.com",
+  "https://food-menu-app-xet2.onrender.com",
+  "http://localhost:3000",
+];
+
+function relativeUrl(url: string | null): string | null {
+  if (!url) return null;
+  for (const origin of ORIGINS_TO_STRIP) {
+    if (url.startsWith(origin)) {
+      const stripped = url.slice(origin.length);
+      return stripped.startsWith("/") ? stripped : `/${stripped}`;
+    }
+  }
+  return url;
+}
+
 export default function InboxPage() {
   const { lang } = useLang();
   const [items, setItems] = useState<Notification[]>([]);
@@ -273,10 +290,11 @@ export default function InboxPage() {
   }
 
   function hasRecipeLink(item: Notification): boolean {
-    if (!item.url) return false;
-    if (item.url === "/inbox") return false;
-    if (item.url.startsWith("/poll/")) return false;
-    if (item.pollUrl && item.url === item.pollUrl) return false;
+    const rel = relativeUrl(item.url);
+    if (!rel) return false;
+    if (rel === "/inbox") return false;
+    if (rel.startsWith("/poll/")) return false;
+    if (item.pollUrl && rel === item.pollUrl) return false;
     return true;
   }
 
@@ -308,6 +326,8 @@ export default function InboxPage() {
             const clickable = isAdmin;
             const hasPoll = !!item.pollId;
             const showRecipe = hasRecipeLink(item);
+            const relUrl = relativeUrl(item.url);
+            const relPollUrl = relativeUrl(item.pollUrl) || (item.pollId ? `/poll/${item.pollId}` : null);
 
             return (
               <div
@@ -381,23 +401,23 @@ export default function InboxPage() {
 
                 {hasPoll && isAdmin && renderPollTally(item)}
 
-                {item.previewImage && item.url && (
+                {item.previewImage && relUrl && (
                   <Link
-                    href={item.url}
+                    href={relUrl}
                     onClick={(e) => e.stopPropagation()}
                     style={{ display: "flex", alignItems: "center", gap: 12, padding: 10, background: "var(--bg)", border: "1px solid var(--line)", borderRadius: 8, textDecoration: "none", color: "inherit", marginTop: 4 }}
                   >
                     <img src={item.previewImage} alt="Preview" style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 6 }} />
                     <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                       {item.previewTitle ? renderPreviewTitle(item.previewTitle) : <strong>View Recipe</strong>}
-                      <span style={{ fontSize: 11, color: "var(--muted)", marginTop: 2 }}>{item.url.replace("https://", "")}</span>
+                      <span style={{ fontSize: 11, color: "var(--muted)", marginTop: 2 }}>{relUrl.replace(/^https?:\/\//, "")}</span>
                     </div>
                   </Link>
                 )}
 
-                {showRecipe && !item.previewImage && (
+                {showRecipe && !item.previewImage && relUrl && (
                   <Link
-                    href={item.url!}
+                    href={relUrl}
                     onClick={(e) => e.stopPropagation()}
                     className="btn btn-ghost"
                     style={{ alignSelf: "flex-start", marginTop: 4 }}
@@ -406,19 +426,18 @@ export default function InboxPage() {
                   </Link>
                 )}
 
-                {/* Poll action buttons — shown to everyone (admin + recipient) */}
                 {hasPoll && (
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 6 }} onClick={(e) => e.stopPropagation()}>
                     <Link
-                      href={item.pollUrl || `/poll/${item.pollId}`}
+                      href={relPollUrl || `/poll/${item.pollId}`}
                       className="btn btn-primary"
                       style={{ fontSize: 12 }}
                     >
                       📊 {lang === "ar" ? "فتح الاستطلاع" : "Open poll"} →
                     </Link>
-                    {showRecipe && (
+                    {showRecipe && relUrl && (
                       <Link
-                        href={item.url!}
+                        href={relUrl}
                         className="btn btn-ghost"
                         style={{ fontSize: 12 }}
                       >
