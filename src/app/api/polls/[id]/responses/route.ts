@@ -4,6 +4,14 @@ import { polls, pollResponses, notifications, pushSubscriptions } from "@/db/sch
 import { eq } from "drizzle-orm";
 import { isAdmin } from "@/lib/auth";
 
+function isValidPhone(p: string | null | undefined): p is string {
+  if (!p) return false;
+  const t = p.trim();
+  if (!t) return false;
+  if (t.toLowerCase() === "unknown") return false;
+  return true;
+}
+
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -30,29 +38,30 @@ export async function GET(
 
     const responses = await db.select().from(pollResponses).where(eq(pollResponses.pollId, pollId));
 
-    // Get all subscribers so we can attach names and compute "pending"
     const allSubs = await db.select().from(pushSubscriptions);
     const subByPhone = new Map<string, { name: string | null; phoneNumber: string }>();
     for (const s of allSubs) {
+      if (!isValidPhone(s.phoneNumber)) continue;
       if (!subByPhone.has(s.phoneNumber)) {
         subByPhone.set(s.phoneNumber, { name: s.name, phoneNumber: s.phoneNumber });
       }
     }
 
-    // Determine the invitee list
     const target = notification?.targetPhone || "all";
     let invitees: string[];
     if (!target || target === "all") {
       invitees = Array.from(subByPhone.keys());
     } else {
-      invitees = target.split(",").map((s) => s.trim()).filter(Boolean);
+      invitees = target.split(",").map((s) => s.trim()).filter(isValidPhone);
     }
 
     const answerByPhone = new Map<string, string>();
-    for (const r of responses) answerByPhone.set(r.phone, r.answer);
+    for (const r of responses) {
+      if (isValidPhone(r.phone)) answerByPhone.set(r.phone, r.answer);
+    }
 
     const yes = responses
-      .filter((r) => r.answer === "yes")
+      .filter((r) => r.answer === "yes" && isValidPhone(r.phone))
       .map((r) => {
         const sub = subByPhone.get(r.phone);
         return {
@@ -63,7 +72,7 @@ export async function GET(
       });
 
     const no = responses
-      .filter((r) => r.answer === "no")
+      .filter((r) => r.answer === "no" && isValidPhone(r.phone))
       .map((r) => {
         const sub = subByPhone.get(r.phone);
         return {

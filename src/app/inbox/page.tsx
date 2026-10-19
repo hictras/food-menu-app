@@ -55,7 +55,7 @@ export default function InboxPage() {
   const [hasPhone, setHasPhone] = useState(false);
 
   const [responsesByPollId, setResponsesByPollId] = useState<Record<number, PollResponses>>({});
-  const [loadingResponses, setLoadingResponses] = useState<number | null>(null);
+  const [loadingResponses, setLoadingResponses] = useState<Record<number, boolean>>({});
 
   const [colors, setColors] = useState({
     inbox_title_color_light: "#e2543a",
@@ -63,6 +63,21 @@ export default function InboxPage() {
     inbox_recipe_color_light: "#52525b",
     inbox_recipe_color_dark: "#a1a1aa",
   });
+
+  const loadResponses = useCallback((pollId: number) => {
+    setLoadingResponses((prev) => ({ ...prev, [pollId]: true }));
+    fetch(`/api/polls/${pollId}/responses`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.error) {
+          setResponsesByPollId((prev) => ({ ...prev, [pollId]: data }));
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        setLoadingResponses((prev) => ({ ...prev, [pollId]: false }));
+      });
+  }, []);
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -77,6 +92,7 @@ export default function InboxPage() {
       });
 
     loadMessages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function loadMessages() {
@@ -89,23 +105,10 @@ export default function InboxPage() {
         const anyTargeted = list.some((n) => n.targetPhone && n.targetPhone !== "all");
         setHasPhone(anyTargeted);
         setLoading(false);
+        list.filter((n) => n.pollId).forEach((n) => loadResponses(n.pollId!));
       })
       .catch(() => setLoading(false));
   }
-
-  const loadResponses = useCallback((pollId: number) => {
-    if (responsesByPollId[pollId]) return;
-    setLoadingResponses(pollId);
-    fetch(`/api/polls/${pollId}/responses`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (!data.error) {
-          setResponsesByPollId((prev) => ({ ...prev, [pollId]: data }));
-        }
-      })
-      .catch(() => {})
-      .finally(() => setLoadingResponses(null));
-  }, [responsesByPollId]);
 
   function toggleOpen(item: Notification) {
     if (!isAdmin) return;
@@ -149,6 +152,11 @@ export default function InboxPage() {
     }
   }
 
+  function refreshPoll(pollId: number, e: React.MouseEvent) {
+    e.stopPropagation();
+    loadResponses(pollId);
+  }
+
   function recipientBadge(target: string | null): { label: string; color: string; bg: string } {
     if (!target || target === "all") {
       return { label: lang === "ar" ? "الجميع" : "All", color: "var(--muted)", bg: "var(--surface-2)" };
@@ -188,6 +196,7 @@ export default function InboxPage() {
   function renderPollTally(item: Notification) {
     if (!item.pollId) return null;
     const r = responsesByPollId[item.pollId];
+    const isLoading = !!loadingResponses[item.pollId];
     const yes = r?.counts.yes ?? 0;
     const no = r?.counts.no ?? 0;
     const pending = r?.counts.pending ?? 0;
@@ -207,8 +216,25 @@ export default function InboxPage() {
           <span style={{ color: "var(--ink-soft)" }}>{lang === "ar" ? "معلق" : "Pending"}</span>
         </span>
         <span style={{ fontSize: 11, color: "var(--muted)", marginInlineStart: "auto" }}>
-          {total} {lang === "ar" ? "مدعو" : total === 1 ? "invitee" : "invitees"}
+          {isLoading ? "…" : `${total} ${lang === "ar" ? "مدعو" : total === 1 ? "invitee" : "invitees"}`}
         </span>
+        <button
+          type="button"
+          onClick={(e) => refreshPoll(item.pollId!, e)}
+          style={{
+            fontSize: 10,
+            fontWeight: 600,
+            padding: "2px 8px",
+            borderRadius: 6,
+            border: "1px solid var(--line)",
+            background: "var(--surface-2)",
+            color: "var(--ink-soft)",
+            cursor: "pointer",
+          }}
+          title={lang === "ar" ? "تحديث" : "Refresh"}
+        >
+          ↻
+        </button>
       </div>
     );
   }
@@ -216,15 +242,16 @@ export default function InboxPage() {
   function renderPollDetail(item: Notification) {
     if (!item.pollId) return null;
     const r = responsesByPollId[item.pollId];
-    const isLoading = loadingResponses === item.pollId;
+    const isLoading = !!loadingResponses[item.pollId];
 
-    if (isLoading || !r) {
+    if (isLoading && !r) {
       return (
         <div style={{ padding: 12, background: "var(--bg)", border: "1px solid var(--line)", borderRadius: 8, fontSize: 12, color: "var(--muted)" }}>
           {lang === "ar" ? "جاري تحميل الأصوات..." : "Loading responses..."}
         </div>
       );
     }
+    if (!r) return null;
 
     const renderGroup = (title: string, color: string, bg: string, people: { phone: string; name: string | null }[]) => (
       <div>
@@ -252,28 +279,46 @@ export default function InboxPage() {
 
     return (
       <div style={{ padding: 12, background: "var(--bg)", border: "1px solid var(--line)", borderRadius: 8, display: "flex", flexDirection: "column", gap: 10 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
           <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--muted)" }}>
             📊 {lang === "ar" ? "نتائج الاستطلاع" : "Poll results"}
           </div>
-          <button
-            type="button"
-            onClick={(e) => togglePollOpen(item.pollId!, e)}
-            style={{
-              fontSize: 11,
-              fontWeight: 600,
-              padding: "4px 10px",
-              borderRadius: 6,
-              border: "1px solid var(--line)",
-              background: r.isOpen ? "var(--surface-2)" : "var(--accent-soft)",
-              color: r.isOpen ? "var(--ink-soft)" : "var(--accent)",
-              cursor: "pointer",
-            }}
-          >
-            {r.isOpen
-              ? (lang === "ar" ? "إغلاق التصويت" : "Close voting")
-              : (lang === "ar" ? "إعادة فتح التصويت" : "Reopen voting")}
-          </button>
+          <div style={{ display: "flex", gap: 6 }}>
+            <button
+              type="button"
+              onClick={(e) => refreshPoll(item.pollId!, e)}
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                padding: "4px 10px",
+                borderRadius: 6,
+                border: "1px solid var(--line)",
+                background: "var(--surface-2)",
+                color: "var(--ink-soft)",
+                cursor: "pointer",
+              }}
+            >
+              ↻ {lang === "ar" ? "تحديث" : "Refresh"}
+            </button>
+            <button
+              type="button"
+              onClick={(e) => togglePollOpen(item.pollId!, e)}
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                padding: "4px 10px",
+                borderRadius: 6,
+                border: "1px solid var(--line)",
+                background: r.isOpen ? "var(--surface-2)" : "var(--accent-soft)",
+                color: r.isOpen ? "var(--ink-soft)" : "var(--accent)",
+                cursor: "pointer",
+              }}
+            >
+              {r.isOpen
+                ? (lang === "ar" ? "إغلاق التصويت" : "Close voting")
+                : (lang === "ar" ? "إعادة فتح التصويت" : "Reopen voting")}
+            </button>
+          </div>
         </div>
 
         {renderGroup(lang === "ar" ? "نعم" : "Yes", "var(--olive)", "var(--olive-soft)", r.yes)}
