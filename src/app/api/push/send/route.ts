@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import webpush from "web-push";
 import { getDb } from "@/db";
-import { pushSubscriptions, notifications, polls } from "@/db/schema";
-import { inArray } from "drizzle-orm";
+import { pushSubscriptions, notifications, polls, recipes } from "@/db/schema";
+import { inArray, eq } from "drizzle-orm";
 import { isAdmin } from "@/lib/auth";
 
 function initWebPush() {
@@ -27,10 +27,24 @@ export async function POST(req: NextRequest) {
     const targetPhone = body.targetPhone || "all";
     const pollQuestion = (body.poll?.question || "").trim();
 
-    let previewImage = null;
-    let previewTitle = null;
+    let previewImage: string | null = null;
+    let previewTitle: string | null = null;
 
-    if (url.startsWith("http")) {
+    const recipeMatch = url.match(/\/recipes\/(\d+)/);
+    if (recipeMatch) {
+      const recipeId = Number(recipeMatch[1]);
+      try {
+        const [recipe] = await db.select().from(recipes).where(eq(recipes.id, recipeId)).limit(1);
+        if (recipe) {
+          previewImage = recipe.imageUrl || null;
+          previewTitle = recipe.name || null;
+        }
+      } catch (err) {
+        console.error("Recipe lookup failed:", err);
+      }
+    }
+
+    if (!previewImage && url.startsWith("http")) {
       try {
         const res = await fetch(url);
         const html = await res.text();
@@ -64,19 +78,14 @@ export async function POST(req: NextRequest) {
         isOpen: 1,
       }).returning();
       pollId = poll.id;
-      pollUrl = `/poll/${poll.id}`;
+      pollUrl = "/poll/" + poll.id;
       pushUrl = pollUrl;
-
-      // Save pollUrl on the notification row
-      await db.update(notifications).set({ pollUrl }).where(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (await import("drizzle-orm")).eq(notifications.id, inserted.id) as any
-      );
+      await db.update(notifications).set({ pollUrl }).where(eq(notifications.id, inserted.id));
     }
 
     const payload = JSON.stringify({
       title: pollQuestion || title,
-      body: pollQuestion ? `Tap to RSVP: ${text}` : text,
+      body: pollQuestion ? "Tap to RSVP: " + text : text,
       url: pushUrl,
     });
 
