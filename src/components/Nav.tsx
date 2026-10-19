@@ -44,6 +44,9 @@ export default function Nav() {
 
           {loaded && isAdmin && (
             <>
+              <Link href="/replies" className="nav-link">
+                {lang === "ar" ? "💬 الردود" : "💬 Replies"}
+              </Link>
               <Link href="/recipes/new" className="nav-cta">
                 {t(lang, "nav_add")}
               </Link>
