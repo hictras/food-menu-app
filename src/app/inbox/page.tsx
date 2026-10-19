@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useLang } from "@/components/LanguageProvider";
 
@@ -13,6 +13,19 @@ type Notification = {
   previewTitle: string | null;
   targetPhone: string | null;
   createdAt: string;
+  pollId: number | null;
+  pollQuestion: string | null;
+  pollIsOpen: number | null;
+};
+
+type PollResponses = {
+  pollId: number;
+  question: string;
+  isOpen: boolean;
+  yes: { phone: string; name: string | null; respondedAt: string }[];
+  no: { phone: string; name: string | null; respondedAt: string }[];
+  pending: { phone: string; name: string | null }[];
+  counts: { yes: number; no: number; pending: number; total: number };
 };
 
 export default function InboxPage() {
@@ -21,12 +34,10 @@ export default function InboxPage() {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [openId, setOpenId] = useState<number | null>(null);
-
-  const [showVerify, setShowVerify] = useState(false);
-  const [phoneInput, setPhoneInput] = useState("");
-  const [verifying, setVerifying] = useState(false);
-  const [verifyMsg, setVerifyMsg] = useState("");
   const [hasPhone, setHasPhone] = useState(false);
+
+  const [responsesByPollId, setResponsesByPollId] = useState<Record<number, PollResponses>>({});
+  const [loadingResponses, setLoadingResponses] = useState<number | null>(null);
 
   const [colors, setColors] = useState({
     inbox_title_color_light: "#e2543a",
@@ -57,7 +68,6 @@ export default function InboxPage() {
       .then((data) => {
         const list = Array.isArray(data) ? data : [];
         setItems(list);
-        // Heuristic: if any row is targeted (not "all"), we must have a phone cookie
         const anyTargeted = list.some((n) => n.targetPhone && n.targetPhone !== "all");
         setHasPhone(anyTargeted);
         setLoading(false);
@@ -65,34 +75,26 @@ export default function InboxPage() {
       .catch(() => setLoading(false));
   }
 
-  async function verifyPhone() {
-    const trimmed = phoneInput.trim();
-    if (!trimmed) return;
-    setVerifying(true);
-    setVerifyMsg("");
-    try {
-      const res = await fetch("/api/auth/verify-phone", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phoneNumber: trimmed }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setVerifyMsg(data.error || "Failed");
-        setVerifying(false);
-        return;
-      }
-      setVerifyMsg(lang === "ar" ? "تم التحقق ✓" : "Verified ✓");
-      setShowVerify(false);
-      setPhoneInput("");
-      setTimeout(() => {
-        setVerifyMsg("");
-        loadMessages();
-      }, 600);
-    } catch (err) {
-      setVerifyMsg(err instanceof Error ? err.message : "Error");
-    } finally {
-      setVerifying(false);
+  const loadResponses = useCallback((pollId: number) => {
+    if (responsesByPollId[pollId]) return;
+    setLoadingResponses(pollId);
+    fetch(`/api/polls/${pollId}/responses`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.error) {
+          setResponsesByPollId((prev) => ({ ...prev, [pollId]: data }));
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoadingResponses(null));
+  }, [responsesByPollId]);
+
+  function toggleOpen(item: Notification) {
+    if (!isAdmin) return;
+    const willOpen = openId !== item.id;
+    setOpenId(willOpen ? item.id : null);
+    if (willOpen && item.pollId) {
+      loadResponses(item.pollId);
     }
   }
 
@@ -106,6 +108,26 @@ export default function InboxPage() {
       setItems((prev) => prev.filter((item) => item.id !== id));
     } catch {
       alert("Delete failed");
+    }
+  }
+
+  async function togglePollOpen(pollId: number, e: React.MouseEvent) {
+    e.stopPropagation();
+    const current = responsesByPollId[pollId];
+    const newState = current ? !current.isOpen : false;
+    try {
+      const res = await fetch(`/api/polls/${pollId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isOpen: newState }),
+      });
+      if (!res.ok) throw new Error("Failed");
+      setResponsesByPollId((prev) => ({
+        ...prev,
+        [pollId]: { ...prev[pollId], isOpen: newState },
+      }));
+    } catch {
+      alert("Failed to update poll");
     }
   }
 
@@ -145,6 +167,125 @@ export default function InboxPage() {
     return <strong style={{ fontSize: 13, color: "var(--ink)" }}>{title}</strong>;
   }
 
+  function renderPollTally(item: Notification) {
+    if (!item.pollId) return null;
+    const r = responsesByPollId[item.pollId];
+    const yes = r?.counts.yes ?? 0;
+    const no = r?.counts.no ?? 0;
+    const pending = r?.counts.pending ?? 0;
+    const total = yes + no + pending;
+    return (
+      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center", marginTop: 4 }}>
+        <span style={{ fontSize: 12 }}>
+          <strong style={{ color: "var(--olive)", fontSize: 14 }}>{yes}</strong>{" "}
+          <span style={{ color: "var(--ink-soft)" }}>{lang === "ar" ? "نعم" : "Yes"}</span>
+        </span>
+        <span style={{ fontSize: 12 }}>
+          <strong style={{ color: "var(--accent)", fontSize: 14 }}>{no}</strong>{" "}
+          <span style={{ color: "var(--ink-soft)" }}>{lang === "ar" ? "لا" : "No"}</span>
+        </span>
+        <span style={{ fontSize: 12 }}>
+          <strong style={{ color: "var(--muted)", fontSize: 14 }}>{pending}</strong>{" "}
+          <span style={{ color: "var(--ink-soft)" }}>{lang === "ar" ? "معلق" : "Pending"}</span>
+        </span>
+        <span style={{ fontSize: 11, color: "var(--muted)", marginInlineStart: "auto" }}>
+          {total} {lang === "ar" ? "مدعو" : total === 1 ? "invitee" : "invitees"}
+        </span>
+      </div>
+    );
+  }
+
+  function renderPollDetail(item: Notification) {
+    if (!item.pollId) return null;
+    const r = responsesByPollId[item.pollId];
+    const isLoading = loadingResponses === item.pollId;
+
+    if (isLoading || !r) {
+      return (
+        <div style={{ padding: 12, background: "var(--bg)", border: "1px solid var(--line)", borderRadius: 8, fontSize: 12, color: "var(--muted)" }}>
+          {lang === "ar" ? "جاري تحميل الأصوات..." : "Loading responses..."}
+        </div>
+      );
+    }
+
+    const renderGroup = (title: string, color: string, bg: string, people: { phone: string; name: string | null }[]) => (
+      <div>
+        <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color, marginBottom: 6 }}>
+          {title} · {people.length}
+        </div>
+        {people.length === 0 ? (
+          <div style={{ fontSize: 12, color: "var(--muted)", fontStyle: "italic", marginBottom: 10 }}>
+            {lang === "ar" ? "لا أحد" : "None"}
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 10 }}>
+            {people.map((p) => (
+              <div key={p.phone} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 10px", background: bg, border: "1px solid var(--line)", borderRadius: 6, fontSize: 12 }}>
+                <span style={{ color: "var(--ink)", fontWeight: 500 }}>
+                  {p.name || (lang === "ar" ? "بدون اسم" : "Unnamed")}
+                </span>
+                <span style={{ color: "var(--muted)", fontVariantNumeric: "tabular-nums" }}>{p.phone}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+
+    return (
+      <div style={{ padding: 12, background: "var(--bg)", border: "1px solid var(--line)", borderRadius: 8, display: "flex", flexDirection: "column", gap: 10 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--muted)" }}>
+            📊 {lang === "ar" ? "نتائج الاستطلاع" : "Poll results"}
+          </div>
+          <button
+            type="button"
+            onClick={(e) => togglePollOpen(item.pollId!, e)}
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              padding: "4px 10px",
+              borderRadius: 6,
+              border: "1px solid var(--line)",
+              background: r.isOpen ? "var(--surface-2)" : "var(--accent-soft)",
+              color: r.isOpen ? "var(--ink-soft)" : "var(--accent)",
+              cursor: "pointer",
+            }}
+          >
+            {r.isOpen
+              ? (lang === "ar" ? "إغلاق التصويت" : "Close voting")
+              : (lang === "ar" ? "إعادة فتح التصويت" : "Reopen voting")}
+          </button>
+        </div>
+
+        {renderGroup(
+          lang === "ar" ? "نعم" : "Yes",
+          "var(--olive)",
+          "var(--olive-soft)",
+          r.yes
+        )}
+        {renderGroup(
+          lang === "ar" ? "لا" : "No",
+          "var(--accent)",
+          "var(--accent-soft)",
+          r.no
+        )}
+        {renderGroup(
+          lang === "ar" ? "لم يصوت" : "Pending",
+          "var(--muted)",
+          "var(--surface-2)",
+          r.pending
+        )}
+
+        {item.pollQuestion && (
+          <div style={{ fontSize: 11, color: "var(--muted)", paddingTop: 8, borderTop: "1px solid var(--line)" }}>
+            {item.pollQuestion}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <main className="container" style={{ paddingTop: 40, paddingBottom: 80 }}>
       <div className="page-head">
@@ -157,41 +298,6 @@ export default function InboxPage() {
             ? lang === "ar" ? "رسائلك الخاصة" : "Your messages"
             : lang === "ar" ? "ترى فقط الرسائل العامة" : "You are seeing broadcast messages only"}
       </p>
-
-      {!isAdmin && (
-        <div style={{ marginBottom: 24, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-          {showVerify ? (
-            <>
-              <input
-                type="text"
-                placeholder={lang === "ar" ? "رقم هاتفك" : "Your phone number"}
-                value={phoneInput}
-                onChange={(e) => setPhoneInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") verifyPhone(); }}
-                style={{ padding: "7px 12px", border: "1px solid var(--line)", borderRadius: 8, background: "var(--input-bg)", color: "var(--ink)", fontSize: 13, minWidth: 200 }}
-                autoFocus
-              />
-              <button type="button" className="btn btn-primary" onClick={verifyPhone} disabled={verifying} style={{ fontSize: 12 }}>
-                {verifying ? "…" : lang === "ar" ? "تحقق" : "Verify"}
-              </button>
-              <button type="button" className="btn btn-ghost" onClick={() => { setShowVerify(false); setPhoneInput(""); setVerifyMsg(""); }} style={{ fontSize: 12 }}>
-                {lang === "ar" ? "إلغاء" : "Cancel"}
-              </button>
-            </>
-          ) : (
-            <button type="button" className="btn btn-ghost" onClick={() => setShowVerify(true)} style={{ fontSize: 12 }}>
-              {hasPhone
-                ? lang === "ar" ? "تغيير رقمي" : "Change my phone"
-                : lang === "ar" ? "تحقق من رقم هاتفك" : "Verify your phone"}
-            </button>
-          )}
-          {verifyMsg && (
-            <span style={{ fontSize: 12, color: verifyMsg.includes("✓") ? "var(--olive)" : "var(--accent)" }}>
-              {verifyMsg}
-            </span>
-          )}
-        </div>
-      )}
 
       {loading ? (
         <p className="helper">{lang === "ar" ? "جاري التحميل..." : "Loading..."}</p>
@@ -206,11 +312,12 @@ export default function InboxPage() {
             const phones = recipientList(item.targetPhone);
             const isOpen = isAdmin && openId === item.id;
             const clickable = isAdmin;
+            const hasPoll = !!item.pollId;
 
             return (
               <div
                 key={item.id}
-                onClick={clickable ? () => setOpenId(isOpen ? null : item.id) : undefined}
+                onClick={clickable ? () => toggleOpen(item) : undefined}
                 style={{
                   background: "var(--surface)",
                   border: "1px solid var(--line)",
@@ -226,7 +333,22 @@ export default function InboxPage() {
                 onMouseLeave={clickable ? (e) => { e.currentTarget.style.borderColor = "var(--line)"; } : undefined}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16 }}>
-                  <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: "var(--ink)" }}>{item.title}</h3>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                    {hasPoll && (
+                      <span style={{
+                        fontSize: 10,
+                        fontWeight: 700,
+                        padding: "2px 8px",
+                        borderRadius: 999,
+                        background: "var(--accent-soft)",
+                        color: "var(--accent)",
+                        border: "1px solid var(--accent)",
+                      }}>
+                        📊 {lang === "ar" ? "استطلاع" : "Poll"}
+                      </span>
+                    )}
+                    <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: "var(--ink)" }}>{item.title}</h3>
+                  </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
                     {isAdmin && (
                       <span
@@ -262,7 +384,9 @@ export default function InboxPage() {
 
                 <p style={{ margin: 0, fontSize: 13, color: "var(--ink-soft)" }}>{item.body}</p>
 
-                {item.url && item.previewImage ? (
+                {hasPoll && isAdmin && renderPollTally(item)}
+
+                {item.url && item.previewImage && (
                   <Link
                     href={item.url}
                     onClick={(e) => e.stopPropagation()}
@@ -274,89 +398,68 @@ export default function InboxPage() {
                       <span style={{ fontSize: 11, color: "var(--muted)", marginTop: 2 }}>{item.url.replace("https://", "")}</span>
                     </div>
                   </Link>
-                ) : (
-                  item.url && item.url !== "/inbox" && (
-                    <Link
-                      href={item.url}
-                      onClick={(e) => e.stopPropagation()}
-                      className="btn btn-ghost"
-                      style={{ alignSelf: "flex-start", marginTop: 4 }}
-                    >
-                      {lang === "ar" ? "عرض الصفحة" : "View Page"} →
-                    </Link>
-                  )
+                )}
+
+                {!item.previewImage && item.url && item.url !== "/inbox" && !item.url.startsWith("/poll/") && (
+                  <Link
+                    href={item.url}
+                    onClick={(e) => e.stopPropagation()}
+                    className="btn btn-ghost"
+                    style={{ alignSelf: "flex-start", marginTop: 4 }}
+                  >
+                    {lang === "ar" ? "عرض الصفحة" : "View Page"} →
+                  </Link>
+                )}
+
+                {hasPoll && item.url && (
+                  <Link
+                    href={item.url}
+                    onClick={(e) => e.stopPropagation()}
+                    className="btn btn-ghost"
+                    style={{ alignSelf: "flex-start", marginTop: 4, fontSize: 12 }}
+                  >
+                    📊 {lang === "ar" ? "فتح الاستطلاع" : "Open poll"} →
+                  </Link>
                 )}
 
                 {isAdmin && isOpen && (
                   <div
                     onClick={(e) => e.stopPropagation()}
-                    style={{
-                      marginTop: 4,
-                      padding: 12,
-                      background: "var(--bg)",
-                      border: "1px solid var(--line)",
-                      borderRadius: 8,
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 10,
-                    }}
+                    style={{ marginTop: 4, display: "flex", flexDirection: "column", gap: 12 }}
                   >
-                    <div>
-                      <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--muted)", marginBottom: 4 }}>
-                        {lang === "ar" ? "العنوان" : "Title"}
-                      </div>
-                      <div style={{ fontSize: 13, color: "var(--ink)" }}>{item.title}</div>
-                    </div>
+                    {hasPoll && renderPollDetail(item)}
 
-                    <div>
-                      <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--muted)", marginBottom: 4 }}>
-                        {lang === "ar" ? "النص" : "Body"}
-                      </div>
-                      <div style={{ fontSize: 13, color: "var(--ink)" }}>{item.body}</div>
-                    </div>
-
-                    {item.url && (
+                    <div style={{ padding: 12, background: "var(--bg)", border: "1px solid var(--line)", borderRadius: 8, display: "flex", flexDirection: "column", gap: 10 }}>
                       <div>
                         <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--muted)", marginBottom: 4 }}>
-                          {lang === "ar" ? "الرابط" : "Recipe / URL"}
+                          {lang === "ar" ? "الرسالة" : "Message"}
                         </div>
-                        <Link href={item.url} style={{ fontSize: 12, color: "var(--accent)", wordBreak: "break-all" }}>
-                          {item.url}
-                        </Link>
+                        <div style={{ fontSize: 13, color: "var(--ink)" }}>{item.title}</div>
+                        <div style={{ fontSize: 12, color: "var(--ink-soft)", marginTop: 2 }}>{item.body}</div>
                       </div>
-                    )}
 
-                    <div>
-                      <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--muted)", marginBottom: 4 }}>
-                        {lang === "ar" ? "المستلمون" : "Recipients"}
+                      <div>
+                        <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--muted)", marginBottom: 4 }}>
+                          {lang === "ar" ? "المستلمون" : "Recipients"}
+                        </div>
+                        {phones.length === 0 ? (
+                          <div style={{ fontSize: 13, color: "var(--ink)" }}>
+                            {lang === "ar" ? "الجميع" : "All subscribers"}
+                          </div>
+                        ) : (
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                            {phones.map((p) => (
+                              <span key={p} style={{ fontSize: 12, color: "var(--accent)", background: "var(--accent-soft)", padding: "2px 8px", borderRadius: 6, fontVariantNumeric: "tabular-nums" }}>
+                                {p}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
-                      {phones.length === 0 ? (
-                        <div style={{ fontSize: 13, color: "var(--ink)" }}>
-                          {lang === "ar" ? "الجميع" : "All subscribers"}
-                        </div>
-                      ) : (
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                          {phones.map((p) => (
-                            <span
-                              key={p}
-                              style={{
-                                fontSize: 12,
-                                color: "var(--accent)",
-                                background: "var(--accent-soft)",
-                                padding: "2px 8px",
-                                borderRadius: 6,
-                                fontVariantNumeric: "tabular-nums",
-                              }}
-                            >
-                              {p}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
 
-                    <div style={{ fontSize: 10, color: "var(--muted)", marginTop: 2 }}>
-                      {lang === "ar" ? "أُرسلت" : "Sent"} {new Date(item.createdAt).toLocaleString()}
+                      <div style={{ fontSize: 10, color: "var(--muted)" }}>
+                        {lang === "ar" ? "أُرسلت" : "Sent"} {new Date(item.createdAt).toLocaleString()}
+                      </div>
                     </div>
                   </div>
                 )}

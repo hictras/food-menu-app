@@ -73,3 +73,24 @@ export const settings = sqliteTable("settings", {
   key: text("key").primaryKey(),
   value: text("value").notNull(),
 });
+
+export const polls = sqliteTable("polls", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  notificationId: integer("notification_id")
+    .notNull()
+    .references(() => notifications.id, { onDelete: "cascade" }),
+  question: text("question").notNull(),
+  isOpen: integer("is_open").notNull().default(1),
+  createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const pollResponses = sqliteTable("poll_responses", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  pollId: integer("poll_id")
+    .notNull()
+    .references(() => polls.id, { onDelete: "cascade" }),
+  phone: text("phone").notNull(),
+  answer: text("answer").notNull(),
+  name: text("name"),
+  respondedAt: text("responded_at").default(sql`CURRENT_TIMESTAMP`),
+});

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import Link from "next/link";
 import { useLang } from "./LanguageProvider";
 
 type Recipe = { id: number; name: string; nameAr: string | null; imageUrl: string | null; };
@@ -10,18 +11,19 @@ export default function AdminSender() {
   const { lang } = useLang();
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<string>("");
-  
+
   const [title, setTitle] = useState("Menu");
   const [body, setBody] = useState("New recipe added!");
-  const [url, setUrl] = useState(""); 
+  const [url, setUrl] = useState("");
 
-  // Recipients State
+  const [pollEnabled, setPollEnabled] = useState(false);
+  const [pollQuestion, setPollQuestion] = useState("");
+
   const [recipients, setRecipients] = useState<Recipient[]>([]);
   const [selectedPhones, setSelectedPhones] = useState<string[]>([]);
   const [phoneSearch, setPhoneSearch] = useState("");
   const [showRecipientDropdown, setShowRecipientDropdown] = useState(false);
 
-  // Recipes State
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [recipeSearch, setRecipeSearch] = useState("");
   const [showRecipeDropdown, setShowRecipeDropdown] = useState(false);
@@ -33,9 +35,8 @@ export default function AdminSender() {
     fetch("/api/recipients").then(res => res.json()).then(data => setRecipients(Array.isArray(data) ? data : []));
   }, []);
 
-  // Filter recipients based on search (with null safety)
   const filteredRecipients = useMemo(() => {
-    if (!phoneSearch.trim()) return recipients.filter(r => r.phoneNumber); // Only show valid phones
+    if (!phoneSearch.trim()) return recipients.filter(r => r.phoneNumber);
     const lower = phoneSearch.toLowerCase();
     return recipients.filter(r => {
       if (!r.phoneNumber) return false;
@@ -43,7 +44,6 @@ export default function AdminSender() {
     });
   }, [recipients, phoneSearch]);
 
-  // Filter recipes
   const filteredRecipes = useMemo(() => {
     if (!recipeSearch.trim()) return recipes;
     const lower = recipeSearch.toLowerCase();
@@ -62,20 +62,34 @@ export default function AdminSender() {
   }
 
   async function send() {
+    if (pollEnabled && !pollQuestion.trim()) {
+      setResult(JSON.stringify({ error: "Poll question is required" }, null, 2));
+      return;
+    }
+
     setBusy(true);
     setResult("");
     try {
       const fullUrl = url.trim().startsWith("/") ? `${baseUrl}${url}` : url.trim();
-      
       const target = selectedPhones.length > 0 ? selectedPhones.join(",") : "all";
+
+      const payload: any = { title, body, url: fullUrl, targetPhone: target };
+      if (pollEnabled && pollQuestion.trim()) {
+        payload.poll = { question: pollQuestion.trim() };
+      }
 
       const res = await fetch("/api/push/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, body, url: fullUrl, targetPhone: target }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       setResult(JSON.stringify(data, null, 2));
+
+      if (res.ok && data.pollId) {
+        setPollEnabled(false);
+        setPollQuestion("");
+      }
     } catch (err) {
       setResult(String(err));
     } finally {
@@ -92,14 +106,12 @@ export default function AdminSender() {
   return (
     <main className="container" style={{ paddingTop: 40 }}>
       <h1>{lang === "ar" ? "إرسال إشعار" : "Send Push Notification"}</h1>
-      
+
       <div className="form-card">
-        
-        {/* Target Selection */}
+
         <div className="field" style={{ position: "relative" }}>
           <label>{lang === "ar" ? "المستلمون (اتركه فارغاً للجميع)" : "Recipients (leave empty for all)"}</label>
-          
-          {/* Tags Area */}
+
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6, padding: 8, border: "1px solid var(--line)", borderRadius: 8, background: "var(--bg)", marginBottom: 8 }}>
             {selectedPhones.map(phone => {
               const rec = recipients.find(r => r.phoneNumber === phone);
@@ -113,17 +125,15 @@ export default function AdminSender() {
             {selectedPhones.length === 0 && <span style={{ color: "var(--muted)", fontSize: 12, padding: 4 }}>Everyone</span>}
           </div>
 
-          {/* Search Input */}
-          <input 
-            type="text" 
-            placeholder="Search by name or phone..." 
+          <input
+            type="text"
+            placeholder="Search by name or phone..."
             value={phoneSearch}
             onChange={(e) => { setPhoneSearch(e.target.value); setShowRecipientDropdown(true); }}
             onFocus={() => setShowRecipientDropdown(true)}
             style={{ width: "100%", padding: 8 }}
           />
 
-          {/* Dropdown List */}
           {showRecipientDropdown && phoneSearch.trim() !== "" && (
             <>
               <div style={{ position: "fixed", inset: 0, zIndex: 10 }} onClick={() => setShowRecipientDropdown(false)} />
@@ -151,17 +161,49 @@ export default function AdminSender() {
           <input type="text" value={body} onChange={(e) => setBody(e.target.value)} style={{ width: "100%", padding: 8, marginBottom: 12 }} />
         </div>
 
+        {/* Poll toggle */}
+        <div style={{ marginBottom: 16, padding: 14, background: "var(--bg)", border: pollEnabled ? "1px solid var(--accent)" : "1px solid var(--line)", borderRadius: 10, transition: "border-color 0.15s" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", margin: 0 }}>
+            <input
+              type="checkbox"
+              checked={pollEnabled}
+              onChange={(e) => setPollEnabled(e.target.checked)}
+              style={{ margin: 0 }}
+            />
+            <span style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)" }}>
+              📊 {lang === "ar" ? "إضافة استطلاع (نعم / لا)" : "Add a poll (Yes / No)"}
+            </span>
+          </label>
+
+          {pollEnabled && (
+            <div style={{ marginTop: 12 }}>
+              <input
+                type="text"
+                placeholder={lang === "ar" ? "السؤال (مثال: هل أنت قادم للعشاء الجمعة؟)" : "Question (e.g. Coming to dinner Friday?)"}
+                value={pollQuestion}
+                onChange={(e) => setPollQuestion(e.target.value)}
+                style={{ width: "100%", padding: "9px 12px", border: "1px solid var(--line)", borderRadius: 8, background: "var(--input-bg)", color: "var(--ink)", fontSize: 13 }}
+              />
+              <p className="helper" style={{ marginTop: 6 }}>
+                {lang === "ar"
+                  ? "سيظهر السؤال كعنوان الإشعار. المستلمون سيتلقون زر نعم/لا في صفحة التصويت."
+                  : "The question becomes the notification title. Recipients get Yes/No buttons on the poll page."}
+              </p>
+            </div>
+          )}
+        </div>
+
         <div className="field" style={{ position: "relative" }}>
           <label>{lang === "ar" ? "ابحث عن وصفة لربطها (اختياري)" : "Search Recipe (Optional)"}</label>
-          <input 
-            type="text" 
-            placeholder="Type recipe name..." 
+          <input
+            type="text"
+            placeholder="Type recipe name..."
             value={recipeSearch}
             onChange={(e) => { setRecipeSearch(e.target.value); setShowRecipeDropdown(true); }}
             onFocus={() => setShowRecipeDropdown(true)}
             style={{ width: "100%", padding: 8, marginBottom: 8 }}
           />
-          
+
           {showRecipeDropdown && recipeSearch.trim() !== "" && (
             <>
               <div style={{ position: "fixed", inset: 0, zIndex: 10 }} onClick={() => setShowRecipeDropdown(false)} />
@@ -185,7 +227,7 @@ export default function AdminSender() {
           <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Leave empty to send text only" style={{ width: "100%", padding: 8, marginBottom: 12 }} />
         </div>
 
-        {url.trim() !== "" && (
+        {url.trim() !== "" && !pollEnabled && (
           <div style={{ marginBottom: 24 }}>
             <label style={{ display: "block", marginBottom: 8, fontSize: 13, fontWeight: 600, color: "var(--muted)" }}>Inbox Preview</label>
             <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: 16 }}>
@@ -204,12 +246,30 @@ export default function AdminSender() {
             </div>
           </div>
         )}
-        
+
+        {pollEnabled && pollQuestion.trim() && (
+          <div style={{ marginBottom: 24, padding: 14, background: "var(--accent-soft)", border: "1px solid var(--accent)", borderRadius: 10 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--accent)", marginBottom: 6 }}>
+              {lang === "ar" ? "معاينة الاستطلاع" : "Poll preview"}
+            </div>
+            <div style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)", marginBottom: 4 }}>{pollQuestion}</div>
+            <div style={{ fontSize: 12, color: "var(--ink-soft)" }}>
+              {lang === "ar" ? "المستلمون سيرون أزرار نعم / لا" : "Recipients will see Yes / No buttons"}
+            </div>
+          </div>
+        )}
+
         <button className="btn btn-primary" onClick={send} disabled={busy} style={{ width: "100%", padding: 12 }}>
-          {busy ? "Sending..." : "Send"}
+          {busy ? "Sending..." : pollEnabled ? (lang === "ar" ? "إرسال مع استطلاع" : "Send with poll") : "Send"}
         </button>
 
-        {result && <pre style={{ marginTop: 16, fontSize: 13, background: "#f5f5f5", padding: 12, borderRadius: 8 }}>{result}</pre>}
+        {result && <pre style={{ marginTop: 16, fontSize: 13, background: "var(--bg)", padding: 12, borderRadius: 8, overflow: "auto" }}>{result}</pre>}
+
+        <div style={{ marginTop: 24, paddingTop: 16, borderTop: "1px solid var(--line)", display: "flex", gap: 10 }}>
+          <Link href="/inbox" className="btn btn-ghost" style={{ fontSize: 12 }}>
+            📥 {lang === "ar" ? "فتح صندوق الرسائل" : "Open inbox"}
+          </Link>
+        </div>
       </div>
     </main>
   );

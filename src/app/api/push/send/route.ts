@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import webpush from "web-push";
 import { getDb } from "@/db";
-import { pushSubscriptions, notifications } from "@/db/schema";
+import { pushSubscriptions, notifications, polls } from "@/db/schema";
 import { inArray } from "drizzle-orm";
 import { isAdmin } from "@/lib/auth";
 
@@ -25,6 +25,7 @@ export async function POST(req: NextRequest) {
     const text = body.body || "New recipe added";
     const url = body.url || "/inbox";
     const targetPhone = body.targetPhone || "all";
+    const pollQuestion = (body.poll?.question || "").trim();
 
     let previewImage = null;
     let previewTitle = null;
@@ -42,16 +43,33 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    await db.insert(notifications).values({
+    const [inserted] = await db.insert(notifications).values({
       title,
       body: text,
       url,
       previewImage,
       previewTitle,
       targetPhone,
-    });
+    }).returning();
 
-    const payload = JSON.stringify({ title, body: text, url: "/inbox" });
+    let pollId: number | null = null;
+    let pollUrl = url;
+
+    if (pollQuestion) {
+      const [poll] = await db.insert(polls).values({
+        notificationId: inserted.id,
+        question: pollQuestion,
+        isOpen: 1,
+      }).returning();
+      pollId = poll.id;
+      pollUrl = `/poll/${poll.id}`;
+    }
+
+    const payload = JSON.stringify({
+      title: pollQuestion || title,
+      body: pollQuestion ? `Tap to RSVP: ${text}` : text,
+      url: pollUrl,
+    });
 
     let subs;
     if (targetPhone === "all") {
@@ -70,7 +88,11 @@ export async function POST(req: NextRequest) {
       subs.map((s) => webpush.sendNotification({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }, payload))
     );
 
-    return NextResponse.json({ sent: results.filter((r) => r.status === "fulfilled").length, total: subs.length });
+    return NextResponse.json({
+      sent: results.filter((r) => r.status === "fulfilled").length,
+      total: subs.length,
+      pollId,
+    });
   } catch (err) {
     console.error("Send error:", err);
     return NextResponse.json({ error: err instanceof Error ? err.message : "Failed" }, { status: 500 });
