@@ -1623,3 +1623,104 @@ html[lang="ar"] .detail-desc-divider {
 html[data-theme="dark"] .custom-color-text {
   color: var(--custom-dark) !important;
 }
+
+/* ========== NAV MENU ========== */
+
+.nav-menu-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.nav-menu-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.nav-menu-toggle:hover,
+.nav-menu-toggle[aria-expanded="true"] {
+  color: var(--ink);
+  background: var(--surface-2);
+  border-color: var(--line-strong);
+}
+
+.nav-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  inset-inline-end: 0;
+  min-width: 200px;
+  background: var(--surface-solid);
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  box-shadow: var(--shadow-lg);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 60;
+}
+@keyframes navMenuIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.nav-menu { animation: navMenuIn 0.12s ease; }
+
+.nav-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition: background 0.1s;
+  white-space: nowrap;
+}
+.nav-menu-item:hover {
+  background: var(--surface-2);
+  color: var(--accent);
+}
+.nav-menu-danger {
+  color: var(--accent);
+}
+.nav-menu-danger:hover {
+  background: var(--accent-soft);
+}
+.nav-menu-divider {
+  height: 1px;
+  background: var(--line);
+  margin: 4px 0;
+}
+
+@media (max-width: 720px) {
+  .nav-inner { padding: 10px 16px; gap: 8px; }
+  .nav-links { gap: 2px; }
+  .nav-link { padding: 5px 8px; font-size: 12px; }
+  .nav-cta { padding: 5px 12px; font-size: 12px; height: 28px; }
+  .nav-menu-toggle { padding: 5px 10px; font-size: 12px; }
+  .nav-icon-btn { width: 28px; height: 28px; }
+  .nav-icon-btn.nav-lang { padding: 0 8px; }
+  .nav-icon-btn.nav-lang span { display: none; }
+}
+@media (max-width: 480px) {
+  .nav-inner { flex-wrap: nowrap; }
+  .brand { font-size: 16px; }
+  .nav-link { padding: 5px 6px; font-size: 11.5px; }
+}
