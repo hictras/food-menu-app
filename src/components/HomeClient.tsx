@@ -157,7 +157,7 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
   }
 
   return (
-    <>
+    <main className="container">
       <div className="page-head">
         <h1>{t(lang, "home_title")}</h1>
       </div>
@@ -310,6 +310,6 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
           ))}
         </div>
       )}
-    </>
+    </main>
   );
 }

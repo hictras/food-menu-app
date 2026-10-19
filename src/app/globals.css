@@ -1850,3 +1850,10 @@ html[lang="ar"] .welcome-title {
     max-width: 110px;
   }
 }
+
+/* ========== LOGO AUTO-INVERT IN LIGHT MODE ========== */
+
+html[data-theme="light"] .nav-logo,
+html[data-theme="light"] .welcome-logo {
+  filter: invert(1) brightness(0.9);
+}

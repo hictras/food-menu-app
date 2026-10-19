@@ -10,14 +10,12 @@ export default function HomeWrapper({ children }: { children: React.ReactNode })
   const [entered, setEntered] = useState<boolean | null>(null);
 
   useEffect(() => {
-    // Session check
     try {
       const flag = sessionStorage.getItem(SESSION_KEY);
       setEntered(flag === "1");
     } catch {
       setEntered(false);
     }
-    // Fetch background
     fetch("/api/settings")
       .then((res) => res.json())
       .then((data) => {
@@ -33,19 +31,24 @@ export default function HomeWrapper({ children }: { children: React.ReactNode })
     setEntered(true);
   }
 
-  // While checking session, render nothing to avoid flash
   if (entered === null) return null;
 
   return (
     <>
-      {backgroundUrl && (
+      {backgroundUrl && !entered && (
         <div
           className="home-background"
           style={{ backgroundImage: `url(${backgroundUrl})` }}
         />
       )}
       {!entered && <WelcomeOverlay onEnter={handleEnter} />}
-      <div style={{ opacity: entered ? 1 : 0, transition: "opacity 0.3s ease" }}>
+      <div
+        style={{
+          opacity: entered ? 1 : 0,
+          transition: "opacity 0.3s ease",
+          pointerEvents: entered ? "auto" : "none",
+        }}
+      >
         {children}
       </div>
     </>
