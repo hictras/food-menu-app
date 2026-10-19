@@ -1,9 +1,10 @@
-// version: 2.0.1
+// version: 3.0.0
 self.addEventListener("install", () => {
-  console.log("[sw] v2.0.1");
   self.skipWaiting();
 });
-self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
+self.addEventListener("activate", (event) => {
+  event.waitUntil(self.clients.claim());
+});
 
 self.addEventListener("push", function (event) {
   let data = {};
@@ -17,7 +18,6 @@ self.addEventListener("push", function (event) {
     body: data.body || "New update from Menu",
     icon: "/icon-192.png",
     badge: "/icon-192.png",
-    vibrate: [200, 100, 200, 100, 200],
     data: { url: data.url || "/inbox" },
   };
 
@@ -35,24 +35,10 @@ self.addEventListener("notificationclick", function (event) {
     clients.matchAll({ type: "window", includeUncontrolled: true }).then(function (clientList) {
       for (const client of clientList) {
         if (!client.url.startsWith(self.location.origin)) continue;
-
-        if (client.url === absoluteUrl) {
-          return client.focus ? client.focus() : Promise.resolve();
-        }
-
-        if ("navigate" in client) {
-          return client.navigate(absoluteUrl).then(function (navigated) {
-            if (navigated && "focus" in navigated) return navigated.focus();
-            return clients.openWindow(absoluteUrl);
-          }).catch(function () {
-            return clients.openWindow(absoluteUrl);
-          });
-        }
-
-        return client.focus ? client.focus() : Promise.resolve();
+        client.focus();
+        return clients.openWindow(absoluteUrl);
       }
-
-      if (clients.openWindow) return clients.openWindow(absoluteUrl);
+      return clients.openWindow(absoluteUrl);
     })
   );
 });
