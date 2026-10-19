@@ -63,7 +63,7 @@ export default function Nav() {
         </Link>
 
         <div className="nav-links">
-          <Link href="/" className="nav-link">
+          <Link href="/recipes" className="nav-link">
             {t(lang, "nav_recipes")}
           </Link>
 
