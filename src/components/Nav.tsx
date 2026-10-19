@@ -61,10 +61,6 @@ export default function Nav() {
 
           {loaded && isAdmin && (
             <>
-              <Link href="/recipes/new" className="nav-cta">
-                {t(lang, "nav_add")}
-              </Link>
-
               <div className="nav-menu-wrap">
                 <button
                   type="button"
@@ -78,6 +74,9 @@ export default function Nav() {
 
                 {menuOpen && (
                   <div className="nav-menu">
+                    <Link href="/recipes/new" className="nav-menu-item" onClick={closeMenu}>
+                      ✚ {t(lang, "nav_add")}
+                    </Link>
                     <Link href="/replies" className="nav-menu-item" onClick={closeMenu}>
                       💬 {lang === "ar" ? "الردود" : "Replies"}
                     </Link>
