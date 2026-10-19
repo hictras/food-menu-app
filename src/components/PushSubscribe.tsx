@@ -24,7 +24,6 @@ export default function PushSubscribe() {
     setBusy(true);
 
     try {
-      // 1. Ask for notification permission FIRST (mobile blocks this if delayed)
       const permission = await Notification.requestPermission();
       if (permission !== "granted") {
         setMsg(lang === "ar" ? "تم رفض الإذن" : "Permission denied");
@@ -32,10 +31,9 @@ export default function PushSubscribe() {
         return;
       }
 
-      // 2. Ask for the phone number AFTER permission is granted
       const phoneNumber = window.prompt(
-        lang === "ar" 
-          ? "أدخل رقم هاتفك (مثال: 96170123456)" 
+        lang === "ar"
+          ? "أدخل رقم هاتفك (مثال: 96170123456)"
           : "Enter your phone number (e.g. 96170123456)"
       );
 
@@ -45,7 +43,6 @@ export default function PushSubscribe() {
         return;
       }
 
-      // 3. Subscribe to push
       const reg = await navigator.serviceWorker.register("/sw.js");
       await navigator.serviceWorker.ready;
 
@@ -54,7 +51,6 @@ export default function PushSubscribe() {
         applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!),
       });
 
-      // 4. Send to server
       const res = await fetch("/api/push/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -65,6 +61,9 @@ export default function PushSubscribe() {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || "Server rejected the subscription");
       }
+
+      // Save phone locally so /inbox knows who is viewing
+      localStorage.setItem("viewer_phone", phoneNumber.trim());
 
       setSubscribed(true);
       setMsg(lang === "ar" ? "تم التفعيل بنجاح!" : "Subscribed successfully!");
@@ -88,6 +87,7 @@ export default function PushSubscribe() {
         });
         await sub.unsubscribe();
       }
+      localStorage.removeItem("viewer_phone");
       setSubscribed(false);
       setMsg("Unsubscribed");
     } catch (err) {
