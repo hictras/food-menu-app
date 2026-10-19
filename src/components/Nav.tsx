@@ -74,6 +74,9 @@ export default function Nav() {
 
                 {menuOpen && (
                   <div className="nav-menu">
+                    <Link href="/admin/import" className="nav-menu-item" onClick={closeMenu}>
+                      📥 Import recipes
+                    </Link>
                     <Link href="/recipes/new" className="nav-menu-item" onClick={closeMenu}>
                       ✚ {t(lang, "nav_add")}
                     </Link>
