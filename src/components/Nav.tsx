@@ -67,6 +67,10 @@ export default function Nav() {
             {t(lang, "nav_recipes")}
           </Link>
 
+          <Link href="/calendar" className="nav-link">
+            📅 {lang === "ar" ? "التقويم" : "Calendar"}
+          </Link>
+
           <Link href="/inbox" className="nav-link">
             {lang === "ar" ? "📥 الرسائل" : "📥 Inbox"}
           </Link>

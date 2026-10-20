@@ -95,3 +95,13 @@ export const pollResponses = sqliteTable("poll_responses", {
   name: text("name"),
   respondedAt: text("responded_at").default(sql`CURRENT_TIMESTAMP`),
 });
+
+export const mealPlan = sqliteTable("meal_plan", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  date: text("date").notNull(),
+  slot: text("slot").notNull(),
+  recipeId: integer("recipe_id")
+    .notNull()
+    .references(() => recipes.id, { onDelete: "cascade" }),
+  createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
+});
