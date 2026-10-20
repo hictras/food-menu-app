@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useLang } from "@/components/LanguageProvider";
 
-type Slot = "breakfast" | "lunch" | "dinner" | "snack";
+type Slot = "breakfast" | "lunch" | "dinner" | "snack" | "dessert";
 
 type RecipeMini = {
   id: number;
@@ -16,8 +16,10 @@ type RecipeMini = {
 };
 
 type PlanEntry = {
-  date: string; // YYYY-MM-DD
+  id: number;
+  date: string;
   slot: Slot;
+  position: number;
   recipe: RecipeMini;
 };
 
@@ -34,8 +36,11 @@ const SLOTS: { key: Slot; label: string; labelAr: string; color: string }[] = [
   { key: "breakfast", label: "Breakfast", labelAr: "فطور", color: "var(--olive)" },
   { key: "lunch", label: "Lunch", labelAr: "غداء", color: "#d97757" },
   { key: "dinner", label: "Dinner", labelAr: "عشاء", color: "var(--accent)" },
-  { key: "snack", label: "Snack", labelAr: "وجبة خفيفة", color: "var(--muted)" },
+  { key: "snack", label: "Snack", labelAr: "وجبة خفيفة", color: "#7ba05b" },
+  { key: "dessert", label: "Dessert", labelAr: "حلويات", color: "#c94e35" },
 ];
+
+const MAX_POSITIONS = 2;
 
 function formatDate(y: number, m: number, d: number): string {
   return `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
@@ -56,14 +61,15 @@ export default function CalendarPage() {
   const isAr = lang === "ar";
 
   const [year, setYear] = useState(() => new Date().getFullYear());
-  const [month, setMonth] = useState(() => new Date().getMonth()); // 0-indexed
+  const [month, setMonth] = useState(() => new Date().getMonth());
   const [entries, setEntries] = useState<PlanEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  // Picker modal state
+  const [slotMenuDate, setSlotMenuDate] = useState<string | null>(null);
   const [pickerDate, setPickerDate] = useState<string | null>(null);
   const [pickerSlot, setPickerSlot] = useState<Slot | null>(null);
+  const [pickerPosition, setPickerPosition] = useState<number | null>(null);
   const [recipes, setRecipes] = useState<RecipeFull[]>([]);
   const [recipeSearch, setRecipeSearch] = useState("");
 
@@ -91,7 +97,18 @@ export default function CalendarPage() {
     loadMonth();
   }, [loadMonth]);
 
-  // Load recipes once when picker opens
+  useEffect(() => {
+    if (!slotMenuDate) return;
+    function closeSlotMenu() {
+      setSlotMenuDate(null);
+    }
+    const timer = setTimeout(() => document.addEventListener("click", closeSlotMenu), 0);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("click", closeSlotMenu);
+    };
+  }, [slotMenuDate]);
+
   useEffect(() => {
     if (pickerDate && recipes.length === 0) {
       fetch("/api/recipes")
@@ -105,11 +122,13 @@ export default function CalendarPage() {
   const firstDayOfWeek = new Date(year, month, 1).getDay();
   const today = todayStr();
 
-  // Index entries by date
-  const byDate = new Map<string, PlanEntry[]>();
+  // Index: date -> slot -> position -> entry
+  const byDate = new Map<string, Map<Slot, Map<number, PlanEntry>>>();
   for (const e of entries) {
-    if (!byDate.has(e.date)) byDate.set(e.date, []);
-    byDate.get(e.date)!.push(e);
+    if (!byDate.has(e.date)) byDate.set(e.date, new Map());
+    const slotMap = byDate.get(e.date)!;
+    if (!slotMap.has(e.slot)) slotMap.set(e.slot, new Map());
+    slotMap.get(e.slot)!.set(e.position, e);
   }
 
   function prevMonth() {
@@ -126,36 +145,46 @@ export default function CalendarPage() {
     setMonth(t.getMonth());
   }
 
-  function openPicker(date: string, slot: Slot) {
+  function openPicker(date: string, slot: Slot, position: number) {
     if (!isAdmin) return;
     setPickerDate(date);
     setPickerSlot(slot);
+    setPickerPosition(position);
     setRecipeSearch("");
   }
 
+  function closePicker() {
+    setPickerDate(null);
+    setPickerSlot(null);
+    setPickerPosition(null);
+  }
+
   async function assignRecipe(recipeId: number) {
-    if (!pickerDate || !pickerSlot) return;
+    if (!pickerDate || !pickerSlot || pickerPosition === null) return;
     try {
       const res = await fetch("/api/meal-plan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date: pickerDate, slot: pickerSlot, recipeId }),
+        body: JSON.stringify({
+          date: pickerDate,
+          slot: pickerSlot,
+          position: pickerPosition,
+          recipeId,
+        }),
       });
       if (!res.ok) throw new Error("Save failed");
-      setPickerDate(null);
-      setPickerSlot(null);
+      closePicker();
       loadMonth();
     } catch (err) {
       alert("Failed to save");
     }
   }
 
-  async function removeRecipe(date: string, slot: Slot) {
+  async function removeEntry(id: number) {
     try {
-      const res = await fetch(`/api/meal-plan?date=${date}&slot=${slot}`, { method: "DELETE" });
+      const res = await fetch(`/api/meal-plan?id=${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Delete failed");
-      setPickerDate(null);
-      setPickerSlot(null);
+      closePicker();
       loadMonth();
     } catch (err) {
       alert("Failed to remove");
@@ -169,9 +198,10 @@ export default function CalendarPage() {
       })
     : recipes;
 
-  const pickerRecipe = pickerDate && pickerSlot
-    ? (byDate.get(pickerDate) || []).find((e) => e.slot === pickerSlot)?.recipe || null
-    : null;
+  const pickerCurrentEntry =
+    pickerDate && pickerSlot && pickerPosition !== null
+      ? byDate.get(pickerDate)?.get(pickerSlot)?.get(pickerPosition) || null
+      : null;
 
   return (
     <main className="container" style={{ paddingTop: 40, paddingBottom: 80 }}>
@@ -179,10 +209,9 @@ export default function CalendarPage() {
         <h1>{isAr ? "تقويم الوجبات" : "Meal Calendar"}</h1>
       </div>
       <p className="page-sub">
-        {isAr ? "اختر وصفة لكل يوم" : "Pick a recipe for each day"}
+        {isAr ? "اختر حتى وصفتين لكل وجبة في اليوم" : "Up to 2 recipes per slot per day"}
       </p>
 
-      {/* Header: month nav */}
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
         <button type="button" className="btn btn-ghost" onClick={prevMonth} style={{ fontSize: 14, padding: "6px 12px" }}>←</button>
         <div style={{ fontSize: 20, fontWeight: 600, fontFamily: "var(--font-head)", flex: 1, textAlign: "center" }}>
@@ -194,7 +223,6 @@ export default function CalendarPage() {
         </button>
       </div>
 
-      {/* Day names */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4, marginBottom: 4 }}>
         {(isAr ? DAY_NAMES_AR : DAY_NAMES_EN).map((d) => (
           <div key={d} style={{ textAlign: "center", fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--muted)", padding: "6px 0" }}>
@@ -203,47 +231,57 @@ export default function CalendarPage() {
         ))}
       </div>
 
-      {/* Calendar grid */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(7, minmax(0, 1fr))", gap: 4 }}>
-        {/* Empty cells before first day */}
         {Array.from({ length: firstDayOfWeek }).map((_, i) => (
           <div key={`empty-${i}`} />
         ))}
 
-        {/* Day cells */}
         {Array.from({ length: daysInMonth }).map((_, i) => {
           const day = i + 1;
           const date = formatDate(year, month, day);
-          const dayEntries = byDate.get(date) || [];
+          const dayEntries = byDate.get(date);
           const isToday = date === today;
-          const entryBySlot = new Map<Slot, PlanEntry>();
-          for (const e of dayEntries) entryBySlot.set(e.slot, e);
+
+          const slotFilled = new Map<Slot, PlanEntry[]>();
+          if (dayEntries) {
+            for (const [slot, posMap] of dayEntries.entries()) {
+              slotFilled.set(slot, Array.from(posMap.values()).sort((a, b) => a.position - b.position));
+            }
+          }
+          const hasAny = slotFilled.size > 0;
 
           return (
             <div
               key={date}
+              onClick={(e) => {
+                const target = e.target as HTMLElement;
+                if (target.closest("button") || target.closest("a")) return;
+                window.location.href = `/calendar/${date}`;
+              }}
               style={{
-                minHeight: 90,
+                minHeight: 80,
                 minWidth: 0,
-                padding: 6,
+                padding: 5,
                 background: isToday ? "var(--accent-soft)" : "var(--surface)",
                 border: isToday ? "1px solid var(--accent)" : "1px solid var(--line)",
                 borderRadius: 8,
                 display: "flex",
                 flexDirection: "column",
-                gap: 3,
-                fontSize: 11,
+                gap: 4,
+                fontSize: 10,
                 overflow: "hidden",
+                cursor: "pointer",
+                position: "relative",
               }}
             >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontWeight: 700, fontSize: 12, color: isToday ? "var(--accent)" : "var(--ink)" }}>
+                <span style={{ fontWeight: 700, fontSize: 11, color: isToday ? "var(--accent)" : "var(--ink)" }}>
                   {day}
                 </span>
                 {isAdmin && (
                   <button
                     type="button"
-                    onClick={() => openPicker(date, "dinner")}
+                    onClick={(e) => { e.stopPropagation(); setSlotMenuDate(slotMenuDate === date ? null : date); }}
                     title={isAr ? "إضافة" : "Add"}
                     style={{
                       background: "transparent",
@@ -260,43 +298,112 @@ export default function CalendarPage() {
                 )}
               </div>
 
-              {SLOTS.map((slot) => {
-                const entry = entryBySlot.get(slot.key);
-                if (!entry) return null;
-                return (
-                  <Link
-                    key={slot.key}
-                    href={`/recipes/${entry.recipe.id}`}
-                    style={{
-                      display: "block",
-                      maxWidth: "100%",
-                      padding: "3px 5px",
-                      borderRadius: 4,
-                      background: "var(--bg)",
-                      color: "var(--ink)",
-                      textDecoration: "none",
-                      fontSize: 10,
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                      borderLeft: `3px solid ${slot.color}`,
-                    }}
-                    onClick={(e) => {
-                      if (isAdmin && (e.ctrlKey || e.metaKey)) {
-                        e.preventDefault();
-                        openPicker(date, slot.key);
-                      }
-                    }}
-                    title={`${isAr ? slot.labelAr : slot.label}: ${isAr ? (entry.recipe.nameAr || entry.recipe.name) : entry.recipe.name}`}
-                  >
-                    {isAr ? (entry.recipe.nameAr || entry.recipe.name) : entry.recipe.name}
-                  </Link>
-                );
-              })}
+              {hasAny ? (
+                SLOTS.map((slot) => {
+                  const items = slotFilled.get(slot.key);
+                  if (!items || items.length === 0) return null;
+                  return (
+                    <div key={slot.key} style={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                        <span style={{ display: "inline-block", width: 4, height: 4, borderRadius: "50%", background: slot.color, flexShrink: 0 }} />
+                        <span style={{ fontSize: 7, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", color: "var(--muted)", flex: 1 }}>
+                          {isAr ? slot.labelAr : slot.label}
+                        </span>
+                      </div>
+                      {items.map((entry) => (
+                        <div
+                          key={entry.id}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (isAdmin) openPicker(date, slot.key, entry.position);
+                            else window.location.href = `/calendar/${date}`;
+                          }}
+                          title={`${isAr ? slot.labelAr : slot.label} ${entry.position}: ${isAr ? (entry.recipe.nameAr || entry.recipe.name) : entry.recipe.name}`}
+                          style={{
+                            display: "block",
+                            maxWidth: "100%",
+                            padding: "2px 4px",
+                            borderRadius: 3,
+                            background: "var(--bg)",
+                            color: "var(--ink)",
+                            fontSize: 9,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            borderLeft: `2px solid ${slot.color}`,
+                            cursor: "pointer",
+                          }}
+                        >
+                          {isAr ? (entry.recipe.nameAr || entry.recipe.name) : entry.recipe.name}
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })
+              ) : (
+                isAdmin && (
+                  <div style={{ fontSize: 8, color: "var(--muted)", fontStyle: "italic", marginTop: "auto" }}>
+                    {isAr ? "لا وجبات" : "No meals"}
+                  </div>
+                )
+              )}
 
-              {dayEntries.length === 0 && isAdmin && (
-                <div style={{ fontSize: 9, color: "var(--muted)", fontStyle: "italic", marginTop: "auto" }}>
-                  {isAr ? "اضغط +" : "Click +"}
+              {isAdmin && slotMenuDate === date && (
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  style={{
+                    position: "absolute",
+                    top: "calc(100% + 4px)",
+                    left: 0,
+                    zIndex: 50,
+                    background: "var(--surface-solid)",
+                    border: "1px solid var(--line-strong)",
+                    borderRadius: 8,
+                    boxShadow: "var(--shadow-lg)",
+                    padding: 4,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 2,
+                    minWidth: 130,
+                  }}
+                >
+                  {SLOTS.map((slot) => {
+                    const positionsUsed = slotFilled.get(slot.key)?.length || 0;
+                    const firstEmpty = positionsUsed < 2 ? positionsUsed + 1 : null;
+                    return (
+                      <button
+                        key={slot.key}
+                        type="button"
+                        disabled={!firstEmpty}
+                        onClick={() => {
+                          if (!firstEmpty) return;
+                          setSlotMenuDate(null);
+                          openPicker(date, slot.key, firstEmpty);
+                        }}
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          textAlign: "start",
+                          padding: "5px 8px",
+                          fontSize: 11,
+                          color: firstEmpty ? "var(--ink)" : "var(--muted)",
+                          cursor: firstEmpty ? "pointer" : "not-allowed",
+                          borderRadius: 4,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 6,
+                        }}
+                        onMouseEnter={(e) => { if (firstEmpty) e.currentTarget.style.background = "var(--surface-2)"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                      >
+                        <span style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: slot.color }} />
+                        {isAr ? slot.labelAr : slot.label}
+                        <span style={{ fontSize: 9, color: "var(--muted)", marginInlineStart: "auto" }}>
+                          {positionsUsed}/2
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -308,10 +415,9 @@ export default function CalendarPage() {
         <p className="helper" style={{ marginTop: 16 }}>{isAr ? "جاري التحميل..." : "Loading..."}</p>
       )}
 
-      {/* Picker modal */}
-      {pickerDate && pickerSlot && (
+      {pickerDate && pickerSlot && pickerPosition !== null && (
         <div
-          onClick={() => { setPickerDate(null); setPickerSlot(null); }}
+          onClick={closePicker}
           style={{
             position: "fixed",
             inset: 0,
@@ -345,36 +451,36 @@ export default function CalendarPage() {
                   {pickerDate}
                 </div>
                 <div style={{ fontSize: 16, fontWeight: 600, color: "var(--ink)" }}>
-                  {SLOTS.find((s) => s.key === pickerSlot)?.[isAr ? "labelAr" : "label"]}
+                  {SLOTS.find((s) => s.key === pickerSlot)?.[isAr ? "labelAr" : "label"]} · {isAr ? "الوصفة" : "Recipe"} {pickerPosition}
                 </div>
               </div>
               <button
                 type="button"
-                onClick={() => { setPickerDate(null); setPickerSlot(null); }}
+                onClick={closePicker}
                 style={{ background: "transparent", border: "none", fontSize: 20, cursor: "pointer", color: "var(--muted)" }}
               >
                 ×
               </button>
             </div>
 
-            {pickerRecipe && (
+            {pickerCurrentEntry && (
               <div style={{ padding: 10, background: "var(--bg)", border: "1px solid var(--line)", borderRadius: 8 }}>
                 <div style={{ fontSize: 11, color: "var(--muted)", marginBottom: 4 }}>
-                  {isAr ? "الوصفة الحالية" : "Current recipe"}
+                  {isAr ? "الحالي" : "Current"}
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  {pickerRecipe.imageUrl ? (
-                    <img src={pickerRecipe.imageUrl} alt={pickerRecipe.name} style={{ width: 40, height: 40, objectFit: "cover", borderRadius: 6 }} />
+                  {pickerCurrentEntry.recipe.imageUrl ? (
+                    <img src={pickerCurrentEntry.recipe.imageUrl} alt={pickerCurrentEntry.recipe.name} style={{ width: 40, height: 40, objectFit: "cover", borderRadius: 6 }} />
                   ) : (
                     <div style={{ width: 40, height: 40, background: "var(--line)", borderRadius: 6 }} />
                   )}
                   <div style={{ flex: 1, fontSize: 13, fontWeight: 500 }}>
-                    {isAr ? (pickerRecipe.nameAr || pickerRecipe.name) : pickerRecipe.name}
+                    {isAr ? (pickerCurrentEntry.recipe.nameAr || pickerCurrentEntry.recipe.name) : pickerCurrentEntry.recipe.name}
                   </div>
                   <button
                     type="button"
                     className="btn btn-ghost"
-                    onClick={() => removeRecipe(pickerDate, pickerSlot)}
+                    onClick={() => removeEntry(pickerCurrentEntry.id)}
                     style={{ fontSize: 11, padding: "4px 10px" }}
                   >
                     {isAr ? "حذف" : "Remove"}

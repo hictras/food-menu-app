@@ -5,24 +5,71 @@ import { and, eq, gte, lte } from "drizzle-orm";
 import { isAdmin } from "@/lib/auth";
 
 /**
- * GET /api/meal-plan?month=2026-10
- *   Returns: [{ date, slot, recipe: { id, name, nameAr, imageUrl, category, categoryAr } }]
+ * GET /api/meal-plan?month=YYYY-MM
+ *   Returns: [{ date, slot, position, recipe: { id, name, nameAr, imageUrl, category, categoryAr } }]
  *
  * POST /api/meal-plan
- *   Body: { date, slot, recipeId }
- *   Upserts one slot for one day.
+ *   Body: { date, slot, position, recipeId }
+ *   Upserts one slot+position for one day. Position must be 1 or 2.
  *
- * DELETE /api/meal-plan?date=2026-10-20&slot=dinner
- *   Removes one slot.
+ * DELETE /api/meal-plan?id=N
+ *   Removes one row by id.
  */
+
+const VALID_SLOTS = ["breakfast", "lunch", "dinner", "snack", "dessert"];
+const MAX_POSITIONS = 2;
 
 export async function GET(req: NextRequest) {
   try {
     const db = getDb();
-    const month = req.nextUrl.searchParams.get("month"); // "2026-10"
+    const month = req.nextUrl.searchParams.get("month");
+    const dateParam = req.nextUrl.searchParams.get("date");
 
+    // Day mode: ?date=YYYY-MM-DD
+    if (dateParam) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
+        return NextResponse.json({ error: "date=YYYY-MM-DD required" }, { status: 400 });
+      }
+      const dayRows = await db.select().from(mealPlan).where(eq(mealPlan.date, dateParam));
+      if (dayRows.length === 0) return NextResponse.json([]);
+      const dayRecipeRows = await db.select().from(recipes);
+      const dayRecipeMap = new Map<number, typeof recipes.$inferSelect>();
+      for (const r of dayRecipeRows) dayRecipeMap.set(r.id, r);
+      const dayResult = dayRows
+        .map((row) => {
+          const recipe = dayRecipeMap.get(row.recipeId);
+          if (!recipe) return null;
+          return {
+            id: row.id,
+            date: row.date,
+            slot: row.slot,
+            position: row.position,
+            recipe: {
+              id: recipe.id,
+              name: recipe.name,
+              nameAr: recipe.nameAr,
+              description: recipe.description,
+              descriptionAr: recipe.descriptionAr,
+              imageUrl: recipe.imageUrl,
+              category: recipe.category,
+              categoryAr: recipe.categoryAr,
+              prepTime: recipe.prepTime,
+              cookTime: recipe.cookTime,
+              servings: recipe.servings,
+            },
+          };
+        })
+        .filter((x) => x !== null)
+        .sort((a, b) => {
+          if (a.slot !== b.slot) return a.slot.localeCompare(b.slot);
+          return a.position - b.position;
+        });
+      return NextResponse.json(dayResult);
+    }
+
+    // Month mode: ?month=YYYY-MM
     if (!month || !/^\d{4}-\d{2}$/.test(month)) {
-      return NextResponse.json({ error: "month=YYYY-MM required" }, { status: 400 });
+      return NextResponse.json({ error: "month=YYYY-MM or date=YYYY-MM-DD required" }, { status: 400 });
     }
 
     const from = month + "-01";
@@ -37,7 +84,6 @@ export async function GET(req: NextRequest) {
 
     if (rows.length === 0) return NextResponse.json([]);
 
-    const recipeIds = Array.from(new Set(rows.map((r) => r.recipeId)));
     const recipeRows = await db.select().from(recipes);
     const recipeMap = new Map<number, typeof recipes.$inferSelect>();
     for (const r of recipeRows) recipeMap.set(r.id, r);
@@ -47,8 +93,10 @@ export async function GET(req: NextRequest) {
         const recipe = recipeMap.get(row.recipeId);
         if (!recipe) return null;
         return {
+          id: row.id,
           date: row.date,
           slot: row.slot,
+          position: row.position,
           recipe: {
             id: recipe.id,
             name: recipe.name,
@@ -59,7 +107,12 @@ export async function GET(req: NextRequest) {
           },
         };
       })
-      .filter((x) => x !== null);
+      .filter((x) => x !== null)
+      .sort((a, b) => {
+        if (a.date !== b.date) return a.date.localeCompare(b.date);
+        if (a.slot !== b.slot) return a.slot.localeCompare(b.slot);
+        return a.position - b.position;
+      });
 
     return NextResponse.json(result);
   } catch (err) {
@@ -76,13 +129,17 @@ export async function POST(req: NextRequest) {
   try {
     const db = getDb();
     const body = await req.json();
-    const { date, slot, recipeId } = body || {};
+    const { date, slot, position, recipeId } = body || {};
 
     if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
       return NextResponse.json({ error: "date=YYYY-MM-DD required" }, { status: 400 });
     }
-    if (!slot || typeof slot !== "string") {
-      return NextResponse.json({ error: "slot required" }, { status: 400 });
+    if (!slot || !VALID_SLOTS.includes(slot)) {
+      return NextResponse.json({ error: "Invalid slot" }, { status: 400 });
+    }
+    const pos = Number(position);
+    if (!pos || pos < 1 || pos > MAX_POSITIONS) {
+      return NextResponse.json({ error: "position must be 1 or 2" }, { status: 400 });
     }
     const rid = Number(recipeId);
     if (!rid || Number.isNaN(rid)) {
@@ -94,11 +151,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Recipe not found" }, { status: 404 });
     }
 
-    // Upsert: try to find existing row for (date, slot)
+    // Upsert by (date, slot, position)
     const existing = await db
       .select()
       .from(mealPlan)
-      .where(and(eq(mealPlan.date, date), eq(mealPlan.slot, slot)))
+      .where(
+        and(
+          eq(mealPlan.date, date),
+          eq(mealPlan.slot, slot),
+          eq(mealPlan.position, pos)
+        )
+      )
       .limit(1);
 
     if (existing.length > 0) {
@@ -106,15 +169,16 @@ export async function POST(req: NextRequest) {
         .update(mealPlan)
         .set({ recipeId: rid })
         .where(eq(mealPlan.id, existing[0].id));
+      return NextResponse.json({ ok: true, id: existing[0].id, updated: true });
     } else {
-      await db.insert(mealPlan).values({
+      const [inserted] = await db.insert(mealPlan).values({
         date,
         slot,
+        position: pos,
         recipeId: rid,
-      });
+      }).returning();
+      return NextResponse.json({ ok: true, id: inserted.id, updated: false });
     }
-
-    return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("POST meal-plan error:", err);
     return NextResponse.json({ error: "Failed to save" }, { status: 500 });
@@ -128,17 +192,17 @@ export async function DELETE(req: NextRequest) {
 
   try {
     const db = getDb();
-    const date = req.nextUrl.searchParams.get("date");
-    const slot = req.nextUrl.searchParams.get("slot");
+    const idParam = req.nextUrl.searchParams.get("id");
 
-    if (!date || !slot) {
-      return NextResponse.json({ error: "date and slot required" }, { status: 400 });
+    if (!idParam) {
+      return NextResponse.json({ error: "id required" }, { status: 400 });
+    }
+    const id = Number(idParam);
+    if (Number.isNaN(id)) {
+      return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     }
 
-    await db
-      .delete(mealPlan)
-      .where(and(eq(mealPlan.date, date), eq(mealPlan.slot, slot)));
-
+    await db.delete(mealPlan).where(eq(mealPlan.id, id));
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("DELETE meal-plan error:", err);

@@ -100,6 +100,7 @@ export const mealPlan = sqliteTable("meal_plan", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   date: text("date").notNull(),
   slot: text("slot").notNull(),
+  position: integer("position").notNull().default(1),
   recipeId: integer("recipe_id")
     .notNull()
     .references(() => recipes.id, { onDelete: "cascade" }),
