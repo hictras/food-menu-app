@@ -17,6 +17,7 @@ export default function AdminSender() {
   const [url, setUrl] = useState("");
 
   const [pollEnabled, setPollEnabled] = useState(false);
+  const [personalize, setPersonalize] = useState(false);
   const [pollQuestion, setPollQuestion] = useState("");
 
   const [recipients, setRecipients] = useState<Recipient[]>([]);
@@ -148,6 +149,27 @@ export default function AdminSender() {
                 )}
               </div>
             </>
+          )}
+        </div>
+
+        <div style={{ marginBottom: 16, padding: 14, background: "var(--bg)", border: personalize ? "1px solid var(--accent)" : "1px solid var(--line)", borderRadius: 10, transition: "border-color 0.15s" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", margin: 0 }}>
+            <input
+              type="checkbox"
+              checked={personalize}
+              onChange={(e) => setPersonalize(e.target.checked)}
+              style={{ margin: 0 }}
+            />
+            <span style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)" }}>
+              {lang === "ar" ? "تخصيص بالاسم" : "Personalize with {name}"}
+            </span>
+          </label>
+          {personalize && (
+            <p className="helper" style={{ marginTop: 8, marginBottom: 0 }}>
+              {lang === "ar"
+                ? "استخدم {name} في العنوان أو النص لإدراج اسم المستلم."
+                : "Use {name} in the title or body to insert each recipient's name."}
+            </p>
           )}
         </div>
 

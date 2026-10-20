@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
     const url = body.url || "/inbox";
     const targetPhone = body.targetPhone || "all";
     const pollQuestion = (body.poll?.question || "").trim();
+    const personalize = !!body.personalize;
 
     let previewImage: string | null = null;
     let previewTitle: string | null = null;
@@ -83,11 +84,12 @@ export async function POST(req: NextRequest) {
       await db.update(notifications).set({ pollUrl }).where(eq(notifications.id, inserted.id));
     }
 
-    const payload = JSON.stringify({
+    const payloadObj: Record<string, unknown> = {
       title: pollQuestion || title,
       body: pollQuestion ? "Tap to RSVP: " + text : text,
       url: pushUrl,
-    });
+    };
+    if (pollId) payloadObj.pollId = pollId;
 
     let subs;
     if (targetPhone === "all") {
@@ -102,8 +104,29 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No subscriptions found" }, { status: 404 });
     }
 
+    function personalizeText(t: string, name: string | null): string {
+      if (!personalize) return t;
+      const replacement = (name || "").trim();
+      if (replacement) return t.replace(/\{name\}/g, replacement);
+      return t
+        .replace(/\{name\}/g, "")
+        .replace(/\s+([,.!?;:])/g, "$1")
+        .replace(/\s{2,}/g, " ")
+        .trim();
+    }
+
     const results = await Promise.allSettled(
-      subs.map((s) => webpush.sendNotification({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }, payload))
+      subs.map((s) => {
+        const perPayload = JSON.stringify({
+          ...payloadObj,
+          title: personalizeText(payloadObj.title as string, s.name || null),
+          body: personalizeText(payloadObj.body as string, s.name || null),
+        });
+        return webpush.sendNotification(
+          { endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } },
+          perPayload
+        );
+      })
     );
 
     return NextResponse.json({
