@@ -77,6 +77,9 @@ export default function AdminSender() {
       if (pollEnabled && pollQuestion.trim()) {
         payload.poll = { question: pollQuestion.trim() };
       }
+      if (personalize) {
+        payload.personalize = true;
+      }
 
       const res = await fetch("/api/push/send", {
         method: "POST",
