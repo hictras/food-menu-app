@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLang } from "./LanguageProvider";
 import { t, pick } from "@/lib/i18n";
 import { extractYouTubeId } from "@/lib/youtube";
