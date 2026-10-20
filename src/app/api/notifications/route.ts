@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getDb } from "@/db";
-import { notifications, polls } from "@/db/schema";
-import { desc } from "drizzle-orm";
+import { notifications, polls, pushSubscriptions } from "@/db/schema";
+import { desc, eq } from "drizzle-orm";
 import { isAdmin } from "@/lib/auth";
 
 const VIEWER_PHONE_COOKIE = "viewer_phone";
@@ -16,6 +16,28 @@ export async function GET(req: NextRequest) {
     const cookiePhone = (store.get(VIEWER_PHONE_COOKIE)?.value || "").trim();
     const queryPhone = (req.nextUrl.searchParams.get("phone") || "").trim();
     const phone = cookiePhone || queryPhone;
+
+    let viewerName: string | null = null;
+    if (!admin && phone) {
+      const sub = await db
+        .select()
+        .from(pushSubscriptions)
+        .where(eq(pushSubscriptions.phoneNumber, phone))
+        .limit(1);
+      viewerName = sub[0]?.name || null;
+    }
+
+    function personalizeText(t: string | null | undefined): string {
+      if (!t) return t || "";
+      if (admin) return t;
+      const trimmed = (viewerName || "").trim();
+      if (trimmed) return t.replace(/\{name\}/g, trimmed);
+      return t
+        .replace(/\{name\}/g, "")
+        .replace(/\s+([,.!?;:])/g, "$1")
+        .replace(/\s{2,}/g, " ")
+        .trim();
+    }
 
     const all = await db
       .select()
@@ -33,8 +55,10 @@ export async function GET(req: NextRequest) {
       const storedPollUrl = (n as unknown as { pollUrl?: string | null }).pollUrl;
       return {
         ...n,
+        title: personalizeText(n.title),
+        body: personalizeText(n.body),
         pollId: poll?.id ?? null,
-        pollQuestion: poll?.question ?? null,
+        pollQuestion: poll ? personalizeText(poll.question) : null,
         pollIsOpen: poll?.isOpen ?? null,
         pollUrl: storedPollUrl ?? (poll ? `/poll/${poll.id}` : null),
       };
