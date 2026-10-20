@@ -9,8 +9,13 @@ export default function DynamicFavicon() {
       .then((data) => {
         if (!data.logo_url) return;
 
-        // Only remove icons we previously added (safe)
-        document.querySelectorAll("link[data-dynamic='true']").forEach((el) => el.remove());
+        // Remove Next.js default favicon AND our previous dynamic ones
+        document.querySelectorAll("link[rel*='icon']").forEach((el) => {
+          const href = el.getAttribute("href") || "";
+          if (href.includes("/favicon.ico") || el.getAttribute("data-dynamic") === "true") {
+            el.remove();
+          }
+        });
 
         // Add new icon links
         const icon = document.createElement("link");
