@@ -43,6 +43,11 @@ export default function RecipeDetailClient({
   instructions: InstructionRow[];
   isAdmin: boolean;
 }) {
+  const [logoUrl, setLogoUrl] = useState<string>("");
+  useEffect(() => {
+    fetch("/api/settings").then((r) => r.json()).then((d) => { if (d.logo_url) setLogoUrl(d.logo_url); }).catch(() => {});
+  }, []);
+
   const { lang } = useLang();
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
@@ -94,7 +99,10 @@ export default function RecipeDetailClient({
       </div>
 
       {recipe.imageUrl && (
-        <img src={recipe.imageUrl} alt={displayName} className="detail-hero" loading="eager" decoding="async" />
+        <div className="img-with-watermark">
+          <img src={recipe.imageUrl} alt={displayName} className="detail-hero" loading="eager" decoding="async" />
+          {logoUrl && <img src={logoUrl} alt="" className="watermark" style={{ width: 48, height: 48, bottom: 16, right: 16 }} />}
+        </div>
       )}
 
       <header className="detail-head">

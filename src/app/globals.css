@@ -1934,3 +1934,34 @@ html[lang="ar"] .welcome-title-fullscreen {
 
 /* ========== FAVICON LIGHT MODE WORKAROUND ========== */
 /* Note: favicons can't be styled with CSS — see JS fix below */
+
+/* ========== IMAGE WATERMARK ========== */
+
+.img-with-watermark {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.img-with-watermark .watermark {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  opacity: 0.85;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+  z-index: 2;
+  border-radius: 4px;
+}
+
+@media (max-width: 640px) {
+  .img-with-watermark .watermark {
+    width: 24px;
+    height: 24px;
+    bottom: 6px;
+    right: 6px;
+  }
+}

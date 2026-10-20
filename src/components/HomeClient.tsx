@@ -36,6 +36,10 @@ const TAG_AR: Record<string, string> = {
 type SortKey = "newest" | "name-asc" | "name-desc" | "time-asc" | "time-desc";
 
 export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
+  const [logoUrl, setLogoUrl] = useState<string>("");
+  useEffect(() => {
+    fetch("/api/settings").then((r) => r.json()).then((d) => { if (d.logo_url) setLogoUrl(d.logo_url); }).catch(() => {});
+  }, []);
   const { lang } = useLang();
 
   const [query, setQuery] = useState("");
@@ -260,7 +264,10 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
                     <Link key={r.id} href={`/recipes/${r.id}`} className="recipe-card">
                       <div className="recipe-card-img-wrap">
                         {r.imageUrl ? (
-                          <img src={r.imageUrl} alt={displayName} className="recipe-card-img" loading="lazy" decoding="async" />
+                          <div className="img-with-watermark">
+                            <img src={r.imageUrl} alt={displayName} className="recipe-card-img" loading="lazy" decoding="async" />
+                            {logoUrl && <img src={logoUrl} alt="" className="watermark" />}
+                          </div>
                         ) : (
                           <div className="recipe-card-img" />
                         )}
