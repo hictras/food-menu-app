@@ -99,7 +99,11 @@ export default function CalendarPage() {
 
   useEffect(() => {
     if (!slotMenuDate) return;
-    function closeSlotMenu() {
+    function closeSlotMenu(e: MouseEvent) {
+      const target = e.target as HTMLElement;
+      // Ignore clicks on the toggle button or inside the slot menu
+      if (target.closest("button[data-slot-toggle]")) return;
+      if (target.closest("[data-slot-menu]")) return;
       setSlotMenuDate(null);
     }
     const timer = setTimeout(() => document.addEventListener("click", closeSlotMenu), 0);
@@ -269,7 +273,6 @@ export default function CalendarPage() {
                 flexDirection: "column",
                 gap: 4,
                 fontSize: 10,
-                overflow: "hidden",
                 cursor: "pointer",
                 position: "relative",
               }}
@@ -281,16 +284,30 @@ export default function CalendarPage() {
                 {isAdmin && (
                   <button
                     type="button"
-                    onClick={(e) => { e.stopPropagation(); setSlotMenuDate(slotMenuDate === date ? null : date); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      setSlotMenuDate(slotMenuDate === date ? null : date);
+                    }}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    data-slot-toggle
                     title={isAr ? "إضافة" : "Add"}
                     style={{
-                      background: "transparent",
-                      border: "none",
-                      color: "var(--muted)",
+                      background: "var(--accent)",
+                      border: "1px solid var(--accent)",
+                      color: "#fff",
                       cursor: "pointer",
-                      fontSize: 14,
+                      fontSize: 13,
+                      fontWeight: 700,
+                      width: 18,
+                      height: 18,
+                      borderRadius: 4,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                       padding: 0,
                       lineHeight: 1,
+                      flexShrink: 0,
                     }}
                   >
                     +
@@ -350,7 +367,9 @@ export default function CalendarPage() {
 
               {isAdmin && slotMenuDate === date && (
                 <div
+                  data-slot-menu
                   onClick={(e) => e.stopPropagation()}
+                  onMouseDown={(e) => e.stopPropagation()}
                   style={{
                     position: "absolute",
                     top: "calc(100% + 4px)",
