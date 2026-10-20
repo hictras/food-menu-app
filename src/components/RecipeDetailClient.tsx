@@ -95,7 +95,7 @@ export default function RecipeDetailClient({
   return (
     <>
       <div style={{ margin: "20px 0" }}>
-        <Link href="/" className="btn btn-ghost">{t(lang, "back_cookbook")}</Link>
+        <Link href="/recipes" className="btn btn-ghost">{t(lang, "back_cookbook")}</Link>
       </div>
 
       {recipe.imageUrl && (
