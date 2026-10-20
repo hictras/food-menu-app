@@ -204,7 +204,7 @@ export default function CalendarPage() {
       </div>
 
       {/* Calendar grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, minmax(0, 1fr))", gap: 4 }}>
         {/* Empty cells before first day */}
         {Array.from({ length: firstDayOfWeek }).map((_, i) => (
           <div key={`empty-${i}`} />
@@ -224,6 +224,7 @@ export default function CalendarPage() {
               key={date}
               style={{
                 minHeight: 90,
+                minWidth: 0,
                 padding: 6,
                 background: isToday ? "var(--accent-soft)" : "var(--surface)",
                 border: isToday ? "1px solid var(--accent)" : "1px solid var(--line)",
@@ -232,6 +233,7 @@ export default function CalendarPage() {
                 flexDirection: "column",
                 gap: 3,
                 fontSize: 11,
+                overflow: "hidden",
               }}
             >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -267,6 +269,7 @@ export default function CalendarPage() {
                     href={`/recipes/${entry.recipe.id}`}
                     style={{
                       display: "block",
+                      maxWidth: "100%",
                       padding: "3px 5px",
                       borderRadius: 4,
                       background: "var(--bg)",
