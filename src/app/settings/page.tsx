@@ -16,6 +16,7 @@ type Settings = {
   inbox_recipe_color_light: string;
   inbox_recipe_color_dark: string;
   logo_url: string;
+  favicon_url: string;
   background_url: string;
   welcome_title: string;
   welcome_button: string;
@@ -32,6 +33,7 @@ const DEFAULT: Settings = {
   inbox_recipe_color_light: "#52525b",
   inbox_recipe_color_dark: "#a1a1aa",
   logo_url: "",
+  favicon_url: "",
   background_url: "",
   welcome_title: "Hictra Recipes",
   welcome_button: "Enter",
@@ -113,6 +115,19 @@ export default function SettingsPage() {
               onUploaded={(url) => setConfig({ ...config, logo_url: url })}
               initialUrl={config.logo_url || undefined}
             />
+          </div>
+
+          <div className="field">
+            <label>{lang === "ar" ? "أيقونة التبويب (favicon)" : "Favicon (tab icon)"}</label>
+            <ImageUpload
+              onUploaded={(url) => setConfig({ ...config, favicon_url: url })}
+              initialUrl={config.favicon_url || undefined}
+            />
+            <p className="helper" style={{ marginTop: 6 }}>
+              {lang === "ar"
+                ? "أيقونة مربعة صغيرة (64x64 أو 128x128). تظهر في علامة التبويب."
+                : "Small square icon (64x64 or 128x128). Appears in the browser tab."}
+            </p>
           </div>
 
           <div className="field">

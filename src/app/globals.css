@@ -1931,3 +1931,6 @@ html[lang="ar"] .welcome-title-fullscreen {
   font-weight: 700;
   font-size: 34px;
 }
+
+/* ========== FAVICON LIGHT MODE WORKAROUND ========== */
+/* Note: favicons can't be styled with CSS — see JS fix below */
