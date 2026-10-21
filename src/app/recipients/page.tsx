@@ -8,6 +8,7 @@ type Recipient = {
   id: number;
   phoneNumber: string | null;
   name: string | null;
+  excluded: number;
 };
 
 export default function RecipientsPage() {
@@ -76,13 +77,14 @@ export default function RecipientsPage() {
             <tr>
               <th style={{ padding: 12, textAlign: "start", fontWeight: 600 }}>Name</th>
               <th style={{ padding: 12, textAlign: "start", fontWeight: 600 }}>Phone Number</th>
+              <th style={{ padding: 12, textAlign: "center", fontWeight: 600 }}>Excluded</th>
               <th style={{ padding: 12, textAlign: "end", fontWeight: 600 }}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {recipients.length === 0 ? (
               <tr>
-                <td colSpan={3} style={{ padding: 24, textAlign: "center", color: "var(--muted)" }}>No recipients yet.</td>
+                <td colSpan={4} style={{ padding: 24, textAlign: "center", color: "var(--muted)" }}>No recipients yet.</td>
               </tr>
             ) : (
               recipients.map((r) => (
@@ -104,6 +106,26 @@ export default function RecipientsPage() {
                     <>
                       <td style={{ padding: 12 }}>{r.name || <span style={{ color: "var(--muted)", fontStyle: "italic" }}>Unnamed</span>}</td>
                       <td style={{ padding: 12 }}>{r.phoneNumber}</td>
+                      <td style={{ padding: 12, textAlign: "center" }}>
+                        <input
+                          type="checkbox"
+                          checked={r.excluded === 1}
+                          onChange={async (e) => {
+                            await fetch("/api/recipients", {
+                              method: "PUT",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({
+                                id: r.id,
+                                name: r.name || "",
+                                phoneNumber: r.phoneNumber || "",
+                                excluded: e.target.checked,
+                              }),
+                            });
+                            loadRecipients();
+                          }}
+                          style={{ cursor: "pointer" }}
+                        />
+                      </td>
                       <td style={{ padding: 12, textAlign: "end" }}>
                         <button onClick={() => { setEditId(r.id); setEditName(r.name || ""); setEditPhone(r.phoneNumber || ""); }} className="btn btn-ghost" style={{ padding: "4px 10px", fontSize: 12, marginRight: 4 }}>Edit</button>
                         <button onClick={() => handleDelete(r.id)} className="btn btn-danger" style={{ padding: "4px 10px", fontSize: 12 }}>Delete</button>

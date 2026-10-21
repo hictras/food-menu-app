@@ -2607,3 +2607,30 @@ textarea:focus,
 select:focus {
   background-color: var(--input-bg-focus) !important;
 }
+
+
+/* ========== IMAGE OVERFLOW FIX ========== */
+
+/* Force all images inside form fields and upload components to fit their container */
+.field img,
+.space-y-2 img,
+.settings-preview img {
+  max-width: 100% !important;
+  height: auto !important;
+  object-fit: contain !important;
+  border-radius: var(--radius-sm);
+}
+
+/* Constrain the image upload preview area specifically */
+.space-y-2 > img {
+  max-width: 200px !important;
+  max-height: 200px !important;
+  width: 100%;
+  display: block;
+}
+
+/* Make sure settings page containers don't overflow */
+.form-card img {
+  max-width: 100%;
+  height: auto;
+}

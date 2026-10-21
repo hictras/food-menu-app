@@ -7,6 +7,17 @@ import { useLang } from "./LanguageProvider";
 type Recipe = { id: number; name: string; nameAr: string | null; imageUrl: string | null; };
 type Recipient = { id: number; phoneNumber: string | null; name: string | null; };
 
+const PRESETS = [
+  { name: "🍽 Dinner ready", title: "Dinner is ready!", body: "Come eat — the food is on the table." },
+  { name: "🍽 No dish", title: "No dish today", body: "Check back tomorrow — something delicious is coming." },
+  { name: "📊 Poll", title: "Coming for dinner?", body: "Please RSVP with Yes or No." },
+  { name: "🍳 New recipe", title: "New recipe added", body: "Check out what's new in the cookbook!" },
+  { name: "☕ Breakfast", title: "Breakfast ready", body: "Come grab a bite." },
+  { name: "🍰 Dessert", title: "Dessert time!", body: "Something sweet is waiting." },
+];
+
+const LOCATION_PRESETS = ["Parent's house", "Home", "Beach house", "Work", "Other"];
+
 export default function AdminSender() {
   const { lang } = useLang();
   const [busy, setBusy] = useState(false);
@@ -16,6 +27,7 @@ export default function AdminSender() {
   const [body, setBody] = useState("New recipe added!");
   const [location, setLocation] = useState("");
   const [noDish, setNoDish] = useState(false);
+  const [presetsOpen, setPresetsOpen] = useState(false);
   const [url, setUrl] = useState("");
 
   const [pollEnabled, setPollEnabled] = useState(false);
@@ -185,7 +197,42 @@ export default function AdminSender() {
           )}
         </div>
 
-        <div className="field">
+        <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 12, flexWrap: "wrap" }}>
+          <button
+            type="button"
+            className="btn btn-ghost"
+            onClick={() => setPresetsOpen((v) => !v)}
+            style={{ fontSize: 12 }}
+          >
+            📋 {lang === "ar" ? "القوالب" : "Presets"}
+          </button>
+          {presetsOpen && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {PRESETS.map((p) => (
+                <button
+                  key={p.name}
+                  type="button"
+                  className="chip"
+                  onClick={() => {
+                    if (!title.trim() && !body.trim()) {
+                      setTitle(p.title);
+                      setBody(p.body);
+                    } else {
+                      setTitle(p.title);
+                      setBody(p.body);
+                    }
+                    setPresetsOpen(false);
+                  }}
+                  style={{ fontSize: 12, cursor: "pointer" }}
+                >
+                  {p.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+<div className="field">
           <label>{lang === "ar" ? "العنوان" : "Title"}</label>
           <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} style={{ width: "100%", padding: 8, marginBottom: 12 }} />
         </div>
@@ -200,9 +247,22 @@ export default function AdminSender() {
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            placeholder={lang === "ar" ? "بيت أمي، البيت، الشاليه" : "Mother house, Home, Beach house"}
+            placeholder={lang === "ar" ? "بيت الأهل، البيت، الشاليه" : "Parent's house, Home, Beach house"}
             style={{ width: "100%", padding: 8, marginBottom: 8 }}
           />
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
+            {LOCATION_PRESETS.map((p) => (
+              <button
+                key={p}
+                type="button"
+                className="chip"
+                onClick={() => setLocation(p)}
+                style={{ fontSize: 11, cursor: "pointer" }}
+              >
+                📍 {p}
+              </button>
+            ))}
+          </div>
           <p className="helper" style={{ marginTop: 0, marginBottom: 12 }}>
             {lang === "ar" ? "سيظهر في الإشعار وصندوق الرسائل" : "Shown in push notification and inbox"}
           </p>
@@ -269,6 +329,25 @@ export default function AdminSender() {
         </div>
 
         <div className="field">
+          <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
+            <input
+              type="checkbox"
+              checked={noDish}
+              onChange={(e) => setNoDish(e.target.checked)}
+              style={{ margin: 0 }}
+            />
+            <span style={{ fontWeight: 600, color: "var(--ink)" }}>
+              🍽 {lang === "ar" ? "لا يوجد طبق اليوم" : "No dish today"}
+            </span>
+          </label>
+          <p className="helper" style={{ marginTop: 6 }}>
+            {lang === "ar"
+              ? "عند التحديد، يفتح الإشعار صفحة /no-dish-today."
+              : "When checked, the push opens the /no-dish-today page."}
+          </p>
+        </div>
+
+<div className="field">
           <label>{lang === "ar" ? "الرابط (اختياري)" : "URL (Optional)"}</label>
           <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="/recipes/3 or leave empty" style={{ width: "100%", padding: 8, marginBottom: 12 }} />
         </div>

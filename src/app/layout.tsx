@@ -4,6 +4,7 @@ import { LanguageProvider } from "@/components/LanguageProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Nav from "@/components/Nav";
 import DynamicFavicon from "@/components/DynamicFavicon";
+import TitleThemeSync from "@/components/TitleThemeSync";
 
 export const metadata: Metadata = {
   title: "Menu — Recipes",
@@ -38,6 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider>
           <LanguageProvider>
             <DynamicFavicon />
+            <TitleThemeSync />
             <Nav />
             {children}
           </LanguageProvider>

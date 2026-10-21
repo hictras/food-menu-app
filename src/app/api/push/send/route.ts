@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
 
     let subs;
     if (targetPhone === "all") {
-      subs = await db.select().from(pushSubscriptions);
+      subs = await db.select().from(pushSubscriptions).where(eq(pushSubscriptions.excluded, 0));
     } else {
       const phones = targetPhone.split(",").map((p: string) => p.trim()).filter(Boolean);
       if (phones.length === 0) subs = await db.select().from(pushSubscriptions);

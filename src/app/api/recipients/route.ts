@@ -19,7 +19,7 @@ export async function PUT(req: NextRequest) {
   if (!body.id) return NextResponse.json({ error: "ID required" }, { status: 400 });
   
   await db.update(pushSubscriptions)
-    .set({ name: body.name, phoneNumber: body.phoneNumber })
+    .set({ name: body.name, phoneNumber: body.phoneNumber, excluded: body.excluded ? 1 : 0 })
     .where(eq(pushSubscriptions.id, body.id));
     
   return NextResponse.json({ ok: true });

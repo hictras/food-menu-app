@@ -55,6 +55,7 @@ export const pushSubscriptions = sqliteTable("push_subscriptions", {
   auth: text("auth").notNull(),
   phoneNumber: text("phone_number").notNull(),
   name: text("name"),
+  excluded: integer("excluded").notNull().default(0),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 

@@ -75,6 +75,13 @@ export default function PushSubscribe() {
   }
 
   async function unsubscribe() {
+    const confirmed = window.confirm(
+      lang === "ar"
+        ? "هل تريد إيقاف الإشعارات؟ لن تتلقى أي تحديثات."
+        : "Disable notifications? You won't receive any updates."
+    );
+    if (!confirmed) return;
+
     setBusy(true);
     try {
       const reg = await navigator.serviceWorker.ready;
