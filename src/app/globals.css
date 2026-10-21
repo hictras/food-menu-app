@@ -2543,3 +2543,67 @@ html[data-theme="dark"] {
     font-size: 13px;
   }
 }
+
+/* ========== PAGE TITLES — CONFIGURABLE ========== */
+
+:root {
+  --title-size: 40px;
+  --title-color-light: #17171a;
+  --title-color-dark: #ededed;
+}
+
+html[data-theme="light"] {
+  --title-color: var(--title-color-light);
+}
+
+html[data-theme="dark"] {
+  --title-color: var(--title-color-dark);
+}
+
+h1 {
+  font-size: var(--title-size) !important;
+  color: var(--title-color) !important;
+}
+
+.detail-head h1 {
+  font-size: calc(var(--title-size) * 1.1) !important;
+}
+
+/* ========== LABELS — CONFIGURABLE ========== */
+
+:root {
+  --label-size: 11px;
+  --label-color-light: #71717a;
+  --label-color-dark: #a1a1aa;
+}
+
+html[data-theme="light"] {
+  --label-color: var(--label-color-light);
+}
+html[data-theme="dark"] {
+  --label-color: var(--label-color-dark);
+}
+
+.field label,
+.form-section h2 {
+  font-size: var(--label-size) !important;
+  color: var(--label-color) !important;
+}
+
+/* ========== INPUTS — THEME AWARE ========== */
+input[type="text"],
+input[type="number"],
+input[type="password"],
+textarea,
+select {
+  color: var(--ink) !important;
+  background-color: var(--input-bg) !important;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+  background-color: var(--input-bg-focus) !important;
+}
