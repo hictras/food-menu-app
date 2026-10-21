@@ -72,19 +72,41 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
   const [prepTime, setPrepTime] = useState(initial?.prepTime ? String(initial.prepTime) : "");
   const [cookTime, setCookTime] = useState(initial?.cookTime ? String(initial.cookTime) : "");
   const [servings, setServings] = useState(initial?.servings ? String(initial.servings) : "4");
+
   const [tags, setTags] = useState<string[]>(() => {
     if (!initial?.dietaryTags) return [];
     try {
       const parsed = typeof initial.dietaryTags === "string" 
         ? JSON.parse(initial.dietaryTags) 
         : initial.dietaryTags;
-      return Array.isArray(parsed) ? Array.from(new Set(parsed)) : [];
-    } catch { 
+      
+      if (!Array.isArray(parsed)) return [];
+
+      const normalized = parsed.map((t: string) => {
+        const officialTag = DIETARY_TAGS.find(
+          (official) => official.toLowerCase() === t.toLowerCase().trim()
+        );
+        return officialTag || t; 
+      });
+
+      return Array.from(new Set(normalized));
+    } catch (err) { 
       return []; 
     }
   });
+  
+
+      
+
+      
+
+      
   const [imageUrl, setImageUrl] = useState<string | null>(initial?.imageUrl ?? null);
   const [videoUrl, setVideoUrl] = useState(initial?.videoUrl ?? "");
+
+  
+
+      
 
   const [ingredientsList, setIngredientsList] = useState<Ingredient[]>(
     initial?.ingredients?.length
