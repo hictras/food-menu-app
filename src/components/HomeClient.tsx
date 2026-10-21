@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useLang } from "./LanguageProvider";
 import { t, pick } from "@/lib/i18n";
 import { cuisineFlagUrl } from "@/lib/cuisine-flag";
@@ -41,6 +42,7 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
     fetch("/api/settings").then((r) => r.json()).then((d) => { if (d.logo_url) setLogoUrl(d.logo_url); }).catch(() => {});
   }, []);
   const { lang } = useLang();
+  const router = useRouter();
 
   const [query, setQuery] = useState("");
   const [cuisineFilter, setCuisineFilter] = useState<string>("");
@@ -48,6 +50,9 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
   const [tagFilter, setTagFilter] = useState<string>("");
   const [sort, setSort] = useState<SortKey>("newest");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [dailyDishOpen, setDailyDishOpen] = useState(false);
+  const [isRolling, setIsRolling] = useState(false);
+  const [dailyDish, setDailyDish] = useState<RecipeRow | null>(null);
   useEffect(() => {
     const stored = localStorage.getItem("recipes_view");
     if (stored === "grid" || stored === "list") setViewMode(stored);
@@ -157,6 +162,35 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
   const hasFilters = query || cuisineFilter || categoryFilter || tagFilter;
   const total = recipes.length;
 
+  
+
+  function openRandomMainDish() {
+    setDailyDishOpen(true);
+    setIsRolling(true);
+    setDailyDish(null);
+
+    // Fake delay for the dice roll effect
+    setTimeout(() => {
+      const mainDishes = recipes.filter(
+        (r) => r.category === "Main Dish" || r.categoryAr === "طبق رئيسي" || r.categoryAr === "Main Course" || r.category === "Main Course"
+      );
+      if (mainDishes.length === 0) {
+        alert(lang === "ar" ? "لا توجد أطباق رئيسية" : "No main dishes found!");
+        setDailyDishOpen(false);
+        return;
+      }
+      const randomIndex = Math.floor(Math.random() * mainDishes.length);
+      setDailyDish(mainDishes[randomIndex]);
+      setIsRolling(false);
+    }, 1200); // 1.2 seconds of rolling
+  }
+
+  function confirmDailyDish() {
+    if (!dailyDish) return;
+    // ONLY navigate when Agree is clicked
+    router.push(`/recipes/${dailyDish.id}?today`);
+  }
+
   function clearFilters() {
     setQuery("");
     setCuisineFilter("");
@@ -169,6 +203,15 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
     <main className="container">
       <div className="page-head">
         <h1>{t(lang, "home_title")}</h1>
+        <button
+          type="button"
+          onClick={openRandomMainDish}
+          className="btn btn-primary"
+          style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginBottom: "6px" }}
+        >
+          🎲 {lang === "ar" ? "فاجئني" : "Surprise Me"}
+        </button>
+        
       </div>
       <p className="page-sub">
         {total === 0
@@ -426,6 +469,58 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
           </div>
         )}
         </>
+      )}
+    
+      {/* DISH OF THE DAY MODAL */}
+      {dailyDishOpen && (
+        <div
+          onClick={() => { if (!isRolling) setDailyDishOpen(false); }}
+          style={{ position: "fixed", inset: 0, zIndex: 999, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(6px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{ background: "var(--surface-solid)", borderRadius: 16, overflow: "hidden", maxWidth: 420, width: "100%", border: "1px solid var(--line-strong)", boxShadow: "var(--shadow-lg)", minHeight: 300, display: "flex", flexDirection: "column", justifyContent: "center" }}
+          >
+            {isRolling ? (
+              <div style={{ padding: 40, textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
+                <div style={{ fontSize: 64, animation: "spin 1s linear infinite" }}>🎲</div>
+                <h2 style={{ fontSize: 20, margin: 0 }}>
+                  {lang === "ar" ? "جاري اختيار الطبق..." : "Rolling the dice..."}
+                </h2>
+                <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
+              </div>
+            ) : dailyDish ? (
+              <>
+                {dailyDish.imageUrl ? (
+                  <img src={dailyDish.imageUrl} alt={pick(lang, dailyDish.name, dailyDish.nameAr)} style={{ width: "100%", height: 220, objectFit: "cover" }} />
+                ) : (
+                  <div style={{ width: "100%", height: 220, background: "var(--line)" }} />
+                )}
+                
+                <div style={{ padding: 24, textAlign: "center" }}>
+                  <h2 style={{ fontSize: 24, margin: "0 0 8px", fontFamily: "var(--font-head)" }}>
+                    {pick(lang, dailyDish.name, dailyDish.nameAr)}
+                  </h2>
+                  <p style={{ color: "var(--muted)", margin: "0 0 24px", fontSize: 14 }}>
+                    {lang === "ar" ? "هل توافق على هذا الطبق لليوم؟" : "Do you agree to make this the dish of the day?"}
+                  </p>
+                  
+                  <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                    <button className="btn btn-ghost" onClick={openRandomMainDish} style={{ flex: 1, padding: 12 }}>
+                      🎲 {lang === "ar" ? "رمي النرد" : "Re-roll"}
+                    </button>
+                    <button className="btn btn-ghost" onClick={() => setDailyDishOpen(false)} style={{ flex: 1, padding: 12 }}>
+                      {lang === "ar" ? "إلغاء" : "Cancel"}
+                    </button>
+                    <button className="btn btn-primary" onClick={confirmDailyDish} style={{ flex: 1, padding: 12 }}>
+                      {lang === "ar" ? "موافق" : "Agree"}
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : null}
+          </div>
+        </div>
       )}
     </main>
   );
