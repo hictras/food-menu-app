@@ -20,6 +20,7 @@ type Settings = {
   background_url: string;
   welcome_title: string;
   welcome_button: string;
+  no_dish_image_url: string;
 };
 
 const DEFAULT: Settings = {
@@ -37,6 +38,7 @@ const DEFAULT: Settings = {
   background_url: "",
   welcome_title: "Hictra Recipes",
   welcome_button: "Enter",
+  no_dish_image_url: "",
 };
 
 export default function SettingsPage() {

@@ -12,6 +12,7 @@ type Notification = {
   previewImage: string | null;
   previewTitle: string | null;
   targetPhone: string | null;
+  location: string | null;
   createdAt: string;
   pollId: number | null;
   pollQuestion: string | null;
@@ -443,6 +444,12 @@ export default function InboxPage() {
                 </div>
 
                 <p style={{ margin: 0, fontSize: 13, color: "var(--ink-soft)" }}>{item.body}</p>
+                {item.location && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 2 }}>
+                    <span style={{ fontSize: 12 }}>📍</span>
+                    <span style={{ fontSize: 12, color: "var(--accent)", fontWeight: 600 }}>{item.location}</span>
+                  </div>
+                )}
 
                 {hasPoll && isAdmin && renderPollTally(item)}
 

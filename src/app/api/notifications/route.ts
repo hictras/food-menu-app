@@ -61,6 +61,7 @@ export async function GET(req: NextRequest) {
         pollQuestion: poll ? personalizeText(poll.question) : null,
         pollIsOpen: poll?.isOpen ?? null,
         pollUrl: storedPollUrl ?? (poll ? `/poll/${poll.id}` : null),
+        location: (n as unknown as { location?: string | null }).location || null,
       };
     }
 

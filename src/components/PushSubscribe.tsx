@@ -102,7 +102,7 @@ export default function PushSubscribe() {
   if (subscribed) {
     return (
       <button type="button" className="btn btn-ghost" onClick={unsubscribe} disabled={busy}>
-        🔕 {lang === "ar" ? "إيقاف" : "Disable"}
+        🔕 {lang === "ar" ? " " : " "}
       </button>
     );
   }
@@ -110,7 +110,7 @@ export default function PushSubscribe() {
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
       <button type="button" className="btn btn-ghost" onClick={subscribe} disabled={busy}>
-        🔔 {lang === "ar" ? "تفعيل" : "Enable"}
+        🔔 {lang === "ar" ? " " : " "}
       </button>
       {msg && <span style={{ fontSize: 11, color: "var(--accent)" }}>{msg}</span>}
     </div>

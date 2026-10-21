@@ -14,6 +14,7 @@ export default function AdminSender() {
 
   const [title, setTitle] = useState("Menu");
   const [body, setBody] = useState("New recipe added!");
+  const [location, setLocation] = useState("");
   const [url, setUrl] = useState("");
 
   const [pollEnabled, setPollEnabled] = useState(false);
@@ -79,6 +80,10 @@ export default function AdminSender() {
       }
       if (personalize) {
         payload.personalize = true;
+      }
+
+      if (location.trim()) {
+        payload.location = location.trim();
       }
 
       const res = await fetch("/api/push/send", {
@@ -183,6 +188,20 @@ export default function AdminSender() {
         <div className="field">
           <label>{lang === "ar" ? "النص" : "Body"}</label>
           <input type="text" value={body} onChange={(e) => setBody(e.target.value)} style={{ width: "100%", padding: 8, marginBottom: 12 }} />
+        </div>
+
+        <div className="field">
+          <label>{lang === "ar" ? "المكان (اختياري)" : "Location (optional)"}</label>
+          <input
+            type="text"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder={lang === "ar" ? "بيت أمي، البيت، الشاليه" : "Mother house, Home, Beach house"}
+            style={{ width: "100%", padding: 8, marginBottom: 8 }}
+          />
+          <p className="helper" style={{ marginTop: 0, marginBottom: 12 }}>
+            {lang === "ar" ? "سيظهر في الإشعار وصندوق الرسائل" : "Shown in push notification and inbox"}
+          </p>
         </div>
 
         <div style={{ marginBottom: 16, padding: 14, background: "var(--bg)", border: pollEnabled ? "1px solid var(--accent)" : "1px solid var(--line)", borderRadius: 10, transition: "border-color 0.15s" }}>

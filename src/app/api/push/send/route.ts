@@ -25,6 +25,7 @@ export async function POST(req: NextRequest) {
     const text = body.body || "New recipe added";
     const url = body.url || "/inbox";
     const targetPhone = body.targetPhone || "all";
+    const location = (body.location || "").trim() || null;
     const pollQuestion = (body.poll?.question || "").trim();
     const personalize = !!body.personalize;
 
@@ -66,6 +67,7 @@ export async function POST(req: NextRequest) {
       previewTitle,
       targetPhone,
       pollUrl: null,
+      location,
     }).returning();
 
     let pollId: number | null = null;
@@ -90,6 +92,7 @@ export async function POST(req: NextRequest) {
       url: pushUrl,
     };
     if (pollId) payloadObj.pollId = pollId;
+    if (location) payloadObj.location = location;
 
     let subs;
     if (targetPhone === "all") {
