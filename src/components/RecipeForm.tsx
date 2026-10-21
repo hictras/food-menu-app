@@ -74,7 +74,14 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
   const [servings, setServings] = useState(initial?.servings ? String(initial.servings) : "4");
   const [tags, setTags] = useState<string[]>(() => {
     if (!initial?.dietaryTags) return [];
-    try { return JSON.parse(initial.dietaryTags); } catch { return []; }
+    try {
+      const parsed = typeof initial.dietaryTags === "string" 
+        ? JSON.parse(initial.dietaryTags) 
+        : initial.dietaryTags;
+      return Array.isArray(parsed) ? Array.from(new Set(parsed)) : [];
+    } catch { 
+      return []; 
+    }
   });
   const [imageUrl, setImageUrl] = useState<string | null>(initial?.imageUrl ?? null);
   const [videoUrl, setVideoUrl] = useState(initial?.videoUrl ?? "");
@@ -204,6 +211,7 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
 
       setDirty(false);
       setToast(isEdit ? t(lang, "recipe_updated") : t(lang, "recipe_saved"));
+      router.refresh();
       const dest = isEdit ? `/recipes/${initial!.id}` : "/";
       setTimeout(() => router.push(dest), 700);
     } catch (err) {

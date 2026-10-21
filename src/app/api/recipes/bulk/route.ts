@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
           prepTime: Number(r.prepTime) || 0,
           cookTime: Number(r.cookTime) || 0,
           servings: Number(r.servings) || 4,
-          dietaryTags: JSON.stringify(r.dietaryTags ?? []),
+          dietaryTags: JSON.stringify(Array.from(new Set(r.dietaryTags ?? []))),
           imageUrl: r.imageUrl ?? null,
           videoUrl: r.videoUrl ?? null,
         })

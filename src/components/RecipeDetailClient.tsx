@@ -52,7 +52,7 @@ export default function RecipeDetailClient({
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
 
-  const tags: string[] = recipe.dietaryTags ? JSON.parse(recipe.dietaryTags) : [];
+  const tags: string[] = recipe.dietaryTags ? Array.from(new Set(JSON.parse(recipe.dietaryTags))) : [];
   const youtubeId = extractYouTubeId(recipe.videoUrl);
   const minLabel = lang === "ar" ? "د" : "min";
 
