@@ -161,6 +161,17 @@ export default function SettingsPage() {
               style={{ width: "100%", padding: 10 }}
             />
           </div>
+
+          <div className="field">
+            <label>No dish today image</label>
+            <ImageUpload
+              onUploaded={(url) => setConfig({ ...config, no_dish_image_url: url })}
+              initialUrl={config.no_dish_image_url || undefined}
+            />
+            <p className="helper" style={{ marginTop: 6 }}>
+              Shown on the /no-dish-today page and in link previews.
+            </p>
+          </div>
         </div>
 
         <hr style={{ borderColor: "var(--line)", margin: "24px 0" }} />
