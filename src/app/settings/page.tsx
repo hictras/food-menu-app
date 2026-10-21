@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLang } from "@/components/LanguageProvider";
 import ImageUpload from "@/components/ImageUpload";
+import VideoUpload from "@/components/VideoUpload";
 
 type Settings = {
   today_text: string;
@@ -21,6 +22,7 @@ type Settings = {
   welcome_title: string;
   welcome_button: string;
   no_dish_image_url: string;
+  no_dish_video_url: string;
 };
 
 const DEFAULT: Settings = {
@@ -39,6 +41,7 @@ const DEFAULT: Settings = {
   welcome_title: "Hictra Recipes",
   welcome_button: "Enter",
   no_dish_image_url: "",
+  no_dish_video_url: "",
 };
 
 export default function SettingsPage() {
@@ -170,6 +173,17 @@ export default function SettingsPage() {
             />
             <p className="helper" style={{ marginTop: 6 }}>
               Shown on the /no-dish-today page and in link previews.
+            </p>
+          </div>
+
+          <div className="field">
+            <label>No dish today video</label>
+            <VideoUpload
+              onUploaded={(url) => setConfig({ ...config, no_dish_video_url: url })}
+              initialUrl={config.no_dish_video_url || undefined}
+            />
+            <p className="helper" style={{ marginTop: 6 }}>
+              Optional. Shown on the /no-dish-today page below the image.
             </p>
           </div>
         </div>

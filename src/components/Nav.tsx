@@ -151,6 +151,9 @@ export default function Nav() {
                   <Link href="/settings" className="nav-menu-item" onClick={closeAll}>
                     {lang === "ar" ? "الإعدادات" : "Settings"}
                   </Link>
+                  <Link href="/no-dish-today" className="nav-menu-item" onClick={closeAll}>
+                    🍽 {lang === "ar" ? "لا طبق اليوم" : "No Dish page"}
+                  </Link>
                   <div className="nav-menu-divider" />
                   <button
                     type="button"
@@ -216,6 +219,9 @@ export default function Nav() {
               </Link>
               <Link className="mobile-nav-link" href="/settings" onClick={closeAll}>
                 <span>⚙️</span> {lang === "ar" ? "الإعدادات" : "Settings"}
+              </Link>
+              <Link className="mobile-nav-link" href="/no-dish-today" onClick={closeAll}>
+                <span>🍽</span> {lang === "ar" ? "لا طبق اليوم" : "No Dish page"}
               </Link>
               <button
                 type="button"

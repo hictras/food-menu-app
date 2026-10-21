@@ -15,6 +15,7 @@ export default function AdminSender() {
   const [title, setTitle] = useState("Menu");
   const [body, setBody] = useState("New recipe added!");
   const [location, setLocation] = useState("");
+  const [noDish, setNoDish] = useState(false);
   const [url, setUrl] = useState("");
 
   const [pollEnabled, setPollEnabled] = useState(false);
@@ -74,7 +75,10 @@ export default function AdminSender() {
       const target = selectedPhones.length > 0 ? selectedPhones.join(",") : "all";
 
       // Send url as-is. Relative paths stay relative. Absolute stays absolute.
-      const payload: Record<string, unknown> = { title, body, url: url.trim(), targetPhone: target };
+      const finalUrl = noDish ? "/no-dish-today" : url.trim();
+      const finalTitle = noDish && !title.trim() ? "No dish today" : title;
+      const finalBody = noDish && !body.trim() ? "Sorry — no dish for today. Check back tomorrow!" : body;
+      const payload: Record<string, unknown> = { title: finalTitle, body: finalBody, url: finalUrl, targetPhone: target };
       if (pollEnabled && pollQuestion.trim()) {
         payload.poll = { question: pollQuestion.trim() };
       }

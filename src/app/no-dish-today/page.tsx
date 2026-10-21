@@ -37,6 +37,7 @@ async function NoDishContent() {
   const rows = await db.select().from(settings);
   const s = Object.fromEntries(rows.map((r) => [r.key, r.value]));
   const imageUrl = s.no_dish_image_url || "";
+  const videoUrl = s.no_dish_video_url || "";
   const logoUrl = s.logo_url || "";
 
   return (
@@ -49,7 +50,7 @@ async function NoDishContent() {
         minHeight: "calc(100vh - 200px)",
         textAlign: "center",
         padding: "40px 24px",
-        gap: 24,
+        gap: 28,
       }}
     >
       {(imageUrl || logoUrl) && (
@@ -60,39 +61,70 @@ async function NoDishContent() {
             maxWidth: 360,
             width: "100%",
             height: "auto",
-            borderRadius: 16,
-            boxShadow: "0 20px 60px rgba(0,0,0,0.15)",
+            borderRadius: 20,
+            boxShadow: "0 24px 60px rgba(0,0,0,0.18), 0 4px 12px rgba(0,0,0,0.08)",
           }}
         />
       )}
 
-      <h1
-        style={{
-          fontSize: 36,
-          margin: 0,
-          fontFamily: "var(--font-head)",
-          fontWeight: 400,
-          letterSpacing: "-0.02em",
-        }}
-      >
-        Sorry, no dish today
-      </h1>
-      <p
-        style={{
-          fontSize: 15,
-          color: "var(--ink-soft)",
-          maxWidth: 480,
-          lineHeight: 1.6,
-          margin: 0,
-        }}
-      >
-        Check back tomorrow — something delicious is coming.
-      </p>
+      {videoUrl && (
+        <div
+          style={{
+            width: "100%",
+            maxWidth: 560,
+            borderRadius: 20,
+            overflow: "hidden",
+            border: "1px solid var(--line)",
+            boxShadow: "0 24px 60px rgba(0,0,0,0.18)",
+            background: "#000",
+            aspectRatio: "16 / 9",
+          }}
+        >
+          <video
+            src={videoUrl}
+            controls
+            playsInline
+            preload="metadata"
+            style={{
+              width: "100%",
+              height: "100%",
+              display: "block",
+              objectFit: "contain",
+            }}
+          />
+        </div>
+      )}
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "center" }}>
+        <h1
+          style={{
+            fontSize: 38,
+            margin: 0,
+            fontFamily: "var(--font-head)",
+            fontWeight: 400,
+            letterSpacing: "-0.025em",
+            lineHeight: 1.1,
+          }}
+        >
+          Sorry, no dish today
+        </h1>
+        <p
+          style={{
+            fontSize: 15,
+            color: "var(--ink-soft)",
+            maxWidth: 480,
+            lineHeight: 1.6,
+            margin: 0,
+          }}
+        >
+          Check back tomorrow — something delicious is coming.
+        </p>
+      </div>
 
       <Link
         href="/recipes"
         className="btn btn-primary"
-        style={{ marginTop: 8, padding: "12px 24px", fontSize: 14 }}
+        style={{ padding: "14px 28px", fontSize: 14 }}
       >
         ← Browse recipes
       </Link>
