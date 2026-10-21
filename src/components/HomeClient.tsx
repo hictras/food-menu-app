@@ -47,6 +47,11 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
   const [categoryFilter, setCategoryFilter] = useState<string>("");
   const [tagFilter, setTagFilter] = useState<string>("");
   const [sort, setSort] = useState<SortKey>("newest");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  useEffect(() => {
+    const stored = localStorage.getItem("recipes_view");
+    if (stored === "grid" || stored === "list") setViewMode(stored);
+  }, []);
 
   const allCuisines = useMemo(() => {
     const set = new Set<string>();
@@ -214,6 +219,27 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
             ))}
           </select>
 
+          <div className="view-toggle">
+            <button
+              type="button"
+              className={`view-toggle-btn${viewMode === "grid" ? " active" : ""}`}
+              onClick={() => { setViewMode("grid"); localStorage.setItem("recipes_view", "grid"); }}
+              aria-label="Grid view"
+              title="Grid view"
+            >
+              ▦
+            </button>
+            <button
+              type="button"
+              className={`view-toggle-btn${viewMode === "list" ? " active" : ""}`}
+              onClick={() => { setViewMode("list"); localStorage.setItem("recipes_view", "list"); }}
+              aria-label="List view"
+              title="List view"
+            >
+              ☰
+            </button>
+          </div>
+
           <select className="filter-select" value={sort} onChange={(e) => setSort(e.target.value as SortKey)}>
             <option value="newest">{lang === "ar" ? "الأحدث" : "Newest"}</option>
             <option value="name-asc">{lang === "ar" ? "الاسم أ-ي" : "Name A–Z"}</option>
@@ -241,6 +267,8 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
           <button type="button" className="btn btn-ghost" onClick={clearFilters}>{lang === "ar" ? "مسح الفلاتر" : "Clear filters"}</button>
         </div>
       ) : (
+        <>
+        {viewMode === "grid" && (
         <div className="category-sections">
           {grouped.map((group) => (
             <section key={group.key} className="category-section">
@@ -316,6 +344,88 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
             </section>
           ))}
         </div>
+        )}
+
+        {viewMode === "list" && (
+          <div className="recipe-list">
+            {filtered.map((r) => {
+              const tags: string[] = r.dietaryTags ? JSON.parse(r.dietaryTags) : [];
+              const displayName = pick(lang, r.name, r.nameAr);
+              const displayCuisine = pick(lang, r.cuisine, r.cuisineAr);
+              const hasVideo = !!(r.videoUrl && r.videoUrl.trim());
+              return (
+                <Link key={r.id} href={`/recipes/${r.id}`} className="recipe-list-item">
+                  <div className="recipe-list-img">
+                    {r.imageUrl ? (
+                      <img src={r.imageUrl} alt={displayName} loading="lazy" decoding="async" />
+                    ) : (
+                      <div className="recipe-list-img-placeholder" />
+                    )}
+                    {hasVideo && <span className="recipe-list-video">🎬</span>}
+                  </div>
+                  <div className="recipe-list-body">
+                    <h3>{displayName}</h3>
+                    <div className="recipe-list-meta">
+                      {displayCuisine && <span>{displayCuisine}</span>}
+                      <span>⏱ {r.prepTime + r.cookTime} {lang === "ar" ? "د" : "min"}</span>
+                      <span>🍽 {r.servings}</span>
+                    </div>
+                    {tags.length > 0 && (
+                      <div className="recipe-list-tags">
+                        {tags.slice(0, 3).map((tag) => (
+                          <span key={tag} className="chip">
+                            {lang === "ar" ? TAG_AR[tag] ?? tag : tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+
+        {viewMode === "list" && (
+          <div className="recipe-list">
+            {filtered.map((r) => {
+              const tags: string[] = r.dietaryTags ? JSON.parse(r.dietaryTags) : [];
+              const displayName = pick(lang, r.name, r.nameAr);
+              const displayCuisine = pick(lang, r.cuisine, r.cuisineAr);
+              const hasVideo = !!(r.videoUrl && r.videoUrl.trim());
+              return (
+                <Link key={r.id} href={`/recipes/${r.id}`} className="recipe-list-item">
+                  <div className="recipe-list-img">
+                    {r.imageUrl ? (
+                      <img src={r.imageUrl} alt={displayName} loading="lazy" decoding="async" />
+                    ) : (
+                      <div className="recipe-list-img-placeholder" />
+                    )}
+                    {hasVideo && <span className="recipe-list-video">🎬</span>}
+                  </div>
+                  <div className="recipe-list-body">
+                    <h3>{displayName}</h3>
+                    <div className="recipe-list-meta">
+                      {displayCuisine && <span>{displayCuisine}</span>}
+                      <span>⏱ {r.prepTime + r.cookTime} {lang === "ar" ? "د" : "min"}</span>
+                      <span>🍽 {r.servings}</span>
+                    </div>
+                    {tags.length > 0 && (
+                      <div className="recipe-list-tags">
+                        {tags.slice(0, 3).map((tag) => (
+                          <span key={tag} className="chip">
+                            {lang === "ar" ? TAG_AR[tag] ?? tag : tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+        </>
       )}
     </main>
   );
