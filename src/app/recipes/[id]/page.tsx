@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { getDb } from "@/db";
-import { recipes, ingredients, instructions, settings } from "@/db/schema";
-import { eq, asc } from "drizzle-orm";
+import { recipes, ingredients, instructions, settings, mealPlan } from "@/db/schema";
+import { eq, asc, desc } from "drizzle-orm";
 import RecipeDetailClient from "@/components/RecipeDetailClient";
 import { isAdmin } from "@/lib/auth";
 import type { Metadata } from "next";
@@ -84,6 +84,9 @@ async function RecipeDetail({ id, isToday }: { id: number; isToday: boolean; }) 
       } 
     : recipe;
 
+  const history = await db.select({ date: mealPlan.date }).from(mealPlan).where(eq(mealPlan.recipeId, id)).orderBy(desc(mealPlan.date)).limit(1);
+  const lastMadeDate = history.length > 0 ? history[0].date : null;
+
   const ings = await db.select().from(ingredients).where(eq(ingredients.recipeId, id)).orderBy(asc(ingredients.id));
   const steps = await db.select().from(instructions).where(eq(instructions.recipeId, id)).orderBy(asc(instructions.stepNumber));
   const admin = await isAdmin();
@@ -94,6 +97,7 @@ async function RecipeDetail({ id, isToday }: { id: number; isToday: boolean; }) 
       ingredients={ings}
       instructions={steps}
       isAdmin={admin}
+      lastMadeDate={lastMadeDate}
     />
   );
 }

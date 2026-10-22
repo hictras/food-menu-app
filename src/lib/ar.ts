@@ -650,6 +650,25 @@ export const ar = {
     playBtn: "العب الآن",
   },
 
+
+  // ── Recipe History ────────────────────────────────────────
+  history: {
+    lastTimeMade: "آخر مرة تم تحضيره:",
+    title: "سجل الوصفة",
+    sub: "كل الأيام التي تم فيها تحضير هذه الوصفة",
+    loading: "جاري التحميل...",
+    empty: "لم يتم تحضير هذه الوصفة بعد.",
+    backToRecipe: "← العودة إلى الوصفة",
+    viewDay: "عرض اليوم",
+    slots: {
+      breakfast: "فطور",
+      lunch: "غداء",
+      dinner: "عشاء",
+      snack: "وجبة خفيفة",
+      dessert: "حلويات",
+    },
+  },
+
 } as const;
 
 export type Ar = typeof ar;

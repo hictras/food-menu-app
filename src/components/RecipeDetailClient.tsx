@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useLang } from "./LanguageProvider";
+import { ar } from "@/lib/ar";
 import { t, pick } from "@/lib/i18n";
 import { extractYouTubeId } from "@/lib/youtube";
 import { categoryIcon, categoryLabel } from "@/lib/categories";
@@ -37,11 +38,13 @@ const TAG_AR: Record<string, string> = {
 
 export default function RecipeDetailClient({
   recipe, ingredients, instructions, isAdmin,
+  lastMadeDate
 }: {
   recipe: RecipeRow;
   ingredients: IngredientRow[];
   instructions: InstructionRow[];
   isAdmin: boolean;
+  lastMadeDate?: string | null;
 }) {
   const [logoUrl, setLogoUrl] = useState<string>("");
   useEffect(() => {
@@ -49,6 +52,7 @@ export default function RecipeDetailClient({
   }, []);
 
   const { lang } = useLang();
+  const isAr = lang === "ar";
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
 
@@ -107,8 +111,42 @@ export default function RecipeDetailClient({
 
       <header className="detail-head">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
-          <h1 style={{ margin: 0 }}>{displayName}</h1>
+          
+            <h1 style={{ margin: 0 }}>{displayName}</h1>
+            
+            {lastMadeDate && (
+              <Link 
+                href={`/recipes/${recipe.id}/history`} 
+                style={{ 
+                  display: "inline-flex", 
+                  alignItems: "center", 
+                  gap: "6px", 
+                  background: "var(--surface-2)", 
+                  border: "1px solid var(--line-strong)", 
+                  padding: "4px 12px", 
+                  borderRadius: "999px", 
+                  fontSize: "12px", 
+                  fontWeight: 600,
+                  color: "var(--accent)",
+                  textDecoration: "none",
+                  width: "fit-content",
+                  transition: "all 0.15s",
+                  marginTop: "4px"
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "var(--accent-soft)"; e.currentTarget.style.borderColor = "var(--accent)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "var(--surface-2)"; e.currentTarget.style.borderColor = "var(--line-strong)"; }}
+              >
+                🕒 {isAr ? ar.history.lastTimeMade : "Last time made:"} <strong>{lastMadeDate}</strong>
+              </Link>
+            )}
 
+            
+            
+            
+            
+            
+            
+            
           <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
             <button type="button" className="btn btn-ghost" onClick={() => shareToWhatsApp(false)}>
               💬 {lang === "ar" ? "مشاركة" : "Share"}
@@ -126,6 +164,8 @@ export default function RecipeDetailClient({
             )}
           </div>
         </div>
+
+        
 
         {displayDesc && (
           <>
