@@ -361,9 +361,11 @@ export default function GamePage() {
               {isAr ? ar.game.revealBtn : "Reveal"}
             </button>
             <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
-              <h2 style={{ fontSize: "2.2rem", fontWeight: 700, margin: 0, color: "#ffffff", letterSpacing: "-0.02em" }}>
-                {loading ? "Loading..." : (isAr ? (recipe?.nameAr || recipe?.name) : recipe?.name) || "Unknown Recipe"}
-              </h2>
+              <Link href={recipe ? `/recipes/${recipe.id}` : "#"} style={{ textDecoration: "none" }}>
+                <h2 style={{ fontSize: "2.2rem", fontWeight: 700, margin: 0, color: "#ffffff", letterSpacing: "-0.02em", transition: "color 0.15s" }} onMouseEnter={(e) => e.currentTarget.style.color = "#3fb950"} onMouseLeave={(e) => e.currentTarget.style.color = "#ffffff"}>
+                  {loading ? "Loading..." : (isAr ? (recipe?.nameAr || recipe?.name) : recipe?.name) || "Unknown Recipe"}
+                </h2>
+              </Link>
               {recipe && recipe.ingredients && (
                 <span style={{ 
                   background: "#21262d", 
