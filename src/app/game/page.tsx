@@ -357,8 +357,26 @@ export default function GamePage() {
           <div className="hero-content" style={{ padding: "2rem", display: "flex", flexDirection: "column", justifyContent: "center", width: "60%", position: "relative" }}>
             
             {/* REVEAL BUTTON (Top Right of Card) */}
-            <button onClick={imDone} disabled={finished} style={{ position: "absolute", top: "16px", insetInlineEnd: "16px", background: "#21262d", color: "#3fb950", border: "1px solid #3fb950", padding: "6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, cursor: finished ? "not-allowed" : "pointer", opacity: finished ? 0.5 : 1, transition: "all 0.15s", display: "flex", alignItems: "center", gap: "4px", zIndex: 10 }} onMouseEnter={(e) => { if(!finished) e.currentTarget.style.background = "rgba(63, 185, 80, 0.1)" }} onMouseLeave={(e) => { if(!finished) e.currentTarget.style.background = "#21262d" }}>
-              {isAr ? ar.game.revealBtn : "Reveal"}
+            <button 
+              onClick={finished ? startGame : imDone} 
+              style={{ 
+                position: "absolute", top: "16px", insetInlineEnd: "16px", 
+                background: finished ? "#3fb950" : "rgba(63, 185, 80, 0.1)", 
+                color: finished ? "#ffffff" : "#3fb950", 
+                border: "1px solid #3fb950", 
+                padding: "6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, 
+                cursor: "pointer", transition: "all 0.15s", display: "flex", alignItems: "center", gap: "4px", zIndex: 10 
+              }} 
+              onMouseEnter={(e) => { 
+                if(finished) e.currentTarget.style.background = "#2ea043"; 
+                else e.currentTarget.style.background = "rgba(63, 185, 80, 0.2)"; 
+              }} 
+              onMouseLeave={(e) => { 
+                if(finished) e.currentTarget.style.background = "#3fb950"; 
+                else e.currentTarget.style.background = "rgba(63, 185, 80, 0.1)"; 
+              }}
+            >
+              {finished ? (isAr ? ar.game.playAgainBtn : "Play Again") : (isAr ? ar.game.revealBtn : "Reveal")}
             </button>
             <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
               <Link href={recipe ? `/recipes/${recipe.id}` : "#"} style={{ textDecoration: "none" }}>
