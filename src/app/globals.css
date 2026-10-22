@@ -2634,3 +2634,19 @@ select:focus {
   max-width: 100%;
   height: auto;
 }
+
+/* ========== PREVENT iOS ZOOM ON INPUTS ========== */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  input[type="text"],
+  input[type="number"],
+  input[type="password"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+/* ========== PREVENT DOUBLE-TAP ZOOM ========== */
+* {
+  touch-action: manipulation;
+}

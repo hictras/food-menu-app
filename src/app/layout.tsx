@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { LanguageProvider } from "@/components/LanguageProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -9,6 +9,13 @@ import TitleThemeSync from "@/components/TitleThemeSync";
 export const metadata: Metadata = {
   title: "Menu — Recipes",
   description: "Your personal cookbook",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 // Runs before React hydration — applies saved theme/lang instantly.
