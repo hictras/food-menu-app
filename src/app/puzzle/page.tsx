@@ -105,65 +105,7 @@ export default function PuzzlePage() {
     setMessage(isAr ? ar.puzzle.msgRevealed : "Solution revealed.");
   }
 
-  // --- DESKTOP DRAG HANDLERS ---
-  function handleDragStart(e: React.DragEvent, index: number) {
-    if (isSolved) return;
-    setDraggedIndex(index);
-    e.dataTransfer.effectAllowed = "move";
-    setTimeout(() => { (e.target as HTMLElement).style.opacity = "0.5"; }, 0);
-  }
 
-  function handleDragOver(e: React.DragEvent) {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-  }
-
-  function handleDrop(e: React.DragEvent, dropIndex: number) {
-    e.preventDefault();
-    if (isSolved || draggedIndex === null || draggedIndex === dropIndex) return;
-    swapPieces(draggedIndex, dropIndex);
-  }
-
-  function handleDragEnd(e: React.DragEvent) {
-    (e.target as HTMLElement).style.opacity = "1";
-    setDraggedIndex(null);
-  }
-
-  // --- MOBILE TOUCH HANDLERS ---
-  function handleTouchStart(e: React.TouchEvent, index: number) {
-    if (isSolved) return;
-    setDraggedIndex(index);
-    e.currentTarget.style.opacity = "0.5";
-    e.currentTarget.style.transform = "scale(1.05)"; // Slight pop effect
-  }
-
-  function handleTouchEnd(e: React.TouchEvent, dropIndex: number) {
-    if (isSolved || draggedIndex === null) return;
-    e.currentTarget.style.opacity = "1";
-    e.currentTarget.style.transform = "scale(1)";
-    
-    if (draggedIndex !== dropIndex) {
-      swapPieces(draggedIndex, dropIndex);
-    }
-    setDraggedIndex(null);
-  }
-
-  // --- SHARED SWAP LOGIC ---
-  function swapPieces(fromIndex: number, toIndex: number) {
-    const newPieces = [...pieces];
-    const temp = newPieces[fromIndex];
-    newPieces[fromIndex] = newPieces[toIndex];
-    newPieces[toIndex] = temp;
-    
-    setPieces(newPieces);
-    setDraggedIndex(null);
-
-    if (newPieces.every((val, i) => val === i)) {
-      setIsSolved(true);
-      setWon(true);
-      setMessage(isAr ? ar.puzzle.msgPerfect : "Perfect! You solved the puzzle.");
-    }
-  }
 
   return (
     <main style={{ minHeight: "100vh", background: "#0d1117", color: "#e6edf3", fontFamily: "system-ui, sans-serif", padding: "1.5rem 1rem 120px 1rem", direction: isAr ? "rtl" : "ltr" }}>
@@ -217,20 +159,13 @@ export default function PuzzlePage() {
                 return (
                   <div
                     key={index}
-                    draggable={!isSolved}
-                    onDragStart={(e) => handleDragStart(e, index)}
-                    onDragOver={handleDragOver}
-                    onDrop={(e) => handleDrop(e, index)}
-                    onDragEnd={handleDragEnd}
-                    onTouchStart={(e) => handleTouchStart(e, index)}
-                    onTouchEnd={(e) => handleTouchEnd(e, index)}
                     onClick={() => handlePieceClick(index)}
                     style={{
                       backgroundImage: `url(${recipe?.imageUrl})`,
                       backgroundSize: "300% 300%",
                       backgroundPosition: `${x}% ${y}%`,
                       borderRadius: "8px",
-                      cursor: isSolved ? "default" : "grab",
+                      cursor: isSolved ? "default" : "pointer",
                       boxShadow: isSelected ? "inset 0 0 0 3px #ff6b4a" : "inset 0 0 0 1px rgba(255,255,255,0.05)",
                       opacity: isSelected ? 0.8 : 1,
                       transition: "all 0.15s",
