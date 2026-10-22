@@ -512,7 +512,18 @@ export const ar = {
     msgHintUsed: "تم استخدام التلميح! تم كشف مكون صحيح.",
     msgGameEnded: "انتهت اللعبة. تم كشف المكونات الصحيحة.",
     msgWrongLeft: "لا يزال هناك {n} مكونات خاطئة.",
-  },
+  
+    wrongLeftDesc: "لا يزال هناك {n} مكونات خاطئة.",
+    correctMsg: "صحيح. استمر!",
+    lostLifeMsg: "كان هذا مكوناً حقيقياً! خسرت محاولة.",
+    gameOverMsg: "لقد خسرت كل المحاولات! انتهت اللعبة.",
+    winMsg: "لقد خمنت كل المكونات!",
+    selectFirstMsg: "اختر المكونات أولاً.",
+    perfectModalTitle: "ممتاز!",
+    perfectModalBody: "لقد خمّنت كل المكونات بنجاح لـ",
+    playAgainBtn: "العب مجدداً",
+    cancelBtn: "إلغاء",
+},
 
   // ── Calendar ──────────────────────────────────────────────
   calendar: {
@@ -567,6 +578,29 @@ export const ar = {
     english: "الإنجليزية",
     arabic: "العربية",
     goGame: "→ اذهب إلى اللعبة",
+  },
+
+
+  // ── Game Decoys ───────────────────────────────────────────
+  decoys: {
+    "sugar": "سكر", "flour": "طحين", "baking powder": "بيكنج باودر", "vanilla extract": "فانيليا", 
+    "honey": "عسل", "soy sauce": "صويا صوص", "mayonnaise": "مايونيز", "mustard": "خردل", 
+    "ketchup": "كاتشب", "paprika": "بابريكا", "cumin": "كمون", "coriander": "كزبرة", 
+    "cinnamon": "قرفة", "nutmeg": "جوزة الطيب", "chili powder": "شطة", "beef broth": "مرق لحم", 
+    "chicken broth": "مرق دجاج", "red wine": "نبيذ أحمر", "balsamic vinegar": "خل بلسمي", 
+    "worcestershire": "صصة ورشستر", "tabasco": "تاباسكو", "cornstarch": "نشا", "breadcrumbs": "بقسماط", 
+    "almonds": "لوز", "walnuts": "جوز", "pecans": "بيكان", "raisins": "زبيب", "coconut": "جوز هند", 
+    "spinach": "سبانخ", "mushrooms": "مشروم", "zucchini": "كوسا", "eggplant": "باذنجان", 
+    "cauliflower": "قرنبيط", "peas": "بازيلا", "corn": "ذرة", "potato": "بطاطا", "sweet potato": "بطاطا حلوة",
+    "bacon": "لحم مقدد", "ham": "هام", "sausage": "سجق", "tofu": "توفو", "lentils": "عدس", 
+    "chickpeas": "حمص", "black beans": "فاصوليا سوداء", "quinoa": "كينوا", "feta": "جبنة فيتا", 
+    "cheddar": "شيدر", "brie": "بري", "blue cheese": "جبنة زرقاء", "cream cheese": "جبنة كريمية", 
+    "sour cream": "كريمة حامضة", "pesto": "بيستو", "hot sauce": "صوص حار", "maple syrup": "شراب القيقب", 
+    "molasses": "دبس", "cocoa powder": "كاكاو", "dark chocolate": "شوكولاتة داكنة", "white chocolate": "شوكولاتة بيضاء",
+    "peanut butter": "زبدة فول سوداني", "jam": "مربى", "capers": "كبر", "pickles": "مخلل", 
+    "artichoke": "خرشوف", "asparagus": "هليون", "beets": "شمندر", "radish": "فجل", "celery": "كرفس", 
+    "cabbage": "ملفوف", "kale": "كيل", "arugula": "جرجير", "bean sprouts": "براعم فاصوليا", 
+    "water": "ماء", "salt": "ملح", "pepper": "فلفل", "oil": "زيت"
   },
 
 } as const;

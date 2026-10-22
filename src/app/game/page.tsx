@@ -70,7 +70,7 @@ export default function GamePage() {
   const t = (en: string, arText: string) => isAr ? arText : en;
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [correctSet, setCorrectSet] = useState<Set<string>>(new Set());
-  const [cards, setCards] = useState<{ name: string; nameAr: string | null; eliminated: boolean; selected: boolean; correct: boolean }[]>([]);
+  const [cards, setCards] = useState<{ name: string; nameAr: string | null; eliminated: boolean; selected: boolean; correct: boolean; wrong: boolean }[]>([]);
   const [finished, setFinished] = useState(false);
   const [won, setWon] = useState(false);
   const [message, setMessage] = useState("");
@@ -119,6 +119,13 @@ export default function GamePage() {
       // Create a map of english -> arabic names
       const nameMap = new Map<string, string | null>();
       randomRecipe.ingredients.forEach((i: any) => { if(i.nameAr) nameMap.set(i.name.toLowerCase().trim(), i.nameAr); });
+      
+      // Use the centralized dictionary from ar.ts
+      decoys.forEach(d => {
+        if (ar.decoys[d as keyof typeof ar.decoys]) {
+          nameMap.set(d, ar.decoys[d as keyof typeof ar.decoys]);
+        }
+      });
 
       setCards(shuffled.map(name => ({ 
         name, 
@@ -139,15 +146,53 @@ export default function GamePage() {
     startGame();
   }, []); // Empty dependency array ensures this runs only once
 
-  function toggleCard(index: number) {
+  function handleCardClick(index: number) {
     if (finished) return;
-    setCards(prev => {
-      const next = [...prev];
-      const card = next[index];
-      if (card.eliminated || card.correct) return prev;
-      next[index] = { ...card, selected: !card.selected };
-      return next;
-    });
+    
+    const card = cards[index];
+    // Ignore if already green (correct), red (wrong), or eliminated
+    if (card.correct || card.wrong || card.eliminated) return;
+
+    if (correctSet.has(card.name)) {
+      // IT IS CORRECT
+      const nextCards = cards.map((c, i) => i === index ? { ...c, correct: true } : c);
+      setCards(nextCards);
+      
+      // Check if this was the last correct ingredient needed to win
+      const remainingCorrect = nextCards.filter(c => correctSet.has(c.name) && !c.correct).length;
+      
+      // If there are no more hidden correct ingredients, you win!
+      if (remainingCorrect === 0 && !isRevealed) {
+        // WIN GAME!
+        setFinished(true);
+        setWon(true);
+        setMessage(isAr ? ar.game.msgWin : "You guessed all the ingredients!");
+        setMsgType("win");
+        // Automatically eliminate the remaining wrong ingredients
+        setCards(nextCards.map(c => !correctSet.has(c.name) ? { ...c, eliminated: true } : c));
+      } else {
+        setMessage(isAr ? ar.game.correctMsg : "Correct. Keep going!");
+        setMsgType("win");
+      }
+    } else {
+      // IT IS WRONG
+      const newLives = lives - 1;
+      setLives(newLives);
+      
+      const nextCards = cards.map((c, i) => i === index ? { ...c, wrong: true } : c);
+      
+      if (newLives <= 0) {
+        setFinished(true);
+        setMessage(isAr ? ar.game.gameOverMsg : "You lost all 5 lives! Game over.");
+        setMsgType("fail");
+        // Reveal all correct
+        setCards(nextCards.map(c => correctSet.has(c.name) ? { ...c, correct: true } : c));
+      } else {
+        setCards(nextCards);
+        setMessage(isAr ? ar.game.lostLifeMsg : "That was a real ingredient! You lost 1 life.");
+        setMsgType("fail");
+      }
+    }
   }
 
   function eliminateSelected() {
@@ -175,7 +220,7 @@ export default function GamePage() {
       
       if (newlives <= 0) {
         setFinished(true);
-        setMessage(isAr ? ar.game.msgGameOver : "You lost all 5 lives! Game over.");
+        setMessage(isAr ? ar.game.gameOverMsg : "You lost all 5 lives! Game over.");
         setMsgType("fail");
         setCards(nextCards.map(c => correctSet.has(c.name) ? { ...c, correct: true } : c));
       } else {
@@ -184,49 +229,23 @@ export default function GamePage() {
         setCards(nextCards); 
       }
     } else if (eliminatedDecoyCount > 0) {
-      setMessage(isAr ? ar.game.msgCorrect : "Correct. Keep going!");
+      setMessage(isAr ? ar.game.correctMsg : "Correct. Keep going!");
       setMsgType("win");
       setCards(nextCards);
     } else {
-      setMessage(isAr ? ar.game.msgSelectFirst : "Select ingredients first.");
+      setMessage(isAr ? ar.game.selectFirstMsg : "Select ingredients first.");
       setMsgType("info");
     }
   }
 
-  function checkRecipe() {
-    if (finished) return;
-
-    const remaining = cards.filter(c => !c.eliminated && !c.correct);
-    const allRemainingCorrect = remaining.every(c => correctSet.has(c.name));
-    const noCorrectEliminated = cards.filter(c => correctSet.has(c.name)).every(c => !c.eliminated);
-
-    // ONLY win if all decoys are gone, no correct were killed, AND they didn't use the Reveal button!
-    if (allRemainingCorrect && noCorrectEliminated && !isRevealed) {
-      setFinished(true);
-      setWon(true);
-      setMessage(isAr ? ar.game.msgWin : "You guessed all the ingredients!");
-      setMsgType("win");
-      setCards(prev => prev.map(c => correctSet.has(c.name) ? { ...c, correct: true, selected: false } : c));
-      return;
-    }
-
-    const decoysLeft = remaining.filter(c => !correctSet.has(c.name)).length;
-    if (decoysLeft > 0) {
-      setMessage(isAr ? ar.game.msgWrongLeft.replace("{n}", String(decoysLeft)) : `Still ${decoysLeft} wrong ingredient(s) left.`);
-      setMsgType("fail");
-    } else {
-      setMessage(isAr ? ar.game.msgNotQuite : "Not quite — keep trying.");
-      setMsgType("info");
-    }
-  }
+  
 
   function useHint() {
     if (finished || hints <= 0) return;
     
-    // Find ALL correct ingredients that are currently NOT correct and NOT selected
     const hiddenCorrectIndices = cards
       .map((c, i) => ({ c, i }))
-      .filter(({ c }) => correctSet.has(c.name) && !c.correct && !c.selected)
+      .filter(({ c }) => correctSet.has(c.name) && !c.correct && !c.eliminated)
       .map(({ i }) => i);
 
     if (hiddenCorrectIndices.length === 0) {
@@ -235,44 +254,48 @@ export default function GamePage() {
       return;
     }
 
-    // Pick a random one
     const randomIndex = hiddenCorrectIndices[Math.floor(Math.random() * hiddenCorrectIndices.length)];
 
     setHints(h => h - 1);
-    setCards(prev => {
-      const next = [...prev];
-      // Make it green (correct: true) and unselectable (selected: false)
-      next[randomIndex] = { ...next[randomIndex], correct: true, selected: false };
-      return next;
-    });
     
-    setMessage(isAr ? ar.game.msgHintUsed : "Hint used! One correct ingredient is revealed.");
-    setMsgType("info");
+    const nextCards = cards.map((c, i) => i === randomIndex ? { ...c, correct: true, wrong: false } : c);
+    setCards(nextCards);
+    
+    // Check if hint won the game
+    const remainingCorrect = nextCards.filter(c => correctSet.has(c.name) && !c.correct).length;
+    if (remainingCorrect === 0 && !isRevealed) {
+      setFinished(true);
+      setWon(true);
+      setMessage(isAr ? ar.game.msgWin : "You guessed all the ingredients!");
+      setMsgType("win");
+      setCards(nextCards.map(c => !correctSet.has(c.name) ? { ...c, eliminated: true } : c));
+    } else {
+      setMessage(isAr ? ar.game.msgHintUsed : "Hint used! One correct ingredient is revealed.");
+      setMsgType("info");
+    }
   }
 
   function imDone() {
     if (finished) return;
 
-    // Mark that this was a reveal, not a real win
     setIsRevealed(true);
     setFinished(true);
 
-    // Eliminate all wrong, reveal all correct
     const nextCards = cards.map(card => {
       if (correctSet.has(card.name)) {
-        return { ...card, correct: true, selected: false, eliminated: false };
+        return { ...card, correct: true, selected: false, eliminated: false, wrong: false };
       } else {
-        return { ...card, eliminated: true, selected: false };
+        return { ...card, eliminated: true, selected: false, wrong: false };
       }
     });
 
     setCards(nextCards);
-    setWon(false); // Ensure Perfect modal never shows for reveal
-    setMessage("The correct ingredients are revealed.");
+    setWon(false);
+    setMessage(isAr ? ar.game.msgGameEnded : "Game ended. The correct ingredients are revealed.");
     setMsgType("info");
   }
 
-  const remainingCorrect = cards.filter(c => correctSet.has(c.name) && !c.eliminated && !c.correct).length;
+  const remainingCorrect = cards.filter(c => correctSet.has(c.name) && !c.correct && !c.wrong).length;
 
   return (
     <main style={{ minHeight: "100vh", background: "#0d1117", color: "#e6edf3", fontFamily: "system-ui, sans-serif", padding: "80px 1rem 120px 1rem", direction: isAr ? "rtl" : "ltr" }}>
@@ -359,8 +382,8 @@ export default function GamePage() {
             let opacity = 1;
             let shadow = "0 4px 12px rgba(0,0,0,0.2)";
 
-            if (card.selected) {
-              bg = "rgba(255, 107, 74, 0.1)";
+            if (card.wrong) {
+              bg = "rgba(255, 107, 74, 0.15)";
               border = "1px solid #ff6b4a";
               color = "#ff6b4a";
               shadow = "0 0 15px rgba(255, 107, 74, 0.2)";
@@ -383,7 +406,7 @@ export default function GamePage() {
             return (
               <div
                 key={i}
-                onClick={() => toggleCard(i)}
+                onClick={() => handleCardClick(i)}
                 style={{
                   background: bg,
                   color,
@@ -393,7 +416,7 @@ export default function GamePage() {
                   textAlign: "center",
                   fontSize: "13px",
                   fontWeight: 500,
-                  cursor: (card.eliminated || card.correct) ? "default" : "pointer",
+                  cursor: (card.eliminated || card.correct || card.wrong) ? "default" : "pointer",
                   transition: "all 0.2s ease",
                   display: "flex",
                   flexDirection: "column",
@@ -435,12 +458,6 @@ export default function GamePage() {
           <button onClick={useHint} disabled={finished || hints === 0} style={{ flex: 1, background: "#21262d", color: "#d97757", border: "1px solid #30363d", height: "48px", borderRadius: "10px", fontSize: "14px", fontWeight: 600, cursor: (finished || hints === 0) ? "not-allowed" : "pointer", opacity: (finished || hints === 0) ? 0.5 : 1, transition: "background 0.15s", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }} onMouseEnter={(e) => { if(!finished && hints > 0) e.currentTarget.style.background = "#30363d" }} onMouseLeave={(e) => { if(!finished && hints > 0) e.currentTarget.style.background = "#21262d" }}>
             💡 {isAr ? ar.game.hintBtn : "Hint"} ({hints})
           </button>
-          
-          <button onClick={eliminateSelected} disabled={finished} style={{ flex: 1, background: "#ff6b4a", color: "#ffffff", border: "1px solid #ff6b4a", height: "48px", borderRadius: "10px", fontSize: "14px", fontWeight: 700, cursor: finished ? "not-allowed" : "pointer", opacity: finished ? 0.5 : 1, transition: "all 0.15s", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", boxShadow: "0 0 15px rgba(255, 107, 74, 0.4)" }} onMouseEnter={(e) => { if(!finished) { e.currentTarget.style.background = "#e25e40"; e.currentTarget.style.boxShadow = "0 0 25px rgba(255, 107, 74, 0.6)"; } }} onMouseLeave={(e) => { if(!finished) { e.currentTarget.style.background = "#ff6b4a"; e.currentTarget.style.boxShadow = "0 0 15px rgba(255, 107, 74, 0.4)"; } }}>
-            🗑️ {isAr ? ar.game.eliminateBtn : "Eliminate Selected"}
-          </button>
-
-          
         </div>
       </div>
 
