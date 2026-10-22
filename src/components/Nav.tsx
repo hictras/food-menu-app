@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useLang } from "./LanguageProvider";
 import { useTheme } from "./ThemeProvider";
 import { t } from "@/lib/i18n";
+import { ar } from "@/lib/ar";
 import PushSubscribe from "./PushSubscribe";
 
 export default function Nav() {
@@ -85,13 +86,13 @@ export default function Nav() {
             {t(lang, "nav_recipes")}
           </Link>
           <Link className="nav-link" href="/calendar" onClick={closeAll}>
-            {lang === "ar" ? "التقويم" : "Calendar"}
+            {lang === "ar" ? ar.nav.calendar : "Calendar"}
           </Link>
           <Link className="nav-link" href="/inbox" onClick={closeAll}>
-            {lang === "ar" ? "الرسائل" : "Inbox"}
+            {lang === "ar" ? ar.nav.inbox : "Inbox"}
           </Link>
           <Link className="nav-link" href="/game" onClick={closeAll}>
-            🎮 {lang === "ar" ? "لعبة" : "Game"}
+            🎮 {lang === "ar" ? ar.nav.game : "Game"}
           </Link>
         </div>
         
@@ -134,25 +135,25 @@ export default function Nav() {
               {adminOpen && (
                 <div className="nav-admin-menu">
                   <Link href="/admin/import" className="nav-menu-item" onClick={closeAll}>
-                    {lang === "ar" ? "استيراد وصفات" : "Import recipes"}
+                    {lang === "ar" ? ar.nav.import : "Import recipes"}
                   </Link>
                   <Link href="/recipes/new" className="nav-menu-item" onClick={closeAll}>
                     ✚ {t(lang, "nav_add")}
                   </Link>
                   <Link href="/replies" className="nav-menu-item" onClick={closeAll}>
-                    {lang === "ar" ? "الردود" : "Replies"}
+                    {lang === "ar" ? ar.nav.replies : "Replies"}
                   </Link>
                   <Link href="/admin" className="nav-menu-item" onClick={closeAll}>
-                    {lang === "ar" ? "إرسال إشعار" : "Send Push"}
+                    {lang === "ar" ? ar.nav.sendPush : "Send Push"}
                   </Link>
                   <Link href="/recipients" className="nav-menu-item" onClick={closeAll}>
-                    {lang === "ar" ? "المستلمون" : "Recipients"}
+                    {lang === "ar" ? ar.nav.recipients : "Recipients"}
                   </Link>
                   <Link href="/whatsapp" className="nav-menu-item" onClick={closeAll}>
-                    {lang === "ar" ? "واتساب" : "WhatsApp"}
+                    {lang === "ar" ? ar.nav.whatsapp : "WhatsApp"}
                   </Link>
                   <Link href="/settings" className="nav-menu-item" onClick={closeAll}>
-                    {lang === "ar" ? "الإعدادات" : "Settings"}
+                    {lang === "ar" ? ar.nav.settings : "Settings"}
                   </Link>
                   <Link href="/no-dish-today" className="nav-menu-item" onClick={closeAll}>
                     🍽 {lang === "ar" ? "لا طبق اليوم" : "No Dish page"}
@@ -163,7 +164,7 @@ export default function Nav() {
                     onClick={logout}
                     className="nav-menu-item nav-menu-danger"
                   >
-                    {lang === "ar" ? "خروج" : "Logout"}
+                    {lang === "ar" ? ar.nav.logout : "Logout"}
                   </button>
                 </div>
               )}
@@ -172,7 +173,7 @@ export default function Nav() {
 
           {loaded && !isAdmin && (
             <Link className="nav-login" href="/login" onClick={closeAll}>
-              {lang === "ar" ? "دخول" : "Login"}
+              {lang === "ar" ? ar.nav.login : "Login"}
             </Link>
           )}
 
@@ -196,10 +197,10 @@ export default function Nav() {
             <span>🎮</span> Game
           </Link>
           <Link className="mobile-nav-link" href="/calendar" onClick={closeAll}>
-            <span>📅</span> {lang === "ar" ? "التقويم" : "Calendar"}
+            <span>📅</span> {lang === "ar" ? ar.nav.calendar : "Calendar"}
           </Link>
           <Link className="mobile-nav-link" href="/inbox" onClick={closeAll}>
-            <span>✉️</span> {lang === "ar" ? "الرسائل" : "Inbox"}
+            <span>✉️</span> {lang === "ar" ? ar.nav.inbox : "Inbox"}
           </Link>
 
           {loaded && isAdmin && (
@@ -212,19 +213,19 @@ export default function Nav() {
                 <span>✚</span> {t(lang, "nav_add")}
               </Link>
               <Link className="mobile-nav-link" href="/replies" onClick={closeAll}>
-                <span>💬</span> {lang === "ar" ? "الردود" : "Replies"}
+                <span>💬</span> {lang === "ar" ? ar.nav.replies : "Replies"}
               </Link>
               <Link className="mobile-nav-link" href="/admin" onClick={closeAll}>
                 <span>📤</span> {lang === "ar" ? "إرسال" : "Send Push"}
               </Link>
               <Link className="mobile-nav-link" href="/recipients" onClick={closeAll}>
-                <span>👥</span> {lang === "ar" ? "المستلمون" : "Recipients"}
+                <span>👥</span> {lang === "ar" ? ar.nav.recipients : "Recipients"}
               </Link>
               <Link className="mobile-nav-link" href="/whatsapp" onClick={closeAll}>
-                <span>💬</span> {lang === "ar" ? "واتساب" : "WhatsApp"}
+                <span>💬</span> {lang === "ar" ? ar.nav.whatsapp : "WhatsApp"}
               </Link>
               <Link className="mobile-nav-link" href="/settings" onClick={closeAll}>
-                <span>⚙️</span> {lang === "ar" ? "الإعدادات" : "Settings"}
+                <span>⚙️</span> {lang === "ar" ? ar.nav.settings : "Settings"}
               </Link>
               <Link className="mobile-nav-link" href="/no-dish-today" onClick={closeAll}>
                 <span>🍽</span> {lang === "ar" ? "لا طبق اليوم" : "No Dish page"}
@@ -235,7 +236,7 @@ export default function Nav() {
                 className="mobile-nav-link nav-menu-danger"
                 style={{ border: "none", background: "transparent", textAlign: "start", width: "100%", cursor: "pointer" }}
               >
-                <span>🚪</span> {lang === "ar" ? "خروج" : "Logout"}
+                <span>🚪</span> {lang === "ar" ? ar.nav.logout : "Logout"}
               </button>
             </>
           )}
@@ -244,7 +245,7 @@ export default function Nav() {
             <>
               <div className="nav-menu-divider" />
               <Link className="mobile-nav-link" href="/login" onClick={closeAll}>
-                <span>👤</span> {lang === "ar" ? "دخول" : "Login"}
+                <span>👤</span> {lang === "ar" ? ar.nav.login : "Login"}
               </Link>
             </>
           )}

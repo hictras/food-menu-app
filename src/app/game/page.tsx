@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { ar } from "@/lib/ar";
+import { useLang } from "@/components/LanguageProvider";
 
 type Ingredient = { name: string };
 type Recipe = {
@@ -62,10 +64,13 @@ function shuffle(arr: string[]) {
 }
 
 export default function GamePage() {
-  const isAr = typeof document !== "undefined" && document.documentElement.lang === "ar";
+  const { lang } = useLang();
+  const isAr = lang === "ar";
+
+  const t = (en: string, arText: string) => isAr ? arText : en;
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [correctSet, setCorrectSet] = useState<Set<string>>(new Set());
-  const [cards, setCards] = useState<{ name: string; eliminated: boolean; selected: boolean; correct: boolean }[]>([]);
+  const [cards, setCards] = useState<{ name: string; nameAr: string | null; eliminated: boolean; selected: boolean; correct: boolean }[]>([]);
   const [finished, setFinished] = useState(false);
   const [won, setWon] = useState(false);
   const [message, setMessage] = useState("");
@@ -92,7 +97,7 @@ export default function GamePage() {
       const validRecipes = data.filter((r: any) => r.ingredients && r.ingredients.length >= 3);
       
       if (validRecipes.length === 0) {
-        setMessage("No recipes with ingredients found.");
+        setMessage(isAr ? ar.game.msgNoRecipes : "No recipes with ingredients found.");
         setLoading(false);
         return;
       }
@@ -111,9 +116,19 @@ export default function GamePage() {
       const allIngredients = Array.from(new Set([...correct, ...selectedDecoys]));
       const shuffled = shuffle(allIngredients);
 
-      setCards(shuffled.map(name => ({ name, eliminated: false, selected: false, correct: false })));
+      // Create a map of english -> arabic names
+      const nameMap = new Map<string, string | null>();
+      randomRecipe.ingredients.forEach((i: any) => { if(i.nameAr) nameMap.set(i.name.toLowerCase().trim(), i.nameAr); });
+
+      setCards(shuffled.map(name => ({ 
+        name, 
+        nameAr: nameMap.get(name) || null, 
+        eliminated: false, 
+        selected: false, 
+        correct: false 
+      })));
     } catch (err) {
-      setMessage("Failed to load recipes.");
+      setMessage(isAr ? ar.game.msgFailLoad : "Failed to load recipes.");
     } finally {
       setLoading(false);
     }
@@ -155,12 +170,12 @@ export default function GamePage() {
     });
 
     if (killedCorrectCount > 0) {
-      const newLives = lives - 1;
-      setLives(newLives);
+      const newlives = lives - 1;
+      setLives(newlives);
       
-      if (newLives <= 0) {
+      if (newlives <= 0) {
         setFinished(true);
-        setMessage("You lost all 5 lives! Game over.");
+        setMessage(isAr ? ar.game.msgGameOver : "You lost all 5 lives! Game over.");
         setMsgType("fail");
         setCards(nextCards.map(c => correctSet.has(c.name) ? { ...c, correct: true } : c));
       } else {
@@ -169,11 +184,11 @@ export default function GamePage() {
         setCards(nextCards); 
       }
     } else if (eliminatedDecoyCount > 0) {
-      setMessage("Correct. Keep going!");
+      setMessage(isAr ? ar.game.msgCorrect : "Correct. Keep going!");
       setMsgType("win");
       setCards(nextCards);
     } else {
-      setMessage("Select ingredients first.");
+      setMessage(isAr ? ar.game.msgSelectFirst : "Select ingredients first.");
       setMsgType("info");
     }
   }
@@ -189,7 +204,7 @@ export default function GamePage() {
     if (allRemainingCorrect && noCorrectEliminated && !isRevealed) {
       setFinished(true);
       setWon(true);
-      setMessage("You guessed all the ingredients!");
+      setMessage(isAr ? ar.game.msgWin : "You guessed all the ingredients!");
       setMsgType("win");
       setCards(prev => prev.map(c => correctSet.has(c.name) ? { ...c, correct: true, selected: false } : c));
       return;
@@ -197,10 +212,10 @@ export default function GamePage() {
 
     const decoysLeft = remaining.filter(c => !correctSet.has(c.name)).length;
     if (decoysLeft > 0) {
-      setMessage(`Still ${decoysLeft} wrong ingredient(s) left.`);
+      setMessage(isAr ? ar.game.msgWrongLeft.replace("{n}", String(decoysLeft)) : `Still ${decoysLeft} wrong ingredient(s) left.`);
       setMsgType("fail");
     } else {
-      setMessage("Not quite — keep trying.");
+      setMessage(isAr ? ar.game.msgNotQuite : "Not quite — keep trying.");
       setMsgType("info");
     }
   }
@@ -215,7 +230,7 @@ export default function GamePage() {
       .map(({ i }) => i);
 
     if (hiddenCorrectIndices.length === 0) {
-      setMessage("No more hidden correct ingredients to reveal!");
+      setMessage(isAr ? ar.game.msgNoHint : "No more hidden correct ingredients to reveal!");
       setMsgType("info");
       return;
     }
@@ -231,7 +246,7 @@ export default function GamePage() {
       return next;
     });
     
-    setMessage("Hint used! One correct ingredient is revealed.");
+    setMessage(isAr ? ar.game.msgHintUsed : "Hint used! One correct ingredient is revealed.");
     setMsgType("info");
   }
 
@@ -260,7 +275,7 @@ export default function GamePage() {
   const remainingCorrect = cards.filter(c => correctSet.has(c.name) && !c.eliminated && !c.correct).length;
 
   return (
-    <main style={{ minHeight: "100vh", background: "#0d1117", color: "#e6edf3", fontFamily: "system-ui, sans-serif", padding: "80px 1rem 120px 1rem" }}>
+    <main style={{ minHeight: "100vh", background: "#0d1117", color: "#e6edf3", fontFamily: "system-ui, sans-serif", padding: "80px 1rem 120px 1rem", direction: isAr ? "rtl" : "ltr" }}>
       
       {/* BACKGROUND DECORATION */}
       <div style={{ position: "fixed", inset: 0, backgroundImage: "radial-gradient(circle at 50% 0%, rgba(28, 42, 36, 0.5) 0%, rgba(13, 17, 23, 1) 70%)", zIndex: 0, pointerEvents: "none" }}></div>
@@ -276,16 +291,16 @@ export default function GamePage() {
               ← Back
             </Link>
             <button onClick={startGame} style={{ background: "#21262d", color: "#e6edf3", border: "1px solid #30363d", padding: "6px 12px", borderRadius: "6px", fontSize: "13px", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: "4px" }}>
-              ⟳ New Recipe
+              ⟳ {isAr ? ar.game.newRecipe : "New Recipe"}
             </button>
           </div>
 
           {/* Middle Row: Title */}
           <div style={{ textAlign: "center" }}>
             <h1 style={{ fontSize: "1.8rem", fontWeight: 700, margin: 0, letterSpacing: "-0.02em" }}>
-              Guess the <span style={{ color: "#3fb950" }}>Ingredients</span>
+              {isAr ? ar.game.title1 : "Guess the "}<span style={{ color: "#3fb950" }}>{isAr ? ar.game.title2 : "Ingredients"}</span>
             </h1>
-            <p style={{ color: "#8b949e", fontSize: "13px", margin: "4px 0 0 0" }}>Can you identify what goes into this dish?</p>
+            <p style={{ color: "#8b949e", fontSize: "13px", margin: "4px 0 0 0" }}>{isAr ? ar.game.subtitle : "Can you identify what goes into this dish?"}</p>
           </div>
 
           {/* Bottom Row: Stats (Visible on Mobile) */}
@@ -295,11 +310,11 @@ export default function GamePage() {
                 <div style={{ fontSize: "18px", fontWeight: 700 }}>{remainingCorrect}</div>
              </div>
              <div style={{ flex: 1, background: "#161b22", border: "1px solid #30363d", padding: "8px", borderRadius: "12px", textAlign: "center" }}>
-                <div style={{ fontSize: "10px", color: "#8b949e", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>Lives</div>
+                <div style={{ fontSize: "10px", color: "#8b949e", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>lives</div>
                 <div style={{ fontSize: "18px", fontWeight: 700, color: lives > 2 ? "#3fb950" : "#ff6b4a" }}>{lives}</div>
              </div>
              <div style={{ flex: 1, background: "#161b22", border: "1px solid #30363d", padding: "8px", borderRadius: "12px", textAlign: "center" }}>
-                <div style={{ fontSize: "10px", color: "#8b949e", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>Hints</div>
+                <div style={{ fontSize: "10px", color: "#8b949e", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>hints</div>
                 <div style={{ fontSize: "18px", fontWeight: 700, color: "#d97757" }}>{hints}</div>
              </div>
           </div>
@@ -318,18 +333,18 @@ export default function GamePage() {
           <div className="hero-content" style={{ padding: "2rem", display: "flex", flexDirection: "column", justifyContent: "center", width: "60%", position: "relative" }}>
             
             {/* REVEAL BUTTON (Top Right of Card) */}
-            <button onClick={imDone} disabled={finished} style={{ position: "absolute", top: "16px", right: "16px", background: "#21262d", color: "#3fb950", border: "1px solid #3fb950", padding: "6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, cursor: finished ? "not-allowed" : "pointer", opacity: finished ? 0.5 : 1, transition: "all 0.15s", display: "flex", alignItems: "center", gap: "4px", zIndex: 10 }} onMouseEnter={(e) => { if(!finished) e.currentTarget.style.background = "rgba(63, 185, 80, 0.1)" }} onMouseLeave={(e) => { if(!finished) e.currentTarget.style.background = "#21262d" }}>
-              {isAr ? "كعيت" : "Reveal"}
+            <button onClick={imDone} disabled={finished} style={{ position: "absolute", top: "16px", insetInlineEnd: "16px", background: "#21262d", color: "#3fb950", border: "1px solid #3fb950", padding: "6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, cursor: finished ? "not-allowed" : "pointer", opacity: finished ? 0.5 : 1, transition: "all 0.15s", display: "flex", alignItems: "center", gap: "4px", zIndex: 10 }} onMouseEnter={(e) => { if(!finished) e.currentTarget.style.background = "rgba(63, 185, 80, 0.1)" }} onMouseLeave={(e) => { if(!finished) e.currentTarget.style.background = "#21262d" }}>
+              {isAr ? ar.game.revealBtn : "Reveal"}
             </button>
             <h2 style={{ fontSize: "2.2rem", fontWeight: 700, margin: 0, color: "#ffffff", letterSpacing: "-0.02em" }}>
-              {loading ? "Loading..." : (recipe?.name || "Unknown Recipe")}
+              {loading ? "Loading..." : (isAr ? (recipe?.nameAr || recipe?.name) : recipe?.name) || "Unknown Recipe"}
             </h2>
             <div style={{ display: "flex", gap: "12px", marginTop: "2.5rem", background: "#0d1117", padding: "8px 16px", borderRadius: "8px", width: "fit-content", border: "1px solid #30363d", alignItems: "center" }}>
-              <span style={{ color: "#8b949e", fontSize: "13px" }}>🍴 Remaining: <strong style={{ color: "#e6edf3" }}>{remainingCorrect}</strong></span>
+              <span style={{ color: "#8b949e", fontSize: "13px" }}>🍴 {isAr ? ar.game.remaining : "Remaining"}: <strong style={{ color: "#e6edf3" }}>{remainingCorrect}</strong></span>
               <span style={{ color: "#30363d" }}>|</span>
-              <span style={{ color: "#8b949e", fontSize: "13px" }}>❤️ Lives: <strong style={{ color: lives > 2 ? "#3fb950" : "#ff6b4a" }}>{lives}</strong></span>
+              <span style={{ color: "#8b949e", fontSize: "13px" }}>❤️ {isAr ? ar.game.lives : "Lives"}: <strong style={{ color: lives > 2 ? "#3fb950" : "#ff6b4a" }}>{lives}</strong></span>
               <span style={{ color: "#30363d" }}>|</span>
-              <span style={{ color: "#8b949e", fontSize: "13px" }}>💡 Hints: <strong style={{ color: "#d97757" }}>{hints}</strong></span>
+              <span style={{ color: "#8b949e", fontSize: "13px" }}>💡 {isAr ? ar.game.hints : "Hints"}: <strong style={{ color: "#d97757" }}>{hints}</strong></span>
             </div>
           </div>
         </div>
@@ -393,7 +408,7 @@ export default function GamePage() {
                 }}
               >
                 <span style={{ fontSize: "24px", filter: card.eliminated ? "grayscale(1)" : "none" }}>{getEmoji(card.name)}</span>
-                <span style={{ wordBreak: "break-word" }}>{card.name}</span>
+                <span style={{ wordBreak: "break-word" }}>{isAr ? (card.nameAr || card.name) : card.name}</span>
               </div>
             );
           })}
@@ -418,11 +433,11 @@ export default function GamePage() {
 
         <div style={{ display: "flex", gap: "10px", width: "100%", maxWidth: "700px" }}>
           <button onClick={useHint} disabled={finished || hints === 0} style={{ flex: 1, background: "#21262d", color: "#d97757", border: "1px solid #30363d", height: "48px", borderRadius: "10px", fontSize: "14px", fontWeight: 600, cursor: (finished || hints === 0) ? "not-allowed" : "pointer", opacity: (finished || hints === 0) ? 0.5 : 1, transition: "background 0.15s", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }} onMouseEnter={(e) => { if(!finished && hints > 0) e.currentTarget.style.background = "#30363d" }} onMouseLeave={(e) => { if(!finished && hints > 0) e.currentTarget.style.background = "#21262d" }}>
-            💡 Hint ({hints})
+            💡 {isAr ? ar.game.hintBtn : "Hint"} ({hints})
           </button>
           
           <button onClick={eliminateSelected} disabled={finished} style={{ flex: 1, background: "#ff6b4a", color: "#ffffff", border: "1px solid #ff6b4a", height: "48px", borderRadius: "10px", fontSize: "14px", fontWeight: 700, cursor: finished ? "not-allowed" : "pointer", opacity: finished ? 0.5 : 1, transition: "all 0.15s", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", boxShadow: "0 0 15px rgba(255, 107, 74, 0.4)" }} onMouseEnter={(e) => { if(!finished) { e.currentTarget.style.background = "#e25e40"; e.currentTarget.style.boxShadow = "0 0 25px rgba(255, 107, 74, 0.6)"; } }} onMouseLeave={(e) => { if(!finished) { e.currentTarget.style.background = "#ff6b4a"; e.currentTarget.style.boxShadow = "0 0 15px rgba(255, 107, 74, 0.4)"; } }}>
-            🗑️ Eliminate Selected
+            🗑️ {isAr ? ar.game.eliminateBtn : "Eliminate Selected"}
           </button>
 
           
@@ -434,16 +449,16 @@ export default function GamePage() {
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: "20px" }}>
           <div style={{ background: "#161b22", border: "1px solid #30363d", borderRadius: "20px", padding: "40px", textAlign: "center", maxWidth: "400px", width: "100%", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.7)", animation: "scaleIn 0.3s ease" }}>
             <div style={{ fontSize: "64px", marginBottom: "16px" }}>🎉</div>
-            <h2 style={{ fontSize: "24px", fontWeight: 600, color: "#ffffff", margin: "0 0 8px" }}>Perfect!</h2>
+            <h2 style={{ fontSize: "24px", fontWeight: 600, color: "#ffffff", margin: "0 0 8px" }}>{isAr ? ar.game.modalPerfect : "Perfect!"}</h2>
             <p style={{ color: "#8b949e", fontSize: "15px", marginBottom: "24px", lineHeight: 1.5 }}>
-              You successfully guessed all the ingredients for <strong style={{ color: "#ffffff" }}>{recipe?.name}</strong>.
+              {isAr ? ar.game.modalText : "You successfully guessed all the ingredients for"} <strong style={{ color: "#ffffff" }}>{recipe?.name}</strong>.
             </p>
             <div style={{ display: "flex", gap: "10px" }}>
               <button onClick={() => setWon(false)} style={{ flex: 1, background: "#21262d", color: "#e6edf3", border: "1px solid #30363d", padding: "12px", borderRadius: "10px", fontSize: "15px", fontWeight: 600, cursor: "pointer" }}>
-                Cancel
+                {isAr ? ar.game.modalCancel : "Cancel"}
               </button>
               <button onClick={startGame} style={{ flex: 1, background: "#3fb950", color: "#ffffff", border: "none", padding: "12px", borderRadius: "10px", fontSize: "15px", fontWeight: 600, cursor: "pointer" }}>
-                Play Again
+                {isAr ? ar.game.modalPlayAgain : "Play Again"}
               </button>
             </div>
           </div>

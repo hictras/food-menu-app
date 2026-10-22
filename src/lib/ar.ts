@@ -478,6 +478,94 @@ export const ar = {
     grilled: "مشوي على الفحم",
     baked: "مخبوز",
   },
+
+  // ── Game ──────────────────────────────────────────────────
+  game: {
+    back: "→ العودة للوصفات",
+    newRecipe: "⟳ وصفة جديدة",
+    title1: "خمّن ",
+    title2: "المكونات",
+    subtitle: "هل يمكنك معرفة ما يدخل في هذا الطبق؟",
+    remaining: "متبقي",
+    lives: "محاولات",
+    hints: "تلميحات",
+    hintBtn: "تلميح",
+    eliminateBtn: "حذف المحدد",
+    checkBtn: "تأكيد الوصفة",
+    revealBtn: "كعيت",
+    modalPerfect: "ممتاز!",
+    modalText: "لقد خمّنت كل المكونات بنجاح لـ",
+    modalCancel: "إلغاء",
+    modalPlayAgain: "العب مجدداً",
+    msgNoRecipes: "لم يتم العثور على وصفات.",
+    msgFailLoad: "فشل تحميل الوصفات.",
+    msgSelectFirst: "اختر المكونات أولاً.",
+    msgCorrect: "صحيح. استمر!",
+    msgLostLife: "كان هذا مكوناً حقيقياً! خسرت محاولة.",
+    msgGameOver: "لقد خسرت كل المحاولات! انتهت اللعبة.",
+    msgWin: "لقد خمنت كل المكونات!",
+    msgNotQuite: "ليس تماماً — استمر في المحاولة.",
+    msgNoHint: "لا توجد مكونات صحيحة مخفية لكشفها!",
+    msgHintUsed: "تم استخدام التلميح! تم كشف مكون صحيح.",
+    msgGameEnded: "انتهت اللعبة. تم كشف المكونات الصحيحة.",
+    msgWrongLeft: "لا يزال هناك {n} مكونات خاطئة.",
+  },
+
+  // ── Calendar ──────────────────────────────────────────────
+  calendar: {
+    title: "تقويم الوجبات",
+    sub: "اختر حتى وصفتين لكل وجبة في اليوم",
+    today: "اليوم",
+    add: "أضف",
+    noMeals: "لا وجبات",
+    slots: {
+      breakfast: "فطور",
+      lunch: "غداء",
+      dinner: "عشاء",
+      snack: "وجبة خفيفة",
+      dessert: "حلويات",
+    },
+  },
+
+
+  // ── Import Page ───────────────────────────────────────────
+  importPage: {
+    title: "استيراد وصفات",
+    sub: "الصق مصفوفة JSON من الوصفات — سيتم عرضها للمعاينة قبل الحفظ",
+    parseBtn: "معاينة",
+    importBtn: "استيراد",
+    importingBtn: "جاري الاستيراد...",
+    sampleBtn: "نموذج",
+    openFileBtn: "رفع ملف",
+    clearBtn: "مسح",
+    previewLabel: "معاينة",
+    dropFileHint: "أفلت الملف لتحميله",
+    successMsg: "تم إضافة {n} وصفة",
+    viewRecipesBtn: "عرض الوصفات",
+    missingNameWarn: "الوصفات بدون اسم لن تُضاف",
+    errEmpty: "الصق JSON أولاً",
+    errInvalid: "JSON غير صالح: {err}",
+    errArray: "المتوقع مصفوفة JSON",
+    errImport: "فشل الاستيراد",
+  },
+
+  // ── No Dish Page ──────────────────────────────────────────
+  noDish: {
+    title: "عذراً، لا يوجد طبق اليوم",
+    subtitle: "عُد غداً — شيء لذيذ قادم.",
+    backBtn: "← تصفح الوصفات",
+  },
+
+  // ── Dictionary ────────────────────────────────────────────
+  dictionary: {
+    title: "قاموس الكلمات",
+    sub: "جميع الكلمات المستخدمة في المشروع",
+    key: "المفتاح",
+    english: "الإنجليزية",
+    arabic: "العربية",
+    goGame: "→ اذهب إلى اللعبة",
+  },
+
 } as const;
 
 export type Ar = typeof ar;
