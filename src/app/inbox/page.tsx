@@ -81,6 +81,10 @@ export default function InboxPage() {
   }, []);
 
   useEffect(() => {
+    if ('clearAppBadge' in navigator) {
+      navigator.clearAppBadge().catch((error) => console.error('Badge clear error:', error));
+    }
+
     fetch("/api/auth/me")
       .then((res) => res.json())
       .then((data) => setIsAdmin(!!data.admin))
