@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useLang } from "@/components/LanguageProvider";
 
@@ -58,6 +59,7 @@ const DAY_NAMES_AR = ["أحد", "اثنين", "ثلاثاء", "أربعاء", "�
 
 export default function CalendarPage() {
   const { lang } = useLang();
+  const router = useRouter();
   const isAr = lang === "ar";
 
   const [year, setYear] = useState(() => new Date().getFullYear());
@@ -145,8 +147,8 @@ export default function CalendarPage() {
   }
   function goToday() {
     const t = new Date();
-    setYear(t.getFullYear());
-    setMonth(t.getMonth());
+    const dateStr = formatDate(t.getFullYear(), t.getMonth(), t.getDate());
+    router.push(`/calendar/${dateStr}`);
   }
 
   function openPicker(date: string, slot: Slot, position: number) {
