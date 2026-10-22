@@ -9,7 +9,15 @@ export async function GET() {
   try {
     const db = getDb();
     const all = await db.select().from(recipes).orderBy(desc(recipes.createdAt));
-    return NextResponse.json(all);
+    const allIngredients = await db.select().from(ingredients);
+    
+    // Attach ingredients to each recipe
+    const recipesWithIngredients = all.map((r) => ({
+      ...r,
+      ingredients: allIngredients.filter((i) => i.recipeId === r.id),
+    }));
+    
+    return NextResponse.json(recipesWithIngredients);
   } catch (err) {
     return NextResponse.json({ error: "Failed to load" }, { status: 500 });
   }

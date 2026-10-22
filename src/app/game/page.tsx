@@ -1,0 +1,437 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+
+type Ingredient = { name: string };
+type Recipe = {
+  id: number;
+  name: string;
+  nameAr: string | null;
+  imageUrl: string | null;
+  ingredients: Ingredient[];
+};
+
+const DECOY_POOL = [
+  "sugar", "flour", "baking powder", "vanilla extract", "honey", "soy sauce", "mayonnaise",
+  "mustard", "ketchup", "paprika", "cumin", "coriander", "cinnamon", "nutmeg", "chili powder",
+  "beef broth", "chicken broth", "red wine", "balsamic vinegar", "worcestershire", "tabasco",
+  "cornstarch", "breadcrumbs", "almonds", "walnuts", "pecans", "raisins", "coconut", "spinach",
+  "mushrooms", "zucchini", "eggplant", "cauliflower", "peas", "corn", "potato", "sweet potato",
+  "bacon", "ham", "sausage", "tofu", "lentils", "chickpeas", "black beans", "quinoa",
+  "feta", "cheddar", "brie", "blue cheese", "cream cheese", "sour cream", "pesto",
+  "hot sauce", "maple syrup", "molasses", "cocoa powder", "dark chocolate", "white chocolate",
+  "peanut butter", "jam", "capers", "pickles", "artichoke", "asparagus", "beets",
+  "radish", "celery", "cabbage", "kale", "arugula", "bean sprouts", "water", "salt", "pepper", "oil"
+];
+
+// Helper to get a matching emoji for the ingredient
+function getEmoji(name: string) {
+  const n = name.toLowerCase();
+  if (n.includes("pepper") || n.includes("chili")) return "🌶️";
+  if (n.includes("tomato")) return "🍅";
+  if (n.includes("onion")) return "🧅";
+  if (n.includes("garlic")) return "🧄";
+  if (n.includes("meat") || n.includes("beef") || n.includes("lamb") || n.includes("steak")) return "🥩";
+  if (n.includes("chicken")) return "🍗";
+  if (n.includes("fish") || n.includes("shrimp") || n.includes("seafood")) return "🐟";
+  if (n.includes("cheese") || n.includes("parmesan") || n.includes("mozzarella")) return "🧀";
+  if (n.includes("egg")) return "🥚";
+  if (n.includes("milk") || n.includes("cream") || n.includes("yogurt")) return "🥛";
+  if (n.includes("flour") || n.includes("bread") || n.includes("dough")) return "🌾";
+  if (n.includes("rice")) return "🍚";
+  if (n.includes("oil") || n.includes("butter")) return "🫒";
+  if (n.includes("water")) return "💧";
+  if (n.includes("lemon") || n.includes("lime")) return "🍋";
+  if (n.includes("potato")) return "🥔";
+  if (n.includes("carrot")) return "🥕";
+  if (n.includes("herb") || n.includes("parsley") || n.includes("cilantro") || n.includes("mint")) return "🌿";
+  if (n.includes("spice") || n.includes("cumin") || n.includes("cinnamon") || n.includes("powder")) return "🥣";
+  if (n.includes("sugar") || n.includes("honey") || n.includes("syrup")) return "🍯";
+  if (n.includes("nut") || n.includes("almond") || n.includes("pine")) return "🥜";
+  return "🥄";
+}
+
+function shuffle(arr: string[]) {
+  const newArr = [...arr];
+  for (let i = newArr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+  }
+  return newArr;
+}
+
+export default function GamePage() {
+  const [recipe, setRecipe] = useState<Recipe | null>(null);
+  const [correctSet, setCorrectSet] = useState<Set<string>>(new Set());
+  const [cards, setCards] = useState<{ name: string; eliminated: boolean; selected: boolean; correct: boolean }[]>([]);
+  const [finished, setFinished] = useState(false);
+  const [won, setWon] = useState(false);
+  const [message, setMessage] = useState("");
+  const [msgType, setMsgType] = useState<"win" | "fail" | "info">("info");
+  const [lives, setLives] = useState(5);
+  const [hints, setHints] = useState(5);
+  const [loading, setLoading] = useState(true);
+
+  async function startGame() {
+    setLoading(true);
+    setFinished(false);
+    setWon(false);
+    setMessage("");
+    setMsgType("info");
+    setLives(5);
+    setHints(5);
+
+    try {
+      const res = await fetch("/api/recipes");
+      const data = await res.json();
+      
+      const validRecipes = data.filter((r: any) => r.ingredients && r.ingredients.length >= 3);
+      
+      if (validRecipes.length === 0) {
+        setMessage("No recipes with ingredients found.");
+        setLoading(false);
+        return;
+      }
+
+      const randomRecipe = validRecipes[Math.floor(Math.random() * validRecipes.length)];
+      setRecipe(randomRecipe);
+
+      const correct = randomRecipe.ingredients.map((i: any) => i.name.toLowerCase().trim());
+      setCorrectSet(new Set(correct));
+
+      const decoys = DECOY_POOL.filter(d => !correct.includes(d));
+      const targetTotal = Math.min(18, Math.max(12, correct.length + 6));
+      const needDecoys = Math.max(5, targetTotal - correct.length);
+      const selectedDecoys = shuffle(decoys).slice(0, needDecoys);
+
+      const allIngredients = Array.from(new Set([...correct, ...selectedDecoys]));
+      const shuffled = shuffle(allIngredients);
+
+      setCards(shuffled.map(name => ({ name, eliminated: false, selected: false, correct: false })));
+    } catch (err) {
+      setMessage("Failed to load recipes.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    startGame();
+  }, []);
+
+  function toggleCard(index: number) {
+    if (finished) return;
+    setCards(prev => {
+      const next = [...prev];
+      const card = next[index];
+      if (card.eliminated || card.correct) return prev;
+      next[index] = { ...card, selected: !card.selected };
+      return next;
+    });
+  }
+
+  function eliminateSelected() {
+    if (finished) return;
+    
+    let killedCorrectCount = 0;
+    let eliminatedDecoyCount = 0;
+
+    const nextCards = cards.map(card => {
+      if (card.selected && !card.eliminated && !card.correct) {
+        if (correctSet.has(card.name)) {
+          killedCorrectCount++;
+          return { ...card, selected: false }; 
+        } else {
+          eliminatedDecoyCount++;
+          return { ...card, selected: false, eliminated: true };
+        }
+      }
+      return card;
+    });
+
+    if (killedCorrectCount > 0) {
+      const newLives = lives - 1;
+      setLives(newLives);
+      
+      if (newLives <= 0) {
+        setFinished(true);
+        setMessage("You lost all 5 lives! Game over.");
+        setMsgType("fail");
+        setCards(nextCards.map(c => correctSet.has(c.name) ? { ...c, correct: true } : c));
+      } else {
+        setMessage(`That was a real ingredient! You lost 1 life.`);
+        setMsgType("fail");
+        setCards(nextCards); 
+      }
+    } else if (eliminatedDecoyCount > 0) {
+      setMessage("Correct. Keep going!");
+      setMsgType("win");
+      setCards(nextCards);
+    } else {
+      setMessage("Select ingredients first.");
+      setMsgType("info");
+    }
+  }
+
+  function checkRecipe() {
+    if (finished) return;
+
+    const remaining = cards.filter(c => !c.eliminated && !c.correct);
+    const allRemainingCorrect = remaining.every(c => correctSet.has(c.name));
+    const noCorrectEliminated = cards.filter(c => correctSet.has(c.name)).every(c => !c.eliminated);
+
+    if (allRemainingCorrect && noCorrectEliminated) {
+      setFinished(true);
+      setWon(true);
+      setMessage("You guessed all the ingredients!");
+      setMsgType("win");
+      setCards(prev => prev.map(c => correctSet.has(c.name) ? { ...c, correct: true, selected: false } : c));
+      return;
+    }
+
+    const decoysLeft = remaining.filter(c => !correctSet.has(c.name)).length;
+    if (decoysLeft > 0) {
+      setMessage(`Still ${decoysLeft} wrong ingredient(s) left.`);
+      setMsgType("fail");
+    } else {
+      setMessage("Not quite — keep trying.");
+      setMsgType("info");
+    }
+  }
+
+  function useHint() {
+    if (finished || hints <= 0) return;
+    
+    // Find a correct ingredient that is currently NOT selected and NOT revealed
+    const hiddenCorrectIndex = cards.findIndex(c => correctSet.has(c.name) && !c.correct && !c.selected);
+    
+    if (hiddenCorrectIndex === -1) {
+      setMessage("No more hidden ingredients to reveal!");
+      setMsgType("info");
+      return;
+    }
+
+    setHints(h => h - 1);
+    setCards(prev => {
+      const next = [...prev];
+      next[hiddenCorrectIndex] = { ...next[hiddenCorrectIndex], selected: true };
+      return next;
+    });
+    setMessage("Hint used! One correct ingredient is now selected for you.");
+    setMsgType("info");
+  }
+
+  function imDone() {
+    if (finished) return;
+
+    // Automatically eliminate all wrong ingredients, reveal all correct
+    const nextCards = cards.map(card => {
+      if (correctSet.has(card.name)) {
+        return { ...card, correct: true, selected: false, eliminated: false };
+      } else {
+        return { ...card, eliminated: true, selected: false };
+      }
+    });
+
+    setCards(nextCards);
+    setFinished(true);
+    
+    // Check if they already lost by eliminating a correct ingredient earlier
+    const lostByElimination = cards.filter(c => correctSet.has(c.name)).some(c => c.eliminated);
+    
+    if (lostByElimination) {
+      setMessage("Game Over. You had eliminated real ingredients.");
+      setMsgType("fail");
+    } else {
+      setWon(true);
+      setMessage("Perfect! All ingredients found.");
+      setMsgType("win");
+    }
+  }
+
+  const remainingCorrect = cards.filter(c => correctSet.has(c.name) && !c.eliminated && !c.correct).length;
+
+  return (
+    <main style={{ minHeight: "100vh", background: "#0d1117", color: "#e6edf3", fontFamily: "system-ui, sans-serif", padding: "1rem 1rem 120px 1rem" }}>
+      
+      {/* BACKGROUND DECORATION */}
+      <div style={{ position: "fixed", inset: 0, backgroundImage: "radial-gradient(circle at 50% 0%, rgba(28, 42, 36, 0.5) 0%, rgba(13, 17, 23, 1) 70%)", zIndex: 0, pointerEvents: "none" }}></div>
+
+      <div style={{ maxWidth: 1000, margin: "0 auto", position: "relative", zIndex: 1 }}>
+        
+        {/* HEADER */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem", position: "relative" }}>
+          <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+          <Link href="/recipes" style={{ color: "#8b949e", textDecoration: "none", fontSize: "14px", fontWeight: 500, display: "flex", alignItems: "center", gap: "6px" }}>
+            ← Back to Recipes
+          </Link>
+          <button onClick={startGame} style={{ background: "#21262d", color: "#e6edf3", border: "1px solid #30363d", padding: "6px 12px", borderRadius: "6px", fontSize: "13px", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: "4px" }}>
+            ⟳ New Recipe
+          </button>
+        </div>
+          
+          <div style={{ textAlign: "center", position: "absolute", left: "50%", transform: "translateX(-50%)" }}>
+            <h1 style={{ fontSize: "1.8rem", fontWeight: 700, margin: 0, letterSpacing: "-0.02em" }}>
+              Guess the <span style={{ color: "#3fb950" }}>Ingredients</span>
+            </h1>
+            <p style={{ color: "#8b949e", fontSize: "13px", margin: "4px 0 0 0" }}>Can you identify what goes into this dish?</p>
+          </div>
+
+          <div style={{ display: "flex", gap: "12px" }}>
+             <div style={{ background: "#161b22", border: "1px solid #30363d", padding: "6px 16px", borderRadius: "999px", textAlign: "center" }}>
+                <div style={{ fontSize: "10px", color: "#8b949e", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>Remaining</div>
+                <div style={{ fontSize: "16px", fontWeight: 700 }}>{remainingCorrect}</div>
+             </div>
+             <div style={{ background: "#161b22", border: "1px solid #30363d", padding: "6px 16px", borderRadius: "999px", textAlign: "center" }}>
+                <div style={{ fontSize: "10px", color: "#8b949e", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>Lives</div>
+                <div style={{ fontSize: "16px", fontWeight: 700, color: lives > 2 ? "#3fb950" : "#ff6b4a" }}>{lives}</div>
+             </div>
+             <div style={{ background: "#161b22", border: "1px solid #30363d", padding: "6px 16px", borderRadius: "999px", textAlign: "center" }}>
+                <div style={{ fontSize: "10px", color: "#8b949e", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>Hints</div>
+                <div style={{ fontSize: "16px", fontWeight: 700, color: "#d97757" }}>{hints}</div>
+             </div>
+          </div>
+        </div>
+
+        {/* HERO RECIPE CARD */}
+        <div style={{ display: "flex", background: "#161b22", border: "1px solid #30363d", borderRadius: "16px", overflow: "hidden", marginBottom: "2rem", minHeight: "140px" }}>
+          <div style={{ width: "40%", background: "#0d1117", position: "relative" }}>
+            {recipe?.imageUrl ? (
+              <img src={recipe.imageUrl} alt={recipe.name} style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }} />
+            ) : (
+              <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "40px" }}>🍽️</div>
+            )}
+          </div>
+          <div style={{ padding: "2rem", display: "flex", flexDirection: "column", justifyContent: "center", width: "60%" }}>
+            <h2 style={{ fontSize: "2.2rem", fontWeight: 700, margin: 0, color: "#ffffff", letterSpacing: "-0.02em" }}>
+              {loading ? "Loading..." : (recipe?.name || "Unknown Recipe")}
+            </h2>
+            <div style={{ display: "flex", gap: "12px", marginTop: "1rem", background: "#0d1117", padding: "8px 16px", borderRadius: "8px", width: "fit-content", border: "1px solid #30363d", alignItems: "center" }}>
+              <span style={{ color: "#8b949e", fontSize: "13px" }}>🍴 Remaining: <strong style={{ color: "#e6edf3" }}>{remainingCorrect}</strong></span>
+              <span style={{ color: "#30363d" }}>|</span>
+              <span style={{ color: "#8b949e", fontSize: "13px" }}>❤️ Lives: <strong style={{ color: lives > 2 ? "#3fb950" : "#ff6b4a" }}>{lives}</strong></span>
+              <span style={{ color: "#30363d" }}>|</span>
+              <span style={{ color: "#8b949e", fontSize: "13px" }}>💡 Hints: <strong style={{ color: "#d97757" }}>{hints}</strong></span>
+            </div>
+          </div>
+        </div>
+
+        {/* INGREDIENTS GRID */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "12px", marginBottom: "2rem" }}>
+          {cards.map((card, i) => {
+            let bg = "#161b22";
+            let color = "#e6edf3";
+            let border = "1px solid #30363d";
+            let textDecoration = "none";
+            let opacity = 1;
+            let shadow = "0 4px 12px rgba(0,0,0,0.2)";
+
+            if (card.selected) {
+              bg = "rgba(255, 107, 74, 0.1)";
+              border = "1px solid #ff6b4a";
+              color = "#ff6b4a";
+              shadow = "0 0 15px rgba(255, 107, 74, 0.2)";
+            }
+            if (card.eliminated) {
+              bg = "rgba(22, 27, 34, 0.5)";
+              color = "#484f58";
+              border = "1px dashed #30363d";
+              textDecoration = "line-through";
+              opacity = 0.5;
+              shadow = "none";
+            }
+            if (card.correct) {
+              bg = "rgba(63, 185, 80, 0.1)";
+              border = "1px solid #3fb950";
+              color = "#3fb950";
+              shadow = "0 0 15px rgba(63, 185, 80, 0.2)";
+            }
+
+            return (
+              <div
+                key={i}
+                onClick={() => toggleCard(i)}
+                style={{
+                  background: bg,
+                  color,
+                  border,
+                  borderRadius: "12px",
+                  padding: "16px 8px",
+                  textAlign: "center",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  cursor: (card.eliminated || card.correct) ? "default" : "pointer",
+                  transition: "all 0.2s ease",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "8px",
+                  minHeight: "90px",
+                  textDecoration,
+                  opacity,
+                  userSelect: "none",
+                  boxShadow: shadow,
+                }}
+              >
+                <span style={{ fontSize: "24px", filter: card.eliminated ? "grayscale(1)" : "none" }}>{getEmoji(card.name)}</span>
+                <span style={{ wordBreak: "break-word" }}>{card.name}</span>
+              </div>
+            );
+          })}
+        </div>
+
+      </div>
+
+      {/* BOTTOM STICKY BAR */}
+      <div style={{ 
+        position: "fixed", bottom: 0, left: 0, right: 0, 
+        background: "rgba(13, 17, 23, 0.85)", backdropFilter: "blur(16px)", 
+        borderTop: "1px solid #30363d",
+        padding: "16px", zIndex: 50,
+        display: "flex", flexDirection: "column", alignItems: "center", gap: "12px"
+      }}>
+        
+        {message && (
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "14px", fontWeight: 500, color: msgType === "win" ? "#3fb950" : msgType === "fail" ? "#ff6b4a" : "#8b949e" }}>
+            {msgType === "win" ? "✅" : msgType === "fail" ? "❌" : "ℹ️"} {message}
+          </div>
+        )}
+
+        <div style={{ display: "flex", gap: "8px", width: "100%", maxWidth: "700px", flexWrap: "wrap" }}>
+          <button onClick={useHint} disabled={finished || hints === 0} style={{ flex: "1 1 120px", background: "#21262d", color: "#d97757", border: "1px solid #30363d", padding: "12px 16px", borderRadius: "10px", fontSize: "14px", fontWeight: 600, cursor: (finished || hints === 0) ? "not-allowed" : "pointer", opacity: (finished || hints === 0) ? 0.5 : 1, transition: "background 0.15s", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }} onMouseEnter={(e) => { if(!finished && hints > 0) e.currentTarget.style.background = "#30363d" }} onMouseLeave={(e) => { if(!finished && hints > 0) e.currentTarget.style.background = "#21262d" }}>
+            💡 Hint ({hints})
+          </button>
+          <button onClick={eliminateSelected} disabled={finished} style={{ flex: 1, background: "#21262d", color: "#e6edf3", border: "1px solid #30363d", padding: "12px 20px", borderRadius: "10px", fontSize: "14px", fontWeight: 600, cursor: finished ? "not-allowed" : "pointer", opacity: finished ? 0.5 : 1, transition: "background 0.15s", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }} onMouseEnter={(e) => { if(!finished) e.currentTarget.style.background = "#30363d" }} onMouseLeave={(e) => { if(!finished) e.currentTarget.style.background = "#21262d" }}>
+            🗑️ Eliminate Selected
+          </button>
+          <button onClick={checkRecipe} disabled={finished} style={{ flex: 1, background: "#ff6b4a", color: "#ffffff", border: "none", padding: "12px 20px", borderRadius: "10px", fontSize: "14px", fontWeight: 600, cursor: finished ? "not-allowed" : "pointer", opacity: finished ? 0.5 : 1, transition: "background 0.15s", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", boxShadow: "0 4px 12px rgba(255, 107, 74, 0.3)" }} onMouseEnter={(e) => { if(!finished) e.currentTarget.style.background = "#e25e40" }} onMouseLeave={(e) => { if(!finished) e.currentTarget.style.background = "#ff6b4a" }}>
+            ✓ Check Recipe
+          </button>
+          <button onClick={imDone} disabled={finished} style={{ flex: "1 1 120px", background: "#3fb950", color: "#ffffff", border: "none", padding: "12px 16px", borderRadius: "10px", fontSize: "14px", fontWeight: 600, cursor: finished ? "not-allowed" : "pointer", opacity: finished ? 0.5 : 1, transition: "background 0.15s", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", boxShadow: "0 4px 12px rgba(63, 185, 80, 0.3)" }} onMouseEnter={(e) => { if(!finished) e.currentTarget.style.background = "#2ea043" }} onMouseLeave={(e) => { if(!finished) e.currentTarget.style.background = "#3fb950" }}>
+            🏁 كعيت (Done)
+          </button>
+        </div>
+      </div>
+
+      {/* WIN MODAL */}
+      {won && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: "20px" }}>
+          <div style={{ background: "#161b22", border: "1px solid #30363d", borderRadius: "20px", padding: "40px", textAlign: "center", maxWidth: "400px", width: "100%", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.7)", animation: "scaleIn 0.3s ease" }}>
+            <div style={{ fontSize: "64px", marginBottom: "16px" }}>🎉</div>
+            <h2 style={{ fontSize: "24px", fontWeight: 600, color: "#ffffff", margin: "0 0 8px" }}>Perfect!</h2>
+            <p style={{ color: "#8b949e", fontSize: "15px", marginBottom: "24px", lineHeight: 1.5 }}>
+              You successfully guessed all the ingredients for <strong style={{ color: "#ffffff" }}>{recipe?.name}</strong>.
+            </p>
+            <button onClick={startGame} style={{ background: "#3fb950", color: "#ffffff", border: "none", padding: "12px 32px", borderRadius: "10px", fontSize: "15px", fontWeight: 600, cursor: "pointer", width: "100%", transition: "background 0.15s" }} onMouseEnter={(e) => e.currentTarget.style.background = "#2ea043"} onMouseLeave={(e) => e.currentTarget.style.background = "#3fb950"}>
+              Play Again
+            </button>
+          </div>
+          <style>{`@keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }`}</style>
+        </div>
+      )}
+
+    </main>
+  );
+}

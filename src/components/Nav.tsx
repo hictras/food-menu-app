@@ -14,7 +14,7 @@ export default function Nav() {
   const [loaded, setLoaded] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
-  const [logoUrl, setLogoUrl] = useState<string>("");
+    const [logoUrl, setLogoUrl] = useState<string>("");
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -35,7 +35,7 @@ export default function Nav() {
     function close(e: MouseEvent) {
       const target = e.target as HTMLElement;
       if (!target.closest(".nav-admin-wrap")) setAdminOpen(false);
-      if (!target.closest(".nav-mobile-wrap")) setMobileOpen(false);
+            if (!target.closest(".nav-mobile-wrap")) setMobileOpen(false);
     }
     function esc(e: KeyboardEvent) {
       if (e.key === "Escape") {
@@ -90,8 +90,11 @@ export default function Nav() {
           <Link className="nav-link" href="/inbox" onClick={closeAll}>
             {lang === "ar" ? "الرسائل" : "Inbox"}
           </Link>
+          <Link className="nav-link" href="/game" onClick={closeAll}>
+            🎮 {lang === "ar" ? "لعبة" : "Game"}
+          </Link>
         </div>
-
+        
         <div className="nav-actions">
           <PushSubscribe />
 
@@ -189,6 +192,9 @@ export default function Nav() {
         </div>
 
         <div className={`nav-mobile-menu${mobileOpen ? " is-open" : ""}`} id="nav-mobile-menu">
+          <Link className="mobile-nav-link" href="/game" onClick={closeAll}>
+            <span>🎮</span> Game
+          </Link>
           <Link className="mobile-nav-link" href="/calendar" onClick={closeAll}>
             <span>📅</span> {lang === "ar" ? "التقويم" : "Calendar"}
           </Link>
