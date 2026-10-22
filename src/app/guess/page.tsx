@@ -147,6 +147,21 @@ export default function GamePage() {
     startGame();
   }, []); // Empty dependency array ensures this runs only once
 
+    function playSound(type: 'correct' | 'wrong' | 'win') {
+    try {
+      const audio = new Audio();
+      if (type === 'correct') {
+        audio.src = 'https://actions.google.com/sounds/v1/cartoon/pop.ogg';
+      } else if (type === 'wrong') {
+        audio.src = 'https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg';
+      } else if (type === 'win') {
+        audio.src = 'https://actions.google.com/sounds/v1/cartoon/magic_chime.ogg';
+      }
+      audio.volume = 0.5; // Keep it subtle
+      audio.play().catch(() => {}); // Ignore browser autoplay errors
+    } catch (e) {}
+  }
+
   function handleCardClick(index: number) {
     if (finished) return;
     
@@ -155,6 +170,7 @@ export default function GamePage() {
     if (card.correct || card.wrong || card.eliminated) return;
 
     if (correctSet.has(card.name)) {
+      playSound("correct");
       // IT IS CORRECT
       const nextCards = cards.map((c, i) => i === index ? { ...c, correct: true } : c);
       setCards(nextCards);
@@ -169,6 +185,7 @@ export default function GamePage() {
         setWon(true);
         setMessage(isAr ? ar.game.msgWin : "You guessed all the ingredients!");
         setMsgType("win");
+        playSound("win");
         // Automatically eliminate the remaining wrong ingredients
         setCards(nextCards.map(c => !correctSet.has(c.name) ? { ...c, eliminated: true } : c));
       } else {
@@ -176,6 +193,7 @@ export default function GamePage() {
         setMsgType("win");
       }
     } else {
+      playSound("wrong");
       // IT IS WRONG
       const newLives = lives - 1;
       setLives(newLives);

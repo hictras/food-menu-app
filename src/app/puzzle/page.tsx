@@ -77,6 +77,19 @@ export default function PuzzlePage() {
     startGame();
   }, []);
 
+    function playSound(type: 'swap' | 'win') {
+    try {
+      const audio = new Audio();
+      if (type === 'swap') {
+        audio.src = 'https://actions.google.com/sounds/v1/cartoon/pop.ogg';
+      } else if (type === 'win') {
+        audio.src = 'https://actions.google.com/sounds/v1/cartoon/magic_chime.ogg';
+      }
+      audio.volume = 0.5;
+      audio.play().catch(() => {});
+    } catch (e) {}
+  }
+
   function handlePieceClick(index: number) {
     if (isSolved) return;
 
@@ -91,10 +104,12 @@ export default function PuzzlePage() {
       newPieces[index] = temp;
       setPieces(newPieces);
       setSelectedIndex(null);
+      playSound("swap");
 
       if (newPieces.every((val, i) => val === i)) {
         setIsSolved(true);
         setWon(true);
+        playSound("win");
         setMessage(isAr ? ar.puzzle.msgPerfect : "Perfect! You solved the puzzle.");
       }
     }
