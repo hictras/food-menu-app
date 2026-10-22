@@ -28,6 +28,7 @@ export default function PuzzlePage() {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [pieces, setPieces] = useState<number[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [isSolved, setIsSolved] = useState(false);
   const [won, setWon] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -103,6 +104,49 @@ export default function PuzzlePage() {
     setMessage(isAr ? ar.puzzle.msgRevealed : "Solution revealed.");
   }
 
+  function handleDragStart(e: React.DragEvent, index: number) {
+    if (isSolved) return;
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+    // Make the drag image slightly transparent
+    setTimeout(() => {
+      const target = e.target as HTMLElement;
+      target.style.opacity = "0.5";
+    }, 0);
+  }
+
+  function handleDragOver(e: React.DragEvent) {
+    e.preventDefault(); // Necessary to allow dropping
+    e.dataTransfer.dropEffect = "move";
+  }
+
+  function handleDrop(e: React.DragEvent, dropIndex: number) {
+    e.preventDefault();
+    if (isSolved || draggedIndex === null || draggedIndex === dropIndex) return;
+
+    // Swap the pieces
+    const newPieces = [...pieces];
+    const temp = newPieces[draggedIndex];
+    newPieces[draggedIndex] = newPieces[dropIndex];
+    newPieces[dropIndex] = temp;
+    
+    setPieces(newPieces);
+    setDraggedIndex(null);
+
+    // Check win
+    if (newPieces.every((val, i) => val === i)) {
+      setIsSolved(true);
+      setWon(true);
+      setMessage(isAr ? ar.puzzle.msgPerfect : "Perfect! You solved the puzzle.");
+    }
+  }
+
+  function handleDragEnd(e: React.DragEvent) {
+    const target = e.target as HTMLElement;
+    target.style.opacity = "1";
+    setDraggedIndex(null);
+  }
+
   return (
     <main style={{ minHeight: "100vh", background: "#0d1117", color: "#e6edf3", fontFamily: "system-ui, sans-serif", padding: "1.5rem 1rem 120px 1rem", direction: isAr ? "rtl" : "ltr" }}>
       
@@ -155,13 +199,18 @@ export default function PuzzlePage() {
                 return (
                   <div
                     key={index}
+                    draggable={!isSolved}
+                    onDragStart={(e) => handleDragStart(e, index)}
+                    onDragOver={handleDragOver}
+                    onDrop={(e) => handleDrop(e, index)}
+                    onDragEnd={handleDragEnd}
                     onClick={() => handlePieceClick(index)}
                     style={{
                       backgroundImage: `url(${recipe?.imageUrl})`,
                       backgroundSize: "300% 300%",
                       backgroundPosition: `${x}% ${y}%`,
                       borderRadius: "8px",
-                      cursor: isSolved ? "default" : "pointer",
+                      cursor: isSolved ? "default" : "grab",
                       boxShadow: isSelected ? "inset 0 0 0 3px #ff6b4a" : "inset 0 0 0 1px rgba(255,255,255,0.05)",
                       opacity: isSelected ? 0.8 : 1,
                       transition: "all 0.15s",
