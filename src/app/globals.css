@@ -2650,3 +2650,452 @@ select:focus {
 * {
   touch-action: manipulation;
 }
+
+/* ========== WEEKLY SUMMARY ========== */
+
+.week-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 8px 20px;
+  margin-bottom: 24px;
+}
+
+.week-day {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+.week-day:last-child { border-bottom: none; }
+
+.week-day-name {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  padding-top: 3px;
+}
+
+.week-day-meals {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.week-day-empty {
+  color: var(--muted);
+  font-style: italic;
+  font-size: 13px;
+}
+
+.week-slot {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 13.5px;
+}
+
+.week-slot-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  position: relative;
+  top: -1px;
+}
+
+.week-slot-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.week-slot-recipes { color: var(--ink); font-weight: 500; }
+
+.week-slot-sep { color: var(--muted); }
+
+.week-recipe-link {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s, color 0.15s;
+}
+.week-recipe-link:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.week-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.week-logo { height: 24px; width: auto; object-fit: contain; }
+
+@media (max-width: 640px) {
+  .week-day { grid-template-columns: 1fr; gap: 6px; }
+  .week-day-name { padding-top: 0; }
+}
+
+/* ========== PRINT ========== */
+
+.no-print { /* hidden in print */ }
+
+@media print {
+  @page { margin: 16mm; }
+
+  html, body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  body::before { display: none !important; }
+
+  .site-header,
+  .nav-inner,
+  .no-print,
+  .toast,
+  .week-footer { display: none !important; }
+
+  .container { max-width: 100% !important; padding: 0 !important; }
+
+  .week-summary {
+    background: #fff !important;
+    border: 1px solid #ccc !important;
+    padding: 8px 16px !important;
+  }
+  .week-day {
+    border-bottom: 1px solid #ddd !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .week-day-name { color: #555 !important; }
+  .week-slot-label { color: #555 !important; }
+  .week-recipe-link { color: #000 !important; border-bottom: none !important; }
+  .week-slot-dot { display: none !important; }
+
+  h1, .page-head h1 {
+    color: #000 !important;
+    font-size: 22px !important;
+  }
+  .page-sub { color: #444 !important; }
+
+  a { color: #000 !important; text-decoration: none !important; }
+}
+
+/* ========== WEEKLY SUMMARY ========== */
+
+.week-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 8px 20px;
+  margin-bottom: 24px;
+}
+
+.week-day {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+.week-day:last-child { border-bottom: none; }
+
+.week-day-name {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  padding-top: 3px;
+}
+
+.week-day-meals {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.week-day-empty {
+  color: var(--muted);
+  font-style: italic;
+  font-size: 13px;
+}
+
+.week-slot {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 13.5px;
+}
+
+.week-slot-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  position: relative;
+  top: -1px;
+}
+
+.week-slot-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.week-slot-recipes { color: var(--ink); font-weight: 500; }
+
+.week-slot-sep { color: var(--muted); }
+
+.week-recipe-link {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s, color 0.15s;
+}
+.week-recipe-link:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.week-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.week-logo { height: 24px; width: auto; object-fit: contain; }
+
+@media (max-width: 640px) {
+  .week-day { grid-template-columns: 1fr; gap: 6px; }
+  .week-day-name { padding-top: 0; }
+}
+
+/* ========== PRINT ========== */
+
+.no-print { /* hidden in print */ }
+
+@media print {
+  @page { margin: 16mm; }
+
+  html, body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  body::before { display: none !important; }
+
+  .site-header,
+  .nav-inner,
+  .no-print,
+  .toast,
+  .week-footer { display: none !important; }
+
+  .container { max-width: 100% !important; padding: 0 !important; }
+
+  .week-summary {
+    background: #fff !important;
+    border: 1px solid #ccc !important;
+    padding: 8px 16px !important;
+  }
+  .week-day {
+    border-bottom: 1px solid #ddd !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .week-day-name { color: #555 !important; }
+  .week-slot-label { color: #555 !important; }
+  .week-recipe-link { color: #000 !important; border-bottom: none !important; }
+  .week-slot-dot { display: none !important; }
+
+  h1, .page-head h1 {
+    color: #000 !important;
+    font-size: 22px !important;
+  }
+  .page-sub { color: #444 !important; }
+
+  a { color: #000 !important; text-decoration: none !important; }
+}
+
+/* ========== COOK MODE ========== */
+
+.cook-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #000;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0);
+  animation: cookFadeIn 0.2s ease;
+}
+
+@keyframes cookFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.cook-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #222;
+  gap: 12px;
+}
+
+.cook-close {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.cook-close:hover { background: #2a2a2a; }
+
+.cook-wake-status {
+  font-size: 12px;
+  color: #3fb950;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.cook-recipe-name {
+  padding: 12px 20px 0;
+  font-size: 12px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.cook-step-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 32px 24px;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.cook-step-number {
+  font-size: 14px;
+  color: #ff6b4a;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.cook-step-text {
+  font-size: clamp(24px, 6vw, 42px);
+  line-height: 1.4;
+  font-weight: 500;
+  max-width: 900px;
+  color: #fff;
+}
+
+.cook-nav {
+  display: flex;
+  gap: 12px;
+  padding: 20px;
+  border-top: 1px solid #222;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0));
+}
+
+.cook-nav-btn {
+  flex: 1;
+  padding: 20px 16px;
+  font-size: 18px;
+  font-weight: 700;
+  border-radius: 12px;
+  border: 1px solid #333;
+  background: #1a1a1a;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+.cook-nav-btn:hover:not(:disabled) { background: #2a2a2a; border-color: #444; }
+.cook-nav-btn:active:not(:disabled) { transform: scale(0.98); }
+.cook-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.cook-nav-next {
+  background: #ff6b4a;
+  border-color: #ff6b4a;
+}
+.cook-nav-next:hover:not(:disabled) { background: #ff7d5f; border-color: #ff7d5f; }
+
+.cook-nav-done {
+  background: #3fb950;
+  border-color: #3fb950;
+}
+.cook-nav-done:hover:not(:disabled) { background: #4ec961; border-color: #4ec961; }
+
+html[data-theme="light"] .cook-overlay {
+  background: #000;
+  color: #fff;
+}
+
+@media (max-width: 640px) {
+  .cook-step-text { font-size: clamp(22px, 7vw, 32px); }
+  .cook-nav-btn { padding: 18px 12px; font-size: 16px; }
+}
+
+/* ========== NAV SPACING FIX ========== */
+/* Squeeze the center links slightly so "This Week" fits comfortably */
+.nav-center {
+  gap: 2px !important; /* was 8px */
+}
+.nav-link {
+  padding: 0 12px !important; /* was 16px */
+}
+@media (max-width: 900px) {
+  .nav-link {
+    padding: 0 8px !important;
+    font-size: 13px !important;
+  }
+}
+/* Nav link size adjustment to prevent crowding */
+.nav-link {
+  font-size: 13.5px !important;
+}

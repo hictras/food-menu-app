@@ -1,4 +1,5 @@
 "use client";
+import DayReviews from "@/components/DayReviews";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -107,7 +108,10 @@ export default function DayPage() {
             {isAr ? ar.calendar.backToCalendar : "← Back to calendar"}
           </Link>
         </div>
-      </main>
+      {dateStr && (
+        <DayReviews date={dateStr} />
+      )}
+    </main>
     );
   }
 
@@ -220,6 +224,9 @@ export default function DayPage() {
             );
           })}
         </div>
+      )}
+      {dateStr && (
+        <DayReviews date={dateStr} />
       )}
     </main>
   );

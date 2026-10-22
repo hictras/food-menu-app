@@ -108,3 +108,25 @@ export const mealPlan = sqliteTable("meal_plan", {
     .references(() => recipes.id, { onDelete: "cascade" }),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
+
+export const recipeReviews = sqliteTable("recipe_reviews", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  recipeId: integer("recipe_id")
+    .notNull()
+    .references(() => recipes.id, { onDelete: "cascade" }),
+  phone: text("phone").notNull(),
+  rating: integer("rating").notNull(),
+  comment: text("comment"),
+  createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const dayReviews = sqliteTable("day_reviews", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  date: text("date").notNull(),
+  phone: text("phone").notNull(),
+  rating: integer("rating").notNull(),
+  comment: text("comment"),
+  createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
+});

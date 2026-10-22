@@ -8,6 +8,8 @@ import { ar } from "@/lib/ar";
 import { t, pick } from "@/lib/i18n";
 import { extractYouTubeId } from "@/lib/youtube";
 import { categoryIcon, categoryLabel } from "@/lib/categories";
+import CookMode from "./CookMode";
+import RecipeReviews from "./RecipeReviews";
 
 type RecipeRow = {
   id: number; name: string; nameAr: string | null;
@@ -55,6 +57,7 @@ export default function RecipeDetailClient({
   const isAr = lang === "ar";
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
+  const [cookModeOpen, setCookModeOpen] = useState(false);
 
   const tags: string[] = recipe.dietaryTags ? Array.from(new Set(JSON.parse(recipe.dietaryTags))) : [];
   const youtubeId = extractYouTubeId(recipe.videoUrl);
@@ -148,6 +151,11 @@ export default function RecipeDetailClient({
             
             
           <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+            {instructions.length > 0 && (
+              <button type="button" className="btn btn-primary" onClick={() => setCookModeOpen(true)}>
+                🍳 {lang === "ar" ? ar.cookMode.start : "Start Cooking"}
+              </button>
+            )}
             <button type="button" className="btn btn-ghost" onClick={() => shareToWhatsApp(false)}>
               💬 {lang === "ar" ? "مشاركة" : "Share"}
             </button>
@@ -289,6 +297,15 @@ export default function RecipeDetailClient({
           )}
         </section>
       </div>
+
+      <RecipeReviews recipeId={recipe.id} />
+
+      <CookMode
+        open={cookModeOpen}
+        onClose={() => setCookModeOpen(false)}
+        recipeName={displayName}
+        steps={instructions}
+      />
     </>
   );
 }

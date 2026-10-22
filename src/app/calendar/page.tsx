@@ -227,6 +227,7 @@ export default function CalendarPage() {
         <button type="button" className="btn btn-ghost" onClick={goToday} style={{ fontSize: 12, padding: "6px 12px" }}>
           {isAr ? "اليوم" : "Today"}
         </button>
+        <Link href="/week" className="btn btn-ghost" style={{ fontSize: 12, padding: "6px 12px" }}>📄 {isAr ? "ملخص الأسبوع" : "Weekly summary"}</Link>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4, marginBottom: 4 }}>

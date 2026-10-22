@@ -87,12 +87,13 @@ export default function Nav() {
           </Link>
           
           {/* NEW GAMES HUB LINK */}
-          <Link className="nav-link" href="/games" onClick={closeAll}>
-            🎮 {lang === "ar" ? ar.nav.gamesHubNav : "Games"}
-          </Link>
+          <Link className="nav-link" href="/games" onClick={closeAll}>{lang === "ar" ? ar.nav.gamesHubNav : "Games"}</Link>
 
           <Link className="nav-link" href="/calendar" onClick={closeAll}>
             {lang === "ar" ? ar.nav.calendar : "Calendar"}
+          </Link>
+          <Link className="nav-link" href="/week" onClick={closeAll}>
+            {lang === "ar" ? ar.nav.week : "Week"}
           </Link>
           <Link className="nav-link" href="/inbox" onClick={closeAll}>
             {lang === "ar" ? ar.nav.inbox : "Inbox"}
@@ -204,6 +205,9 @@ export default function Nav() {
 
           <Link className="mobile-nav-link" href="/calendar" onClick={closeAll}>
             <span>📅</span> {lang === "ar" ? ar.nav.calendar : "Calendar"}
+          </Link>
+          <Link className="mobile-nav-link" href="/week" onClick={closeAll}>
+            <span>📄</span> {lang === "ar" ? ar.nav.week : "This Week"}
           </Link>
           <Link className="mobile-nav-link" href="/inbox" onClick={closeAll}>
             <span>✉️</span> {lang === "ar" ? ar.nav.inbox : "Inbox"}
