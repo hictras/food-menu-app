@@ -25,7 +25,10 @@ export const ar = {
     login: "دخول",
     admin: "الإدارة",
     langToggle: "English",
-  },
+  
+    calendar: "التقويم",
+    game: "لعبة",
+    import: "استيراد وصفات",},
 
   // ── Home / recipe list ────────────────────────────────────
   home: {
