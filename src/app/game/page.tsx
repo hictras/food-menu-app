@@ -62,6 +62,7 @@ function shuffle(arr: string[]) {
 }
 
 export default function GamePage() {
+  const isAr = typeof document !== "undefined" && document.documentElement.lang === "ar";
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [correctSet, setCorrectSet] = useState<Set<string>>(new Set());
   const [cards, setCards] = useState<{ name: string; eliminated: boolean; selected: boolean; correct: boolean }[]>([]);
@@ -71,6 +72,7 @@ export default function GamePage() {
   const [msgType, setMsgType] = useState<"win" | "fail" | "info">("info");
   const [lives, setLives] = useState(5);
   const [hints, setHints] = useState(5);
+  const [isRevealed, setIsRevealed] = useState(false);
   const [loading, setLoading] = useState(true);
 
   async function startGame() {
@@ -81,6 +83,7 @@ export default function GamePage() {
     setMsgType("info");
     setLives(5);
     setHints(5);
+    setIsRevealed(false);
 
     try {
       const res = await fetch("/api/recipes");
@@ -117,8 +120,9 @@ export default function GamePage() {
   }
 
   useEffect(() => {
+    // Only run on first mount
     startGame();
-  }, []);
+  }, []); // Empty dependency array ensures this runs only once
 
   function toggleCard(index: number) {
     if (finished) return;
@@ -181,7 +185,8 @@ export default function GamePage() {
     const allRemainingCorrect = remaining.every(c => correctSet.has(c.name));
     const noCorrectEliminated = cards.filter(c => correctSet.has(c.name)).every(c => !c.eliminated);
 
-    if (allRemainingCorrect && noCorrectEliminated) {
+    // ONLY win if all decoys are gone, no correct were killed, AND they didn't use the Reveal button!
+    if (allRemainingCorrect && noCorrectEliminated && !isRevealed) {
       setFinished(true);
       setWon(true);
       setMessage("You guessed all the ingredients!");
@@ -203,29 +208,41 @@ export default function GamePage() {
   function useHint() {
     if (finished || hints <= 0) return;
     
-    // Find a correct ingredient that is currently NOT selected and NOT revealed
-    const hiddenCorrectIndex = cards.findIndex(c => correctSet.has(c.name) && !c.correct && !c.selected);
-    
-    if (hiddenCorrectIndex === -1) {
-      setMessage("No more hidden ingredients to reveal!");
+    // Find ALL correct ingredients that are currently NOT correct and NOT selected
+    const hiddenCorrectIndices = cards
+      .map((c, i) => ({ c, i }))
+      .filter(({ c }) => correctSet.has(c.name) && !c.correct && !c.selected)
+      .map(({ i }) => i);
+
+    if (hiddenCorrectIndices.length === 0) {
+      setMessage("No more hidden correct ingredients to reveal!");
       setMsgType("info");
       return;
     }
 
+    // Pick a random one
+    const randomIndex = hiddenCorrectIndices[Math.floor(Math.random() * hiddenCorrectIndices.length)];
+
     setHints(h => h - 1);
     setCards(prev => {
       const next = [...prev];
-      next[hiddenCorrectIndex] = { ...next[hiddenCorrectIndex], selected: true };
+      // Make it green (correct: true) and unselectable (selected: false)
+      next[randomIndex] = { ...next[randomIndex], correct: true, selected: false };
       return next;
     });
-    setMessage("Hint used! One correct ingredient is now selected for you.");
+    
+    setMessage("Hint used! One correct ingredient is revealed.");
     setMsgType("info");
   }
 
   function imDone() {
     if (finished) return;
 
-    // Automatically eliminate all wrong ingredients, reveal all correct
+    // Mark that this was a reveal, not a real win
+    setIsRevealed(true);
+    setFinished(true);
+
+    // Eliminate all wrong, reveal all correct
     const nextCards = cards.map(card => {
       if (correctSet.has(card.name)) {
         return { ...card, correct: true, selected: false, eliminated: false };
@@ -235,25 +252,15 @@ export default function GamePage() {
     });
 
     setCards(nextCards);
-    setFinished(true);
-    
-    // Check if they already lost by eliminating a correct ingredient earlier
-    const lostByElimination = cards.filter(c => correctSet.has(c.name)).some(c => c.eliminated);
-    
-    if (lostByElimination) {
-      setMessage("Game Over. You had eliminated real ingredients.");
-      setMsgType("fail");
-    } else {
-      setWon(true);
-      setMessage("Perfect! All ingredients found.");
-      setMsgType("win");
-    }
+    setWon(false); // Ensure Perfect modal never shows for reveal
+    setMessage("The correct ingredients are revealed.");
+    setMsgType("info");
   }
 
   const remainingCorrect = cards.filter(c => correctSet.has(c.name) && !c.eliminated && !c.correct).length;
 
   return (
-    <main style={{ minHeight: "100vh", background: "#0d1117", color: "#e6edf3", fontFamily: "system-ui, sans-serif", padding: "1rem 1rem 120px 1rem" }}>
+    <main style={{ minHeight: "100vh", background: "#0d1117", color: "#e6edf3", fontFamily: "system-ui, sans-serif", padding: "80px 1rem 120px 1rem" }}>
       
       {/* BACKGROUND DECORATION */}
       <div style={{ position: "fixed", inset: 0, backgroundImage: "radial-gradient(circle at 50% 0%, rgba(28, 42, 36, 0.5) 0%, rgba(13, 17, 23, 1) 70%)", zIndex: 0, pointerEvents: "none" }}></div>
@@ -261,53 +268,63 @@ export default function GamePage() {
       <div style={{ maxWidth: 1000, margin: "0 auto", position: "relative", zIndex: 1 }}>
         
         {/* HEADER */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem", position: "relative" }}>
-          <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-          <Link href="/recipes" style={{ color: "#8b949e", textDecoration: "none", fontSize: "14px", fontWeight: 500, display: "flex", alignItems: "center", gap: "6px" }}>
-            ← Back to Recipes
-          </Link>
-          <button onClick={startGame} style={{ background: "#21262d", color: "#e6edf3", border: "1px solid #30363d", padding: "6px 12px", borderRadius: "6px", fontSize: "13px", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: "4px" }}>
-            ⟳ New Recipe
-          </button>
-        </div>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "1.5rem", gap: "1rem", position: "relative" }}>
           
-          <div style={{ textAlign: "center", position: "absolute", left: "50%", transform: "translateX(-50%)" }}>
+          {/* Top Row: Back & New Recipe */}
+          <div style={{ display: "flex", width: "100%", justifyContent: "space-between", alignItems: "center" }}>
+            <Link href="/recipes" style={{ color: "#8b949e", textDecoration: "none", fontSize: "14px", fontWeight: 500, display: "flex", alignItems: "center", gap: "6px" }}>
+              ← Back
+            </Link>
+            <button onClick={startGame} style={{ background: "#21262d", color: "#e6edf3", border: "1px solid #30363d", padding: "6px 12px", borderRadius: "6px", fontSize: "13px", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: "4px" }}>
+              ⟳ New Recipe
+            </button>
+          </div>
+
+          {/* Middle Row: Title */}
+          <div style={{ textAlign: "center" }}>
             <h1 style={{ fontSize: "1.8rem", fontWeight: 700, margin: 0, letterSpacing: "-0.02em" }}>
               Guess the <span style={{ color: "#3fb950" }}>Ingredients</span>
             </h1>
             <p style={{ color: "#8b949e", fontSize: "13px", margin: "4px 0 0 0" }}>Can you identify what goes into this dish?</p>
           </div>
 
-          <div style={{ display: "flex", gap: "12px" }}>
-             <div style={{ background: "#161b22", border: "1px solid #30363d", padding: "6px 16px", borderRadius: "999px", textAlign: "center" }}>
+          {/* Bottom Row: Stats (Visible on Mobile) */}
+          <div style={{ display: "flex", gap: "8px", width: "100%", justifyContent: "center" }}>
+             <div style={{ flex: 1, background: "#161b22", border: "1px solid #30363d", padding: "8px", borderRadius: "12px", textAlign: "center" }}>
                 <div style={{ fontSize: "10px", color: "#8b949e", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>Remaining</div>
-                <div style={{ fontSize: "16px", fontWeight: 700 }}>{remainingCorrect}</div>
+                <div style={{ fontSize: "18px", fontWeight: 700 }}>{remainingCorrect}</div>
              </div>
-             <div style={{ background: "#161b22", border: "1px solid #30363d", padding: "6px 16px", borderRadius: "999px", textAlign: "center" }}>
+             <div style={{ flex: 1, background: "#161b22", border: "1px solid #30363d", padding: "8px", borderRadius: "12px", textAlign: "center" }}>
                 <div style={{ fontSize: "10px", color: "#8b949e", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>Lives</div>
-                <div style={{ fontSize: "16px", fontWeight: 700, color: lives > 2 ? "#3fb950" : "#ff6b4a" }}>{lives}</div>
+                <div style={{ fontSize: "18px", fontWeight: 700, color: lives > 2 ? "#3fb950" : "#ff6b4a" }}>{lives}</div>
              </div>
-             <div style={{ background: "#161b22", border: "1px solid #30363d", padding: "6px 16px", borderRadius: "999px", textAlign: "center" }}>
+             <div style={{ flex: 1, background: "#161b22", border: "1px solid #30363d", padding: "8px", borderRadius: "12px", textAlign: "center" }}>
                 <div style={{ fontSize: "10px", color: "#8b949e", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>Hints</div>
-                <div style={{ fontSize: "16px", fontWeight: 700, color: "#d97757" }}>{hints}</div>
+                <div style={{ fontSize: "18px", fontWeight: 700, color: "#d97757" }}>{hints}</div>
              </div>
           </div>
+
         </div>
 
         {/* HERO RECIPE CARD */}
-        <div style={{ display: "flex", background: "#161b22", border: "1px solid #30363d", borderRadius: "16px", overflow: "hidden", marginBottom: "2rem", minHeight: "140px" }}>
-          <div style={{ width: "40%", background: "#0d1117", position: "relative" }}>
+        <div className="hero-card-responsive" style={{ display: "flex", background: "#161b22", border: "1px solid #30363d", borderRadius: "16px", overflow: "hidden", marginBottom: "2rem", minHeight: "140px", position: "sticky", top: "70px", zIndex: 40, boxShadow: "0 10px 30px -10px rgba(0,0,0,0.8)", backdropFilter: "blur(12px)" }}>
+          <div className="hero-image" style={{ width: "40%", background: "#0d1117", position: "relative" }}>
             {recipe?.imageUrl ? (
               <img src={recipe.imageUrl} alt={recipe.name} style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }} />
             ) : (
               <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "40px" }}>🍽️</div>
             )}
           </div>
-          <div style={{ padding: "2rem", display: "flex", flexDirection: "column", justifyContent: "center", width: "60%" }}>
+          <div className="hero-content" style={{ padding: "2rem", display: "flex", flexDirection: "column", justifyContent: "center", width: "60%", position: "relative" }}>
+            
+            {/* REVEAL BUTTON (Top Right of Card) */}
+            <button onClick={imDone} disabled={finished} style={{ position: "absolute", top: "16px", right: "16px", background: "#21262d", color: "#3fb950", border: "1px solid #3fb950", padding: "6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, cursor: finished ? "not-allowed" : "pointer", opacity: finished ? 0.5 : 1, transition: "all 0.15s", display: "flex", alignItems: "center", gap: "4px", zIndex: 10 }} onMouseEnter={(e) => { if(!finished) e.currentTarget.style.background = "rgba(63, 185, 80, 0.1)" }} onMouseLeave={(e) => { if(!finished) e.currentTarget.style.background = "#21262d" }}>
+              {isAr ? "كعيت" : "Reveal"}
+            </button>
             <h2 style={{ fontSize: "2.2rem", fontWeight: 700, margin: 0, color: "#ffffff", letterSpacing: "-0.02em" }}>
               {loading ? "Loading..." : (recipe?.name || "Unknown Recipe")}
             </h2>
-            <div style={{ display: "flex", gap: "12px", marginTop: "1rem", background: "#0d1117", padding: "8px 16px", borderRadius: "8px", width: "fit-content", border: "1px solid #30363d", alignItems: "center" }}>
+            <div style={{ display: "flex", gap: "12px", marginTop: "2.5rem", background: "#0d1117", padding: "8px 16px", borderRadius: "8px", width: "fit-content", border: "1px solid #30363d", alignItems: "center" }}>
               <span style={{ color: "#8b949e", fontSize: "13px" }}>🍴 Remaining: <strong style={{ color: "#e6edf3" }}>{remainingCorrect}</strong></span>
               <span style={{ color: "#30363d" }}>|</span>
               <span style={{ color: "#8b949e", fontSize: "13px" }}>❤️ Lives: <strong style={{ color: lives > 2 ? "#3fb950" : "#ff6b4a" }}>{lives}</strong></span>
@@ -399,19 +416,16 @@ export default function GamePage() {
           </div>
         )}
 
-        <div style={{ display: "flex", gap: "8px", width: "100%", maxWidth: "700px", flexWrap: "wrap" }}>
-          <button onClick={useHint} disabled={finished || hints === 0} style={{ flex: "1 1 120px", background: "#21262d", color: "#d97757", border: "1px solid #30363d", padding: "12px 16px", borderRadius: "10px", fontSize: "14px", fontWeight: 600, cursor: (finished || hints === 0) ? "not-allowed" : "pointer", opacity: (finished || hints === 0) ? 0.5 : 1, transition: "background 0.15s", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }} onMouseEnter={(e) => { if(!finished && hints > 0) e.currentTarget.style.background = "#30363d" }} onMouseLeave={(e) => { if(!finished && hints > 0) e.currentTarget.style.background = "#21262d" }}>
+        <div style={{ display: "flex", gap: "10px", width: "100%", maxWidth: "700px" }}>
+          <button onClick={useHint} disabled={finished || hints === 0} style={{ flex: 1, background: "#21262d", color: "#d97757", border: "1px solid #30363d", height: "48px", borderRadius: "10px", fontSize: "14px", fontWeight: 600, cursor: (finished || hints === 0) ? "not-allowed" : "pointer", opacity: (finished || hints === 0) ? 0.5 : 1, transition: "background 0.15s", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }} onMouseEnter={(e) => { if(!finished && hints > 0) e.currentTarget.style.background = "#30363d" }} onMouseLeave={(e) => { if(!finished && hints > 0) e.currentTarget.style.background = "#21262d" }}>
             💡 Hint ({hints})
           </button>
-          <button onClick={eliminateSelected} disabled={finished} style={{ flex: 1, background: "#21262d", color: "#e6edf3", border: "1px solid #30363d", padding: "12px 20px", borderRadius: "10px", fontSize: "14px", fontWeight: 600, cursor: finished ? "not-allowed" : "pointer", opacity: finished ? 0.5 : 1, transition: "background 0.15s", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }} onMouseEnter={(e) => { if(!finished) e.currentTarget.style.background = "#30363d" }} onMouseLeave={(e) => { if(!finished) e.currentTarget.style.background = "#21262d" }}>
+          
+          <button onClick={eliminateSelected} disabled={finished} style={{ flex: 1, background: "#ff6b4a", color: "#ffffff", border: "1px solid #ff6b4a", height: "48px", borderRadius: "10px", fontSize: "14px", fontWeight: 700, cursor: finished ? "not-allowed" : "pointer", opacity: finished ? 0.5 : 1, transition: "all 0.15s", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", boxShadow: "0 0 15px rgba(255, 107, 74, 0.4)" }} onMouseEnter={(e) => { if(!finished) { e.currentTarget.style.background = "#e25e40"; e.currentTarget.style.boxShadow = "0 0 25px rgba(255, 107, 74, 0.6)"; } }} onMouseLeave={(e) => { if(!finished) { e.currentTarget.style.background = "#ff6b4a"; e.currentTarget.style.boxShadow = "0 0 15px rgba(255, 107, 74, 0.4)"; } }}>
             🗑️ Eliminate Selected
           </button>
-          <button onClick={checkRecipe} disabled={finished} style={{ flex: 1, background: "#ff6b4a", color: "#ffffff", border: "none", padding: "12px 20px", borderRadius: "10px", fontSize: "14px", fontWeight: 600, cursor: finished ? "not-allowed" : "pointer", opacity: finished ? 0.5 : 1, transition: "background 0.15s", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", boxShadow: "0 4px 12px rgba(255, 107, 74, 0.3)" }} onMouseEnter={(e) => { if(!finished) e.currentTarget.style.background = "#e25e40" }} onMouseLeave={(e) => { if(!finished) e.currentTarget.style.background = "#ff6b4a" }}>
-            ✓ Check Recipe
-          </button>
-          <button onClick={imDone} disabled={finished} style={{ flex: "1 1 120px", background: "#3fb950", color: "#ffffff", border: "none", padding: "12px 16px", borderRadius: "10px", fontSize: "14px", fontWeight: 600, cursor: finished ? "not-allowed" : "pointer", opacity: finished ? 0.5 : 1, transition: "background 0.15s", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", boxShadow: "0 4px 12px rgba(63, 185, 80, 0.3)" }} onMouseEnter={(e) => { if(!finished) e.currentTarget.style.background = "#2ea043" }} onMouseLeave={(e) => { if(!finished) e.currentTarget.style.background = "#3fb950" }}>
-            🏁 كعيت (Done)
-          </button>
+
+          
         </div>
       </div>
 
@@ -424,14 +438,39 @@ export default function GamePage() {
             <p style={{ color: "#8b949e", fontSize: "15px", marginBottom: "24px", lineHeight: 1.5 }}>
               You successfully guessed all the ingredients for <strong style={{ color: "#ffffff" }}>{recipe?.name}</strong>.
             </p>
-            <button onClick={startGame} style={{ background: "#3fb950", color: "#ffffff", border: "none", padding: "12px 32px", borderRadius: "10px", fontSize: "15px", fontWeight: 600, cursor: "pointer", width: "100%", transition: "background 0.15s" }} onMouseEnter={(e) => e.currentTarget.style.background = "#2ea043"} onMouseLeave={(e) => e.currentTarget.style.background = "#3fb950"}>
-              Play Again
-            </button>
+            <div style={{ display: "flex", gap: "10px" }}>
+              <button onClick={() => setWon(false)} style={{ flex: 1, background: "#21262d", color: "#e6edf3", border: "1px solid #30363d", padding: "12px", borderRadius: "10px", fontSize: "15px", fontWeight: 600, cursor: "pointer" }}>
+                Cancel
+              </button>
+              <button onClick={startGame} style={{ flex: 1, background: "#3fb950", color: "#ffffff", border: "none", padding: "12px", borderRadius: "10px", fontSize: "15px", fontWeight: 600, cursor: "pointer" }}>
+                Play Again
+              </button>
+            </div>
           </div>
           <style>{`@keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }`}</style>
         </div>
       )}
 
+    
+      <style>{`
+        @media (max-width: 640px) {
+          .hero-card-responsive {
+            flex-direction: column !important;
+          }
+          .hero-card-responsive .hero-image {
+            width: 100% !important;
+            height: 150px !important;
+          }
+          .hero-card-responsive .hero-content {
+            width: 100% !important;
+            padding: 1rem !important;
+          }
+          .hero-card-responsive .hero-content h2 {
+            font-size: 1.5rem !important;
+          }
+        }
+      `}</style>
+    
     </main>
   );
 }
