@@ -360,9 +360,25 @@ export default function GamePage() {
             <button onClick={imDone} disabled={finished} style={{ position: "absolute", top: "16px", insetInlineEnd: "16px", background: "#21262d", color: "#3fb950", border: "1px solid #3fb950", padding: "6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700, cursor: finished ? "not-allowed" : "pointer", opacity: finished ? 0.5 : 1, transition: "all 0.15s", display: "flex", alignItems: "center", gap: "4px", zIndex: 10 }} onMouseEnter={(e) => { if(!finished) e.currentTarget.style.background = "rgba(63, 185, 80, 0.1)" }} onMouseLeave={(e) => { if(!finished) e.currentTarget.style.background = "#21262d" }}>
               {isAr ? ar.game.revealBtn : "Reveal"}
             </button>
-            <h2 style={{ fontSize: "2.2rem", fontWeight: 700, margin: 0, color: "#ffffff", letterSpacing: "-0.02em" }}>
-              {loading ? "Loading..." : (isAr ? (recipe?.nameAr || recipe?.name) : recipe?.name) || "Unknown Recipe"}
-            </h2>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+              <h2 style={{ fontSize: "2.2rem", fontWeight: 700, margin: 0, color: "#ffffff", letterSpacing: "-0.02em" }}>
+                {loading ? "Loading..." : (isAr ? (recipe?.nameAr || recipe?.name) : recipe?.name) || "Unknown Recipe"}
+              </h2>
+              {recipe && recipe.ingredients && (
+                <span style={{ 
+                  background: "#21262d", 
+                  border: "1px solid #30363d", 
+                  color: "#8b949e", 
+                  fontSize: "14px", 
+                  fontWeight: 600, 
+                  padding: "4px 10px", 
+                  borderRadius: "999px",
+                  marginTop: "4px"
+                }}>
+                  {recipe.ingredients.length}
+                </span>
+              )}
+            </div>
             <div style={{ display: "flex", gap: "12px", marginTop: "2.5rem", background: "#0d1117", padding: "8px 16px", borderRadius: "8px", width: "fit-content", border: "1px solid #30363d", alignItems: "center" }}>
               <span style={{ color: "#8b949e", fontSize: "13px" }}>🍴 {isAr ? ar.game.remaining : "Remaining"}: <strong style={{ color: "#e6edf3" }}>{remainingCorrect}</strong></span>
               <span style={{ color: "#30363d" }}>|</span>
