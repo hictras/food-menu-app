@@ -29,6 +29,7 @@ export default function PuzzlePage() {
   const [pieces, setPieces] = useState<number[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const touchStartRef = useState<number | null>(null);
   const [isSolved, setIsSolved] = useState(false);
   const [won, setWon] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -104,47 +105,64 @@ export default function PuzzlePage() {
     setMessage(isAr ? ar.puzzle.msgRevealed : "Solution revealed.");
   }
 
+  // --- DESKTOP DRAG HANDLERS ---
   function handleDragStart(e: React.DragEvent, index: number) {
     if (isSolved) return;
     setDraggedIndex(index);
     e.dataTransfer.effectAllowed = "move";
-    // Make the drag image slightly transparent
-    setTimeout(() => {
-      const target = e.target as HTMLElement;
-      target.style.opacity = "0.5";
-    }, 0);
+    setTimeout(() => { (e.target as HTMLElement).style.opacity = "0.5"; }, 0);
   }
 
   function handleDragOver(e: React.DragEvent) {
-    e.preventDefault(); // Necessary to allow dropping
+    e.preventDefault();
     e.dataTransfer.dropEffect = "move";
   }
 
   function handleDrop(e: React.DragEvent, dropIndex: number) {
     e.preventDefault();
     if (isSolved || draggedIndex === null || draggedIndex === dropIndex) return;
+    swapPieces(draggedIndex, dropIndex);
+  }
 
-    // Swap the pieces
+  function handleDragEnd(e: React.DragEvent) {
+    (e.target as HTMLElement).style.opacity = "1";
+    setDraggedIndex(null);
+  }
+
+  // --- MOBILE TOUCH HANDLERS ---
+  function handleTouchStart(e: React.TouchEvent, index: number) {
+    if (isSolved) return;
+    setDraggedIndex(index);
+    e.currentTarget.style.opacity = "0.5";
+    e.currentTarget.style.transform = "scale(1.05)"; // Slight pop effect
+  }
+
+  function handleTouchEnd(e: React.TouchEvent, dropIndex: number) {
+    if (isSolved || draggedIndex === null) return;
+    e.currentTarget.style.opacity = "1";
+    e.currentTarget.style.transform = "scale(1)";
+    
+    if (draggedIndex !== dropIndex) {
+      swapPieces(draggedIndex, dropIndex);
+    }
+    setDraggedIndex(null);
+  }
+
+  // --- SHARED SWAP LOGIC ---
+  function swapPieces(fromIndex: number, toIndex: number) {
     const newPieces = [...pieces];
-    const temp = newPieces[draggedIndex];
-    newPieces[draggedIndex] = newPieces[dropIndex];
-    newPieces[dropIndex] = temp;
+    const temp = newPieces[fromIndex];
+    newPieces[fromIndex] = newPieces[toIndex];
+    newPieces[toIndex] = temp;
     
     setPieces(newPieces);
     setDraggedIndex(null);
 
-    // Check win
     if (newPieces.every((val, i) => val === i)) {
       setIsSolved(true);
       setWon(true);
       setMessage(isAr ? ar.puzzle.msgPerfect : "Perfect! You solved the puzzle.");
     }
-  }
-
-  function handleDragEnd(e: React.DragEvent) {
-    const target = e.target as HTMLElement;
-    target.style.opacity = "1";
-    setDraggedIndex(null);
   }
 
   return (
@@ -204,6 +222,8 @@ export default function PuzzlePage() {
                     onDragOver={handleDragOver}
                     onDrop={(e) => handleDrop(e, index)}
                     onDragEnd={handleDragEnd}
+                    onTouchStart={(e) => handleTouchStart(e, index)}
+                    onTouchEnd={(e) => handleTouchEnd(e, index)}
                     onClick={() => handlePieceClick(index)}
                     style={{
                       backgroundImage: `url(${recipe?.imageUrl})`,
