@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useLang } from "@/components/LanguageProvider";
 import { ar } from "@/lib/ar";
@@ -29,11 +29,14 @@ export default function PuzzlePage() {
   const [pieces, setPieces] = useState<number[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-  const touchStartRef = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
   const [isSolved, setIsSolved] = useState(false);
   const [won, setWon] = useState(false);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const boardRef = useRef<HTMLDivElement>(null);
+
 
   async function startGame() {
     setLoading(true);
@@ -107,6 +110,65 @@ export default function PuzzlePage() {
 
 
 
+  function handleDragStart(e: React.PointerEvent, index: number) {
+    if (isSolved) return;
+    // Prevent scrolling on mobile while dragging
+    e.preventDefault();
+    
+    setDraggedIndex(index);
+    setIsDragging(true);
+    setDragPos({ x: e.clientX, y: e.clientY });
+    
+    // Capture pointer so we get move events even outside the element
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  }
+
+  function handleDragMove(e: React.PointerEvent) {
+    if (!isDragging) return;
+    e.preventDefault();
+    setDragPos({ x: e.clientX, y: e.clientY });
+  }
+
+  function handleDragEnd(e: React.PointerEvent) {
+    if (!isDragging || draggedIndex === null) return;
+    setIsDragging(false);
+    
+    // Release pointer capture
+    (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+
+    // Find which piece we dropped it on
+    if (!boardRef.current) return;
+    const boardRect = boardRef.current.getBoundingClientRect();
+    
+    // Check if drop was inside the board
+    if (
+      e.clientX >= boardRect.left && e.clientX <= boardRect.right &&
+      e.clientY >= boardRect.top && e.clientY <= boardRect.bottom
+    ) {
+      // Calculate grid position (3x3)
+      const col = Math.floor((e.clientX - boardRect.left) / (boardRect.width / 3));
+      const row = Math.floor((e.clientY - boardRect.top) / (boardRect.height / 3));
+      const dropIndex = row * 3 + col;
+
+      if (dropIndex >= 0 && dropIndex < 9 && dropIndex !== draggedIndex) {
+        // Swap
+        const newPieces = [...pieces];
+        const temp = newPieces[draggedIndex];
+        newPieces[draggedIndex] = newPieces[dropIndex];
+        newPieces[dropIndex] = temp;
+        setPieces(newPieces);
+
+        if (newPieces.every((val, i) => val === i)) {
+          setIsSolved(true);
+          setWon(true);
+          setMessage(isAr ? ar.puzzle.msgPerfect : "Perfect! You solved the puzzle.");
+        }
+      }
+    }
+    
+    setDraggedIndex(null);
+  }
+
   return (
     <main style={{ minHeight: "100vh", background: "#0d1117", color: "#e6edf3", fontFamily: "system-ui, sans-serif", padding: "1.5rem 1rem 120px 1rem", direction: isAr ? "rtl" : "ltr" }}>
       
@@ -150,7 +212,7 @@ export default function PuzzlePage() {
           {loading ? (
             <div style={{ height: 300, display: "flex", alignItems: "center", justifyContent: "center" }}>Loading...</div>
           ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "4px", width: "100%", aspectRatio: "1 / 1", background: "#0d1117", borderRadius: "12px", padding: "4px", marginTop: "2rem", direction: "ltr" }}>
+            <div ref={boardRef} style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "4px", width: "100%", aspectRatio: "1 / 1", background: "#0d1117", borderRadius: "12px", padding: "4px", marginTop: "2rem", direction: "ltr", touchAction: "none", userSelect: "none" }}>
               {pieces.map((pieceId, index) => {
                 const x = (pieceId % 3) * 50;
                 const y = Math.floor(pieceId / 3) * 50;
@@ -159,16 +221,23 @@ export default function PuzzlePage() {
                 return (
                   <div
                     key={index}
-                    onClick={() => handlePieceClick(index)}
+                    onPointerDown={(e) => handleDragStart(e, index)}
+                    onPointerMove={handleDragMove}
+                    onPointerUp={handleDragEnd}
+                    onClick={() => {
+                      // Keep click fallback
+                      if (!isDragging) handlePieceClick(index);
+                    }}
                     style={{
                       backgroundImage: `url(${recipe?.imageUrl})`,
                       backgroundSize: "300% 300%",
                       backgroundPosition: `${x}% ${y}%`,
                       borderRadius: "8px",
-                      cursor: isSolved ? "default" : "pointer",
-                      boxShadow: isSelected ? "inset 0 0 0 3px #ff6b4a" : "inset 0 0 0 1px rgba(255,255,255,0.05)",
-                      opacity: isSelected ? 0.8 : 1,
-                      transition: "all 0.15s",
+                      cursor: isSolved ? "default" : "grab",
+                      boxShadow: draggedIndex === index ? "inset 0 0 0 3px #ff6b4a" : (isSelected ? "inset 0 0 0 3px #ff6b4a" : "inset 0 0 0 1px rgba(255,255,255,0.05)"),
+                      opacity: draggedIndex === index ? 0.3 : (isSelected ? 0.8 : 1),
+                      transition: isDragging ? "none" : "all 0.15s",
+                      touchAction: "none",
                     }}
                   />
                 );
