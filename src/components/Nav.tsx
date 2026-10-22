@@ -15,7 +15,7 @@ export default function Nav() {
   const [loaded, setLoaded] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
-    const [logoUrl, setLogoUrl] = useState<string>("");
+  const [logoUrl, setLogoUrl] = useState<string>("");
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -36,7 +36,7 @@ export default function Nav() {
     function close(e: MouseEvent) {
       const target = e.target as HTMLElement;
       if (!target.closest(".nav-admin-wrap")) setAdminOpen(false);
-            if (!target.closest(".nav-mobile-wrap")) setMobileOpen(false);
+      if (!target.closest(".nav-mobile-wrap")) setMobileOpen(false);
     }
     function esc(e: KeyboardEvent) {
       if (e.key === "Escape") {
@@ -85,17 +85,20 @@ export default function Nav() {
           <Link className="nav-link nav-recipes-main" href="/recipes" onClick={closeAll}>
             {t(lang, "nav_recipes")}
           </Link>
+          
+          {/* NEW GAMES HUB LINK */}
+          <Link className="nav-link" href="/games" onClick={closeAll}>
+            🎮 {lang === "ar" ? ar.nav.gamesHubNav : "Games"}
+          </Link>
+
           <Link className="nav-link" href="/calendar" onClick={closeAll}>
             {lang === "ar" ? ar.nav.calendar : "Calendar"}
           </Link>
           <Link className="nav-link" href="/inbox" onClick={closeAll}>
             {lang === "ar" ? ar.nav.inbox : "Inbox"}
           </Link>
-          <Link className="nav-link" href="/game" onClick={closeAll}>
-            🎮 {lang === "ar" ? ar.nav.game : "Game"}
-          </Link>
         </div>
-        
+
         <div className="nav-actions">
           <PushSubscribe />
 
@@ -193,9 +196,12 @@ export default function Nav() {
         </div>
 
         <div className={`nav-mobile-menu${mobileOpen ? " is-open" : ""}`} id="nav-mobile-menu">
-          <Link className="mobile-nav-link" href="/game" onClick={closeAll}>
-            <span>🎮</span> Game
+          
+          {/* NEW GAMES HUB LINK (MOBILE) */}
+          <Link className="mobile-nav-link" href="/games" onClick={closeAll}>
+            <span>🎮</span> {lang === "ar" ? ar.nav.gamesHubNav : "Games"}
           </Link>
+
           <Link className="mobile-nav-link" href="/calendar" onClick={closeAll}>
             <span>📅</span> {lang === "ar" ? ar.nav.calendar : "Calendar"}
           </Link>
@@ -207,7 +213,7 @@ export default function Nav() {
             <>
               <div className="nav-menu-divider" />
               <Link className="mobile-nav-link" href="/admin/import" onClick={closeAll}>
-                <span>📥</span> {lang === "ar" ? "استيراد" : "Import"}
+                <span>📥</span> {lang === "ar" ? ar.nav.import : "Import"}
               </Link>
               <Link className="mobile-nav-link" href="/recipes/new" onClick={closeAll}>
                 <span>✚</span> {t(lang, "nav_add")}
@@ -216,7 +222,7 @@ export default function Nav() {
                 <span>💬</span> {lang === "ar" ? ar.nav.replies : "Replies"}
               </Link>
               <Link className="mobile-nav-link" href="/admin" onClick={closeAll}>
-                <span>📤</span> {lang === "ar" ? "إرسال" : "Send Push"}
+                <span>📤</span> {lang === "ar" ? ar.nav.sendPush : "Send Push"}
               </Link>
               <Link className="mobile-nav-link" href="/recipients" onClick={closeAll}>
                 <span>👥</span> {lang === "ar" ? ar.nav.recipients : "Recipients"}

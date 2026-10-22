@@ -28,7 +28,9 @@ export const ar = {
   
     calendar: "التقويم",
     game: "لعبة",
-    import: "استيراد وصفات",},
+    import: "استيراد وصفات",
+    puzzleNav: "لغز",
+    gamesHubNav: "الألعاب",},
 
   // ── Home / recipe list ────────────────────────────────────
   home: {
@@ -601,6 +603,37 @@ export const ar = {
     "artichoke": "خرشوف", "asparagus": "هليون", "beets": "شمندر", "radish": "فجل", "celery": "كرفس", 
     "cabbage": "ملفوف", "kale": "كيل", "arugula": "جرجير", "bean sprouts": "براعم فاصوليا", 
     "water": "ماء", "salt": "ملح", "pepper": "فلفل", "oil": "زيت"
+  },
+
+
+  // ── Puzzle Game ───────────────────────────────────────────
+  puzzle: {
+    back: "→ العودة",
+    newImage: "صورة جديدة",
+    title1: "لغز ",
+    title2: "الوصفة",
+    subtitle: "بدّل القطع لكشف الصورة",
+    revealBtn: "كعيت",
+    newGameBtn: "لعبة جديدة",
+    msgPerfect: "ممتاز! لقد حللت اللغز.",
+    msgRevealed: "تم كشف الحل.",
+    msgNoImages: "لا توجد صور وصفات.",
+    msgFailLoad: "فشل التحميل.",
+    modalPerfect: "ممتاز!",
+    modalText: "لقد حللت اللغز بنجاح لـ ",
+    modalClose: "إغلاق",
+  },
+
+
+  // ── Games Hub ─────────────────────────────────────────────
+  gamesHub: {
+    title: "الألعاب",
+    subtitle: "اختر لعبة لتبدأ",
+    game1Title: "خمّن المكونات",
+    game1Desc: "هل يمكنك معرفة ما يدخل في هذا الطبق؟",
+    game2Title: "لغز الوصفة",
+    game2Desc: "بدّل القطع لكشف صورة الطبق.",
+    playBtn: "العب الآن",
   },
 
 } as const;
