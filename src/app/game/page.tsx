@@ -132,7 +132,8 @@ export default function GamePage() {
         nameAr: nameMap.get(name) || null, 
         eliminated: false, 
         selected: false, 
-        correct: false 
+        correct: false,
+        wrong: false
       })));
     } catch (err) {
       setMessage(isAr ? ar.game.msgFailLoad : "Failed to load recipes.");
