@@ -84,6 +84,12 @@ export default function InboxPage() {
     if ('clearAppBadge' in navigator) {
       navigator.clearAppBadge().catch((error) => console.error('Badge clear error:', error));
     }
+    // Clear the saved count in the Cache API
+    if ('caches' in window) {
+      caches.open('badge-count').then((cache) => {
+        cache.delete('count');
+      });
+    }
 
     fetch("/api/auth/me")
       .then((res) => res.json())

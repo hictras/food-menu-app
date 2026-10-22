@@ -24,9 +24,21 @@ self.addEventListener("push", function (event) {
   // iOS requires the badge to be set BEFORE the notification shows
   const promises = [];
   if ('setAppBadge' in self.navigator) {
-    promises.push(
-      self.navigator.setAppBadge(1).catch((err) => console.log('Badge error:', err))
-    );
+    // We can't use localStorage in a Service Worker, so we use the Cache API
+    // to remember the current count between pushes.
+    const countPromise = caches.open('badge-count').then(async (cache) => {
+      const response = await cache.match('count');
+      let currentCount = response ? parseInt(await response.text(), 10) : 0;
+      currentCount += 1;
+      
+      // Save the new count
+      await cache.put('count', new Response(currentCount.toString()));
+      
+      // Set the badge
+      return self.navigator.setAppBadge(currentCount);
+    }).catch((err) => console.log('Badge error:', err));
+    
+    promises.push(countPromise);
   }
   
   promises.push(self.registration.showNotification(data.title || "Menu", options));
