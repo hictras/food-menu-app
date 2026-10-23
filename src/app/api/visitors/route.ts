@@ -21,11 +21,29 @@ export async function POST(req: NextRequest) {
   }
 }
 
+export async function PUT(req: NextRequest) {
+  try {
+    const db = getDb();
+    const { id, phone } = await req.json();
+    if (!id || !phone) return NextResponse.json({ error: "ID and phone required" }, { status: 400 });
+
+    // Check if the phone is valid (exists in push subscriptions)
+    const sub = await db.select().from(pushSubscriptions).where(eq(pushSubscriptions.phoneNumber, phone)).limit(1);
+    if (sub.length === 0) {
+      return NextResponse.json({ error: "Phone not registered for push notifications" }, { status: 404 });
+    }
+
+    await db.update(visitors).set({ phone }).where(eq(visitors.id, id));
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("PUT visitor error:", err);
+    return NextResponse.json({ error: "Failed" }, { status: 500 });
+  }
+}
+
 export async function GET() {
   try {
     const db = getDb();
-    
-    // Join with pushSubscriptions to get the name
     const all = await db
       .select({
         id: visitors.id,

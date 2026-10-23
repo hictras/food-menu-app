@@ -44,7 +44,7 @@ export default function RecipeReviews({ recipeId }: { recipeId: number }) {
 
   function load() {
     setLoading(true);
-    fetch(`/api/recipes/${recipeId}/reviews`)
+    fetch(`/api/recipes/${recipeId}/reviews`, { cache: "no-store" })
       .then((res) => res.json())
       .then((d) => {
         if (!d.error) {
@@ -102,8 +102,10 @@ export default function RecipeReviews({ recipeId }: { recipeId: number }) {
       if (!res.ok) throw new Error(d.error || "Failed");
       
       // reload data
-      const updated = await fetch(`/api/recipes/${recipeId}/reviews`).then(r => r.json());
+      const updated = await fetch(`/api/recipes/${recipeId}/reviews`, { cache: "no-store" }).then(r => r.json());
       setData(updated);
+      setRating(0);
+      setComment("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error");
     } finally {
@@ -198,7 +200,7 @@ export default function RecipeReviews({ recipeId }: { recipeId: number }) {
 
       {data.reviews.length > 0 && (
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          {data.reviews.map((r) => (
+          {data.reviews.map((r, i) => (
             <div key={`${r.id}-${r.updatedAt}-${Math.random()}`} style={{ display: "flex", gap: 12 }}>
               <div style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--surface-2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, color: "var(--muted)", flexShrink: 0 }}>
                 {(r.name || "?")[0].toUpperCase()}

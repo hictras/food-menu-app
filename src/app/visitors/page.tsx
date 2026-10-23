@@ -13,6 +13,9 @@ export default function VisitorsPage() {
   const router = useRouter();
   const [visitors, setVisitors] = useState<Visitor[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [phoneInput, setPhoneInput] = useState("");
+  const [savingPhone, setSavingPhone] = useState(false);
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -22,6 +25,27 @@ export default function VisitorsPage() {
         else loadVisitors();
       });
   }, [router]);
+
+  
+  async function savePhone(id: string) {
+    setSavingPhone(true);
+    try {
+      const res = await fetch("/api/visitors", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, phone: phoneInput.trim() }),
+      });
+      const data = await res.json();
+      
+      setEditingId(null);
+      setPhoneInput("");
+      loadVisitors(); // Reload the list to show the new name
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Error");
+    } finally {
+      setSavingPhone(false);
+    }
+  }
 
   function loadVisitors() {
     setLoading(true);
@@ -80,8 +104,29 @@ export default function VisitorsPage() {
                   <td style={{ padding: 12, fontWeight: 600, color: "var(--ink)" }}>
                     {v.name || (isAr ? ar.visitorsPage.unknown : "Unknown")}
                   </td>
+                  
                   <td style={{ padding: 12, color: "var(--ink-soft)", fontFamily: "monospace" }}>
-                    {v.phone || "-"}
+                    {v.phone ? (
+                      v.phone
+                    ) : editingId === v.id ? (
+                      <div style={{ display: "flex", gap: 4 }}>
+                        <input 
+                          type="text" 
+                          value={phoneInput} 
+                          onChange={(e) => setPhoneInput(e.target.value)} 
+                          placeholder="961..." 
+                          style={{ width: 100, padding: 4, borderRadius: 4, border: "1px solid var(--line)", background: "var(--input-bg)", color: "var(--ink)", fontSize: 12 }}
+                        />
+                        <button type="button" onClick={() => savePhone(v.id)} disabled={savingPhone} className="btn btn-primary" style={{ padding: "2px 8px", fontSize: 11 }}>
+                          {savingPhone ? "..." : "✓"}
+                        </button>
+                        <button type="button" onClick={() => setEditingId(null)} className="btn btn-ghost" style={{ padding: "2px 8px", fontSize: 11 }}>✕</button>
+                      </div>
+                    ) : (
+                      <button type="button" onClick={() => { setEditingId(v.id); setPhoneInput(""); }} className="btn btn-ghost" style={{ padding: "2px 8px", fontSize: 11 }}>
+                        + Link Phone
+                      </button>
+                    )}
                   </td>
                   <td style={{ padding: 12, textAlign: "end", color: "var(--muted)" }}>
                     {new Date(v.lastSeen).toLocaleString()}

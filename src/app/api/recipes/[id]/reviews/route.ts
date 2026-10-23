@@ -50,12 +50,7 @@ export async function GET(
       name: r.name || null,
     }));
 
-    return NextResponse.json({
-      average,
-      count: total,
-      mine,
-      reviews: publicReviews,
-    });
+    return NextResponse.json({ average, count: total, mine, reviews: publicReviews });
   } catch (err) {
     console.error("GET reviews error:", err);
     return NextResponse.json({ error: "Failed to load reviews" }, { status: 500 });
@@ -73,6 +68,8 @@ export async function POST(
 
     const store = await cookies();
     const phone = (store.get(VIEWER_PHONE_COOKIE)?.value || "").trim();
+    
+    // If there is no phone cookie, we cannot verify who is submitting.
     if (!phone) return NextResponse.json({ error: "Verify your phone to rate." }, { status: 401 });
 
     const body = await req.json();
@@ -85,6 +82,7 @@ export async function POST(
 
     const db = getDb();
     
+    // Check if this specific user already reviewed this specific recipe
     const existing = await db
       .select()
       .from(recipeReviews)
@@ -92,11 +90,13 @@ export async function POST(
       .limit(1);
 
     if (existing.length > 0) {
+      // Update ONLY the row that belongs to this phone and recipe
       await db
         .update(recipeReviews)
         .set({ rating, comment, updatedAt: new Date().toISOString() })
-        .where(eq(recipeReviews.id, existing[0].id));
+        .where(eq(recipeReviews.id, existing[0].id)); // Using the unique ID of the found review
     } else {
+      // Insert new review
       await db.insert(recipeReviews).values({
         recipeId,
         phone,
