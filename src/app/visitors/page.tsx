@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useLang } from "@/components/LanguageProvider";
 import { ar } from "@/lib/ar";
 
-type Visitor = { id: string; phone: string | null; name: string | null; lastSeen: string };
+type Visitor = { id: string; phone: string | null; name: string | null; visits: number; lastSeen: string };
 
 export default function VisitorsPage() {
   const { lang } = useLang();
@@ -85,6 +85,7 @@ export default function VisitorsPage() {
               <th style={{ padding: 12, textAlign: "start", fontWeight: 600 }}>#</th>
               <th style={{ padding: 12, textAlign: "start", fontWeight: 600 }}>{isAr ? ar.visitorsPage.name : "Name"}</th>
               <th style={{ padding: 12, textAlign: "start", fontWeight: 600 }}>{isAr ? ar.visitorsPage.phone : "Phone"}</th>
+              <th style={{ padding: 12, textAlign: "center", fontWeight: 600 }}>{isAr ? "الزيارات" : "Visits"}</th>
               <th style={{ padding: 12, textAlign: "end", fontWeight: 600 }}>
                 {isAr ? ar.visitorsPage.lastSeen : "Last Seen"}
               </th>
@@ -93,7 +94,7 @@ export default function VisitorsPage() {
           <tbody>
             {visitors.length === 0 ? (
               <tr>
-                <td colSpan={4} style={{ padding: 24, textAlign: "center", color: "var(--muted)" }}>
+                <td colSpan={5} style={{ padding: 24, textAlign: "center", color: "var(--muted)" }}>
                   {isAr ? ar.visitorsPage.noDevices : "No devices registered yet."}
                 </td>
               </tr>
@@ -127,6 +128,9 @@ export default function VisitorsPage() {
                         + Link Phone
                       </button>
                     )}
+                  </td>
+                  <td style={{ padding: 12, textAlign: "center", fontWeight: 600, color: "var(--accent)" }}>
+                    {v.visits || 0}
                   </td>
                   <td style={{ padding: 12, textAlign: "end", color: "var(--muted)" }}>
                     {new Date(v.lastSeen).toLocaleString()}

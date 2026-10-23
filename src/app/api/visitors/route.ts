@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/db";
 import { visitors, pushSubscriptions } from "@/db/schema";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,9 +9,14 @@ export async function POST(req: NextRequest) {
     const { id, phone } = await req.json();
     if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
 
-    await db.insert(visitors).values({ id, phone }).onConflictDoUpdate({
+    await db.insert(visitors).values({ id, phone: phone || null, visits: 1 }).onConflictDoUpdate({
       target: visitors.id,
-      set: { lastSeen: new Date().toISOString(), phone: phone || null },
+      set: { 
+        lastSeen: new Date().toISOString(), 
+        // ONLY update phone if a new phone is passed!
+        ...(phone ? { phone } : {}),
+        visits: sql`${visitors.visits} + 1`
+      },
     });
 
     return NextResponse.json({ ok: true });
@@ -27,7 +32,6 @@ export async function PUT(req: NextRequest) {
     const { id, phone } = await req.json();
     if (!id || !phone) return NextResponse.json({ error: "ID and phone required" }, { status: 400 });
 
-    // Check if the phone is valid (exists in push subscriptions)
     const sub = await db.select().from(pushSubscriptions).where(eq(pushSubscriptions.phoneNumber, phone)).limit(1);
     if (sub.length === 0) {
       return NextResponse.json({ error: "Phone not registered for push notifications" }, { status: 404 });
@@ -48,6 +52,7 @@ export async function GET() {
       .select({
         id: visitors.id,
         phone: visitors.phone,
+        visits: visitors.visits,
         lastSeen: visitors.lastSeen,
         name: pushSubscriptions.name,
       })

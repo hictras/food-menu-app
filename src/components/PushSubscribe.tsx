@@ -54,7 +54,7 @@ export default function PushSubscribe() {
       const res = await fetch("/api/push/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subscription: sub, phoneNumber }),
+        body: JSON.stringify({ subscription: sub, phoneNumber, visitorId: localStorage.getItem("visitor_id") }),
       });
 
       if (!res.ok) {

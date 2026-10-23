@@ -158,6 +158,7 @@ export const recipientGroupMembers = sqliteTable("recipient_group_members", {
 export const visitors = sqliteTable("visitors", {
   id: text("id").primaryKey(),
   phone: text("phone"),
+  visits: integer("visits").default(0),
   lastSeen: text("last_seen").default(sql`CURRENT_TIMESTAMP`),
 });
 

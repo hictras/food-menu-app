@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/db";
-import { pushSubscriptions } from "@/db/schema";
+import { pushSubscriptions, visitors } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export const VIEWER_PHONE_COOKIE = "viewer_phone";
-const VIEWER_PHONE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year
+const VIEWER_PHONE_MAX_AGE = 60 * 60 * 24 * 365;
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,6 +13,7 @@ export async function POST(req: NextRequest) {
 
     const sub = body.subscription || body;
     const phoneNumber = (body.phoneNumber || "").trim();
+    const visitorId = (body.visitorId || "").trim();
 
     if (!sub?.endpoint || !sub?.keys?.p256dh || !sub?.keys?.auth) {
       return NextResponse.json({ error: "Invalid subscription data" }, { status: 400 });
@@ -20,6 +22,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Phone number required" }, { status: 400 });
     }
 
+    // 1. Save push subscription
     await db
       .insert(pushSubscriptions)
       .values({
@@ -36,6 +39,11 @@ export async function POST(req: NextRequest) {
           phoneNumber,
         },
       });
+
+    // 2. Link the phone number to their device ID (Visitor)
+    if (visitorId) {
+      await db.update(visitors).set({ phone: phoneNumber }).where(eq(visitors.id, visitorId));
+    }
 
     const res = NextResponse.json({ ok: true });
     res.cookies.set(VIEWER_PHONE_COOKIE, phoneNumber, {
