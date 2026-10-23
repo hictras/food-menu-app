@@ -17,12 +17,10 @@ export default function RecipientsPage() {
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // Group form state
   const [newGroupName, setNewGroupName] = useState("");
   const [selectedGroupPhones, setSelectedGroupPhones] = useState<string[]>([]);
   const [showGroupForm, setShowGroupForm] = useState(false);
 
-  // Edit recipient state
   const [editId, setEditId] = useState<number | null>(null);
   const [editName, setEditName] = useState("");
   const [editPhone, setEditPhone] = useState("");
@@ -74,7 +72,7 @@ export default function RecipientsPage() {
 
   async function handleSaveRecipient(id: number) {
     if (!editPhone.trim()) {
-      alert("Phone number cannot be empty.");
+      alert(isAr ? ar.groups.phoneRequired : "Phone number cannot be empty.");
       return;
     }
     await fetch("/api/recipients", {
@@ -137,14 +135,15 @@ export default function RecipientsPage() {
         )}
       </div>
 
-      {/* RECIPIENTS TABLE WITH EDIT/DELETE */}
+      {/* RECIPIENTS TABLE WITH EDIT/DELETE AND EXCLUDED */}
       <div className="form-card" style={{ padding: 0, overflow: "hidden" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
           <thead style={{ background: "var(--bg)", borderBottom: "1px solid var(--line)" }}>
             <tr>
               <th style={{ padding: 12, textAlign: "start", fontWeight: 600 }}>{isAr ? ar.groups.recipientName : "Name"}</th>
               <th style={{ padding: 12, textAlign: "start", fontWeight: 600 }}>{isAr ? ar.groups.recipientPhone : "Phone Number"}</th>
-              <th style={{ padding: 12, textAlign: "end", fontWeight: 600 }}>{isAr ? "الإجراءات" : "Actions"}</th>
+              <th style={{ padding: 12, textAlign: "center", fontWeight: 600 }}>{isAr ? ar.groups.excluded : "Excluded"}</th>
+              <th style={{ padding: 12, textAlign: "end", fontWeight: 600 }}>{isAr ? ar.groups.actions : "Actions"}</th>
             </tr>
           </thead>
           <tbody>
@@ -153,23 +152,44 @@ export default function RecipientsPage() {
                 {editId === r.id ? (
                   <>
                     <td style={{ padding: 8 }}>
-                      <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)} style={{ width: "100%", padding: 6 }} placeholder="Name" />
+                      <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)} style={{ width: "100%", padding: 6 }} placeholder={isAr ? ar.groups.recipientName : "Name"} />
                     </td>
                     <td style={{ padding: 8 }}>
-                      <input type="text" value={editPhone} onChange={(e) => setEditPhone(e.target.value)} style={{ width: "100%", padding: 6 }} placeholder="Phone" />
+                      <input type="text" value={editPhone} onChange={(e) => setEditPhone(e.target.value)} style={{ width: "100%", padding: 6 }} placeholder={isAr ? ar.groups.recipientPhone : "Phone"} />
                     </td>
+                    <td style={{ padding: 8, textAlign: "center" }}>—</td>
                     <td style={{ padding: 8, textAlign: "end" }}>
-                      <button onClick={() => handleSaveRecipient(r.id)} className="btn btn-primary" style={{ padding: "4px 10px", fontSize: 12, marginRight: 4 }}>Save</button>
-                      <button onClick={() => setEditId(null)} className="btn btn-ghost" style={{ padding: "4px 10px", fontSize: 12 }}>Cancel</button>
+                      <button onClick={() => handleSaveRecipient(r.id)} className="btn btn-primary" style={{ padding: "4px 10px", fontSize: 12, marginRight: 4 }}>{isAr ? ar.groups.save : "Save"}</button>
+                      <button onClick={() => setEditId(null)} className="btn btn-ghost" style={{ padding: "4px 10px", fontSize: 12 }}>{isAr ? ar.groups.cancel : "Cancel"}</button>
                     </td>
                   </>
                 ) : (
                   <>
                     <td style={{ padding: 12 }}>{r.name || <span style={{ color: "var(--muted)", fontStyle: "italic" }}>{isAr ? ar.groups.unnamed : "Unnamed"}</span>}</td>
                     <td style={{ padding: 12 }}>{r.phoneNumber}</td>
+                    <td style={{ padding: 12, textAlign: "center" }}>
+                      <input
+                        type="checkbox"
+                        checked={r.excluded === 1}
+                        onChange={async (e) => {
+                          await fetch("/api/recipients", {
+                            method: "PUT",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              id: r.id,
+                              name: r.name || "",
+                              phoneNumber: r.phoneNumber || "",
+                              excluded: e.target.checked,
+                            }),
+                          });
+                          loadData();
+                        }}
+                        style={{ cursor: "pointer" }}
+                      />
+                    </td>
                     <td style={{ padding: 12, textAlign: "end" }}>
-                      <button onClick={() => { setEditId(r.id); setEditName(r.name || ""); setEditPhone(r.phoneNumber || ""); }} className="btn btn-ghost" style={{ padding: "4px 10px", fontSize: 12, marginRight: 4 }}>Edit</button>
-                      <button onClick={() => handleDeleteRecipient(r.id)} className="btn btn-danger" style={{ padding: "4px 10px", fontSize: 12 }}>Delete</button>
+                      <button onClick={() => { setEditId(r.id); setEditName(r.name || ""); setEditPhone(r.phoneNumber || ""); }} className="btn btn-ghost" style={{ padding: "4px 10px", fontSize: 12, marginRight: 4 }}>{isAr ? ar.groups.edit : "Edit"}</button>
+                      <button onClick={() => handleDeleteRecipient(r.id)} className="btn btn-danger" style={{ padding: "4px 10px", fontSize: 12 }}>{isAr ? ar.groups.delete : "Delete"}</button>
                     </td>
                   </>
                 )}

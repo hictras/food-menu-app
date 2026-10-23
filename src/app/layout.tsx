@@ -50,16 +50,29 @@ const inlineBootstrap = `
 
 const visitorTracker = `
 (function() {
-  var visitorId = localStorage.getItem("visitor_id");
-  if (!visitorId) {
-    visitorId = Math.random().toString(36).substring(2) + Date.now().toString(36);
-    localStorage.setItem("visitor_id", visitorId);
-  }
-  fetch("/api/visitors", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id: visitorId })
-  }).catch(function(){});
+  // Check if user is admin via API before tracking
+  fetch("/api/auth/me")
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.admin) return; // Skip tracking if admin
+      
+      var visitorId = localStorage.getItem("visitor_id");
+      if (!visitorId) {
+        visitorId = Math.random().toString(36).substring(2) + Date.now().toString(36);
+        localStorage.setItem("visitor_id", visitorId);
+      }
+      
+      var phone = null;
+      var match = document.cookie.match(/viewer_phone=([^;]+)/);
+      if (match) phone = decodeURIComponent(match[1]);
+
+      return fetch("/api/visitors", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: visitorId, phone: phone })
+      });
+    })
+    .catch(function(){});
 })();
 `;
 

@@ -111,3 +111,18 @@ export async function POST(
     return NextResponse.json({ error: "Failed to save review" }, { status: 500 });
   }
 }
+
+
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const { id } = await params;
+    const reviewId = Number(req.nextUrl.searchParams.get("reviewId"));
+
+    const db = getDb();
+    await db.delete(recipeReviews).where(eq(recipeReviews.id, reviewId));
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("DELETE review error:", err);
+    return NextResponse.json({ error: "Failed" }, { status: 500 });
+  }
+}

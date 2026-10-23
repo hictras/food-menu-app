@@ -13,7 +13,6 @@ export async function POST(req: NextRequest) {
       target: visitors.id,
       set: { 
         lastSeen: new Date().toISOString(), 
-        // ONLY update phone if a new phone is passed!
         ...(phone ? { phone } : {}),
         visits: sql`${visitors.visits} + 1`
       },
@@ -41,6 +40,22 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("PUT visitor error:", err);
+    return NextResponse.json({ error: "Failed" }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const db = getDb();
+    const idParam = req.nextUrl.searchParams.get("id");
+    if (!idParam) return NextResponse.json({ error: "ID required" }, { status: 400 });
+    
+    const id = String(idParam); // Ensure it's a string
+    
+    await db.delete(visitors).where(eq(visitors.id, id));
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("DELETE visitor error:", err);
     return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }

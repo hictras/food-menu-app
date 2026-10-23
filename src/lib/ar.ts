@@ -304,6 +304,7 @@ export const ar = {
     edit: "تعديل",
     delete: "حذف",
     save: "حفظ",
+    phoneRequired: "رقم الهاتف مطلوب",
     cancel: "إلغاء",
     deleteConfirm: "حذف هذا المستلم؟",
   },
@@ -695,37 +696,9 @@ export const ar = {
 
 
   // ── Reviews ──────────────────────────────────────────────
-  reviews: {
-    title: "تقييمات العائلة",
-    noReviews: "لا توجد تقييمات بعد. كن أول من يقيّم!",
-    avg: "متوسط",
-    review: "تقييم",
-    reviews: "تقييمات",
-    rateThis: "ما رأيك بهذا الطبق؟",
-    placeholder: "أضف ملاحظة (مثال: 'احتاج ملح أكثر، لكنه لذيذ!')",
-    submit: "إرسال التقييم",
-    update: "تحديث التقييم",
-    submitting: "جاري الإرسال...",
-    verify: "يجب تفعيل الإشعارات أولاً لتتمكن من التقييم.",
-    unnamed: "عضو من العائلة",
-    you: "أنت",
-  },
 
 
   // ── Recipe Reviews ───────────────────────────────────────
-  dayReviews: {
-    title: "تقييم اليوم",
-    question: "كيف كانت وجبات اليوم؟",
-    edit: "تعديل تقييمك",
-    placeholder: "أضف ملاحظة...",
-    verify: "تحقق من رقمك للتقييم",
-    verifyBtn: "تحقق",
-    submit: "إرسال التقييم",
-    update: "تحديث التقييم",
-    saving: "جاري الحفظ...",
-    familyMember: "عضو من العائلة",
-    phonePlaceholder: "رقم هاتفك",
-  },
 
   share: "💬 مشاركة",
   today: "✨ اليوم",
@@ -805,6 +778,13 @@ export const ar = {
   personalizeHint: "سيتم استبدال {name} باسم المستلم.",
 
   groups: {
+    excluded: "مستثنى",
+    actions: "الإجراءات",
+    save: "حفظ",
+    phoneRequired: "رقم الهاتف مطلوب",
+    cancel: "إلغاء",
+    edit: "تعديل",
+    delete: "حذف",
     title: "المجموعات",
     newGroup: "+ مجموعة جديدة",
     groupName: "اسم المجموعة",
@@ -834,6 +814,36 @@ export const ar = {
     loading: "جاري التحميل...",
   },
 
+  reviews: {
+    title: "تقييمات العائلة",
+    noReviews: "لا توجد تقييمات بعد. كن أول من يقيّم!",
+    rateThis: "ما رأيك بهذا الطبق؟",
+    placeholder: "أضف ملاحظة...",
+    submit: "إرسال التقييم",
+    update: "تحديث التقييم",
+    submitting: "جاري الإرسال...",
+    verify: "تحقق من رقمك للتقييم",
+    verifyBtn: "تحقق",
+    phonePlaceholder: "رقم هاتفك",
+    unnamed: "عضو من العائلة",
+    deleteConfirm: "حذف هذا التقييم؟",
+    deleteBtn: "حذف",
+  },
+  dayReviews: {
+    title: "تقييم اليوم",
+    question: "كيف كانت وجبات اليوم؟",
+    edit: "تعديل تقييمك",
+    placeholder: "أضف ملاحظة...",
+    verify: "تحقق من رقمك للتقييم",
+    verifyBtn: "تحقق",
+    submit: "إرسال التقييم",
+    update: "تحديث التقييم",
+    saving: "جاري الحفظ...",
+    familyMember: "عضو من العائلة",
+    phonePlaceholder: "رقم هاتفك",
+    deleteConfirm: "حذف هذا التقييم؟",
+    deleteBtn: "حذف",
+  },
 
 } as const;
 

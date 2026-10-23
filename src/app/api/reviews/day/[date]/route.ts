@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { getDb } from "@/db";
 import { dayReviews, pushSubscriptions } from "@/db/schema";
 import { eq, and, desc } from "drizzle-orm";
+import { isAdmin } from "@/lib/auth";
 
 const VIEWER_PHONE_COOKIE = "viewer_phone";
 
@@ -100,5 +101,24 @@ export async function POST(
   } catch (err) {
     console.error("POST day review error:", err);
     return NextResponse.json({ error: "Failed to save review" }, { status: 500 });
+  }
+}
+
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ date: string }> }
+) {
+  
+  try {
+    const { date } = await params;
+    const reviewId = Number(req.nextUrl.searchParams.get("reviewId"));
+
+    const db = getDb();
+    await db.delete(dayReviews).where(eq(dayReviews.id, reviewId));
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("DELETE day review error:", err);
+    return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }
