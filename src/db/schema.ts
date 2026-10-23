@@ -140,3 +140,18 @@ export const pushPresets = sqliteTable("push_presets", {
   pollQuestion: text("poll_question"),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
+
+export const recipientGroups = sqliteTable("recipient_groups", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const recipientGroupMembers = sqliteTable("recipient_group_members", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  groupId: integer("group_id")
+    .notNull()
+    .references(() => recipientGroups.id, { onDelete: "cascade" }),
+  phone: text("phone").notNull(),
+});
+

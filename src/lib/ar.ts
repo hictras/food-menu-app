@@ -799,6 +799,22 @@ export const ar = {
   personalize: "تخصيص بالاسم",
   personalizeHint: "سيتم استبدال {name} باسم المستلم.",
 
+  groups: {
+    title: "المجموعات",
+    newGroup: "+ مجموعة جديدة",
+    groupName: "اسم المجموعة",
+    createBtn: "إنشاء",
+    noGroups: "لا توجد مجموعات بعد.",
+    deleteConfirm: "حذف هذه المجموعة؟",
+    selectGroup: "المجموعات:",
+    recipientName: "الاسم",
+    recipientPhone: "رقم الهاتف",
+    unnamed: "بدون اسم",
+    deleteGroup: "حذف",
+    loading: "جاري التحميل...",
+    recipientsTitle: "المستلمون",
+  },
+  yesterdayBtn: "أمس",
 
 } as const;
 

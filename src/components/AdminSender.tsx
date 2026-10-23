@@ -36,6 +36,7 @@ export default function AdminSender() {
   const [showRecipeDropdown, setShowRecipeDropdown] = useState(false);
 
   const [presets, setPresets] = useState<Preset[]>([]);
+  const [groups, setGroups] = useState<{ id: number, name: string, phones: string[] }[]>([]);
   const [showPresetManager, setShowPresetManager] = useState(false);
   const [editingPreset, setEditingPreset] = useState<Preset | null>(null);
 
@@ -45,6 +46,7 @@ export default function AdminSender() {
   useEffect(() => {
     fetch("/api/recipes").then(res => res.json()).then(data => setRecipes(Array.isArray(data) ? data : []));
     fetch("/api/recipients").then(res => res.json()).then(data => setRecipients(Array.isArray(data) ? data : []));
+    fetch("/api/recipients/groups").then(res => res.json()).then(data => setGroups(Array.isArray(data) ? data : []));
     fetch("/api/push/presets").then(res => res.json()).then(data => setPresets(Array.isArray(data) ? data : []));
   }, []);
 
@@ -261,6 +263,16 @@ export default function AdminSender() {
             })}
             {selectedPhones.length === 0 && <span style={{ color: "var(--muted)", fontSize: 12, padding: 4 }}>Everyone</span>}
           </div>
+          {groups.length > 0 && (
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
+            <span style={{ fontSize: 12, color: "var(--muted)", display: "flex", alignItems: "center" }}>{isAr ? ar.groups.selectGroup : "Groups:"}</span>
+            {groups.map(g => (
+              <button key={g.id} type="button" className="chip" onClick={() => setSelectedPhones(Array.from(new Set([...selectedPhones, ...g.phones])))}>
+                👥 {g.name} ({g.phones.length})
+              </button>
+            ))}
+          </div>
+        )}
           <input type="text" placeholder="Search by name or phone..." value={phoneSearch} onChange={(e) => { setPhoneSearch(e.target.value); setShowRecipientDropdown(true); }} onFocus={() => setShowRecipientDropdown(true)} style={{ width: "100%", padding: 8 }} />
           {showRecipientDropdown && phoneSearch.trim() !== "" && (
             <>
