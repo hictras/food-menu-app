@@ -7,6 +7,7 @@ import { useLang } from "./LanguageProvider";
 import { t, pick } from "@/lib/i18n";
 import { cuisineFlagUrl } from "@/lib/cuisine-flag";
 import { CATEGORIES } from "@/lib/categories";
+import { ar } from "@/lib/ar";
 
 type RecipeRow = {
   id: number;
@@ -41,7 +42,9 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
   useEffect(() => {
     fetch("/api/settings").then((r) => r.json()).then((d) => { if (d.logo_url) setLogoUrl(d.logo_url); }).catch(() => {});
   }, []);
+  
   const { lang } = useLang();
+  const isAr = lang === "ar";
   const router = useRouter();
 
   const [query, setQuery] = useState("");
@@ -53,6 +56,7 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
   const [dailyDishOpen, setDailyDishOpen] = useState(false);
   const [isRolling, setIsRolling] = useState(false);
   const [dailyDish, setDailyDish] = useState<RecipeRow | null>(null);
+
   useEffect(() => {
     const stored = localStorage.getItem("recipes_view");
     if (stored === "grid" || stored === "list") setViewMode(stored);
@@ -81,23 +85,18 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-
     let list = recipes.filter((r) => {
       const name = (pick(lang, r.name, r.nameAr) || "").toLowerCase();
       const cuisine = (pick(lang, r.cuisine, r.cuisineAr) || "").toLowerCase();
-
       if (q && !name.includes(q) && !cuisine.includes(q)) return false;
       if (cuisineFilter && (r.cuisine || r.cuisineAr) !== cuisineFilter) return false;
       if (categoryFilter && (r.category || r.categoryAr) !== categoryFilter) return false;
-
       if (tagFilter) {
         if (!r.dietaryTags) return false;
         try {
           const tags = JSON.parse(r.dietaryTags);
           if (!Array.isArray(tags) || !tags.includes(tagFilter)) return false;
-        } catch {
-          return false;
-        }
+        } catch { return false; }
       }
       return true;
     });
@@ -109,85 +108,45 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
       if (sort === "time-desc") return b.prepTime + b.cookTime - (a.prepTime + a.cookTime);
       return 0;
     });
-
     return list;
   }, [recipes, query, cuisineFilter, categoryFilter, tagFilter, sort, lang]);
 
   const grouped = useMemo(() => {
     const groups: { key: string; icon: string; label: string; items: RecipeRow[] }[] = [];
-
     for (const c of CATEGORIES) {
-      const items = filtered.filter(
-        (r) =>
-          (r.category || "") === c.value ||
-          (r.categoryAr || "") === c.valueAr ||
-          (r.category || "") === c.valueAr ||
-          (r.categoryAr || "") === c.value
+      const items = filtered.filter((r) =>
+        (r.category || "") === c.value || (r.categoryAr || "") === c.valueAr ||
+        (r.category || "") === c.valueAr || (r.categoryAr || "") === c.value
       );
-      if (items.length > 0) {
-        groups.push({
-          key: c.value,
-          icon: c.icon,
-          label: lang === "ar" ? c.valueAr : c.value,
-          items,
-        });
-      }
+      if (items.length > 0) groups.push({ key: c.value, icon: c.icon, label: lang === "ar" ? c.valueAr : c.value, items });
     }
-
     const uncategorized = filtered.filter((r) => {
       const cat = (r.category || "").trim();
       const catAr = (r.categoryAr || "").trim();
       if (!cat && !catAr) return true;
-      return !CATEGORIES.some(
-        (c) =>
-          c.value === cat ||
-          c.valueAr === cat ||
-          c.value === catAr ||
-          c.valueAr === catAr
-      );
+      return !CATEGORIES.some((c) => c.value === cat || c.valueAr === cat || c.value === catAr || c.valueAr === catAr);
     });
-
-    if (uncategorized.length > 0) {
-      groups.push({
-        key: "__other__",
-        icon: "🍴",
-        label: lang === "ar" ? "أخرى" : "Other",
-        items: uncategorized,
-      });
-    }
-
+    if (uncategorized.length > 0) groups.push({ key: "__other__", icon: "🍴", label: lang === "ar" ? "أخرى" : "Other", items: uncategorized });
     return groups;
   }, [filtered, lang]);
 
   const hasFilters = query || cuisineFilter || categoryFilter || tagFilter;
   const total = recipes.length;
 
-  
-
   function openRandomMainDish() {
     setDailyDishOpen(true);
     setIsRolling(true);
     setDailyDish(null);
-
-    // Fake delay for the dice roll effect
     setTimeout(() => {
-      const mainDishes = recipes.filter(
-        (r) => r.category === "Main Dish" || r.categoryAr === "طبق رئيسي" || r.categoryAr === "Main Course" || r.category === "Main Course"
-      );
-      if (mainDishes.length === 0) {
-        alert(lang === "ar" ? "لا توجد أطباق رئيسية" : "No main dishes found!");
-        setDailyDishOpen(false);
-        return;
-      }
-      const randomIndex = Math.floor(Math.random() * mainDishes.length);
-      setDailyDish(mainDishes[randomIndex]);
+      const mainDishes = recipes.filter((r) => r.category === "Main Dish" || r.categoryAr === "طبق رئيسي" || r.categoryAr === "Main Course" || r.category === "Main Course");
+      if (mainDishes.length === 0) { alert(isAr ? ar.home.emptyTitle : "No main dishes found!"); setDailyDishOpen(false); return; }
+      setDailyDish(mainDishes[Math.floor(Math.random() * mainDishes.length)]);
       setIsRolling(false);
-    }, 1200); // 1.2 seconds of rolling
+    }, 1200);
   }
 
   function confirmDailyDish() {
     if (!dailyDish) return;
-    // ONLY navigate when Agree is clicked
     router.push(`/recipes/${dailyDish.id}?today`);
   }
 
@@ -203,97 +162,60 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
     <main className="container">
       <div className="page-head">
         <h1>{t(lang, "home_title")}</h1>
-        <button
-          type="button"
-          onClick={openRandomMainDish}
-          className="btn btn-primary"
-          style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginBottom: "6px" }}
-        >
-          🎲 {lang === "ar" ? "فاجئني" : "Surprise Me"}
+        <button type="button" onClick={openRandomMainDish} className="btn btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginBottom: "6px" }}>
+          🎲 {isAr ? "فاجئني" : "Surprise Me"}
         </button>
-        
       </div>
       <p className="page-sub">
-        {total === 0
-          ? ""
-          : hasFilters
-          ? lang === "ar"
-            ? `${filtered.length} من ${total} وصفة`
-            : `${filtered.length} of ${total} recipes`
-          : total === 1
-          ? t(lang, "recipe_count_one")
-          : t(lang, "recipe_count").replace("{n}", String(total))}
+        {total === 0 ? "" : hasFilters
+          ? (isAr ? `${filtered.length} من ${total} وصفة` : `${filtered.length} of ${total} recipes`)
+          : total === 1 ? t(lang, "recipe_count_one") : t(lang, "recipe_count").replace("{n}", String(total))}
       </p>
 
       {total > 0 && (
-        <div className="filter-bar">
-          <div className="search-wrap">
-            <span className="search-icon">🔍</span>
-            <input
-              type="text"
-              className="search-input"
-              placeholder={lang === "ar" ? "ابحث عن وصفة..." : "Search recipes..."}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-            {query && (
-              <button type="button" className="search-clear" onClick={() => setQuery("")} aria-label="Clear search">✕</button>
-            )}
+        <div className="filter-bar" style={{ display: "block" }}>
+          
+          <div className="filter-top-row">
+            <div className="search-wrap">
+              <span className="search-icon">🔍</span>
+              <input type="text" className="search-input" placeholder={isAr ? ar.home.searchPlaceholder : "Search recipes..."} value={query} onChange={(e) => setQuery(e.target.value)} />
+              {query && <button type="button" className="search-clear" onClick={() => setQuery("")} aria-label="Clear search">✕</button>}
+            </div>
+            
+            <button type="button" className="filter-toggle-small" onClick={() => document.querySelector(".filter-dropdowns")?.classList.toggle("open")}>☰</button>
+            
+            <div className="view-toggle">
+              <button type="button" className={`view-toggle-btn${viewMode === "grid" ? " active" : ""}`} onClick={() => { setViewMode("grid"); localStorage.setItem("recipes_view", "grid"); }}>▦</button>
+              <button type="button" className={`view-toggle-btn${viewMode === "list" ? " active" : ""}`} onClick={() => { setViewMode("list"); localStorage.setItem("recipes_view", "list"); }}>☰</button>
+            </div>
           </div>
 
-          <select className="filter-select" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
-            <option value="">{lang === "ar" ? "كل الفئات" : "All categories"}</option>
-            {CATEGORIES.map((c) => (
-              <option key={c.value} value={c.value}>{c.icon} {lang === "ar" ? c.valueAr : c.value}</option>
-            ))}
-          </select>
+          <div className="filter-dropdowns">
+            <select className="filter-select" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+              <option value="">{isAr ? ar.home.allCategories : "All categories"}</option>
+              {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.icon} {isAr ? c.valueAr : c.value}</option>)}
+            </select>
+            
+            <select className="filter-select" value={cuisineFilter} onChange={(e) => setCuisineFilter(e.target.value)}>
+              <option value="">{isAr ? ar.home.allCuisines : "All cuisines"}</option>
+              {allCuisines.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+            
+            <select className="filter-select" value={tagFilter} onChange={(e) => setTagFilter(e.target.value)}>
+              <option value="">{isAr ? ar.home.allTags : "All tags"}</option>
+              {allTags.map((tag) => <option key={tag} value={tag}>{isAr ? TAG_AR[tag] ?? tag : tag}</option>)}
+            </select>
+            
+            <select className="filter-select" value={sort} onChange={(e) => setSort(e.target.value as SortKey)}>
+              <option value="newest">{isAr ? ar.home.newest : "Newest"}</option>
+              <option value="name-asc">{isAr ? ar.home.nameAsc : "Name A-Z"}</option>
+              <option value="name-desc">{isAr ? ar.home.nameDesc : "Name Z-A"}</option>
+              <option value="time-asc">{isAr ? ar.home.timeAsc : "Fastest first"}</option>
+              <option value="time-desc">{isAr ? ar.home.timeDesc : "Longest first"}</option>
+            </select>
 
-          <select className="filter-select" value={cuisineFilter} onChange={(e) => setCuisineFilter(e.target.value)}>
-            <option value="">{lang === "ar" ? "كل المطابخ" : "All cuisines"}</option>
-            {allCuisines.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
-
-          <select className="filter-select" value={tagFilter} onChange={(e) => setTagFilter(e.target.value)}>
-            <option value="">{lang === "ar" ? "كل الوسوم" : "All tags"}</option>
-            {allTags.map((tag) => (
-              <option key={tag} value={tag}>{lang === "ar" ? TAG_AR[tag] ?? tag : tag}</option>
-            ))}
-          </select>
-
-          <div className="view-toggle">
-            <button
-              type="button"
-              className={`view-toggle-btn${viewMode === "grid" ? " active" : ""}`}
-              onClick={() => { setViewMode("grid"); localStorage.setItem("recipes_view", "grid"); }}
-              aria-label="Grid view"
-              title="Grid view"
-            >
-              ▦
-            </button>
-            <button
-              type="button"
-              className={`view-toggle-btn${viewMode === "list" ? " active" : ""}`}
-              onClick={() => { setViewMode("list"); localStorage.setItem("recipes_view", "list"); }}
-              aria-label="List view"
-              title="List view"
-            >
-              ☰
-            </button>
+            {hasFilters && <button type="button" className="filter-clear" onClick={clearFilters}>{isAr ? ar.home.clear : "Clear"}</button>}
           </div>
-
-          <select className="filter-select" value={sort} onChange={(e) => setSort(e.target.value as SortKey)}>
-            <option value="newest">{lang === "ar" ? "الأحدث" : "Newest"}</option>
-            <option value="name-asc">{lang === "ar" ? "الاسم أ-ي" : "Name A–Z"}</option>
-            <option value="name-desc">{lang === "ar" ? "الاسم ي-أ" : "Name Z–A"}</option>
-            <option value="time-asc">{lang === "ar" ? "الأسرع أولاً" : "Fastest first"}</option>
-            <option value="time-desc">{lang === "ar" ? "الأطول أولاً" : "Longest first"}</option>
-          </select>
-
-          {hasFilters && (
-            <button type="button" className="filter-clear" onClick={clearFilters}>{lang === "ar" ? "مسح" : "Clear"}</button>
-          )}
         </div>
       )}
 
@@ -305,216 +227,125 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
         </div>
       ) : filtered.length === 0 ? (
         <div className="empty">
-          <h2>{lang === "ar" ? "لا نتائج" : "No results"}</h2>
-          <p>{lang === "ar" ? "جرّب كلمات أخرى أو امسح الفلاتر." : "Try different keywords or clear your filters."}</p>
-          <button type="button" className="btn btn-ghost" onClick={clearFilters}>{lang === "ar" ? "مسح الفلاتر" : "Clear filters"}</button>
+          <h2>{isAr ? ar.home.noResults : "No results"}</h2>
+          <p>{isAr ? ar.home.noResultsHint : "Try different keywords or clear your filters."}</p>
+          <button type="button" className="btn btn-ghost" onClick={clearFilters}>{isAr ? "مسح الفلاتر" : "Clear filters"}</button>
         </div>
       ) : (
         <>
-        {viewMode === "grid" && (
-        <div className="category-sections">
-          {grouped.map((group) => (
-            <section key={group.key} className="category-section">
-              <div className="category-section-head">
-                <h2 className="category-section-title">
-                  <span className="category-section-icon">{group.icon}</span>
-                  <span>{group.label}</span>
-                </h2>
-                <span className="category-section-count">{group.items.length}</span>
-              </div>
-              <div className="category-section-line" />
-              <div className="recipe-grid">
-                {group.items.map((r) => {
-                  const tags: string[] = r.dietaryTags ? JSON.parse(r.dietaryTags) : [];
-                  const displayName = pick(lang, r.name, r.nameAr);
-                  const displayCuisine = pick(lang, r.cuisine, r.cuisineAr);
-                  const flagUrl = cuisineFlagUrl(r.cuisine) || cuisineFlagUrl(r.cuisineAr);
-                  const hasVideo = !!(r.videoUrl && r.videoUrl.trim());
-
-                  return (
-                    <Link key={r.id} href={`/recipes/${r.id}`} className="recipe-card">
-                      <div className="recipe-card-img-wrap">
-                        {r.imageUrl ? (
-                          <div className="img-with-watermark">
-                            <img src={r.imageUrl} alt={displayName} className="recipe-card-img" loading="lazy" decoding="async" />
-                            {logoUrl && <img src={logoUrl} alt="" className="watermark" />}
+          {viewMode === "grid" && (
+            <div className="category-sections">
+              {grouped.map((group) => (
+                <section key={group.key} className="category-section">
+                  <div className="category-section-head">
+                    <h2 className="category-section-title">
+                      <span className="category-section-icon">{group.icon}</span>
+                      <span>{group.label}</span>
+                    </h2>
+                    <span className="category-section-count">{group.items.length}</span>
+                  </div>
+                  <div className="category-section-line" />
+                  <div className="recipe-grid">
+                    {group.items.map((r) => {
+                      const tags: string[] = r.dietaryTags ? JSON.parse(r.dietaryTags) : [];
+                      const displayName = pick(lang, r.name, r.nameAr);
+                      const displayCuisine = pick(lang, r.cuisine, r.cuisineAr);
+                      const flagUrl = cuisineFlagUrl(r.cuisine) || cuisineFlagUrl(r.cuisineAr);
+                      const hasVideo = !!(r.videoUrl && r.videoUrl.trim());
+                      return (
+                        <Link key={r.id} href={`/recipes/${r.id}`} className="recipe-card">
+                          <div className="recipe-card-img-wrap">
+                            {r.imageUrl ? (
+                              <div className="img-with-watermark">
+                                <img src={r.imageUrl} alt={displayName} className="recipe-card-img" loading="lazy" decoding="async" />
+                                {logoUrl && <img src={logoUrl} alt="" className="watermark" />}
+                              </div>
+                            ) : <div className="recipe-card-img" />}
+                            {hasVideo && <span className="recipe-card-video-emoji" title={isAr ? "يحتوي على فيديو" : "Has video"}>🎬</span>}
                           </div>
-                        ) : (
-                          <div className="recipe-card-img" />
-                        )}
-                        {hasVideo && (
-                          <span
-                            className="recipe-card-video-emoji"
-                            title={lang === "ar" ? "يحتوي على فيديو" : "Has video"}
-                          >
-                            🎬
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="recipe-card-body">
-                        <div className="recipe-card-head">
-                          <div className="recipe-card-text">
-                            <h3>{displayName}</h3>
-                            {displayCuisine && (
-                              <span className="recipe-card-cuisine">{displayCuisine}</span>
+                          <div className="recipe-card-body">
+                            <div className="recipe-card-head">
+                              <div className="recipe-card-text">
+                                <h3>{displayName}</h3>
+                                {displayCuisine && <span className="recipe-card-cuisine">{displayCuisine}</span>}
+                              </div>
+                              {flagUrl && <img src={flagUrl} alt={displayCuisine} className="recipe-card-flag" loading="lazy" />}
+                            </div>
+                            <div className="recipe-card-meta">
+                              <span>⏱ {r.prepTime + r.cookTime} {isAr ? "د" : "min"}</span>
+                              <span>🍽 {r.servings}</span>
+                            </div>
+                            {tags.length > 0 && (
+                              <div className="recipe-card-tags">
+                                {tags.slice(0, 3).map((tag) => <span key={tag} className="chip">{isAr ? TAG_AR[tag] ?? tag : tag}</span>)}
+                              </div>
                             )}
                           </div>
-                          {flagUrl && (
-                            <img src={flagUrl} alt={displayCuisine} className="recipe-card-flag" loading="lazy" />
-                          )}
-                        </div>
-
-                        <div className="recipe-card-meta">
-                          <span>⏱ {r.prepTime + r.cookTime} {lang === "ar" ? "د" : "min"}</span>
-                          <span>🍽 {r.servings}</span>
-                        </div>
-
-                        {tags.length > 0 && (
-                          <div className="recipe-card-tags">
-                            {tags.slice(0, 3).map((tag) => (
-                              <span key={tag} className="chip">
-                                {lang === "ar" ? TAG_AR[tag] ?? tag : tag}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </section>
-          ))}
-        </div>
-        )}
-
-        {viewMode === "list" && (
-          <div className="recipe-list">
-            {filtered.map((r) => {
-              const tags: string[] = r.dietaryTags ? JSON.parse(r.dietaryTags) : [];
-              const displayName = pick(lang, r.name, r.nameAr);
-              const displayCuisine = pick(lang, r.cuisine, r.cuisineAr);
-              const hasVideo = !!(r.videoUrl && r.videoUrl.trim());
-              return (
-                <Link key={r.id} href={`/recipes/${r.id}`} className="recipe-list-item">
-                  <div className="recipe-list-img">
-                    {r.imageUrl ? (
-                      <img src={r.imageUrl} alt={displayName} loading="lazy" decoding="async" />
-                    ) : (
-                      <div className="recipe-list-img-placeholder" />
-                    )}
-                    {hasVideo && <span className="recipe-list-video">🎬</span>}
+                        </Link>
+                      );
+                    })}
                   </div>
-                  <div className="recipe-list-body">
-                    <h3>{displayName}</h3>
-                    <div className="recipe-list-meta">
-                      {displayCuisine && <span>{displayCuisine}</span>}
-                      <span>⏱ {r.prepTime + r.cookTime} {lang === "ar" ? "د" : "min"}</span>
-                      <span>🍽 {r.servings}</span>
+                </section>
+              ))}
+            </div>
+          )}
+
+          {viewMode === "list" && (
+            <div className="recipe-list">
+              {filtered.map((r) => {
+                const tags: string[] = r.dietaryTags ? JSON.parse(r.dietaryTags) : [];
+                const displayName = pick(lang, r.name, r.nameAr);
+                const displayCuisine = pick(lang, r.cuisine, r.cuisineAr);
+                const hasVideo = !!(r.videoUrl && r.videoUrl.trim());
+                return (
+                  <Link key={r.id} href={`/recipes/${r.id}`} className="recipe-list-item">
+                    <div className="recipe-list-img">
+                      {r.imageUrl ? <img src={r.imageUrl} alt={displayName} loading="lazy" decoding="async" /> : <div className="recipe-list-img-placeholder" />}
+                      {hasVideo && <span className="recipe-list-video">🎬</span>}
                     </div>
-                    {tags.length > 0 && (
-                      <div className="recipe-list-tags">
-                        {tags.slice(0, 3).map((tag) => (
-                          <span key={tag} className="chip">
-                            {lang === "ar" ? TAG_AR[tag] ?? tag : tag}
-                          </span>
-                        ))}
+                    <div className="recipe-list-body">
+                      <h3>{displayName}</h3>
+                      <div className="recipe-list-meta">
+                        {displayCuisine && <span>{displayCuisine}</span>}
+                        <span>⏱ {r.prepTime + r.cookTime} {isAr ? "د" : "min"}</span>
+                        <span>🍽 {r.servings}</span>
                       </div>
-                    )}
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        )}
-
-        {viewMode === "list" && (
-          <div className="recipe-list">
-            {filtered.map((r) => {
-              const tags: string[] = r.dietaryTags ? JSON.parse(r.dietaryTags) : [];
-              const displayName = pick(lang, r.name, r.nameAr);
-              const displayCuisine = pick(lang, r.cuisine, r.cuisineAr);
-              const hasVideo = !!(r.videoUrl && r.videoUrl.trim());
-              return (
-                <Link key={r.id} href={`/recipes/${r.id}`} className="recipe-list-item">
-                  <div className="recipe-list-img">
-                    {r.imageUrl ? (
-                      <img src={r.imageUrl} alt={displayName} loading="lazy" decoding="async" />
-                    ) : (
-                      <div className="recipe-list-img-placeholder" />
-                    )}
-                    {hasVideo && <span className="recipe-list-video">🎬</span>}
-                  </div>
-                  <div className="recipe-list-body">
-                    <h3>{displayName}</h3>
-                    <div className="recipe-list-meta">
-                      {displayCuisine && <span>{displayCuisine}</span>}
-                      <span>⏱ {r.prepTime + r.cookTime} {lang === "ar" ? "د" : "min"}</span>
-                      <span>🍽 {r.servings}</span>
+                      {tags.length > 0 && (
+                        <div className="recipe-list-tags">
+                          {tags.slice(0, 3).map((tag) => <span key={tag} className="chip">{isAr ? TAG_AR[tag] ?? tag : tag}</span>)}
+                        </div>
+                      )}
                     </div>
-                    {tags.length > 0 && (
-                      <div className="recipe-list-tags">
-                        {tags.slice(0, 3).map((tag) => (
-                          <span key={tag} className="chip">
-                            {lang === "ar" ? TAG_AR[tag] ?? tag : tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        )}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
         </>
       )}
-    
+
       {/* DISH OF THE DAY MODAL */}
       {dailyDishOpen && (
-        <div
-          onClick={() => { if (!isRolling) setDailyDishOpen(false); }}
-          style={{ position: "fixed", inset: 0, zIndex: 999, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(6px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{ background: "var(--surface-solid)", borderRadius: 16, overflow: "hidden", maxWidth: 420, width: "100%", border: "1px solid var(--line-strong)", boxShadow: "var(--shadow-lg)", minHeight: 300, display: "flex", flexDirection: "column", justifyContent: "center" }}
-          >
+        <div onClick={() => { if (!isRolling) setDailyDishOpen(false); }} style={{ position: "fixed", inset: 0, zIndex: 999, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(6px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ background: "var(--surface-solid)", borderRadius: 16, overflow: "hidden", maxWidth: 420, width: "100%", border: "1px solid var(--line-strong)", boxShadow: "var(--shadow-lg)", minHeight: 300, display: "flex", flexDirection: "column", justifyContent: "center" }}>
             {isRolling ? (
               <div style={{ padding: 40, textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
                 <div style={{ fontSize: 64, animation: "spin 1s linear infinite" }}>🎲</div>
-                <h2 style={{ fontSize: 20, margin: 0 }}>
-                  {lang === "ar" ? "جاري اختيار الطبق..." : "Rolling the dice..."}
-                </h2>
+                <h2 style={{ fontSize: 20, margin: 0 }}>{isAr ? "جاري اختيار الطبق..." : "Rolling the dice..."}</h2>
                 <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
               </div>
             ) : dailyDish ? (
               <>
                 {dailyDish.imageUrl ? (
                   <img src={dailyDish.imageUrl} alt={pick(lang, dailyDish.name, dailyDish.nameAr)} style={{ width: "100%", height: 220, objectFit: "cover" }} />
-                ) : (
-                  <div style={{ width: "100%", height: 220, background: "var(--line)" }} />
-                )}
-                
+                ) : <div style={{ width: "100%", height: 220, background: "var(--line)" }} />}
                 <div style={{ padding: 24, textAlign: "center" }}>
-                  <h2 style={{ fontSize: 24, margin: "0 0 8px", fontFamily: "var(--font-head)" }}>
-                    {pick(lang, dailyDish.name, dailyDish.nameAr)}
-                  </h2>
-                  <p style={{ color: "var(--muted)", margin: "0 0 24px", fontSize: 14 }}>
-                    {lang === "ar" ? "هل توافق على هذا الطبق لليوم؟" : "Do you agree to make this the dish of the day?"}
-                  </p>
-                  
+                  <h2 style={{ fontSize: 24, margin: "0 0 8px", fontFamily: "var(--font-head)" }}>{pick(lang, dailyDish.name, dailyDish.nameAr)}</h2>
+                  <p style={{ color: "var(--muted)", margin: "0 0 24px", fontSize: 14 }}>{isAr ? "هل توافق على هذا الطبق لليوم؟" : "Do you agree to make this the dish of the day?"}</p>
                   <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                    <button className="btn btn-ghost" onClick={openRandomMainDish} style={{ flex: 1, padding: 12 }}>
-                      🎲 {lang === "ar" ? "رمي النرد" : "Re-roll"}
-                    </button>
-                    <button className="btn btn-ghost" onClick={() => setDailyDishOpen(false)} style={{ flex: 1, padding: 12 }}>
-                      {lang === "ar" ? "إلغاء" : "Cancel"}
-                    </button>
-                    <button className="btn btn-primary" onClick={confirmDailyDish} style={{ flex: 1, padding: 12 }}>
-                      {lang === "ar" ? "موافق" : "Agree"}
-                    </button>
+                    <button className="btn btn-ghost" onClick={openRandomMainDish} style={{ flex: 1, padding: 12 }}>🎲 {isAr ? "رمي النرد" : "Re-roll"}</button>
+                    <button className="btn btn-ghost" onClick={() => setDailyDishOpen(false)} style={{ flex: 1, padding: 12 }}>{isAr ? "إلغاء" : "Cancel"}</button>
+                    <button className="btn btn-primary" onClick={confirmDailyDish} style={{ flex: 1, padding: 12 }}>{isAr ? "موافق" : "Agree"}</button>
                   </div>
                 </div>
               </>
