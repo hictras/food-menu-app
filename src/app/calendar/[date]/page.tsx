@@ -74,8 +74,10 @@ export default function DayPage() {
 
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    fetch("/api/auth/me").then(r => r.json()).then(d => setIsAdmin(d.admin)).catch(() => {});
     if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
       setLoading(false);
       return;
@@ -109,7 +111,7 @@ export default function DayPage() {
           </Link>
         </div>
       {dateStr && (
-        <DayReviews date={dateStr} />
+        <DayReviews date={dateStr} isAdmin={isAdmin} />
       )}
     </main>
     );
@@ -226,7 +228,7 @@ export default function DayPage() {
         </div>
       )}
       {dateStr && (
-        <DayReviews date={dateStr} />
+        <DayReviews date={dateStr} isAdmin={isAdmin} />
       )}
     </main>
   );

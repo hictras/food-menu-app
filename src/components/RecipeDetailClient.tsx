@@ -250,7 +250,7 @@ export default function RecipeDetailClient({
         </section>
       </div>
 
-      <RecipeReviews recipeId={recipe.id} />
+      <RecipeReviews recipeId={recipe.id} isAdmin={isAdmin} />
 
       <CookMode
         open={cookModeOpen}

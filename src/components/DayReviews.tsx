@@ -19,7 +19,7 @@ type Data = {
   reviews: Review[];
 };
 
-export default function DayReviews({ date }: { date: string }) {
+export default function DayReviews({ date, isAdmin }: { date: string; isAdmin?: boolean }) {
   const { lang } = useLang();
   const isAr = lang === "ar";
 
@@ -50,6 +50,9 @@ export default function DayReviews({ date }: { date: string }) {
           if (d.mine) {
             setRating(d.mine.rating);
             setComment(d.mine.comment || "");
+          } else {
+            setRating(0);
+            setComment("");
           }
         }
         setLoading(false);
@@ -59,7 +62,6 @@ export default function DayReviews({ date }: { date: string }) {
 
   useEffect(() => {
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date]);
 
   async function verifyPhone() {
@@ -105,6 +107,12 @@ export default function DayReviews({ date }: { date: string }) {
     } finally {
       setSubmitting(false);
     }
+  }
+
+  async function deleteReview(id: number) {
+    if (!window.confirm(isAr ? ar.dayReviews.deleteConfirm : "Delete this review?")) return;
+    await fetch(`/api/reviews/day/${date}?reviewId=${id}`, { method: "DELETE" });
+    load();
   }
 
   if (loading) return null;
@@ -195,11 +203,11 @@ export default function DayReviews({ date }: { date: string }) {
       {data.reviews.length > 0 && (
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {data.reviews.map((r, i) => (
-            <div key={r.id} style={{ display: "flex", gap: 12 }}>
+            <div key={`${r.id}-${i}`} style={{ display: "flex", gap: 12 }}>
               <div style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--surface-2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, color: "var(--muted)", flexShrink: 0 }}>
                 {(r.name || "?")[0].toUpperCase()}
               </div>
-              <div>
+              <div style={{ flex: 1 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
                   <span style={{ fontSize: 13, fontWeight: 600 }}>{r.name || (isAr ? ar.dayReviews.familyMember : "Family Member")}</span>
                   <span style={{ fontSize: 11, color: "var(--muted)" }}>{new Date(r.updatedAt).toLocaleDateString()}</span>
@@ -208,6 +216,12 @@ export default function DayReviews({ date }: { date: string }) {
                   {"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}
                 </div>
                 {r.comment && <p style={{ fontSize: 13, color: "var(--ink-soft)", lineHeight: 1.5, margin: 0 }}>{r.comment}</p>}
+                
+                {isAdmin && (
+                  <button onClick={() => deleteReview(r.id)} style={{ background: "none", border: "none", color: "var(--accent)", cursor: "pointer", fontSize: 12, marginTop: 6, padding: 0 }}>
+                    🗑 {isAr ? ar.dayReviews.deleteBtn : "Delete"}
+                  </button>
+                )}
               </div>
             </div>
           ))}
