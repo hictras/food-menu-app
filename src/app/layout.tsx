@@ -44,6 +44,18 @@ const inlineBootstrap = `
     var lang = localStorage.getItem("lang") || "en";
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+
+    // Device Tracker
+    var visitorId = localStorage.getItem("visitor_id");
+      visitorId = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      localStorage.setItem("visitor_id", visitorId);
+    }
+    fetch("/api/visitors", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: visitorId })
+    }).catch(function(){});
+
   } catch(e) {}
 })();
 `;

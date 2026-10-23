@@ -742,6 +742,10 @@ export const ar = {
   },
 
   settingsPage: {
+    devices: "الأجهزة",
+    devicesCount: "جهاز",
+    noDevices: "لا توجد أجهزة مسجلة بعد.",
+    lastSeen: "آخر ظهور",
     title: "الإعدادات",
     branding: "الهوية",
     logo: "الشعار",
@@ -774,6 +778,7 @@ export const ar = {
   },
 
   pushPresets: {
+    devices: "الأجهزة",
     title: "إدارة القوالب",
     newPreset: "قالب جديد",
     editPreset: "تعديل القالب",

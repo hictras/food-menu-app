@@ -66,7 +66,8 @@ export default function SettingsPage() {
   const [config, setConfig] = useState<Settings>(DEFAULT);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<"branding" | "typography" | "colors" | "noDish">("branding");
+  const [devices, setDevices] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState<"branding" | "typography" | "colors" | "noDish" | "devices">("branding");
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -78,6 +79,7 @@ export default function SettingsPage() {
   }, [router]);
 
   function load() {
+    fetch("/api/visitors").then(r => r.json()).then(d => setDevices(d.devices || []));
     fetch("/api/settings")
       .then((res) => res.json())
       .then((data) => {
@@ -141,6 +143,11 @@ export default function SettingsPage() {
         <button type="button" className={`btn ${activeTab === "noDish" ? "btn-primary" : "btn-ghost"}`} onClick={() => setActiveTab("noDish")}>
           {lang === "ar" ? ar.settingsPage.noDishTab : "No Dish Today"}
         </button>
+        <button type="button" className={`btn ${activeTab === "devices" ? "btn-primary" : "btn-ghost"}`} onClick={() => setActiveTab("devices")}>
+          {lang === "ar" ? ar.settingsPage.devices : "Devices"}
+        </button>
+        
+        
       </div>
 
       <div className="form-card">
@@ -198,11 +205,11 @@ export default function SettingsPage() {
           </div>
         )}
 
-        <div style={{ marginTop: 24, paddingTop: 24, borderTop: "1px solid var(--line)" }}>
+        {activeTab !== "devices" && (<div style={{ marginTop: 24, paddingTop: 24, borderTop: "1px solid var(--line)" }}>
           <button className="btn btn-primary" onClick={handleSave} disabled={saving} style={{ width: "100%", padding: 12 }}>
             {saving ? (lang === "ar" ? ar.settingsPage.saving : "Saving...") : (lang === "ar" ? ar.settingsPage.save : "Save Changes")}
           </button>
-        </div>
+        </div>)}
       </div>
     </main>
   );
