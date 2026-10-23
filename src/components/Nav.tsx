@@ -164,7 +164,10 @@ export default function Nav() {
                     🍽 {lang === "ar" ? "لا طبق اليوم" : "No Dish page"}
                   </Link>
                   <div className="nav-menu-divider" />
-                  <button
+                  <Link className="mobile-nav-link" href="/visitors" onClick={closeAll}>
+                <span>📱</span> {lang === "ar" ? ar.visitorsPage.title : "Devices Log"}
+              </Link>
+              <button
                     type="button"
                     onClick={logout}
                     className="nav-menu-item nav-menu-danger"
@@ -240,6 +243,12 @@ export default function Nav() {
               </Link>
               <Link className="mobile-nav-link" href="/no-dish-today" onClick={closeAll}>
                 <span>🍽</span> {lang === "ar" ? "لا طبق اليوم" : "No Dish page"}
+              </Link>
+              <Link className="mobile-nav-link" href="/visitors" onClick={closeAll}>
+                <span>📱</span> {lang === "ar" ? ar.visitorsPage.title : "Devices Log"}
+              <Link className="mobile-nav-link" href="/visitors" onClick={closeAll}>
+                <span>📱</span> {lang === "ar" ? ar.visitorsPage.title : "Devices Log"}
+              </Link>
               </Link>
               <button
                 type="button"
