@@ -150,6 +150,7 @@ export default function Nav() {
                   <Link href="/admin" className="nav-menu-item" onClick={closeAll}>
                     {lang === "ar" ? ar.nav.sendPush : "Send Push"}
                   </Link>
+                  <Link href="/visitors" className="nav-menu-item">{lang === "ar" ? ar.visitorsPage.title : "Devices Log"}</Link>
                   <Link href="/recipients" className="nav-menu-item" onClick={closeAll}>
                     {lang === "ar" ? ar.nav.recipients : "Recipients"}
                   </Link>

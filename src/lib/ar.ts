@@ -821,6 +821,20 @@ export const ar = {
   },
   yesterdayBtn: "أمس",
 
+  visitorsPage: {
+    title: "سجل الأجهزة",
+    subtitle: "قائمة بجميع الأجهزة التي فتحت التطبيق",
+    totalDevices: "جهاز",
+    refresh: "تحديث",
+    name: "الاسم",
+    phone: "الهاتف",
+    lastSeen: "آخر ظهور",
+    unknown: "زائر غير معروف",
+    noDevices: "لا توجد أجهزة مسجلة بعد.",
+    loading: "جاري التحميل...",
+  },
+
+
 } as const;
 
 export type Ar = typeof ar;

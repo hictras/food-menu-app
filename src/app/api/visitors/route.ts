@@ -1,22 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/db";
-import { visitors } from "@/db/schema";
-import { desc } from "drizzle-orm";
+import { visitors, pushSubscriptions } from "@/db/schema";
+import { desc, eq } from "drizzle-orm";
 
 export async function POST(req: NextRequest) {
   try {
     const db = getDb();
-    const { id } = await req.json();
+    const { id, phone } = await req.json();
     if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
 
-    await db.insert(visitors).values({ id }).onConflictDoUpdate({
+    await db.insert(visitors).values({ id, phone }).onConflictDoUpdate({
       target: visitors.id,
-      set: { lastSeen: new Date().toISOString() },
+      set: { lastSeen: new Date().toISOString(), phone: phone || null },
     });
 
-    const all = await db.select().from(visitors);
-    return NextResponse.json({ count: all.length });
+    return NextResponse.json({ ok: true });
   } catch (err) {
+    console.error("POST visitor error:", err);
     return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }
@@ -24,9 +24,22 @@ export async function POST(req: NextRequest) {
 export async function GET() {
   try {
     const db = getDb();
-    const all = await db.select().from(visitors).orderBy(desc(visitors.lastSeen));
-    return NextResponse.json({ count: all.length, devices: all });
+    
+    // Join with pushSubscriptions to get the name
+    const all = await db
+      .select({
+        id: visitors.id,
+        phone: visitors.phone,
+        lastSeen: visitors.lastSeen,
+        name: pushSubscriptions.name,
+      })
+      .from(visitors)
+      .leftJoin(pushSubscriptions, eq(visitors.phone, pushSubscriptions.phoneNumber))
+      .orderBy(desc(visitors.lastSeen));
+      
+    return NextResponse.json(all);
   } catch (err) {
-    return NextResponse.json({ error: "Failed" }, { status: 500 });
+    console.error("GET visitor error:", err);
+    return NextResponse.json([], { status: 500 });
   }
 }

@@ -48,7 +48,7 @@ export default function AdminSender() {
     fetch("/api/recipes").then(res => res.json()).then(data => setRecipes(Array.isArray(data) ? data : []));
     fetch("/api/recipients").then(res => res.json()).then(data => setRecipients(Array.isArray(data) ? data : []));
     fetch("/api/recipients/groups").then(res => res.json()).then(data => setGroups(Array.isArray(data) ? data : []));
-    fetch("/api/visitors").then(res => res.json()).then(data => setVisitorCount(data.count));
+    fetch("/api/visitors").then(res => res.json()).then(data => setVisitorCount(data.count || 0)).catch(() => {});
     fetch("/api/push/presets").then(res => res.json()).then(data => setPresets(Array.isArray(data) ? data : []));
   }, []);
 
@@ -202,7 +202,7 @@ export default function AdminSender() {
         <h1>{isAr ? ar.pushPresets.title : "Send Push Notification"}</h1>
         {visitorCount !== null && (
           <div style={{ fontSize: 13, color: "var(--muted)", background: "var(--surface-2)", padding: "4px 12px", borderRadius: 999, border: "1px solid var(--line)" }}>
-            📱 {isAr ? ar.pushPresets.devices : "Devices"}: <strong style={{ color: "var(--ink)" }}>{visitorCount}</strong>
+            📱 {isAr ? ar.settingsPage.devices : "Devices"}: <strong style={{ color: "var(--ink)" }}>{visitorCount}</strong>
           </div>
         )}
         <button type="button" className="btn btn-ghost" onClick={() => setShowPresetManager(!showPresetManager)}>
