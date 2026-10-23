@@ -57,6 +57,7 @@ export default function RecipeDetailClient({
   const isAr = lang === "ar";
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
+  const formattedLastMade = lastMadeDate ? lastMadeDate.split("-").reverse().join("-") : null;
   const [cookModeOpen, setCookModeOpen] = useState(false);
 
   const tags: string[] = recipe.dietaryTags ? Array.from(new Set(JSON.parse(recipe.dietaryTags))) : [];
@@ -112,114 +113,65 @@ export default function RecipeDetailClient({
         </div>
       )}
 
-      <header className="detail-head">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
-          
-            <h1 style={{ margin: 0 }}>{displayName}</h1>
-            
-            {lastMadeDate && (
-              <Link 
-                href={`/recipes/${recipe.id}/history`} 
-                style={{ 
-                  display: "inline-flex", 
-                  alignItems: "center", 
-                  gap: "6px", 
-                  background: "var(--surface-2)", 
-                  border: "1px solid var(--line-strong)", 
-                  padding: "4px 12px", 
-                  borderRadius: "999px", 
-                  fontSize: "12px", 
-                  fontWeight: 600,
-                  color: "var(--accent)",
-                  textDecoration: "none",
-                  width: "fit-content",
-                  transition: "all 0.15s",
-                  marginTop: "4px"
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "var(--accent-soft)"; e.currentTarget.style.borderColor = "var(--accent)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "var(--surface-2)"; e.currentTarget.style.borderColor = "var(--line-strong)"; }}
-              >
-                🕒 {isAr ? ar.history.lastTimeMade : "Last time made:"} <strong>{lastMadeDate}</strong>
-              </Link>
-            )}
+      <header className="detail-head" style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 24 }}>
+        
+        {/* Row 1: Title and Share */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", width: "100%" }}>
+          <h1 style={{ margin: 0, fontSize: 36, fontFamily: "var(--font-head)", fontWeight: 400, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            {displayName}
+          </h1>
+          <button type="button" className="btn btn-ghost" onClick={() => shareToWhatsApp(false)} style={{ height: 42, padding: "0 16px", borderRadius: 8, fontSize: 13, display: "inline-flex", alignItems: "center", gap: 6, border: "1px solid var(--line)", background: "var(--surface)", color: "var(--ink)", cursor: "pointer", flexShrink: 0 }}>
+            💬 {isAr ? ar.share : "Share"}
+          </button>
+        </div>
 
-            
-            
-            
-            
-            
-            
-            
-          <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
-            {instructions.length > 0 && (
-              <button type="button" className="btn btn-primary" onClick={() => setCookModeOpen(true)}>
-                🍳 {lang === "ar" ? ar.cookMode.start : "Start Cooking"}
-              </button>
-            )}
-            <button type="button" className="btn btn-ghost" onClick={() => shareToWhatsApp(false)}>
-              💬 {lang === "ar" ? "مشاركة" : "Share"}
-            </button>
+        {/* Row 2: Badge and Start Cooking + Admin buttons */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+          
+          {lastMadeDate && (
+            <Link 
+              href={`/recipes/${recipe.id}/history`} 
+              style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--surface-2)", border: "1px solid var(--line-strong)", padding: "6px 14px", borderRadius: 999, fontSize: 13, fontWeight: 600, color: "var(--accent)", textDecoration: "none", whiteSpace: "nowrap", height: 42, boxSizing: "border-box" }}
+            >
+              🕒 {isAr ? ar.history.lastTimeMade : "Last time made:"} <strong>{formattedLastMade}</strong>
+            </Link>
+          )}
+
+          <div style={{ display: "flex", gap: 8, marginInlineStart: "auto" }}>
             {isAdmin && (
               <>
-                <button type="button" className="btn btn-ghost" onClick={() => shareToWhatsApp(true)}>
-                  ✨ {lang === "ar" ? "مشاركة كوصفة اليوم" : "Share as Today"}
+                <button type="button" className="btn btn-ghost" onClick={() => shareToWhatsApp(true)} style={{ height: 42, padding: "0 16px", borderRadius: 8, fontSize: 13, display: "inline-flex", alignItems: "center", gap: 6, border: "1px solid var(--line)", background: "var(--surface)", color: "var(--ink)", cursor: "pointer" }}>
+                  ✨ {isAr ? ar.today : "Today"}
                 </button>
-                <Link href={`/recipes/${recipe.id}/edit`} className="btn btn-ghost">{t(lang, "edit")}</Link>
-                <button type="button" className="btn btn-danger" onClick={handleDelete} disabled={deleting}>
-                  {deleting ? "…" : lang === "ar" ? "🗑 حذف" : "🗑 Delete"}
+                <Link href={`/recipes/${recipe.id}/edit`} className="btn btn-ghost" style={{ height: 42, padding: "0 16px", borderRadius: 8, fontSize: 13, display: "inline-flex", alignItems: "center", gap: 6, border: "1px solid var(--line)", background: "var(--surface)", color: "var(--ink)", textDecoration: "none" }}>
+                  {t(lang, "edit")}
+                </Link>
+                <button type="button" className="btn btn-danger" onClick={handleDelete} disabled={deleting} style={{ height: 42, padding: "0 16px", borderRadius: 8, fontSize: 13, display: "inline-flex", alignItems: "center", gap: 6, border: "1px solid rgba(255, 107, 74, 0.4)", background: "transparent", color: "var(--accent)", cursor: "pointer" }}>
+                  {deleting ? "…" : "🗑"}
                 </button>
               </>
             )}
+
+            {instructions.length > 0 && (
+              <button 
+                type="button" 
+                className="btn btn-primary" 
+                onClick={() => setCookModeOpen(true)}
+                style={{ height: 42, padding: "0 16px", borderRadius: 8, fontSize: 13, display: "inline-flex", alignItems: "center", gap: 6, border: "1px solid var(--ink)", background: "var(--ink)", color: "var(--bg)", cursor: "pointer" }}
+              >
+                🍳 {isAr ? ar.cookMode.start : "Start Cooking"}
+              </button>
+            )}
           </div>
         </div>
-
-        
-
-        {displayDesc && (
-          <>
-            <div className="detail-desc-divider" />
-            <p className="detail-desc">{displayDesc}</p>
-          </>
-        )}
-
-        <div className="detail-meta">
-          {catLabel && (
-            <div className="meta-item">
-              <span className="meta-label">{lang === "ar" ? "الفئة" : "Category"}</span>
-              <span className="meta-value">{catIcon} {catLabel}</span>
-            </div>
-          )}
-          <div className="meta-item"><span className="meta-label">{t(lang, "prep")}</span><span className="meta-value">{recipe.prepTime} {minLabel}</span></div>
-          <div className="meta-item"><span className="meta-label">{t(lang, "cook")}</span><span className="meta-value">{recipe.cookTime} {minLabel}</span></div>
-          <div className="meta-item"><span className="meta-label">{t(lang, "min_total")}</span><span className="meta-value">{recipe.prepTime + recipe.cookTime} {minLabel}</span></div>
-          <div className="meta-item"><span className="meta-label">{t(lang, "servings")}</span><span className="meta-value">{recipe.servings}</span></div>
-          {displayCuisine && (
-            <div className="meta-item"><span className="meta-label">{t(lang, "cuisine")}</span><span className="meta-value">{displayCuisine}</span></div>
-          )}
-        </div>
-
-        {displayServedWith && (
-          <div className="serve-note">
-            <div className="serve-label">{lang === "ar" ? "يقدم مع" : "Served with"}</div>
-            <div className="serve-value">{displayServedWith}</div>
-          </div>
-        )}
-
-        {displayHowToServe && (
-          <div className="serve-note">
-            <div className="serve-label">{lang === "ar" ? "طريقة التقديم" : "How to serve"}</div>
-            <div className="serve-value">{displayHowToServe}</div>
-          </div>
-        )}
-
-        {tags.length > 0 && (
-          <div className="chips" style={{ marginTop: 16 }}>
-            {tags.map((tag) => (
-              <span key={tag} className="chip active">{lang === "ar" ? TAG_AR[tag] ?? tag : tag}</span>
-            ))}
-          </div>
-        )}
       </header>
+
+      {displayDesc && (
+        <>
+          <div className="detail-desc-divider" />
+          <p className="detail-desc">{displayDesc}</p>
+        </>
+      )}
 
       {recipe.videoUrl && (
         <section className="video-section">

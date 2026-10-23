@@ -3099,3 +3099,293 @@ html[data-theme="light"] .cook-overlay {
 .nav-link {
   font-size: 13.5px !important;
 }
+
+/* Hide button text on small mobile screens to keep them in one row */
+@media (max-width: 500px) {
+  .btn .nav-desktop-only {
+    display: none !important;
+  }
+}
+
+/* Recipe action bar responsive styling */
+.recipe-actions {
+  gap: 8px;
+}
+.recipe-actions .btn {
+  height: 42px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  min-width: max-content;
+}
+
+/* On mobile, make them share space equally */
+@media (max-width: 600px) {
+  .recipe-actions {
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .recipe-actions .btn {
+    flex: 1;
+    padding: 0 8px;
+    min-width: 0;
+  }
+  .recipe-actions .btn-danger {
+    flex: 0.6;
+  }
+  .recipe-actions .nav-desktop-only {
+    display: none !important;
+  }
+}
+
+/* --- RECIPE DETAIL HEADER FIXES --- */
+
+/* Force title and badge to stay on the same line */
+.detail-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap; /* Force 1 line */
+  width: 100%;
+}
+
+.detail-title-row h1 {
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Add ... if the name is too long */
+  flex: 1;
+}
+
+.last-made-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0; /* Prevents the badge from shrinking */
+}
+
+/* Hide the text part of the badge on mobile */
+@media (max-width: 600px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+  .last-made-badge {
+    padding: 6px 10px; /* Make it a smaller circle on mobile */
+  }
+  .recipe-actions {
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .recipe-actions .btn {
+    flex: 1;
+    padding: 0 8px;
+    min-width: 0;
+  }
+  .recipe-actions .btn-danger {
+    flex: 0.6;
+  }
+  .recipe-actions .nav-desktop-only {
+    display: none !important;
+  }
+}
+
+/* ========== RECIPE HEADER FIX ========== */
+
+.detail-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.detail-title-row h1 {
+  margin: 0;
+  flex: 1; 
+  min-width: 0; /* Crucial: allows flex child to shrink and text-overflow to work */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.last-made-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0; /* Prevents the badge from shrinking */
+  transition: all 0.15s;
+}
+
+.last-made-badge:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+  .last-made-badge {
+    padding: 6px 10px;
+  }
+}
+
+/* ========== ACTION BAR BUTTONS ========== */
+.recipe-actions {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.recipe-actions .btn {
+  height: 42px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  min-width: max-content;
+}
+
+@media (max-width: 640px) {
+  .recipe-actions {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .recipe-actions .btn {
+    flex: 1;
+    padding: 0 8px;
+    min-width: 0;
+  }
+  .recipe-actions .btn-danger {
+    flex: 0.6;
+  }
+  .recipe-actions .nav-desktop-only {
+    display: none !important;
+  }
+}
+
+/* ========== RECIPE HEADER & BUTTONS (FINAL) ========== */
+
+.detail-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+  width: 100%;
+  margin-bottom: 16px;
+}
+.detail-title-row h1 {
+  margin: 0;
+  flex: 1; 
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 32px;
+}
+.last-made-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.recipe-actions {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+.recipe-actions .btn {
+  height: 42px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  text-decoration: none;
+}
+.recipe-actions .btn-primary {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+.recipe-actions .btn-danger {
+  background: transparent;
+  color: var(--accent);
+  border-color: rgba(255, 107, 74, 0.4);
+}
+.mobile-only-icon {
+  display: none;
+}
+@media (max-width: 640px) {
+  .hide-on-mobile { display: none !important; }
+  .last-made-badge { padding: 6px 10px; }
+  .recipe-actions { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
+  .recipe-actions .btn { flex: 1; padding: 0 8px; min-width: 0; }
+  .recipe-actions .btn-danger { flex: 0.6; }
+  .nav-desktop-only { display: none !important; }
+  .mobile-only-icon { display: inline-block; }
+}
+
+/* Mobile adjustments for the recipe header */
+@media (max-width: 640px) {
+  .detail-head h1 {
+    font-size: 28px !important;
+  }
+  .last-made-badge {
+    font-size: 11px !important;
+    padding: 6px 10px !important;
+  }
+  .detail-head .btn {
+    padding: 0 10px !important;
+    font-size: 12px !important;
+  }
+}

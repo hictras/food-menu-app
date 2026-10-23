@@ -90,6 +90,7 @@ export default function WeeklySummaryPage() {
   const [entries, setEntries] = useState<PlanEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [logoUrl, setLogoUrl] = useState<string>("");
+  const [appName, setAppName] = useState("Menu");
 
   useEffect(() => {
     const months = new Set([monthParam(weekStart), monthParam(weekEnd)]);
@@ -119,7 +120,7 @@ export default function WeeklySummaryPage() {
 
     fetch("/api/settings")
       .then((r) => r.json())
-      .then((d) => { if (d.logo_url) setLogoUrl(d.logo_url); })
+      .then((d) => { if (d.logo_url) setLogoUrl(d.logo_url); if (d.app_name) setAppName(d.app_name); })
       .catch(() => {});
   }, [weekStart, weekEnd]);
 
@@ -191,7 +192,7 @@ export default function WeeklySummaryPage() {
       lines.push("");
     }
     if (!any) lines.push(isAr ? ar.weeklySummary.empty : "No meals planned this week.");
-    lines.push(isAr ? `— ${ar.weeklySummary.sharedFrom}` : "— Shared from Menu");
+    lines.push(isAr ? `— ${appName}` : `— Shared from ${appName}`);
     return lines.join("\n");
   }
 
@@ -276,7 +277,7 @@ export default function WeeklySummaryPage() {
 
       <div className="week-footer">
         {logoUrl && <img src={logoUrl} alt="" className="week-logo" />}
-        <span>{isAr ? ar.weeklySummary.sharedFrom : "Shared from Menu"}</span>
+        <span>{isAr ? appName : `Shared from ${appName}`}</span>
       </div>
     </main>
   );

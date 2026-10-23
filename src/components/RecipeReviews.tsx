@@ -199,7 +199,7 @@ export default function RecipeReviews({ recipeId }: { recipeId: number }) {
       {data.reviews.length > 0 && (
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {data.reviews.map((r) => (
-            <div key={r.id} style={{ display: "flex", gap: 12 }}>
+            <div key={`${r.id}-${r.updatedAt}-${Math.random()}`} style={{ display: "flex", gap: 12 }}>
               <div style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--surface-2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, color: "var(--muted)", flexShrink: 0 }}>
                 {(r.name || "?")[0].toUpperCase()}
               </div>

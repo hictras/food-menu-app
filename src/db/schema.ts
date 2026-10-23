@@ -63,6 +63,7 @@ export const notifications = sqliteTable("notifications", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   title: text("title").notNull(),
   body: text("body").notNull(),
+  pollQuestion: text("poll_question"),
   url: text("url"),
   previewImage: text("preview_image"),
   previewTitle: text("preview_title"),
@@ -129,4 +130,13 @@ export const dayReviews = sqliteTable("day_reviews", {
   comment: text("comment"),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const pushPresets = sqliteTable("push_presets", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  title: text("title").notNull(),
+  body: text("body").notNull(),
+  pollQuestion: text("poll_question"),
+  createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
 });

@@ -1,7 +1,9 @@
 "use client";
 
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ar } from "@/lib/ar";
 import { useLang } from "@/components/LanguageProvider";
 import ImageUpload from "@/components/ImageUpload";
 import VideoUpload from "@/components/VideoUpload";
@@ -19,6 +21,7 @@ type Settings = {
   logo_url: string;
   favicon_url: string;
   background_url: string;
+  app_name: string;
   welcome_title: string;
   welcome_button: string;
   no_dish_image_url: string;
@@ -44,6 +47,7 @@ const DEFAULT: Settings = {
   logo_url: "",
   favicon_url: "",
   background_url: "",
+  app_name: "Menu",
   welcome_title: "Hictra Recipes",
   welcome_button: "Enter",
   no_dish_image_url: "",
@@ -62,6 +66,7 @@ export default function SettingsPage() {
   const [config, setConfig] = useState<Settings>(DEFAULT);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState<"branding" | "typography" | "colors" | "noDish">("branding");
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -119,191 +124,85 @@ export default function SettingsPage() {
   return (
     <main className="container" style={{ paddingTop: 40, paddingBottom: 80, maxWidth: 650 }}>
       <div className="page-head">
-        <h1>{lang === "ar" ? "الإعدادات" : "Settings"}</h1>
+        <h1>{lang === "ar" ? ar.settingsPage.title : "Settings"}</h1>
+      </div>
+
+      {/* TAB MENU */}
+      <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8, marginBottom: 20 }}>
+        <button type="button" className={`btn ${activeTab === "branding" ? "btn-primary" : "btn-ghost"}`} onClick={() => setActiveTab("branding")}>
+          {lang === "ar" ? ar.settingsPage.branding : "Branding"}
+        </button>
+        <button type="button" className={`btn ${activeTab === "typography" ? "btn-primary" : "btn-ghost"}`} onClick={() => setActiveTab("typography")}>
+          {lang === "ar" ? ar.settingsPage.typography : "Typography"}
+        </button>
+        <button type="button" className={`btn ${activeTab === "colors" ? "btn-primary" : "btn-ghost"}`} onClick={() => setActiveTab("colors")}>
+          {lang === "ar" ? ar.settingsPage.datesColors : "Dates & Colors"}
+        </button>
+        <button type="button" className={`btn ${activeTab === "noDish" ? "btn-primary" : "btn-ghost"}`} onClick={() => setActiveTab("noDish")}>
+          {lang === "ar" ? ar.settingsPage.noDishTab : "No Dish Today"}
+        </button>
       </div>
 
       <div className="form-card">
-        <div className="form-section">
-          <h2>{lang === "ar" ? "الهوية" : "Branding"}</h2>
-
-          <div className="field">
-            <label>{lang === "ar" ? "الشعار" : "Logo"}</label>
-            <ImageUpload
-              onUploaded={(url) => setConfig({ ...config, logo_url: url })}
-              initialUrl={config.logo_url || undefined}
-            />
+        
+        {activeTab === "branding" && (
+          <div>
+            <div className="field"><label>{lang === "ar" ? ar.settingsPage.logo : "Logo"}</label><ImageUpload onUploaded={(url) => setConfig({ ...config, logo_url: url })} initialUrl={config.logo_url || undefined} /></div>
+            <div className="field"><label>{lang === "ar" ? ar.settingsPage.favicon : "Favicon"}</label><ImageUpload onUploaded={(url) => setConfig({ ...config, favicon_url: url })} initialUrl={config.favicon_url || undefined} /></div>
+            <div className="field"><label>{lang === "ar" ? ar.settingsPage.background : "Background image"}</label><ImageUpload onUploaded={(url) => setConfig({ ...config, background_url: url })} initialUrl={config.background_url || undefined} /></div>
+            <div className="field"><label>{lang === "ar" ? ar.settingsPage.welcomeTitle : "Welcome title"}</label><input type="text" value={config.welcome_title} onChange={(e) => setConfig({ ...config, welcome_title: e.target.value })} style={{ width: "100%", padding: 10 }} /></div>
+            <div className="field"><label>{lang === "ar" ? ar.settingsPage.welcomeButton : "Enter button text"}</label><input type="text" value={config.welcome_button} onChange={(e) => setConfig({ ...config, welcome_button: e.target.value })} style={{ width: "100%", padding: 10 }} /></div>
+            <div className="field"><label>{lang === "ar" ? ar.settingsPage.appName : "App Name"}</label><input type="text" value={config.app_name || ""} onChange={(e) => setConfig({ ...config, app_name: e.target.value })} placeholder="e.g. Hictra Recipes" style={{ width: "100%", padding: 10 }} /><p className="helper" style={{ marginTop: 6 }}>{lang === "ar" ? ar.settingsPage.appNameHint : "Shows in browser tab and shared messages."}</p></div>
           </div>
+        )}
 
-          <div className="field">
-            <label>{lang === "ar" ? "أيقونة التبويب (favicon)" : "Favicon (tab icon)"}</label>
-            <ImageUpload
-              onUploaded={(url) => setConfig({ ...config, favicon_url: url })}
-              initialUrl={config.favicon_url || undefined}
-            />
-            <p className="helper" style={{ marginTop: 6 }}>
-              {lang === "ar"
-                ? "أيقونة مربعة صغيرة (64x64 أو 128x128). تظهر في علامة التبويب."
-                : "Small square icon (64x64 or 128x128). Appears in the browser tab."}
-            </p>
-          </div>
+        {activeTab === "typography" && (
+          <div>
+            <div className="form-section" style={{ marginTop: 0 }}>
+              <h2>{lang === "ar" ? ar.settingsPage.pageTitles : "Page Titles"}</h2>
+              <div className="field"><label>{lang === "ar" ? ar.settingsPage.titleSize : "Title font size (px)"}</label><input type="number" min="24" max="96" value={config.title_size} onChange={(e) => setConfig({ ...config, title_size: e.target.value })} style={{ width: "100%", padding: 10 }} /></div>
+              <div className="field"><label>{lang === "ar" ? ar.settingsPage.titleColor : "Title color"}</label><div style={{ display: "flex", gap: 12 }}><div style={{ flex: 1 }}><span style={{ fontSize: 10, color: "var(--muted)", display: "block", marginBottom: 4 }}>{lang === "ar" ? ar.settingsPage.light : "Light"}</span><input type="color" value={config.title_color_light} onChange={(e) => setConfig({ ...config, title_color_light: e.target.value })} style={{ width: "100%", height: 36 }} /></div><div style={{ flex: 1 }}><span style={{ fontSize: 10, color: "var(--muted)", display: "block", marginBottom: 4 }}>{lang === "ar" ? ar.settingsPage.dark : "Dark"}</span><input type="color" value={config.title_color_dark} onChange={(e) => setConfig({ ...config, title_color_dark: e.target.value })} style={{ width: "100%", height: 36 }} /></div></div></div>
+            </div>
 
-          <div className="field">
-            <label>{lang === "ar" ? "صورة الخلفية" : "Background image"}</label>
-            <ImageUpload
-              onUploaded={(url) => setConfig({ ...config, background_url: url })}
-              initialUrl={config.background_url || undefined}
-            />
-          </div>
+            <hr style={{ borderColor: "var(--line)", margin: "24px 0" }} />
 
-          <div className="field">
-            <label>{lang === "ar" ? "نص الترحيب" : "Welcome title"}</label>
-            <input
-              type="text"
-              value={config.welcome_title}
-              onChange={(e) => setConfig({ ...config, welcome_title: e.target.value })}
-              placeholder="Hictra Recipes"
-              style={{ width: "100%", padding: 10 }}
-            />
-          </div>
+            <div className="form-section" style={{ marginTop: 0 }}>
+              <h2>{lang === "ar" ? "نص اليوم" : "Today Text"}</h2>
+              <div className="field"><label>{lang === "ar" ? ar.settingsPage.todayText : '"Today" title text'}</label><input type="text" value={config.today_text} onChange={(e) => setConfig({ ...config, today_text: e.target.value })} style={{ width: "100%", padding: 10 }} /></div>
+            </div>
 
-          <div className="field">
-            <label>{lang === "ar" ? "نص زر الدخول" : "Enter button text"}</label>
-            <input
-              type="text"
-              value={config.welcome_button}
-              onChange={(e) => setConfig({ ...config, welcome_button: e.target.value })}
-              placeholder="Enter"
-              style={{ width: "100%", padding: 10 }}
-            />
-          </div>
+            <hr style={{ borderColor: "var(--line)", margin: "24px 0" }} />
 
-          <div className="field">
-            <label>No dish today image</label>
-            <ImageUpload
-              onUploaded={(url) => setConfig({ ...config, no_dish_image_url: url })}
-              initialUrl={config.no_dish_image_url || undefined}
-            />
-            <p className="helper" style={{ marginTop: 6 }}>
-              Shown on the /no-dish-today page and in link previews.
-            </p>
-          </div>
-
-          <div className="field">
-            <label>No dish today video</label>
-            <VideoUpload
-              onUploaded={(url) => setConfig({ ...config, no_dish_video_url: url })}
-              initialUrl={config.no_dish_video_url || undefined}
-            />
-            <p className="helper" style={{ marginTop: 6 }}>
-              Optional. Shown on the /no-dish-today page below the image.
-            </p>
-          </div>
-        </div>
-
-        <hr style={{ borderColor: "var(--line)", margin: "24px 0" }} />
-
-        <div className="form-section">
-          <h2>Page Titles</h2>
-
-          <div className="field">
-            <label>Title font size (px)</label>
-            <input
-              type="number"
-              min="24"
-              max="96"
-              value={config.title_size}
-              onChange={(e) => setConfig({ ...config, title_size: e.target.value })}
-              style={{ width: "100%", padding: 10 }}
-            />
-            <p className="helper">Used for page headings across the app (e.g. 40px).</p>
-          </div>
-
-        <div className="form-section">
-          <h2>Labels Style</h2>
-          <p className="helper" style={{ marginBottom: 16 }}>
-            Customize the look of form labels and section headings across the app.
-          </p>
-
-          <div className="field">
-            <label>Label font size (px)</label>
-            <input
-              type="number"
-              min="8"
-              max="24"
-              value={config.label_size}
-              onChange={(e) => setConfig({ ...config, label_size: e.target.value })}
-              style={{ width: "100%", padding: 10 }}
-            />
-            <p className="helper">Default: 11px</p>
-          </div>
-
-          <div className="field">
-            <label>Label color</label>
-            <div style={{ display: "flex", gap: 12 }}>
-              <div style={{ flex: 1 }}>
-                <span style={{ fontSize: 10, color: "var(--muted)", display: "block", marginBottom: 4 }}>Light</span>
-                <div style={{ display: "flex", gap: 8 }}>
-                  <input type="color" value={config.label_color_light} onChange={(e) => setConfig({ ...config, label_color_light: e.target.value })} style={{ width: 40, height: 36, padding: 0, border: "none", background: "none" }} />
-                  <input type="text" value={config.label_color_light} onChange={(e) => setConfig({ ...config, label_color_light: e.target.value })} style={{ flex: 1 }} />
-                </div>
-              </div>
-              <div style={{ flex: 1 }}>
-                <span style={{ fontSize: 10, color: "var(--muted)", display: "block", marginBottom: 4 }}>Dark</span>
-                <div style={{ display: "flex", gap: 8 }}>
-                  <input type="color" value={config.label_color_dark} onChange={(e) => setConfig({ ...config, label_color_dark: e.target.value })} style={{ width: 40, height: 36, padding: 0, border: "none", background: "none" }} />
-                  <input type="text" value={config.label_color_dark} onChange={(e) => setConfig({ ...config, label_color_dark: e.target.value })} style={{ flex: 1 }} />
-                </div>
-              </div>
+            <div className="form-section" style={{ marginTop: 0 }}>
+              <h2>{lang === "ar" ? ar.settingsPage.labelsStyle : "Labels Style"}</h2>
+              <div className="field"><label>{lang === "ar" ? ar.settingsPage.labelSize : "Label font size (px)"}</label><input type="number" min="8" max="24" value={config.label_size} onChange={(e) => setConfig({ ...config, label_size: e.target.value })} style={{ width: "100%", padding: 10 }} /></div>
+              <div className="field"><label>{lang === "ar" ? ar.settingsPage.labelColor : "Label color"}</label><div style={{ display: "flex", gap: 12 }}><div style={{ flex: 1 }}><span style={{ fontSize: 10, color: "var(--muted)", display: "block", marginBottom: 4 }}>{lang === "ar" ? ar.settingsPage.light : "Light"}</span><input type="color" value={config.label_color_light} onChange={(e) => setConfig({ ...config, label_color_light: e.target.value })} style={{ width: "100%", height: 36 }} /></div><div style={{ flex: 1 }}><span style={{ fontSize: 10, color: "var(--muted)", display: "block", marginBottom: 4 }}>{lang === "ar" ? ar.settingsPage.dark : "Dark"}</span><input type="color" value={config.label_color_dark} onChange={(e) => setConfig({ ...config, label_color_dark: e.target.value })} style={{ width: "100%", height: 36 }} /></div></div></div>
             </div>
           </div>
-        </div>
+        )}
 
-          <div className="field">
-            <label>Title color</label>
-            <div style={{ display: "flex", gap: 12 }}>
-              <div style={{ flex: 1 }}>
-                <span style={{ fontSize: 10, color: "var(--muted)", display: "block", marginBottom: 4 }}>Light</span>
-                <div style={{ display: "flex", gap: 8 }}>
-                  <input type="color" value={config.title_color_light} onChange={(e) => setConfig({ ...config, title_color_light: e.target.value })} style={{ width: 40, height: 36, padding: 0, border: "none", background: "none" }} />
-                  <input type="text" value={config.title_color_light} onChange={(e) => setConfig({ ...config, title_color_light: e.target.value })} style={{ flex: 1 }} />
-                </div>
-              </div>
-              <div style={{ flex: 1 }}>
-                <span style={{ fontSize: 10, color: "var(--muted)", display: "block", marginBottom: 4 }}>Dark</span>
-                <div style={{ display: "flex", gap: 8 }}>
-                  <input type="color" value={config.title_color_dark} onChange={(e) => setConfig({ ...config, title_color_dark: e.target.value })} style={{ width: 40, height: 36, padding: 0, border: "none", background: "none" }} />
-                  <input type="text" value={config.title_color_dark} onChange={(e) => setConfig({ ...config, title_color_dark: e.target.value })} style={{ flex: 1 }} />
-                </div>
-              </div>
-            </div>
+        {activeTab === "colors" && (
+          <div>
+            <ColorPair label={lang === "ar" ? ar.settingsPage.mainTitleColor : "Main Title Color (?today)"} lightKey="today_color_light" darkKey="today_color_dark" />
+            <ColorPair label={lang === "ar" ? ar.settingsPage.recipeNameColor : "Recipe Name Color"} lightKey="recipe_name_color_light" darkKey="recipe_name_color_dark" />
+            <hr style={{ borderColor: "var(--line)", margin: "16px 0" }} />
+            <ColorPair label={lang === "ar" ? ar.settingsPage.inboxTitleColor : "Inbox: Main Title"} lightKey="inbox_title_color_light" darkKey="inbox_title_color_dark" />
+            <ColorPair label={lang === "ar" ? ar.settingsPage.inboxRecipeColor : "Inbox: Recipe Name"} lightKey="inbox_recipe_color_light" darkKey="inbox_recipe_color_dark" />
           </div>
+        )}
+
+        {activeTab === "noDish" && (
+          <div>
+            <div className="field"><label>{lang === "ar" ? ar.settingsPage.noDishImage : "No dish today image"}</label><ImageUpload onUploaded={(url) => setConfig({ ...config, no_dish_image_url: url })} initialUrl={config.no_dish_image_url || undefined} /></div>
+            <div className="field"><label>{lang === "ar" ? ar.settingsPage.noDishVideo : "No dish today video"}</label><VideoUpload onUploaded={(url) => setConfig({ ...config, no_dish_video_url: url })} initialUrl={config.no_dish_video_url || undefined} /></div>
+          </div>
+        )}
+
+        <div style={{ marginTop: 24, paddingTop: 24, borderTop: "1px solid var(--line)" }}>
+          <button className="btn btn-primary" onClick={handleSave} disabled={saving} style={{ width: "100%", padding: 12 }}>
+            {saving ? (lang === "ar" ? ar.settingsPage.saving : "Saving...") : (lang === "ar" ? ar.settingsPage.save : "Save Changes")}
+          </button>
         </div>
-
-
-
-        <div className="field" style={{ marginBottom: 24 }}>
-          <label style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)" }}>
-            {lang === "ar" ? "نص عنوان اليوم" : '"Today" title text'}
-          </label>
-          <input
-            type="text"
-            value={config.today_text}
-            onChange={(e) => setConfig({ ...config, today_text: e.target.value })}
-            style={{ width: "100%", padding: 10, marginTop: 8 }}
-          />
-        </div>
-
-        <ColorPair label="Main Title Color (?today)" lightKey="today_color_light" darkKey="today_color_dark" />
-        <ColorPair label="Recipe Name Color (under ?today)" lightKey="recipe_name_color_light" darkKey="recipe_name_color_dark" />
-
-        <hr style={{ borderColor: "var(--line)", margin: "24px 0" }} />
-
-        <ColorPair label="Inbox Preview: Main Title" lightKey="inbox_title_color_light" darkKey="inbox_title_color_dark" />
-        <ColorPair label="Inbox Preview: Recipe Name" lightKey="inbox_recipe_color_light" darkKey="inbox_recipe_color_dark" />
-
-        <button className="btn btn-primary" onClick={handleSave} disabled={saving} style={{ width: "100%", marginTop: 16 }}>
-          {saving ? (lang === "ar" ? "جاري الحفظ..." : "Saving...") : (lang === "ar" ? "حفظ التغييرات" : "Save Changes")}
-        </button>
       </div>
     </main>
   );

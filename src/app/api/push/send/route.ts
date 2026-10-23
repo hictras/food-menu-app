@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import webpush from "web-push";
 import { getDb } from "@/db";
-import { pushSubscriptions, notifications, polls, recipes } from "@/db/schema";
+import { pushSubscriptions, notifications, polls, recipes, settings } from "@/db/schema";
 import { inArray, eq } from "drizzle-orm";
 import { isAdmin } from "@/lib/auth";
 
@@ -19,15 +19,18 @@ export async function POST(req: NextRequest) {
   try {
     initWebPush();
     const db = getDb();
+    const appSettings = await db.select().from(settings);
+    const s = Object.fromEntries(appSettings.map((r) => [r.key, r.value]));
+    const defaultTitle = s.app_name || "Menu";
     const body = await req.json();
 
-    const title = body.title || "Menu";
+    const title = body.title || defaultTitle;
     const text = body.body || "New recipe added";
     const url = body.url || "/inbox";
     const targetPhone = body.targetPhone || "all";
     const location = (body.location || "").trim() || null;
     const pollQuestion = (body.poll?.question || "").trim();
-    const personalize = !!body.personalize;
+    const personalize = !!body.personalize || title.includes("{name}") || text.includes("{name}");
 
     let previewImage: string | null = null;
     let previewTitle: string | null = null;

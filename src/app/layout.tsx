@@ -5,11 +5,25 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import Nav from "@/components/Nav";
 import DynamicFavicon from "@/components/DynamicFavicon";
 import TitleThemeSync from "@/components/TitleThemeSync";
+import { cacheLife, cacheTag } from "next/cache";
+import { getDb } from "@/db";
+import { settings } from "@/db/schema";
 
-export const metadata: Metadata = {
-  title: "Menu — Recipes",
-  description: "Your personal cookbook",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  'use cache'
+  cacheLife('hours')
+  cacheTag('app-settings')
+
+  try {
+    const db = getDb();
+    const rows = await db.select().from(settings);
+    const s = Object.fromEntries(rows.map((r) => [r.key, r.value]));
+    const appName = s.app_name || "Menu";
+    return { title: appName, description: "Your personal cookbook" };
+  } catch {
+    return { title: "Menu", description: "Your personal cookbook" };
+  }
+}
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -18,8 +32,6 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
-// Runs before React hydration — applies saved theme/lang instantly.
-// No flash of dark/English on first paint.
 const inlineBootstrap = `
 (function() {
   try {
