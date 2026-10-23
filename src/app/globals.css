@@ -3389,3 +3389,25 @@ html[data-theme="light"] .cook-overlay {
     font-size: 12px !important;
   }
 }
+
+/* Fix for Admin Sender Preset Inputs */
+.preset-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: var(--input-bg);
+  color: var(--ink);
+  font-size: 13px;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+.preset-input::placeholder {
+  color: var(--muted);
+  opacity: 0.8;
+}
+.preset-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--input-bg-focus);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}

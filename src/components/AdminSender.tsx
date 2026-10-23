@@ -101,6 +101,16 @@ export default function AdminSender() {
     setUrl(`/calendar/${yyyy}-${mm}-${dd}`);
   }
 
+
+  function insertYesterdayDate() {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yyyy = yesterday.getFullYear();
+    const mm = String(yesterday.getMonth() + 1).padStart(2, '0');
+    const dd = String(yesterday.getDate()).padStart(2, '0');
+    setUrl(`/calendar/${yyyy}-${mm}-${dd}`);
+  }
+
   async function savePreset(e: React.FormEvent) {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
@@ -197,10 +207,10 @@ export default function AdminSender() {
             {editingPreset ? (isAr ? ar.pushPresets.editPreset : "Edit Preset") : (isAr ? ar.pushPresets.newPreset : "New Preset")}
           </h2>
           <form onSubmit={savePreset} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <input name="presetName" placeholder={isAr ? ar.pushPresets.presetName : "Preset Name"} defaultValue={editingPreset?.name} required style={{ padding: 10, borderRadius: 8, border: "1px solid var(--line)" }} />
-            <input name="presetTitle" placeholder={isAr ? ar.pushPresets.presetTitle : "Title"} defaultValue={editingPreset?.title} required style={{ padding: 10, borderRadius: 8, border: "1px solid var(--line)" }} />
-            <input name="presetBody" placeholder={isAr ? ar.pushPresets.presetBody : "Body"} defaultValue={editingPreset?.body} required style={{ padding: 10, borderRadius: 8, border: "1px solid var(--line)" }} />
-            <input name="presetPoll" placeholder="Poll Question (Optional)" defaultValue={editingPreset?.pollQuestion || ""} style={{ padding: 10, borderRadius: 8, border: "1px solid var(--line)" }} />
+            <input name="presetName" className="preset-input" placeholder={isAr ? ar.pushPresets.presetName : "Preset Name"} defaultValue={editingPreset?.name} required />
+            <input name="presetTitle" className="preset-input" placeholder={isAr ? ar.pushPresets.presetTitle : "Title"} defaultValue={editingPreset?.title} required />
+            <input name="presetBody" className="preset-input" placeholder={isAr ? ar.pushPresets.presetBody : "Body"} defaultValue={editingPreset?.body} required />
+            <input name="presetPoll" className="preset-input" placeholder="Poll Question (Optional)" defaultValue={editingPreset?.pollQuestion || ""} />
             <div style={{ display: "flex", gap: 8 }}>
               <button type="submit" className="btn btn-primary">
                 {editingPreset ? (isAr ? ar.pushPresets.updatePreset : "Update") : (isAr ? ar.pushPresets.addPreset : "Add Preset")}
@@ -331,7 +341,17 @@ export default function AdminSender() {
         </div>
 
         <div className="field">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}><label>{isAr ? ar.pushPresets.optionalUrl : "URL (Optional)"}</label><button type="button" className="btn btn-ghost" style={{ padding: "2px 8px", fontSize: 11 }} onClick={insertTodayDate}>📅 {isAr ? ar.todayBtn : "Today"}</button></div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+            <label>{isAr ? ar.pushPresets.optionalUrl : "URL (Optional)"}</label>
+            <div style={{ display: "flex", gap: 4 }}>
+              <button type="button" className="btn btn-ghost" style={{ padding: "2px 8px", fontSize: 11 }} onClick={insertTodayDate}>
+                📅 {isAr ? ar.todayBtn : "Today"}
+              </button>
+              <button type="button" className="btn btn-ghost" style={{ padding: "2px 8px", fontSize: 11 }} onClick={insertYesterdayDate}>
+                📅 {isAr ? ar.yesterdayBtn : "Yesterday"}
+              </button>
+            </div>
+          </div>
           <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="/recipes/3" style={{ width: "100%", padding: 8, marginBottom: 12 }} />
         </div>
 
