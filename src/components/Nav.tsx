@@ -246,9 +246,6 @@ export default function Nav() {
               </Link>
               <Link className="mobile-nav-link" href="/visitors" onClick={closeAll}>
                 <span>📱</span> {lang === "ar" ? ar.visitorsPage.title : "Devices Log"}
-              <Link className="mobile-nav-link" href="/visitors" onClick={closeAll}>
-                <span>📱</span> {lang === "ar" ? ar.visitorsPage.title : "Devices Log"}
-              </Link>
               </Link>
               <button
                 type="button"
