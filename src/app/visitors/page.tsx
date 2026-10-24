@@ -6,7 +6,7 @@ import { useLang } from "@/components/LanguageProvider";
 import { ar } from "@/lib/ar";
 import { useModal } from "@/components/ModalProvider";
 
-type Visitor = { id: string; phone: string | null; name: string | null; visits: number; lastSeen: string };
+type Visitor = { id: string; phone: string | null; name: string | null; visits: number; lastSeen: string; lastPage: string | null };
 
 export default function VisitorsPage() {
   const { lang } = useLang();
@@ -32,7 +32,7 @@ export default function VisitorsPage() {
 
   function loadVisitors() {
     setLoading(true);
-    fetch("/api/visitors")
+    fetch("/api/visitors", { cache: "no-store" })
       .then((r) => r.json())
       .then((data) => {
         setVisitors(Array.isArray(data) ? data : []);
@@ -82,7 +82,7 @@ export default function VisitorsPage() {
   if (loading) return <div className="container" style={{ padding: 40 }}>{isAr ? ar.visitorsPage.loading : "Loading..."}</div>;
 
   return (
-    <main className="container" style={{ paddingTop: 40, paddingBottom: 80, maxWidth: 800 }}>
+    <main className="container" style={{ paddingTop: 40, paddingBottom: 80, maxWidth: 900 }}>
       <div className="page-head">
         <h1>{isAr ? ar.visitorsPage.title : "Devices Log"}</h1>
       </div>
@@ -90,7 +90,7 @@ export default function VisitorsPage() {
         {isAr ? ar.visitorsPage.subtitle : "List of all devices that opened the app"}
       </p>
 
-      <div className="form-card" style={{ padding: 0, overflow: "hidden" }}>
+      <div className="form-card" style={{ padding: 0, overflow: "auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px", borderBottom: "1px solid var(--line)", background: "var(--surface-2)" }}>
           <span style={{ fontSize: 14, fontWeight: 600 }}>
             {visitors.length} {isAr ? ar.visitorsPage.totalDevices : "Devices"}
@@ -100,13 +100,14 @@ export default function VisitorsPage() {
           </button>
         </div>
 
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14, minWidth: 700 }}>
           <thead style={{ background: "var(--bg)", borderBottom: "1px solid var(--line)" }}>
             <tr>
               <th style={{ padding: 12, textAlign: "start", fontWeight: 600 }}>#</th>
               <th style={{ padding: 12, textAlign: "start", fontWeight: 600 }}>{isAr ? ar.visitorsPage.name : "Name"}</th>
               <th style={{ padding: 12, textAlign: "start", fontWeight: 600 }}>{isAr ? ar.visitorsPage.phone : "Phone"}</th>
-              <th style={{ padding: 12, textAlign: "center", fontWeight: 600 }}>{isAr ? ar.settingsPage.devices : "Visits"}</th>
+              <th style={{ padding: 12, textAlign: "center", fontWeight: 600 }}>{isAr ? "الزيارات" : "Visits"}</th>
+              <th style={{ padding: 12, textAlign: "start", fontWeight: 600 }}>{isAr ? "آخر صفحة" : "Last Page"}</th>
               <th style={{ padding: 12, textAlign: "end", fontWeight: 600 }}>{isAr ? ar.visitorsPage.lastSeen : "Last Seen"}</th>
               <th style={{ padding: 12, textAlign: "center", fontWeight: 600 }}></th>
             </tr>
@@ -114,7 +115,7 @@ export default function VisitorsPage() {
           <tbody>
             {visitors.length === 0 ? (
               <tr>
-                <td colSpan={6} style={{ padding: 24, textAlign: "center", color: "var(--muted)" }}>
+                <td colSpan={7} style={{ padding: 24, textAlign: "center", color: "var(--muted)" }}>
                   {isAr ? ar.visitorsPage.noDevices : "No devices registered yet."}
                 </td>
               </tr>
@@ -137,6 +138,7 @@ export default function VisitorsPage() {
                         />
                       </td>
                       <td style={{ padding: 12, textAlign: "center", fontWeight: 600, color: "var(--accent)" }}>{v.visits || 0}</td>
+                      <td style={{ padding: 12, textAlign: "start", color: "var(--muted)" }}>—</td>
                       <td style={{ padding: 12, textAlign: "end", color: "var(--muted)" }}>—</td>
                       <td style={{ padding: 8, textAlign: "center" }}>
                         <button onClick={() => handleSave(v.id)} className="btn btn-primary" style={{ padding: "4px 10px", fontSize: 12, marginRight: 4 }}>
@@ -157,6 +159,9 @@ export default function VisitorsPage() {
                       </td>
                       <td style={{ padding: 12, textAlign: "center", fontWeight: 600, color: "var(--accent)" }}>
                         {v.visits || 0}
+                      </td>
+                      <td style={{ padding: 12, color: "var(--accent)", fontFamily: "monospace", fontSize: 12 }}>
+                        {v.lastPage || "-"}
                       </td>
                       <td style={{ padding: 12, textAlign: "end", color: "var(--muted)" }}>
                         {new Date(v.lastSeen).toLocaleString()}

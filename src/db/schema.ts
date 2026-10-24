@@ -161,5 +161,6 @@ export const visitors = sqliteTable("visitors", {
   phone: text("phone"),
   visits: integer("visits").default(0),
   lastSeen: text("last_seen").default(sql`CURRENT_TIMESTAMP`),
+  lastPage: text("last_page"),
 });
 
