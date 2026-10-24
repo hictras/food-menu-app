@@ -86,7 +86,9 @@ export default function RecipeDetailClient({
 
   async function handleDelete() {
     const ok = await confirm({
-      message: ar.messages.deleteConfirm[L]
+      message: ar.messages.deleteConfirm[L],
+      confirmText: isAr ? "حذف" : "Delete",
+      tone: "danger"
     });
     if (!ok) return;
     setDeleting(true);
@@ -96,7 +98,7 @@ export default function RecipeDetailClient({
       router.push("/");
       router.refresh();
     } catch (err) {
-      show({ message: ar.messages.deleteFailed[L], tone: "error" });
+      show({ message: ar.messages.deleteFailed[L], tone: "danger" });
       setDeleting(false);
     }
   }

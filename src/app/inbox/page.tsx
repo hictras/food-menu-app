@@ -137,7 +137,9 @@ export default function InboxPage() {
   async function handleDelete(id: number, e: React.MouseEvent) {
     e.stopPropagation();
     const ok = await confirm({ 
-      message: isAr ? ar.messages.deleteMessageConfirm : "Delete message?" 
+      message: isAr ? ar.messages.deleteMessageConfirm : "Delete message?",
+      confirmText: isAr ? "حذف" : "Delete",
+      tone: "danger"
     });
     if (!ok) return;
     
@@ -146,7 +148,7 @@ export default function InboxPage() {
       if (!res.ok) throw new Error("Failed");
       setItems((prev) => prev.filter((item) => item.id !== id));
     } catch {
-      show({ message: isAr ? ar.messages.deleteFailed.ar : "Delete failed", tone: "error" });
+      show({ message: isAr ? ar.messages.deleteFailed.ar : "Delete failed", tone: "danger" });
     }
   }
 
@@ -166,7 +168,7 @@ export default function InboxPage() {
         [pollId]: { ...prev[pollId], isOpen: newState },
       }));
     } catch {
-      show({ message: isAr ? ar.messages.failedToUpdatePoll : "Failed to update poll", tone: "error" });
+      show({ message: isAr ? ar.messages.failedToUpdatePoll : "Failed to update poll", tone: "danger" });
     }
   }
 

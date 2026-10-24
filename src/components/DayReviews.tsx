@@ -112,7 +112,7 @@ export default function DayReviews({ date, isAdmin }: { date: string; isAdmin?: 
   }
 
   async function deleteReview(id: number) {
-    const ok = await confirm({ message: isAr ? ar.dayReviews.deleteConfirm : "Delete this review?" });
+    const ok = await confirm({ message: isAr ? ar.dayReviews.deleteConfirm : "Delete this review?", confirmText: isAr ? ar.modal.deleteBtn : "Delete", tone: "danger" });
     if (!ok) return;
     await fetch(`/api/reviews/day/${date}?reviewId=${id}`, { method: "DELETE" });
     load();

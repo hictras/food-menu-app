@@ -39,7 +39,9 @@ export default function VisitorsPage() {
 
   async function deleteVisitor(id: string) {
     const ok = await confirm({ 
-      message: isAr ? ar.messages.deleteLogConfirm : "Delete this log?" 
+      message: isAr ? ar.messages.deleteLogConfirm : "Delete this log?",
+      confirmText: isAr ? "حذف" : "Delete",
+      tone: "danger"
     });
     if (!ok) return;
     

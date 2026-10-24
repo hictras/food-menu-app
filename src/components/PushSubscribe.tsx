@@ -31,7 +31,7 @@ export default function PushSubscribe() {
       if (permission !== "granted") {
         show({
           message: isAr ? ar.push.permissionDenied : "Permission denied",
-          tone: "error",
+          tone: "danger",
         });
         setBusy(false);
         return;
@@ -45,7 +45,7 @@ export default function PushSubscribe() {
       if (!phoneNumber || !phoneNumber.trim()) {
         show({
           message: isAr ? ar.push.phoneRequired : "Phone number is required",
-          tone: "error",
+          tone: "danger",
         });
         setBusy(false);
         return;
@@ -70,7 +70,7 @@ export default function PushSubscribe() {
         if (res.status === 409) {
           show({
             message: isAr ? ar.push.phoneTaken : (data.error || "Phone already registered"),
-            tone: "error",
+            tone: "danger",
           });
           try { await sub.unsubscribe(); } catch {}
           setBusy(false);
@@ -78,7 +78,7 @@ export default function PushSubscribe() {
         }
         show({
           message: isAr ? ar.push.error : (data.error || "Server rejected the subscription"),
-          tone: "error",
+          tone: "danger",
         });
         setBusy(false);
         return;
@@ -88,12 +88,12 @@ export default function PushSubscribe() {
       setSubscribed(true);
       show({
         message: isAr ? ar.push.subscribed : "Subscribed successfully!",
-        tone: "success",
+        tone: "info",
       });
     } catch (err) {
       show({
         message: isAr ? ar.push.error : (err instanceof Error ? err.message : "Error"),
-        tone: "error",
+        tone: "danger",
       });
     } finally {
       setBusy(false);
@@ -102,7 +102,9 @@ export default function PushSubscribe() {
 
   async function unsubscribe() {
     const ok = await confirm({
-      message: isAr ? ar.push.unsubscribeConfirm : "Disable notifications? You won't receive any updates."
+      message: isAr ? ar.push.unsubscribeConfirm : "Disable notifications? You won't receive any updates.",
+      confirmText: isAr ? "إيقاف" : "Disable",
+      tone: "danger"
     });
     if (!ok) return;
 
@@ -127,7 +129,7 @@ export default function PushSubscribe() {
     } catch (err) {
       show({
         message: isAr ? ar.push.error : (err instanceof Error ? err.message : "Error"),
-        tone: "error",
+        tone: "danger",
       });
     } finally {
       setBusy(false);

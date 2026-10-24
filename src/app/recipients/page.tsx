@@ -61,22 +61,35 @@ export default function RecipientsPage() {
   }
 
   async function deleteGroup(id: number) {
-    const isConfirmed = await confirm({ message: isAr ? ar.groups.deleteConfirm : "Delete this group?" });
-    if (!isConfirmed) return;
+    const ok = await confirm({ 
+      message: isAr ? ar.groups.deleteConfirm : "Delete this group?", 
+      confirmText: isAr ? ar.modal.deleteBtn : "Delete", 
+      tone: "danger" 
+    });
+    if (!ok) return;
+    
     await fetch(`/api/recipients/groups?id=${id}`, { method: "DELETE" });
     loadData();
   }
 
   async function handleDeleteRecipient(id: number) {
-    const isConfirmed = await confirm({ message: isAr ? ar.groups.deleteConfirm : "Delete this recipient?" });
-    if (!isConfirmed) return;
+    const ok = await confirm({ 
+      message: isAr ? ar.groups.deleteConfirm : "Delete this recipient?", 
+      confirmText: isAr ? ar.modal.deleteBtn : "Delete", 
+      tone: "danger" 
+    });
+    if (!ok) return;
+    
     await fetch(`/api/recipients?id=${id}`, { method: "DELETE" });
     loadData();
   }
 
   async function handleSaveRecipient(id: number) {
     if (!editPhone.trim()) {
-      show({ message: isAr ? ar.groups.phoneRequired : "Phone number cannot be empty.", tone: "error" });
+      show({ 
+        message: isAr ? ar.groups.phoneRequired : "Phone number cannot be empty.", 
+        tone: "danger" 
+      });
       return;
     }
     await fetch("/api/recipients", {

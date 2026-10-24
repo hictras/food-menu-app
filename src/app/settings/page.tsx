@@ -103,7 +103,7 @@ export default function SettingsPage() {
     setSaving(false);
     show({ 
       message: isAr ? ar.messages.settingsSaved : "Settings saved!", 
-      tone: "success" 
+      tone: "info" 
     });
   }
 

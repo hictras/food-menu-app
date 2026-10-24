@@ -84,7 +84,7 @@ export default function RecipeReviews({ recipeId, isAdmin }: { recipeId: number;
   }
 
   async function deleteReview(id: number) {
-    const ok = await confirm({ message: isAr ? ar.reviews.deleteConfirm : "Delete this review?" });
+    const ok = await confirm({ message: isAr ? ar.reviews.deleteConfirm : "Delete this review?", confirmText: isAr ? ar.modal.deleteBtn : "Delete", tone: "danger" });
     if (!ok) return;
     await fetch(`/api/recipes/${recipeId}/reviews?reviewId=${id}`, { method: "DELETE" });
     load();

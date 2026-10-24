@@ -900,6 +900,8 @@ export const ar = {
 
   modal: {
     ok: "حسناً",
+    deleteBtn: "حذف",
+    disableBtn: "إيقاف",
     cancel: "إلغاء",
     yes: "نعم",
     no: "لا",

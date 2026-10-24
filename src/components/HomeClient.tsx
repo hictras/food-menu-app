@@ -142,7 +142,7 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
     setDailyDish(null);
     setTimeout(() => {
       const mainDishes = filtered;
-      if (mainDishes.length === 0) { show({ title: isAr ? ar.home.emptyTitle : "No main dishes found!", message: "", tone: "error" }); setDailyDishOpen(false); return; }
+      if (mainDishes.length === 0) { show({ title: isAr ? ar.home.emptyTitle : "No main dishes found!", message: "", tone: "danger" }); setDailyDishOpen(false); return; }
       setDailyDish(mainDishes[Math.floor(Math.random() * mainDishes.length)]);
       setIsRolling(false);
     }, 1200);

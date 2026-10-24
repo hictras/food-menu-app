@@ -183,7 +183,7 @@ export default function CalendarPage() {
       closePicker();
       loadMonth();
     } catch (err) {
-      show({ message: isAr ? ar.calendar.saveFailed : "Failed to save", tone: "error" });
+      show({ message: isAr ? ar.calendar.saveFailed : "Failed to save", tone: "danger" });
     }
   }
 
@@ -194,7 +194,7 @@ export default function CalendarPage() {
       closePicker();
       loadMonth();
     } catch (err) {
-      show({ message: isAr ? ar.calendar.removeFailed : "Failed to remove", tone: "error" });
+      show({ message: isAr ? ar.calendar.removeFailed : "Failed to remove", tone: "danger" });
     }
   }
 
