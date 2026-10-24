@@ -72,7 +72,12 @@ const visitorTracker = `
       return fetch("/api/visitors", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: visitorId, phone: phone })
+        body: JSON.stringify({ 
+          id: visitorId, 
+          phone: phone,
+          lastPage: window.location.pathname,
+          lastPage: window.location.pathname 
+        })
       });
     })
     .catch(function(){});
