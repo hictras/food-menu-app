@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/db";
 import { visitors, pushSubscriptions } from "@/db/schema";
@@ -10,17 +9,41 @@ export async function POST(req: NextRequest) {
     const { id, phone, lastPage } = await req.json();
     if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
 
-    await db.insert(visitors).values({ id, phone: phone || null, lastPage: lastPage || null, visits: 1 }).onConflictDoUpdate({
-      target: visitors.id,
-      set: { 
-        lastSeen: new Date().toISOString(), 
+    // 1. Check if this visitor exists and when they were last seen
+    const existing = await db.select().from(visitors).where(eq(visitors.id, id)).limit(1);
+    
+    let shouldIncrement = true;
+
+    if (existing.length > 0 && existing[0].lastSeen) {
+      const lastSeenTime = new Date(existing[0].lastSeen).getTime();
+      const now = Date.now();
+      // 15 minutes in milliseconds
+      const FIFTEEN_MINUTES = 15 * 60 * 1000;
+
+      // If less than 15 minutes have passed, don't increment the count
+      if (now - lastSeenTime < FIFTEEN_MINUTES) {
+        shouldIncrement = false;
+      }
+    }
+
+    // 2. Update or insert the visitor
+    if (existing.length > 0) {
+      await db.update(visitors).set({
+        lastSeen: new Date().toISOString(),
         ...(phone ? { phone } : {}),
         ...(lastPage ? { lastPage } : {}),
-        visits: sql`${visitors.visits} + 1`
-      },
-    });
+        ...(shouldIncrement ? { visits: sql`${visitors.visits} + 1` } : {}),
+      }).where(eq(visitors.id, id));
+    } else {
+      await db.insert(visitors).values({ 
+        id, 
+        phone: phone || null, 
+        lastPage: lastPage || null, 
+        visits: 1 
+      });
+    }
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, incremented: shouldIncrement });
   } catch (err) {
     console.error("POST visitor error:", err);
     return NextResponse.json({ error: "Failed" }, { status: 500 });
