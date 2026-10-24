@@ -50,8 +50,7 @@ export async function DELETE(req: NextRequest) {
     const idParam = req.nextUrl.searchParams.get("id");
     if (!idParam) return NextResponse.json({ error: "ID required" }, { status: 400 });
     
-    const id = String(idParam); // Ensure it's a string
-    
+    const id = String(idParam); 
     await db.delete(visitors).where(eq(visitors.id, id));
     return NextResponse.json({ ok: true });
   } catch (err) {

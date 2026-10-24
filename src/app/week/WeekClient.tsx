@@ -243,7 +243,9 @@ export default function WeekClient() {
 
             return (
               <div key={dateStr} className="week-day">
-                <div className="week-day-name">{dayName}</div>
+                <Link href={`/calendar/${dateStr}`} className="week-day-name" style={{ textDecoration: "none", color: "var(--accent)" }}>
+                  {dayName}
+                </Link>
                 <div className="week-day-meals">
                   {!hasMeals && (
                     <span className="week-day-empty">—</span>

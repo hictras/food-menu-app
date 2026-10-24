@@ -827,6 +827,13 @@ export const ar = {
   yesterdayBtn: "أمس",
 
   visitorsPage: {
+    save: "حفظ",
+    cancel: "إلغاء",
+    edit: "تعديل",
+    linkPhone: "ربط الهاتف",
+    phoneNumberPlaceholder: "رقم الهاتف",
+    phoneRequired: "رقم الهاتف مطلوب",
+    updateFailed: "فشل التحديث",
     title: "سجل الأجهزة",
     subtitle: "قائمة بجميع الأجهزة التي فتحت التطبيق",
     totalDevices: "جهاز",

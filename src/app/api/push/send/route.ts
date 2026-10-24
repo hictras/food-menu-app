@@ -99,16 +99,15 @@ export async function POST(req: NextRequest) {
 
     let subs;
     if (targetPhone === "all") {
+      // Send to everyone EXCEPT excluded
       subs = await db.select().from(pushSubscriptions).where(eq(pushSubscriptions.excluded, 0));
     } else {
+      // Specific phones or groups — IGNORE the excluded flag
       const phones = targetPhone.split(",").map((p: string) => p.trim()).filter(Boolean);
       if (phones.length === 0) {
         subs = await db.select().from(pushSubscriptions).where(eq(pushSubscriptions.excluded, 0));
       } else {
-        subs = await db
-          .select()
-          .from(pushSubscriptions)
-          .where(and(inArray(pushSubscriptions.phoneNumber, phones), eq(pushSubscriptions.excluded, 0)));
+        subs = await db.select().from(pushSubscriptions).where(inArray(pushSubscriptions.phoneNumber, phones));
       }
     }
 
