@@ -339,6 +339,7 @@ export const ar = {
 
   // ── Push subscribe ────────────────────────────────────────
   push: {
+    disableEn: "Disable",
     enable: "🔔 تفعيل",
     disable: "🔕 إيقاف",
     phoneTaken: "رقم الهاتف مسجل بالفعل على جهاز آخر. تواصل مع المسؤول لحذف الجهاز القديم.",
@@ -348,7 +349,8 @@ export const ar = {
     subscribed: "تم التفعيل بنجاح!",
     unsubscribed: "تم الإيقاف",
     error: "خطأ",
-    unsubscribeConfirm: "هل تريد إيقاف الإشعارات؟ لن تتلقى أي تحديثات.",
+    unsubscribeConfirm: "إيقاف الإشعارات؟ لن تتلقى أي تحديثات على {number}.",
+    unsubscribeConfirmNoNum: "إيقاف الإشعارات؟ لن تتلقى أي تحديثات.",
     okBtn: "حسناً",
   },
 
@@ -918,6 +920,19 @@ export const ar = {
     infoTitle: "معلومة",
     promptTitle: "إدخال",
     submit: "إرسال",
+  },
+
+  unsubscribeConfirmEn: "Disable notifications? You won't receive any updates on {number}.",
+  unsubscribeConfirmNoNumEn: "Disable notifications? You won't receive any updates.",
+
+  weeklySummaryEn: {
+    title: "This Week's Menu",
+    print: "Print",
+    share: "Share on WhatsApp",
+    prevWeek: "← Prev week",
+    nextWeek: "Next week →",
+    empty: "No meals planned this week.",
+    sharedFrom: "Shared from Menu",
   },
 
 } as const;

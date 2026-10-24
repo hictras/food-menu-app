@@ -10,7 +10,7 @@ export async function GET() {
   try {
     const store = await cookies();
     const phone = (store.get(VIEWER_PHONE_COOKIE)?.value || "").trim();
-    if (!phone) return NextResponse.json({ name: null });
+    if (!phone) return NextResponse.json({ name: null, phone: null });
 
     const db = getDb();
     const rows = await db
@@ -19,12 +19,12 @@ export async function GET() {
       .where(eq(pushSubscriptions.phoneNumber, phone))
       .limit(1);
 
-    if (rows.length === 0) return NextResponse.json({ name: null });
+    if (rows.length === 0) return NextResponse.json({ name: null, phone: null });
 
     const name = (rows[0].name || "").trim();
-    return NextResponse.json({ name: name || null });
+    return NextResponse.json({ name: name || null, phone });
   } catch (err) {
     console.error("Welcome lookup error:", err);
-    return NextResponse.json({ name: null });
+    return NextResponse.json({ name: null, phone: null });
   }
 }

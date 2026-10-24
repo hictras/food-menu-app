@@ -486,7 +486,7 @@ export default function InboxPage() {
                   </Link>
                 )}
 
-                {showRecipe && !item.previewImage && relUrl && (
+                {!hasPoll && showRecipe && !item.previewImage && relUrl && (
                   <Link
                     href={relUrl}
                     onClick={(e) => e.stopPropagation()}
@@ -498,7 +498,7 @@ export default function InboxPage() {
                 )}
 
                 {hasPoll && (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 6 }} onClick={(e) => e.stopPropagation()}>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8, alignItems: "center" }} onClick={(e) => e.stopPropagation()}>
                     <Link
                       href={relPollUrl || `/poll/${item.pollId}`}
                       className="btn btn-primary"

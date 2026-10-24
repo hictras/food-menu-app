@@ -94,7 +94,21 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     const no = responses.filter((r) => r.answer === "no");
 
     const store = await cookies();
+    
+    // Look up the user's name to replace {name}
     const viewerPhone = (store.get(VIEWER_PHONE_COOKIE)?.value || "").trim();
+    let viewerName: string | null = null;
+    if (viewerPhone) {
+      const [sub] = await db.select().from(pushSubscriptions).where(eq(pushSubscriptions.phoneNumber, viewerPhone)).limit(1);
+      if (sub && sub.name) viewerName = sub.name.trim();
+    }
+
+    function personalize(t: string | null | undefined): string {
+      if (!t) return "";
+      if (!viewerName) return t.replace(/\{name\}/g, "").replace(/\s+([,.!?;:])/g, "$1").replace(/\s{2,}/g, " ").trim();
+      return t.replace(/\{name\}/g, viewerName);
+    }
+  
     const myResponse = viewerPhone ? responses.find((r) => r.phone === viewerPhone) : null;
 
     const targetPhones = parseTargetPhones(notification?.targetPhone || null);
@@ -105,10 +119,10 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
     return NextResponse.json({
       id: poll.id,
-      question: poll.question,
+      question: personalize(poll.question),
       isOpen: !!poll.isOpen,
-      title: notification?.title || poll.question,
-      body: notification?.body || "",
+      title: personalize(notification?.title || poll.question),
+      body: personalize(notification?.body || ""),
       targetPhone: notification?.targetPhone || "all",
       recipeUrl,
       yesCount: yes.length,

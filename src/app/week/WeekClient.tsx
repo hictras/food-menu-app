@@ -33,23 +33,18 @@ const SLOTS: { key: Slot; label: string; labelAr: string; color: string }[] = [
 ];
 
 const DAY_NAMES_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const DAY_NAMES_AR = ar.calendar.days;
 const MONTH_NAMES_EN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-const MONTH_NAMES_AR = ar.calendar.months;
 
 function fmt(y: number, m: number, d: number): string {
   return `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
 }
-
 function parseDate(s: string): Date {
   const [y, m, d] = s.split("-").map(Number);
   return new Date(y, m - 1, d);
 }
-
 function toStr(d: Date): string {
   return fmt(d.getFullYear(), d.getMonth(), d.getDate());
 }
-
 function mondayOf(date: Date): Date {
   const d = new Date(date);
   const offset = (d.getDay() + 6) % 7;
@@ -57,13 +52,11 @@ function mondayOf(date: Date): Date {
   d.setHours(0, 0, 0, 0);
   return d;
 }
-
 function addDays(date: Date, n: number): Date {
   const d = new Date(date);
   d.setDate(d.getDate() + n);
   return d;
 }
-
 function monthParam(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 }
@@ -91,6 +84,7 @@ export default function WeekClient() {
   const [loading, setLoading] = useState(true);
   const [logoUrl, setLogoUrl] = useState<string>("");
   const [appName, setAppName] = useState("Menu");
+  const [ratings, setRatings] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const months = new Set([monthParam(weekStart), monthParam(weekEnd)]);
@@ -124,6 +118,26 @@ export default function WeekClient() {
       .catch(() => {});
   }, [weekStart, weekEnd]);
 
+  useEffect(() => {
+    async function fetchRatings() {
+      const newRatings: Record<string, number> = {};
+      await Promise.all(
+        days.map(async (day) => {
+          const dateStr = toStr(day);
+          try {
+            const res = await fetch(`/api/reviews/day/${dateStr}`, { cache: "no-store" });
+            const data = await res.json();
+            if (data.count > 0 && data.average > 0) {
+              newRatings[dateStr] = data.average;
+            }
+          } catch (e) {}
+        })
+      );
+      setRatings(newRatings);
+    }
+    fetchRatings();
+  }, [days]);
+
   const byDate = useMemo(() => {
     const map = new Map<string, Map<Slot, PlanEntry[]>>();
     const startStr = toStr(weekStart);
@@ -154,8 +168,8 @@ export default function WeekClient() {
     const d2 = weekEnd.getDate();
 
     if (isAr) {
-      const m1n = MONTH_NAMES_AR[m1];
-      const m2n = MONTH_NAMES_AR[m2];
+      const m1n = ar.calendar.months[m1];
+      const m2n = ar.calendar.months[m2];
       if (y1 === y2 && m1 === m2) return `${d1} – ${d2} ${m1n} ${y1}`;
       if (y1 === y2) return `${d1} ${m1n} – ${d2} ${m2n} ${y1}`;
       return `${d1} ${m1n} ${y1} – ${d2} ${m2n} ${y2}`;
@@ -167,78 +181,68 @@ export default function WeekClient() {
     return `${m1n} ${d1}, ${y1} – ${m2n} ${d2}, ${y2}`;
   }
 
-  function buildWhatsAppText(): string {
+  function share() {
     const lines: string[] = [];
-    lines.push(isAr ? `🗓 *${ar.weeklySummary.title}*` : "🗓 *This Week's Menu*");
+    lines.push(`🗓 *${isAr ? ar.weeklySummary.title : ar.weeklySummaryEn.title}*`);
     lines.push(rangeLabel());
     lines.push("");
-
-    let any = false;
     for (const day of days) {
       const dateStr = toStr(day);
       const slotMap = byDate.get(dateStr);
       if (!slotMap || slotMap.size === 0) continue;
-      any = true;
-      const dayName = isAr ? DAY_NAMES_AR[day.getDay()] : DAY_NAMES_EN[day.getDay()];
+      const dayName = isAr ? ar.calendar.days[day.getDay()] : DAY_NAMES_EN[day.getDay()];
       lines.push(`*${dayName}*`);
       for (const slot of SLOTS) {
         const list = slotMap.get(slot.key);
         if (!list) continue;
         for (const e of list) {
-          const slotLabel = isAr ? slot.labelAr : slot.label;
-          lines.push(`  ${slotLabel}: ${recipeName(e)}`);
+          lines.push(`  ${isAr ? slot.labelAr : slot.label}: ${recipeName(e)}`);
         }
       }
       lines.push("");
     }
-    if (!any) lines.push(isAr ? ar.weeklySummary.empty : "No meals planned this week.");
-    lines.push(isAr ? `— ${appName}` : `— Shared from ${appName}`);
-    return lines.join("\n");
-  }
-
-  function share() {
-    const text = buildWhatsAppText();
-    window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank");
+    lines.push(`— ${isAr ? ar.weeklySummary.sharedFrom : ar.weeklySummaryEn.sharedFrom}`);
+    window.open("https://wa.me/?text=" + encodeURIComponent(lines.join("\n")), "_blank");
   }
 
   return (
     <main className="container" style={{ paddingTop: 40, paddingBottom: 80, maxWidth: 760 }}>
       <div className="no-print" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
         <Link href="/calendar" className="btn btn-ghost" style={{ fontSize: 12 }}>
-          {isAr ? ar.calendar.backToCalendar : "← Calendar"}
+          {ar.calendar.backToCalendar}
         </Link>
         <div style={{ display: "flex", gap: 8 }}>
           <Link href={`/week?from=${toStr(addDays(weekStart, -7))}`} className="btn btn-ghost" style={{ fontSize: 12 }}>
-            {isAr ? ar.weeklySummary.prevWeek : "← Prev week"}
+            {isAr ? ar.weeklySummary.prevWeek : ar.weeklySummaryEn.prevWeek}
           </Link>
           <Link href={`/week?from=${toStr(addDays(weekStart, 7))}`} className="btn btn-ghost" style={{ fontSize: 12 }}>
-            {isAr ? ar.weeklySummary.nextWeek : "Next week →"}
+            {isAr ? ar.weeklySummary.nextWeek : ar.weeklySummaryEn.nextWeek}
           </Link>
         </div>
       </div>
 
       <div className="page-head" style={{ marginTop: 0 }}>
-        <h1>{isAr ? ar.weeklySummary.title : "This Week's Menu"}</h1>
+        <h1>{isAr ? ar.weeklySummary.title : ar.weeklySummaryEn.title}</h1>
       </div>
       <p className="page-sub">{rangeLabel()}</p>
 
       <div className="no-print" style={{ display: "flex", gap: 8, marginBottom: 24, flexWrap: "wrap" }}>
         <button type="button" className="btn btn-ghost" onClick={() => window.print()}>
-          🖨 {isAr ? ar.weeklySummary.print : "Print"}
+          🖨 {isAr ? ar.weeklySummary.print : ar.weeklySummaryEn.print}
         </button>
         <button type="button" className="btn btn-primary" onClick={share}>
-          💬 {isAr ? ar.weeklySummary.share : "Share on WhatsApp"}
+          💬 {isAr ? ar.weeklySummary.share : ar.weeklySummaryEn.share}
         </button>
       </div>
 
       {loading ? (
-        <p className="helper">{isAr ? ar.calendar.loading : "Loading..."}</p>
+        <p className="helper">{ar.calendar.loading}</p>
       ) : (
         <div className="week-summary">
           {days.map((day) => {
             const dateStr = toStr(day);
             const slotMap = byDate.get(dateStr);
-            const dayName = isAr ? DAY_NAMES_AR[day.getDay()] : DAY_NAMES_EN[day.getDay()];
+            const dayName = isAr ? ar.calendar.days[day.getDay()] : DAY_NAMES_EN[day.getDay()];
             const hasMeals = slotMap && slotMap.size > 0;
 
             return (
@@ -246,10 +250,13 @@ export default function WeekClient() {
                 <Link href={`/calendar/${dateStr}`} className="week-day-name" style={{ textDecoration: "none", color: "var(--accent)" }}>
                   {dayName}
                 </Link>
-                <div className="week-day-meals">
-                  {!hasMeals && (
-                    <span className="week-day-empty">—</span>
+                <div className="week-day-meals" style={{ position: "relative" }}>
+                  {ratings[dateStr] && (
+                    <span style={{ position: "absolute", top: 0, insetInlineEnd: 0, fontSize: 11, background: "rgba(255, 215, 0, 0.15)", color: "#ffd700", padding: "2px 6px", borderRadius: 4, fontWeight: 600 }}>
+                      ⭐ {ratings[dateStr].toFixed(1)}
+                    </span>
                   )}
+                  {!hasMeals && <span className="week-day-empty">—</span>}
                   {hasMeals && SLOTS.map((slot) => {
                     const list = slotMap!.get(slot.key);
                     if (!list || list.length === 0) return null;
@@ -279,7 +286,7 @@ export default function WeekClient() {
 
       <div className="week-footer">
         {logoUrl && <img src={logoUrl} alt="" className="week-logo" />}
-        <span>{isAr ? appName : `Shared from ${appName}`}</span>
+        <span>{isAr ? ar.weeklySummary.sharedFrom : ar.weeklySummaryEn.sharedFrom}</span>
       </div>
     </main>
   );

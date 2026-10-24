@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
     const phone = cookiePhone || queryPhone;
 
     let viewerName: string | null = null;
-    if (!admin && phone) {
+    if (phone) {
       const sub = await db
         .select()
         .from(pushSubscriptions)
@@ -27,11 +27,12 @@ export async function GET(req: NextRequest) {
       viewerName = sub[0]?.name || null;
     }
 
+    // Replace {name} with the actual name, or "Admin" if admin, or empty
     function personalizeText(t: string | null | undefined): string {
-      if (!t) return t || "";
-      if (admin) return t;
-      const trimmed = (viewerName || "").trim();
-      if (trimmed) return t.replace(/\{name\}/g, trimmed);
+      if (!t) return "";
+      let replacement = viewerName ? viewerName.trim() : (admin ? "Admin" : "");
+      
+      if (replacement) return t.replace(/\{name\}/g, replacement);
       return t
         .replace(/\{name\}/g, "")
         .replace(/\s+([,.!?;:])/g, "$1")

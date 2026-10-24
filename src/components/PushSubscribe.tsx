@@ -101,9 +101,17 @@ export default function PushSubscribe() {
   }
 
   async function unsubscribe() {
+    const res = await fetch("/api/auth/welcome");
+    const data = await res.json();
+    const phone = data.phone || null;
+    
+    const confirmMsg = phone
+      ? (isAr ? ar.push.unsubscribeConfirm : ar.unsubscribeConfirmEn).replace("{number}", phone)
+      : (isAr ? ar.push.unsubscribeConfirmNoNum : ar.unsubscribeConfirmNoNumEn);
+
     const ok = await confirm({
-      message: isAr ? ar.push.unsubscribeConfirm : "Disable notifications? You won't receive any updates.",
-      confirmText: isAr ? "إيقاف" : "Disable",
+      message: confirmMsg,
+      confirmText: isAr ? ar.push.disable : ar.push.disableEn,
       tone: "danger"
     });
     if (!ok) return;
