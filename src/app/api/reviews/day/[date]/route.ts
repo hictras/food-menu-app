@@ -3,7 +3,6 @@ import { cookies } from "next/headers";
 import { getDb } from "@/db";
 import { dayReviews, pushSubscriptions } from "@/db/schema";
 import { eq, and, desc } from "drizzle-orm";
-import { isAdmin } from "@/lib/auth";
 
 const VIEWER_PHONE_COOKIE = "viewer_phone";
 
@@ -18,38 +17,52 @@ export async function GET(
     }
 
     const db = getDb();
-    const reviews = await db
+
+    const reviewRows = await db
       .select({
         id: dayReviews.id,
         rating: dayReviews.rating,
         comment: dayReviews.comment,
         phone: dayReviews.phone,
         updatedAt: dayReviews.updatedAt,
-        name: pushSubscriptions.name,
       })
       .from(dayReviews)
-      .leftJoin(pushSubscriptions, eq(dayReviews.phone, pushSubscriptions.phoneNumber))
       .where(eq(dayReviews.date, date))
       .orderBy(desc(dayReviews.updatedAt));
+
+    const subs = await db
+      .select({ phoneNumber: pushSubscriptions.phoneNumber, name: pushSubscriptions.name })
+      .from(pushSubscriptions);
+
+    const nameByPhone = new Map<string, string | null>();
+    for (const s of subs) {
+      if (!s.phoneNumber) continue;
+      if (!nameByPhone.has(s.phoneNumber)) {
+        nameByPhone.set(s.phoneNumber, s.name);
+      } else if (!nameByPhone.get(s.phoneNumber) && s.name) {
+        nameByPhone.set(s.phoneNumber, s.name);
+      }
+    }
 
     const store = await cookies();
     const viewerPhone = (store.get(VIEWER_PHONE_COOKIE)?.value || "").trim();
 
     let mine = null;
     if (viewerPhone) {
-      const myReview = reviews.find((r) => r.phone === viewerPhone);
+      const myReview = reviewRows.find((r) => r.phone === viewerPhone);
       if (myReview) mine = { rating: myReview.rating, comment: myReview.comment };
     }
 
-    const total = reviews.length;
-    const average = total > 0 ? reviews.reduce((acc, r) => acc + r.rating, 0) / total : 0;
+    const total = reviewRows.length;
+    const average =
+      total > 0 ? reviewRows.reduce((acc, r) => acc + r.rating, 0) / total : 0;
 
-    const publicReviews = reviews.map((r) => ({
+    const publicReviews = reviewRows.map((r) => ({
       id: r.id,
       rating: r.rating,
       comment: r.comment,
       updatedAt: r.updatedAt,
-      name: r.name || null,
+      name: nameByPhone.get(r.phone) || null,
     }));
 
     return NextResponse.json({ average, count: total, mine, reviews: publicReviews });
@@ -104,16 +117,12 @@ export async function POST(
   }
 }
 
-
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ date: string }> }
 ) {
-  
   try {
-    const { date } = await params;
     const reviewId = Number(req.nextUrl.searchParams.get("reviewId"));
-
     const db = getDb();
     await db.delete(dayReviews).where(eq(dayReviews.id, reviewId));
     return NextResponse.json({ ok: true });

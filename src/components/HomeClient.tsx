@@ -8,6 +8,7 @@ import { t, pick } from "@/lib/i18n";
 import { cuisineFlagUrl } from "@/lib/cuisine-flag";
 import { CATEGORIES } from "@/lib/categories";
 import { ar } from "@/lib/ar";
+import { useModal } from "./ModalProvider";
 
 type RecipeRow = {
   id: number;
@@ -47,6 +48,7 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
   const { lang } = useLang();
   const isAr = lang === "ar";
   const router = useRouter();
+  const { show } = useModal();
 
   const [query, setQuery] = useState("");
   const [cuisineFilter, setCuisineFilter] = useState<string>("");
@@ -140,7 +142,7 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
     setDailyDish(null);
     setTimeout(() => {
       const mainDishes = filtered;
-      if (mainDishes.length === 0) { alert(isAr ? ar.home.emptyTitle : "No main dishes found!"); setDailyDishOpen(false); return; }
+      if (mainDishes.length === 0) { show({ title: isAr ? ar.home.emptyTitle : "No main dishes found!", message: "", tone: "error" }); setDailyDishOpen(false); return; }
       setDailyDish(mainDishes[Math.floor(Math.random() * mainDishes.length)]);
       setIsRolling(false);
     }, 1200);

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLang } from "@/components/LanguageProvider";
 import { ar } from "@/lib/ar";
+import { useModal } from "@/components/ModalProvider";
 
 type Visitor = { id: string; phone: string | null; name: string | null; visits: number; lastSeen: string };
 
@@ -11,6 +12,8 @@ export default function VisitorsPage() {
   const { lang } = useLang();
   const isAr = lang === "ar";
   const router = useRouter();
+  const { confirm } = useModal();
+  
   const [visitors, setVisitors] = useState<Visitor[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -35,12 +38,16 @@ export default function VisitorsPage() {
   }
 
   async function deleteVisitor(id: string) {
-    if (!window.confirm("Delete this log?")) return;
+    const ok = await confirm({ 
+      message: isAr ? ar.messages.deleteLogConfirm : "Delete this log?" 
+    });
+    if (!ok) return;
+    
     await fetch("/api/visitors?id=" + id, { method: "DELETE" });
     loadVisitors();
   }
 
-  if (loading) return <div className="container" style={{ padding: 40 }}>{isAr ? "Loading..." : "Loading..."}</div>;
+  if (loading) return <div className="container" style={{ padding: 40 }}>{isAr ? ar.visitorsPage.loading : "Loading..."}</div>;
 
   return (
     <main className="container" style={{ paddingTop: 40, paddingBottom: 80, maxWidth: 800 }}>

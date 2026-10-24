@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLang } from "@/components/LanguageProvider";
 import { ar } from "@/lib/ar";
+import { useModal } from "@/components/ModalProvider";
 
 type Recipient = { id: number; phoneNumber: string | null; name: string | null; excluded: number; };
 type Group = { id: number; name: string; phones: string[]; };
@@ -12,6 +13,7 @@ export default function RecipientsPage() {
   const { lang } = useLang();
   const isAr = lang === "ar";
   const router = useRouter();
+  const { show, confirm } = useModal();
   
   const [recipients, setRecipients] = useState<Recipient[]>([]);
   const [groups, setGroups] = useState<Group[]>([]);
@@ -59,20 +61,22 @@ export default function RecipientsPage() {
   }
 
   async function deleteGroup(id: number) {
-    if (!window.confirm(isAr ? ar.groups.deleteConfirm : "Delete this group?")) return;
+    const isConfirmed = await confirm({ message: isAr ? ar.groups.deleteConfirm : "Delete this group?" });
+    if (!isConfirmed) return;
     await fetch(`/api/recipients/groups?id=${id}`, { method: "DELETE" });
     loadData();
   }
 
   async function handleDeleteRecipient(id: number) {
-    if (!window.confirm(isAr ? ar.groups.deleteConfirm : "Delete this recipient?")) return;
+    const isConfirmed = await confirm({ message: isAr ? ar.groups.deleteConfirm : "Delete this recipient?" });
+    if (!isConfirmed) return;
     await fetch(`/api/recipients?id=${id}`, { method: "DELETE" });
     loadData();
   }
 
   async function handleSaveRecipient(id: number) {
     if (!editPhone.trim()) {
-      alert(isAr ? ar.groups.phoneRequired : "Phone number cannot be empty.");
+      show({ message: isAr ? ar.groups.phoneRequired : "Phone number cannot be empty.", tone: "error" });
       return;
     }
     await fetch("/api/recipients", {

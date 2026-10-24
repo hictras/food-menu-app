@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useLang } from "./LanguageProvider";
 import { ar } from "@/lib/ar";
+import { useModal } from "./ModalProvider";
 
 type Review = {
   id: number;
@@ -22,6 +23,7 @@ type Data = {
 export default function DayReviews({ date, isAdmin }: { date: string; isAdmin?: boolean }) {
   const { lang } = useLang();
   const isAr = lang === "ar";
+  const { confirm } = useModal();
 
   const [data, setData] = useState<Data | null>(null);
   const [loading, setLoading] = useState(true);
@@ -110,7 +112,8 @@ export default function DayReviews({ date, isAdmin }: { date: string; isAdmin?: 
   }
 
   async function deleteReview(id: number) {
-    if (!window.confirm(isAr ? ar.dayReviews.deleteConfirm : "Delete this review?")) return;
+    const ok = await confirm({ message: isAr ? ar.dayReviews.deleteConfirm : "Delete this review?" });
+    if (!ok) return;
     await fetch(`/api/reviews/day/${date}?reviewId=${id}`, { method: "DELETE" });
     load();
   }

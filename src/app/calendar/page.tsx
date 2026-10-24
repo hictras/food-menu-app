@@ -4,6 +4,8 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useLang } from "@/components/LanguageProvider";
+import { ar } from "@/lib/ar";
+import { useModal } from "@/components/ModalProvider";
 
 type Slot = "breakfast" | "lunch" | "dinner" | "snack" | "dessert";
 
@@ -34,11 +36,11 @@ type RecipeFull = {
 };
 
 const SLOTS: { key: Slot; label: string; labelAr: string; color: string }[] = [
-  { key: "breakfast", label: "Breakfast", labelAr: "فطور", color: "var(--olive)" },
-  { key: "lunch", label: "Lunch", labelAr: "غداء", color: "#d97757" },
-  { key: "dinner", label: "Dinner", labelAr: "عشاء", color: "var(--accent)" },
-  { key: "snack", label: "Snack", labelAr: "وجبة خفيفة", color: "#7ba05b" },
-  { key: "dessert", label: "Dessert", labelAr: "حلويات", color: "#c94e35" },
+  { key: "breakfast", label: "Breakfast", labelAr: ar.calendar.slots.breakfast, color: "var(--olive)" },
+  { key: "lunch", label: "Lunch", labelAr: ar.calendar.slots.lunch, color: "#d97757" },
+  { key: "dinner", label: "Dinner", labelAr: ar.calendar.slots.dinner, color: "var(--accent)" },
+  { key: "snack", label: "Snack", labelAr: ar.calendar.slots.snack, color: "#7ba05b" },
+  { key: "dessert", label: "Dessert", labelAr: ar.calendar.slots.dessert, color: "#c94e35" },
 ];
 
 const MAX_POSITIONS = 2;
@@ -53,14 +55,15 @@ function todayStr(): string {
 }
 
 const MONTH_NAMES_EN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-const MONTH_NAMES_AR = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+const MONTH_NAMES_AR = ar.calendar.months;
 const DAY_NAMES_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const DAY_NAMES_AR = ["أحد", "اثنين", "ثلاثاء", "أربعاء", "خميس", "جمعة", "سبت"];
+const DAY_NAMES_AR = ar.calendar.days;
 
 export default function CalendarPage() {
   const { lang } = useLang();
   const router = useRouter();
   const isAr = lang === "ar";
+  const { show } = useModal();
 
   const [year, setYear] = useState(() => new Date().getFullYear());
   const [month, setMonth] = useState(() => new Date().getMonth());
@@ -103,7 +106,6 @@ export default function CalendarPage() {
     if (!slotMenuDate) return;
     function closeSlotMenu(e: MouseEvent) {
       const target = e.target as HTMLElement;
-      // Ignore clicks on the toggle button or inside the slot menu
       if (target.closest("button[data-slot-toggle]")) return;
       if (target.closest("[data-slot-menu]")) return;
       setSlotMenuDate(null);
@@ -128,7 +130,6 @@ export default function CalendarPage() {
   const firstDayOfWeek = new Date(year, month, 1).getDay();
   const today = todayStr();
 
-  // Index: date -> slot -> position -> entry
   const byDate = new Map<string, Map<Slot, Map<number, PlanEntry>>>();
   for (const e of entries) {
     if (!byDate.has(e.date)) byDate.set(e.date, new Map());
@@ -182,7 +183,7 @@ export default function CalendarPage() {
       closePicker();
       loadMonth();
     } catch (err) {
-      alert("Failed to save");
+      show({ message: isAr ? ar.calendar.saveFailed : "Failed to save", tone: "error" });
     }
   }
 
@@ -193,7 +194,7 @@ export default function CalendarPage() {
       closePicker();
       loadMonth();
     } catch (err) {
-      alert("Failed to remove");
+      show({ message: isAr ? ar.calendar.removeFailed : "Failed to remove", tone: "error" });
     }
   }
 
@@ -212,10 +213,10 @@ export default function CalendarPage() {
   return (
     <main className="container" style={{ paddingTop: 40, paddingBottom: 80 }}>
       <div className="page-head">
-        <h1>{isAr ? "تقويم الوجبات" : "Meal Calendar"}</h1>
+        <h1>{isAr ? ar.calendar.title : "Meal Calendar"}</h1>
       </div>
       <p className="page-sub">
-        {isAr ? "اختر حتى وصفتين لكل وجبة في اليوم" : "Up to 2 recipes per slot per day"}
+        {isAr ? ar.calendar.sub : "Up to 2 recipes per slot per day"}
       </p>
 
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
@@ -225,9 +226,9 @@ export default function CalendarPage() {
         </div>
         <button type="button" className="btn btn-ghost" onClick={nextMonth} style={{ fontSize: 14, padding: "6px 12px" }}>→</button>
         <button type="button" className="btn btn-ghost" onClick={goToday} style={{ fontSize: 12, padding: "6px 12px" }}>
-          {isAr ? "اليوم" : "Today"}
+          {isAr ? ar.calendar.today : "Today"}
         </button>
-        <Link href="/week" className="btn btn-ghost" style={{ fontSize: 12, padding: "6px 12px" }}>📄 {isAr ? "ملخص الأسبوع" : "Weekly summary"}</Link>
+        <Link href="/week" className="btn btn-ghost" style={{ fontSize: 12, padding: "6px 12px" }}>📄 {isAr ? ar.nav.week : "Weekly summary"}</Link>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4, marginBottom: 4 }}>
@@ -294,7 +295,7 @@ export default function CalendarPage() {
                     }}
                     onMouseDown={(e) => e.stopPropagation()}
                     data-slot-toggle
-                    title={isAr ? "إضافة" : "Add"}
+                    title={isAr ? ar.calendar.add : "Add"}
                     style={{
                       background: "var(--accent)",
                       border: "1px solid var(--accent)",
@@ -363,7 +364,7 @@ export default function CalendarPage() {
               ) : (
                 isAdmin && (
                   <div style={{ fontSize: 8, color: "var(--muted)", fontStyle: "italic", marginTop: "auto" }}>
-                    {isAr ? "لا وجبات" : "No meals"}
+                    {isAr ? ar.calendar.noMeals : "No meals"}
                   </div>
                 )
               )}
@@ -434,7 +435,7 @@ export default function CalendarPage() {
       </div>
 
       {loading && (
-        <p className="helper" style={{ marginTop: 16 }}>{isAr ? "جاري التحميل..." : "Loading..."}</p>
+        <p className="helper" style={{ marginTop: 16 }}>{isAr ? ar.calendar.loading : "Loading..."}</p>
       )}
 
       {pickerDate && pickerSlot && pickerPosition !== null && (
@@ -473,7 +474,7 @@ export default function CalendarPage() {
                   {pickerDate}
                 </div>
                 <div style={{ fontSize: 16, fontWeight: 600, color: "var(--ink)" }}>
-                  {SLOTS.find((s) => s.key === pickerSlot)?.[isAr ? "labelAr" : "label"]} · {isAr ? "الوصفة" : "Recipe"} {pickerPosition}
+                  {SLOTS.find((s) => s.key === pickerSlot)?.[isAr ? "labelAr" : "label"]} · {isAr ? ar.calendar.slotRecipe : "Recipe"} {pickerPosition}
                 </div>
               </div>
               <button
@@ -488,7 +489,7 @@ export default function CalendarPage() {
             {pickerCurrentEntry && (
               <div style={{ padding: 10, background: "var(--bg)", border: "1px solid var(--line)", borderRadius: 8 }}>
                 <div style={{ fontSize: 11, color: "var(--muted)", marginBottom: 4 }}>
-                  {isAr ? "الحالي" : "Current"}
+                  {isAr ? ar.calendar.currentRecipe : "Current"}
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   {pickerCurrentEntry.recipe.imageUrl ? (
@@ -505,7 +506,7 @@ export default function CalendarPage() {
                     onClick={() => removeEntry(pickerCurrentEntry.id)}
                     style={{ fontSize: 11, padding: "4px 10px" }}
                   >
-                    {isAr ? "حذف" : "Remove"}
+                    {isAr ? ar.calendar.deleteBtn : "Remove"}
                   </button>
                 </div>
               </div>
@@ -513,7 +514,7 @@ export default function CalendarPage() {
 
             <input
               type="text"
-              placeholder={isAr ? "ابحث عن وصفة..." : "Search recipes..."}
+              placeholder={isAr ? ar.calendar.searchRecipePlaceholder : "Search recipes..."}
               value={recipeSearch}
               onChange={(e) => setRecipeSearch(e.target.value)}
               style={{ width: "100%", padding: "8px 12px", border: "1px solid var(--line)", borderRadius: 8, background: "var(--input-bg)", color: "var(--ink)", fontSize: 13 }}
@@ -522,7 +523,7 @@ export default function CalendarPage() {
 
             <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 4 }}>
               {filteredRecipes.length === 0 ? (
-                <p className="helper">{isAr ? "لا وصفات" : "No recipes"}</p>
+                <p className="helper">{isAr ? ar.calendar.noRecipes : "No recipes"}</p>
               ) : (
                 filteredRecipes.map((r) => (
                   <button

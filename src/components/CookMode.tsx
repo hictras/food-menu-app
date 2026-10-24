@@ -97,7 +97,7 @@ export default function CookMode({ open, onClose, recipeName, steps }: Props) {
   }
 
   function renderTextWithTimers(t: string) {
-    const regex = /(\d+)\s*(minutes|minute|min|hours|hour|hr|دقيقة|دقائق|ساعة|ساعات)/gi;
+    const regex = /(\d+)\s*(minutes|minute|hours|hour|hrs|hr|mins|min|دقيقة|دقائق|ساعة|ساعات)\b/gi;
     const parts = [];
     let lastIndex = 0;
     let match;

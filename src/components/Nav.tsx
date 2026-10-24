@@ -18,28 +18,36 @@ export default function Nav() {
   const [logoUrl, setLogoUrl] = useState<string>("");
   const [unreadCount, setUnreadCount] = useState(0);
 
-
   useEffect(() => {
+    let mounted = true;
     async function checkUnread() {
       try {
-        const res = await fetch("/api/notifications");
+        const res = await fetch("/api/notifications", { cache: "no-store" });
+        if (!mounted) return;
         const data = await res.json();
-        if (Array.isArray(data)) {
-          const lastRead = localStorage.getItem("last_read_inbox");
-          const unread = data.filter(n => {
-            if (!n.createdAt) return false;
-            return !lastRead || new Date(n.createdAt) > new Date(lastRead);
-          });
-          setUnreadCount(unread.length);
-        }
-      } catch (e) {}
+        if (!Array.isArray(data)) return;
+
+        const lastReadRaw = localStorage.getItem("last_read_inbox");
+        const lastRead = lastReadRaw ? new Date(lastReadRaw).getTime() : 0;
+
+        const unread = data.filter((n) => {
+          if (!n.createdAt) return false;
+          return new Date(n.createdAt).getTime() > lastRead;
+        });
+        setUnreadCount(unread.length);
+      } catch {}
     }
     checkUnread();
-    // Check every minute
     const interval = setInterval(checkUnread, 60000);
-    return () => clearInterval(interval);
+    const onFocus = () => checkUnread();
+    window.addEventListener("focus", onFocus);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+      window.removeEventListener("focus", onFocus);
+    };
   }, []);
-  
+
   useEffect(() => {
     fetch("/api/auth/me")
       .then((r) => r.json())
@@ -108,8 +116,7 @@ export default function Nav() {
           <Link className="nav-link nav-recipes-main" href="/recipes" onClick={closeAll}>
             {t(lang, "nav_recipes")}
           </Link>
-          
-          {/* NEW GAMES HUB LINK */}
+
           <Link className="nav-link" href="/games" onClick={closeAll}>{lang === "ar" ? ar.nav.gamesHubNav : "Games"}</Link>
 
           <Link className="nav-link" href="/calendar" onClick={closeAll}>
@@ -227,8 +234,6 @@ export default function Nav() {
         </div>
 
         <div className={`nav-mobile-menu${mobileOpen ? " is-open" : ""}`} id="nav-mobile-menu">
-          
-          {/* NEW GAMES HUB LINK (MOBILE) */}
           <Link className="mobile-nav-link" href="/games" onClick={closeAll}>
             <span>🎮</span> {lang === "ar" ? ar.nav.gamesHubNav : "Games"}
           </Link>
@@ -239,8 +244,13 @@ export default function Nav() {
           <Link className="mobile-nav-link" href="/week" onClick={closeAll}>
             <span>📄</span> {lang === "ar" ? ar.nav.week : "This Week"}
           </Link>
-          <Link className="mobile-nav-link" href="/inbox" onClick={closeAll}>
+          <Link className="mobile-nav-link" href="/inbox" onClick={closeAll} style={{ position: "relative" }}>
             <span>✉️</span> {lang === "ar" ? ar.nav.inbox : "Inbox"}
+            {unreadCount > 0 && (
+              <span style={{ marginInlineStart: "auto", background: "var(--accent)", color: "white", fontSize: 10, fontWeight: "bold", padding: "2px 6px", borderRadius: 999, lineHeight: 1 }}>
+                {unreadCount}
+              </span>
+            )}
           </Link>
 
           {loaded && isAdmin && (

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useLang } from "./LanguageProvider";
 import { ar } from "@/lib/ar";
+import { useModal } from "./ModalProvider";
 
 type Review = { id: number; rating: number; comment: string | null; updatedAt: string; name: string | null; };
 type Data = { average: number; count: number; mine: { rating: number; comment: string | null } | null; reviews: Review[]; };
@@ -10,6 +11,7 @@ type Data = { average: number; count: number; mine: { rating: number; comment: s
 export default function RecipeReviews({ recipeId, isAdmin }: { recipeId: number; isAdmin?: boolean }) {
   const { lang } = useLang();
   const isAr = lang === "ar";
+  const { confirm } = useModal();
 
   const [data, setData] = useState<Data | null>(null);
   const [loading, setLoading] = useState(true);
@@ -82,7 +84,8 @@ export default function RecipeReviews({ recipeId, isAdmin }: { recipeId: number;
   }
 
   async function deleteReview(id: number) {
-    if (!window.confirm(isAr ? ar.reviews.deleteConfirm : "Delete this review?")) return;
+    const ok = await confirm({ message: isAr ? ar.reviews.deleteConfirm : "Delete this review?" });
+    if (!ok) return;
     await fetch(`/api/recipes/${recipeId}/reviews?reviewId=${id}`, { method: "DELETE" });
     load();
   }

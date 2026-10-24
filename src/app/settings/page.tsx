@@ -1,12 +1,12 @@
 "use client";
 
-
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ar } from "@/lib/ar";
 import { useLang } from "@/components/LanguageProvider";
 import ImageUpload from "@/components/ImageUpload";
 import VideoUpload from "@/components/VideoUpload";
+import { useModal } from "@/components/ModalProvider";
 
 type Settings = {
   today_text: string;
@@ -62,7 +62,10 @@ const DEFAULT: Settings = {
 
 export default function SettingsPage() {
   const { lang } = useLang();
+  const isAr = lang === "ar";
   const router = useRouter();
+  const { show } = useModal();
+  
   const [config, setConfig] = useState<Settings>(DEFAULT);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -98,7 +101,10 @@ export default function SettingsPage() {
       body: JSON.stringify(config),
     });
     setSaving(false);
-    alert(lang === "ar" ? "تم الحفظ!" : "Settings saved!");
+    show({ 
+      message: isAr ? ar.messages.settingsSaved : "Settings saved!", 
+      tone: "success" 
+    });
   }
 
   const ColorPair = ({ label, lightKey, darkKey }: { label: string; lightKey: keyof Settings; darkKey: keyof Settings }) => (
@@ -128,89 +134,86 @@ export default function SettingsPage() {
   return (
     <main className="container" style={{ paddingTop: 40, paddingBottom: 80, maxWidth: 650 }}>
       <div className="page-head">
-        <h1>{lang === "ar" ? ar.settingsPage.title : "Settings"}</h1>
+        <h1>{isAr ? ar.settingsPage.title : "Settings"}</h1>
       </div>
 
       {/* TAB MENU */}
       <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8, marginBottom: 20 }}>
         <button type="button" className={`btn ${activeTab === "branding" ? "btn-primary" : "btn-ghost"}`} onClick={() => setActiveTab("branding")}>
-          {lang === "ar" ? ar.settingsPage.branding : "Branding"}
+          {isAr ? ar.settingsPage.branding : "Branding"}
         </button>
         <button type="button" className={`btn ${activeTab === "typography" ? "btn-primary" : "btn-ghost"}`} onClick={() => setActiveTab("typography")}>
-          {lang === "ar" ? ar.settingsPage.typography : "Typography"}
+          {isAr ? ar.settingsPage.typography : "Typography"}
         </button>
         <button type="button" className={`btn ${activeTab === "colors" ? "btn-primary" : "btn-ghost"}`} onClick={() => setActiveTab("colors")}>
-          {lang === "ar" ? ar.settingsPage.datesColors : "Dates & Colors"}
+          {isAr ? ar.settingsPage.datesColors : "Dates & Colors"}
         </button>
         <button type="button" className={`btn ${activeTab === "noDish" ? "btn-primary" : "btn-ghost"}`} onClick={() => setActiveTab("noDish")}>
-          {lang === "ar" ? ar.settingsPage.noDishTab : "No Dish Today"}
+          {isAr ? ar.settingsPage.noDishTab : "No Dish Today"}
         </button>
         <button type="button" className={`btn ${activeTab === "devices" ? "btn-primary" : "btn-ghost"}`} onClick={() => setActiveTab("devices")}>
-          {lang === "ar" ? ar.settingsPage.devices : "Devices"}
+          {isAr ? ar.settingsPage.devices : "Devices"}
         </button>
-        
-        
-        
       </div>
 
       <div className="form-card">
         
         {activeTab === "branding" && (
           <div>
-            <div className="field"><label>{lang === "ar" ? ar.settingsPage.logo : "Logo"}</label><ImageUpload onUploaded={(url) => setConfig({ ...config, logo_url: url })} initialUrl={config.logo_url || undefined} /></div>
-            <div className="field"><label>{lang === "ar" ? ar.settingsPage.favicon : "Favicon"}</label><ImageUpload onUploaded={(url) => setConfig({ ...config, favicon_url: url })} initialUrl={config.favicon_url || undefined} /></div>
-            <div className="field"><label>{lang === "ar" ? ar.settingsPage.background : "Background image"}</label><ImageUpload onUploaded={(url) => setConfig({ ...config, background_url: url })} initialUrl={config.background_url || undefined} /></div>
-            <div className="field"><label>{lang === "ar" ? ar.settingsPage.welcomeTitle : "Welcome title"}</label><input type="text" value={config.welcome_title} onChange={(e) => setConfig({ ...config, welcome_title: e.target.value })} style={{ width: "100%", padding: 10 }} /></div>
-            <div className="field"><label>{lang === "ar" ? ar.settingsPage.welcomeButton : "Enter button text"}</label><input type="text" value={config.welcome_button} onChange={(e) => setConfig({ ...config, welcome_button: e.target.value })} style={{ width: "100%", padding: 10 }} /></div>
-            <div className="field"><label>{lang === "ar" ? ar.settingsPage.appName : "App Name"}</label><input type="text" value={config.app_name || ""} onChange={(e) => setConfig({ ...config, app_name: e.target.value })} placeholder="e.g. Hictra Recipes" style={{ width: "100%", padding: 10 }} /><p className="helper" style={{ marginTop: 6 }}>{lang === "ar" ? ar.settingsPage.appNameHint : "Shows in browser tab and shared messages."}</p></div>
+            <div className="field"><label>{isAr ? ar.settingsPage.logo : "Logo"}</label><ImageUpload onUploaded={(url) => setConfig({ ...config, logo_url: url })} initialUrl={config.logo_url || undefined} /></div>
+            <div className="field"><label>{isAr ? ar.settingsPage.favicon : "Favicon"}</label><ImageUpload onUploaded={(url) => setConfig({ ...config, favicon_url: url })} initialUrl={config.favicon_url || undefined} /></div>
+            <div className="field"><label>{isAr ? ar.settingsPage.background : "Background image"}</label><ImageUpload onUploaded={(url) => setConfig({ ...config, background_url: url })} initialUrl={config.background_url || undefined} /></div>
+            <div className="field"><label>{isAr ? ar.settingsPage.welcomeTitle : "Welcome title"}</label><input type="text" value={config.welcome_title} onChange={(e) => setConfig({ ...config, welcome_title: e.target.value })} style={{ width: "100%", padding: 10 }} /></div>
+            <div className="field"><label>{isAr ? ar.settingsPage.welcomeButton : "Enter button text"}</label><input type="text" value={config.welcome_button} onChange={(e) => setConfig({ ...config, welcome_button: e.target.value })} style={{ width: "100%", padding: 10 }} /></div>
+            <div className="field"><label>{isAr ? ar.settingsPage.appName : "App Name"}</label><input type="text" value={config.app_name || ""} onChange={(e) => setConfig({ ...config, app_name: e.target.value })} placeholder="e.g. Hictra Recipes" style={{ width: "100%", padding: 10 }} /><p className="helper" style={{ marginTop: 6 }}>{isAr ? ar.settingsPage.appNameHint : "Shows in browser tab and shared messages."}</p></div>
           </div>
         )}
 
         {activeTab === "typography" && (
           <div>
             <div className="form-section" style={{ marginTop: 0 }}>
-              <h2>{lang === "ar" ? ar.settingsPage.pageTitles : "Page Titles"}</h2>
-              <div className="field"><label>{lang === "ar" ? ar.settingsPage.titleSize : "Title font size (px)"}</label><input type="number" min="24" max="96" value={config.title_size} onChange={(e) => setConfig({ ...config, title_size: e.target.value })} style={{ width: "100%", padding: 10 }} /></div>
-              <div className="field"><label>{lang === "ar" ? ar.settingsPage.titleColor : "Title color"}</label><div style={{ display: "flex", gap: 12 }}><div style={{ flex: 1 }}><span style={{ fontSize: 10, color: "var(--muted)", display: "block", marginBottom: 4 }}>{lang === "ar" ? ar.settingsPage.light : "Light"}</span><input type="color" value={config.title_color_light} onChange={(e) => setConfig({ ...config, title_color_light: e.target.value })} style={{ width: "100%", height: 36 }} /></div><div style={{ flex: 1 }}><span style={{ fontSize: 10, color: "var(--muted)", display: "block", marginBottom: 4 }}>{lang === "ar" ? ar.settingsPage.dark : "Dark"}</span><input type="color" value={config.title_color_dark} onChange={(e) => setConfig({ ...config, title_color_dark: e.target.value })} style={{ width: "100%", height: 36 }} /></div></div></div>
+              <h2>{isAr ? ar.settingsPage.pageTitles : "Page Titles"}</h2>
+              <div className="field"><label>{isAr ? ar.settingsPage.titleSize : "Title font size (px)"}</label><input type="number" min="24" max="96" value={config.title_size} onChange={(e) => setConfig({ ...config, title_size: e.target.value })} style={{ width: "100%", padding: 10 }} /></div>
+              <div className="field"><label>{isAr ? ar.settingsPage.titleColor : "Title color"}</label><div style={{ display: "flex", gap: 12 }}><div style={{ flex: 1 }}><span style={{ fontSize: 10, color: "var(--muted)", display: "block", marginBottom: 4 }}>{isAr ? ar.settingsPage.light : "Light"}</span><input type="color" value={config.title_color_light} onChange={(e) => setConfig({ ...config, title_color_light: e.target.value })} style={{ width: "100%", height: 36 }} /></div><div style={{ flex: 1 }}><span style={{ fontSize: 10, color: "var(--muted)", display: "block", marginBottom: 4 }}>{isAr ? ar.settingsPage.dark : "Dark"}</span><input type="color" value={config.title_color_dark} onChange={(e) => setConfig({ ...config, title_color_dark: e.target.value })} style={{ width: "100%", height: 36 }} /></div></div></div>
             </div>
 
             <hr style={{ borderColor: "var(--line)", margin: "24px 0" }} />
 
             <div className="form-section" style={{ marginTop: 0 }}>
-              <h2>{lang === "ar" ? "نص اليوم" : "Today Text"}</h2>
-              <div className="field"><label>{lang === "ar" ? ar.settingsPage.todayText : '"Today" title text'}</label><input type="text" value={config.today_text} onChange={(e) => setConfig({ ...config, today_text: e.target.value })} style={{ width: "100%", padding: 10 }} /></div>
+              <h2>{isAr ? ar.settingsPage.todayText : "Today Text"}</h2>
+              <div className="field"><label>{isAr ? ar.settingsPage.todayText : '"Today" title text'}</label><input type="text" value={config.today_text} onChange={(e) => setConfig({ ...config, today_text: e.target.value })} style={{ width: "100%", padding: 10 }} /></div>
             </div>
 
             <hr style={{ borderColor: "var(--line)", margin: "24px 0" }} />
 
             <div className="form-section" style={{ marginTop: 0 }}>
-              <h2>{lang === "ar" ? ar.settingsPage.labelsStyle : "Labels Style"}</h2>
-              <div className="field"><label>{lang === "ar" ? ar.settingsPage.labelSize : "Label font size (px)"}</label><input type="number" min="8" max="24" value={config.label_size} onChange={(e) => setConfig({ ...config, label_size: e.target.value })} style={{ width: "100%", padding: 10 }} /></div>
-              <div className="field"><label>{lang === "ar" ? ar.settingsPage.labelColor : "Label color"}</label><div style={{ display: "flex", gap: 12 }}><div style={{ flex: 1 }}><span style={{ fontSize: 10, color: "var(--muted)", display: "block", marginBottom: 4 }}>{lang === "ar" ? ar.settingsPage.light : "Light"}</span><input type="color" value={config.label_color_light} onChange={(e) => setConfig({ ...config, label_color_light: e.target.value })} style={{ width: "100%", height: 36 }} /></div><div style={{ flex: 1 }}><span style={{ fontSize: 10, color: "var(--muted)", display: "block", marginBottom: 4 }}>{lang === "ar" ? ar.settingsPage.dark : "Dark"}</span><input type="color" value={config.label_color_dark} onChange={(e) => setConfig({ ...config, label_color_dark: e.target.value })} style={{ width: "100%", height: 36 }} /></div></div></div>
+              <h2>{isAr ? ar.settingsPage.labelsStyle : "Labels Style"}</h2>
+              <div className="field"><label>{isAr ? ar.settingsPage.labelSize : "Label font size (px)"}</label><input type="number" min="8" max="24" value={config.label_size} onChange={(e) => setConfig({ ...config, label_size: e.target.value })} style={{ width: "100%", padding: 10 }} /></div>
+              <div className="field"><label>{isAr ? ar.settingsPage.labelColor : "Label color"}</label><div style={{ display: "flex", gap: 12 }}><div style={{ flex: 1 }}><span style={{ fontSize: 10, color: "var(--muted)", display: "block", marginBottom: 4 }}>{isAr ? ar.settingsPage.light : "Light"}</span><input type="color" value={config.label_color_light} onChange={(e) => setConfig({ ...config, label_color_light: e.target.value })} style={{ width: "100%", height: 36 }} /></div><div style={{ flex: 1 }}><span style={{ fontSize: 10, color: "var(--muted)", display: "block", marginBottom: 4 }}>{isAr ? ar.settingsPage.dark : "Dark"}</span><input type="color" value={config.label_color_dark} onChange={(e) => setConfig({ ...config, label_color_dark: e.target.value })} style={{ width: "100%", height: 36 }} /></div></div></div>
             </div>
           </div>
         )}
 
         {activeTab === "colors" && (
           <div>
-            <ColorPair label={lang === "ar" ? ar.settingsPage.mainTitleColor : "Main Title Color (?today)"} lightKey="today_color_light" darkKey="today_color_dark" />
-            <ColorPair label={lang === "ar" ? ar.settingsPage.recipeNameColor : "Recipe Name Color"} lightKey="recipe_name_color_light" darkKey="recipe_name_color_dark" />
+            <ColorPair label={isAr ? ar.settingsPage.mainTitleColor : "Main Title Color (?today)"} lightKey="today_color_light" darkKey="today_color_dark" />
+            <ColorPair label={isAr ? ar.settingsPage.recipeNameColor : "Recipe Name Color"} lightKey="recipe_name_color_light" darkKey="recipe_name_color_dark" />
             <hr style={{ borderColor: "var(--line)", margin: "16px 0" }} />
-            <ColorPair label={lang === "ar" ? ar.settingsPage.inboxTitleColor : "Inbox: Main Title"} lightKey="inbox_title_color_light" darkKey="inbox_title_color_dark" />
-            <ColorPair label={lang === "ar" ? ar.settingsPage.inboxRecipeColor : "Inbox: Recipe Name"} lightKey="inbox_recipe_color_light" darkKey="inbox_recipe_color_dark" />
+            <ColorPair label={isAr ? ar.settingsPage.inboxTitleColor : "Inbox: Main Title"} lightKey="inbox_title_color_light" darkKey="inbox_title_color_dark" />
+            <ColorPair label={isAr ? ar.settingsPage.inboxRecipeColor : "Inbox: Recipe Name"} lightKey="inbox_recipe_color_light" darkKey="inbox_recipe_color_dark" />
           </div>
         )}
 
         {activeTab === "noDish" && (
           <div>
-            <div className="field"><label>{lang === "ar" ? ar.settingsPage.noDishImage : "No dish today image"}</label><ImageUpload onUploaded={(url) => setConfig({ ...config, no_dish_image_url: url })} initialUrl={config.no_dish_image_url || undefined} /></div>
-            <div className="field"><label>{lang === "ar" ? ar.settingsPage.noDishVideo : "No dish today video"}</label><VideoUpload onUploaded={(url) => setConfig({ ...config, no_dish_video_url: url })} initialUrl={config.no_dish_video_url || undefined} /></div>
+            <div className="field"><label>{isAr ? ar.settingsPage.noDishImage : "No dish today image"}</label><ImageUpload onUploaded={(url) => setConfig({ ...config, no_dish_image_url: url })} initialUrl={config.no_dish_image_url || undefined} /></div>
+            <div className="field"><label>{isAr ? ar.settingsPage.noDishVideo : "No dish today video"}</label><VideoUpload onUploaded={(url) => setConfig({ ...config, no_dish_video_url: url })} initialUrl={config.no_dish_video_url || undefined} /></div>
           </div>
         )}
 
         {activeTab !== "devices" && (<div style={{ marginTop: 24, paddingTop: 24, borderTop: "1px solid var(--line)" }}>
           <button className="btn btn-primary" onClick={handleSave} disabled={saving} style={{ width: "100%", padding: 12 }}>
-            {saving ? (lang === "ar" ? ar.settingsPage.saving : "Saving...") : (lang === "ar" ? ar.settingsPage.save : "Save Changes")}
+            {saving ? (isAr ? ar.settingsPage.saving : "Saving...") : (isAr ? ar.settingsPage.save : "Save Changes")}
           </button>
         </div>)}
       </div>

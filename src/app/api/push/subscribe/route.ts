@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/db";
 import { pushSubscriptions, visitors } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and, ne } from "drizzle-orm";
 
 export const VIEWER_PHONE_COOKIE = "viewer_phone";
 const VIEWER_PHONE_MAX_AGE = 60 * 60 * 24 * 365;
@@ -22,7 +22,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Phone number required" }, { status: 400 });
     }
 
-    // 1. Save push subscription
+    const existingForPhone = await db
+      .select({ endpoint: pushSubscriptions.endpoint })
+      .from(pushSubscriptions)
+      .where(
+        and(
+          eq(pushSubscriptions.phoneNumber, phoneNumber),
+          ne(pushSubscriptions.endpoint, sub.endpoint)
+        )
+      )
+      .limit(1);
+
+    if (existingForPhone.length > 0) {
+      return NextResponse.json(
+        { error: "This phone number is already registered on another device." },
+        { status: 409 }
+      );
+    }
+
     await db
       .insert(pushSubscriptions)
       .values({
@@ -40,7 +57,6 @@ export async function POST(req: NextRequest) {
         },
       });
 
-    // 2. Link the phone number to their device ID (Visitor)
     if (visitorId) {
       await db.update(visitors).set({ phone: phoneNumber }).where(eq(visitors.id, visitorId));
     }

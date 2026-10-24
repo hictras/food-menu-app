@@ -2,13 +2,17 @@ import { Suspense } from "react";
 import { connection } from "next/server";
 import { getDb } from "@/db";
 import { recipes } from "@/db/schema";
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import HomeClient from "@/components/HomeClient";
+import { isAdmin } from "@/lib/auth";
 
 async function RecipeList() {
   await connection();
   const db = getDb();
-  const all = await db.select().from(recipes).orderBy(desc(recipes.createdAt));
+  const admin = await isAdmin();
+  const all = admin
+    ? await db.select().from(recipes).orderBy(desc(recipes.createdAt))
+    : await db.select().from(recipes).where(eq(recipes.isHidden, 0)).orderBy(desc(recipes.createdAt));
   return <HomeClient recipes={all} />;
 }
 

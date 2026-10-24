@@ -247,6 +247,9 @@ export const ar = {
 
   // ── Admin sender ──────────────────────────────────────────
   sender: {
+    locationLabel: "المكان (اختياري)",
+    locationPlaceholder: "بيت الأهل، البيت، الشاليه",
+    noDishLabel: "لا يوجد طبق اليوم",
     title: "إرسال إشعار",
     recipients: "المستلمون (اتركه فارغاً للجميع)",
     everyone: "الجميع",
@@ -338,12 +341,15 @@ export const ar = {
   push: {
     enable: "🔔 تفعيل",
     disable: "🔕 إيقاف",
+    phoneTaken: "رقم الهاتف مسجل بالفعل على جهاز آخر. تواصل مع المسؤول لحذف الجهاز القديم.",
     enterPhone: "أدخل رقم هاتفك (مثال: 96170123456)",
     phoneRequired: "رقم الهاتف مطلوب",
     permissionDenied: "تم رفض الإذن",
     subscribed: "تم التفعيل بنجاح!",
     unsubscribed: "تم الإيقاف",
     error: "خطأ",
+    unsubscribeConfirm: "هل تريد إيقاف الإشعارات؟ لن تتلقى أي تحديثات.",
+    okBtn: "حسناً",
   },
 
   // ── Categories ────────────────────────────────────────────
@@ -370,6 +376,13 @@ export const ar = {
 
   // ── Dietary tags ──────────────────────────────────────────
   tags: {
+    Vegetarian: "نباتي", Vegan: "نباتي صرف", Pescatarian: "بيسكاتاري",
+    "Gluten-Free": "خالٍ من الغلوتين", "Dairy-Free": "خالٍ من الألبان",
+    "Nut-Free": "خالٍ من المكسرات", Halal: "حلال", Kosher: "كوشير",
+    "Low-Carb": "قليل الكربوهيدرات", Keto: "كيتو", Paleo: "باليو",
+    Meat: "لحوم", Chicken: "دجاج", Seafood: "مأكولات بحرية",
+    Fish: "سمك", Lamb: "لحم غنم", Beef: "لحم بقري",
+    Legumes: "بقوليات", Spicy: "حار", Quick: "سريع",
     vegetarian: "نباتي",
     vegan: "نباتي صرف",
     pescatarian: "بيسكاتاري",
@@ -429,6 +442,8 @@ export const ar = {
 
   // ── Units ─────────────────────────────────────────────────
   units: {
+    min: "د",
+    comma: "، ",
     g: "غ",
     kg: "كغ",
     ml: "مل",
@@ -532,6 +547,13 @@ export const ar = {
 
   // ── Calendar ──────────────────────────────────────────────
   calendar: {
+    saveFailed: "فشل الحفظ.",
+    removeFailed: "فشل الحذف.",
+    searchRecipePlaceholder: "ابحث عن وصفة...",
+    noRecipes: "لا وصفات",
+    currentRecipe: "الحالي",
+    deleteBtn: "حذف",
+    slotRecipe: "الوصفة",
     metaTitle: "تقويم الوجبات",
     metaDesc: "خطة الوجبات اليومية",
     days: ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"],
@@ -680,6 +702,8 @@ export const ar = {
     print: "طباعة",
     share: "مشاركة على واتساب",
     sharedFrom: "من منيو",
+    prevWeek: "→ الأسبوع السابق",
+    nextWeek: "الأسبوع التالي ←",
   },
 
 
@@ -861,6 +885,31 @@ export const ar = {
     allCategories: "كل الفئات",
   },
 
+  messages: {
+    settingsSaved: "تم الحفظ!",
+    deleteMessageConfirm: "حذف الرسالة؟",
+    deleteLogConfirm: "حذف هذا السجل؟",
+    failedToUpdatePoll: "فشل تحديث الاستطلاع.",
+    deleteConfirm: { ar: "هل أنت متأكد من الحذف؟ لا يمكن التراجع.", en: "Are you sure? This cannot be undone." },
+    deleteRecipeConfirm: { ar: "هل أنت متأكد من حذف هذه الوصفة؟ لا يمكن التراجع.", en: "Delete this recipe? This cannot be undone." },
+    deleteFailed: { ar: "فشل الحذف.", en: "Delete failed." },
+    saveFailed: { ar: "فشل الحفظ.", en: "Save failed." },
+    removeFailed: { ar: "فشل الحذف.", en: "Remove failed." },
+    phoneRequired: { ar: "رقم الهاتف مطلوب.", en: "Phone number is required." },
+  },
+
+  modal: {
+    ok: "حسناً",
+    cancel: "إلغاء",
+    yes: "نعم",
+    no: "لا",
+    confirmTitle: "تأكيد",
+    errorTitle: "حدث خطأ",
+    successTitle: "تم بنجاح",
+    infoTitle: "معلومة",
+    promptTitle: "إدخال",
+    submit: "إرسال",
+  },
 
 } as const;
 

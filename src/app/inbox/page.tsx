@@ -3,6 +3,8 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useLang } from "@/components/LanguageProvider";
+import { ar } from "@/lib/ar";
+import { useModal } from "@/components/ModalProvider";
 
 type Notification = {
   id: number;
@@ -49,6 +51,9 @@ function relativeUrl(url: string | null): string | null {
 
 export default function InboxPage() {
   const { lang } = useLang();
+  const isAr = lang === "ar";
+  const { show, confirm } = useModal();
+  
   const [items, setItems] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -84,7 +89,6 @@ export default function InboxPage() {
     if ('clearAppBadge' in navigator) {
       navigator.clearAppBadge().catch((error) => console.error('Badge clear error:', error));
     }
-    // Clear the saved count in the Cache API
     if ('caches' in window) {
       caches.open('badge-count').then((cache) => {
         cache.delete('count');
@@ -104,7 +108,6 @@ export default function InboxPage() {
 
     loadMessages();
     localStorage.setItem("last_read_inbox", new Date().toISOString());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function loadMessages() {
@@ -133,14 +136,17 @@ export default function InboxPage() {
 
   async function handleDelete(id: number, e: React.MouseEvent) {
     e.stopPropagation();
-    const confirmDelete = window.confirm(lang === "ar" ? "حذف الرسالة؟" : "Delete message?");
-    if (!confirmDelete) return;
+    const ok = await confirm({ 
+      message: isAr ? ar.messages.deleteMessageConfirm : "Delete message?" 
+    });
+    if (!ok) return;
+    
     try {
       const res = await fetch(`/api/notifications/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed");
       setItems((prev) => prev.filter((item) => item.id !== id));
     } catch {
-      alert("Delete failed");
+      show({ message: isAr ? ar.messages.deleteFailed.ar : "Delete failed", tone: "error" });
     }
   }
 
@@ -160,7 +166,7 @@ export default function InboxPage() {
         [pollId]: { ...prev[pollId], isOpen: newState },
       }));
     } catch {
-      alert("Failed to update poll");
+      show({ message: isAr ? ar.messages.failedToUpdatePoll : "Failed to update poll", tone: "error" });
     }
   }
 
@@ -171,7 +177,7 @@ export default function InboxPage() {
 
   function recipientBadge(target: string | null): { label: string; color: string; bg: string } {
     if (!target || target === "all") {
-      return { label: lang === "ar" ? "الجميع" : "All", color: "var(--muted)", bg: "var(--surface-2)" };
+      return { label: isAr ? ar.inbox.all : "All", color: "var(--muted)", bg: "var(--surface-2)" };
     }
     const parts = target.split(",").map((s) => s.trim()).filter(Boolean);
     return { label: String(parts.length), color: "var(--accent)", bg: "var(--accent-soft)" };
@@ -217,18 +223,18 @@ export default function InboxPage() {
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center", marginTop: 4 }}>
         <span style={{ fontSize: 12 }}>
           <strong style={{ color: "var(--olive)", fontSize: 14 }}>{yes}</strong>{" "}
-          <span style={{ color: "var(--ink-soft)" }}>{lang === "ar" ? "نعم" : "Yes"}</span>
+          <span style={{ color: "var(--ink-soft)" }}>{isAr ? ar.inbox.yes : "Yes"}</span>
         </span>
         <span style={{ fontSize: 12 }}>
           <strong style={{ color: "var(--accent)", fontSize: 14 }}>{no}</strong>{" "}
-          <span style={{ color: "var(--ink-soft)" }}>{lang === "ar" ? "لا" : "No"}</span>
+          <span style={{ color: "var(--ink-soft)" }}>{isAr ? ar.inbox.no : "No"}</span>
         </span>
         <span style={{ fontSize: 12 }}>
           <strong style={{ color: "var(--muted)", fontSize: 14 }}>{pending}</strong>{" "}
-          <span style={{ color: "var(--ink-soft)" }}>{lang === "ar" ? "معلق" : "Pending"}</span>
+          <span style={{ color: "var(--ink-soft)" }}>{isAr ? ar.inbox.pending : "Pending"}</span>
         </span>
         <span style={{ fontSize: 11, color: "var(--muted)", marginInlineStart: "auto" }}>
-          {isLoading ? "…" : `${total} ${lang === "ar" ? "مدعو" : total === 1 ? "invitee" : "invitees"}`}
+          {isLoading ? "…" : `${total} ${isAr ? ar.inbox.invitee : total === 1 ? "invitee" : "invitees"}`}
         </span>
         <button
           type="button"
@@ -243,7 +249,7 @@ export default function InboxPage() {
             color: "var(--ink-soft)",
             cursor: "pointer",
           }}
-          title={lang === "ar" ? "تحديث" : "Refresh"}
+          title={isAr ? ar.inbox.refresh : "Refresh"}
         >
           ↻
         </button>
@@ -259,7 +265,7 @@ export default function InboxPage() {
     if (isLoading && !r) {
       return (
         <div style={{ padding: 12, background: "var(--bg)", border: "1px solid var(--line)", borderRadius: 8, fontSize: 12, color: "var(--muted)" }}>
-          {lang === "ar" ? "جاري تحميل الأصوات..." : "Loading responses..."}
+          {isAr ? ar.inbox.loadingResponses : "Loading responses..."}
         </div>
       );
     }
@@ -272,14 +278,14 @@ export default function InboxPage() {
         </div>
         {people.length === 0 ? (
           <div style={{ fontSize: 12, color: "var(--muted)", fontStyle: "italic", marginBottom: 10 }}>
-            {lang === "ar" ? "لا أحد" : "None"}
+            {isAr ? ar.inbox.none : "None"}
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 10 }}>
             {people.map((p) => (
               <div key={p.phone} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 10px", background: bg, border: "1px solid var(--line)", borderRadius: 6, fontSize: 12 }}>
                 <span style={{ color: "var(--ink)", fontWeight: 500 }}>
-                  {p.name || (lang === "ar" ? "بدون اسم" : "Unnamed")}
+                  {p.name || (isAr ? ar.inbox.unnamed : "Unnamed")}
                 </span>
                 <span style={{ color: "var(--muted)", fontVariantNumeric: "tabular-nums" }}>{p.phone}</span>
               </div>
@@ -293,7 +299,7 @@ export default function InboxPage() {
       <div style={{ padding: 12, background: "var(--bg)", border: "1px solid var(--line)", borderRadius: 8, display: "flex", flexDirection: "column", gap: 10 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
           <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--muted)" }}>
-            📊 {lang === "ar" ? "نتائج الاستطلاع" : "Poll results"}
+            📊 {isAr ? ar.inbox.pollResults : "Poll results"}
           </div>
           <div style={{ display: "flex", gap: 6 }}>
             <button
@@ -310,7 +316,7 @@ export default function InboxPage() {
                 cursor: "pointer",
               }}
             >
-              ↻ {lang === "ar" ? "تحديث" : "Refresh"}
+              ↻ {isAr ? ar.inbox.refresh : "Refresh"}
             </button>
             <button
               type="button"
@@ -327,15 +333,15 @@ export default function InboxPage() {
               }}
             >
               {r.isOpen
-                ? (lang === "ar" ? "إغلاق التصويت" : "Close voting")
-                : (lang === "ar" ? "إعادة فتح التصويت" : "Reopen voting")}
+                ? (isAr ? ar.inbox.closeVoting : "Close voting")
+                : (isAr ? ar.inbox.reopenVoting : "Reopen voting")}
             </button>
           </div>
         </div>
 
-        {renderGroup(lang === "ar" ? "نعم" : "Yes", "var(--olive)", "var(--olive-soft)", r.yes)}
-        {renderGroup(lang === "ar" ? "لا" : "No", "var(--accent)", "var(--accent-soft)", r.no)}
-        {renderGroup(lang === "ar" ? "لم يصوت" : "Pending", "var(--muted)", "var(--surface-2)", r.pending)}
+        {renderGroup(isAr ? ar.inbox.yesGroup : "Yes", "var(--olive)", "var(--olive-soft)", r.yes)}
+        {renderGroup(isAr ? ar.inbox.noGroup : "No", "var(--accent)", "var(--accent-soft)", r.no)}
+        {renderGroup(isAr ? ar.inbox.pendingGroup : "Pending", "var(--muted)", "var(--surface-2)", r.pending)}
 
         {item.pollQuestion && (
           <div style={{ fontSize: 11, color: "var(--muted)", paddingTop: 8, borderTop: "1px solid var(--line)" }}>
@@ -358,21 +364,21 @@ export default function InboxPage() {
   return (
     <main className="container" style={{ paddingTop: 40, paddingBottom: 80 }}>
       <div className="page-head">
-        <h1>{lang === "ar" ? "صندوق الإشعارات" : "Inbox"}</h1>
+        <h1>{isAr ? ar.inbox.title : "Inbox"}</h1>
       </div>
       <p className="page-sub">
         {isAdmin
-          ? lang === "ar" ? "أنت ترى كل الرسائل كمسؤول" : "Admin view — you see every message"
+          ? isAr ? ar.inbox.adminSub : "Admin view — you see every message"
           : hasPhone
-            ? lang === "ar" ? "رسائلك الخاصة" : "Your messages"
-            : lang === "ar" ? "ترى فقط الرسائل العامة" : "You are seeing broadcast messages only"}
+            ? isAr ? ar.inbox.yourMessages : "Your messages"
+            : isAr ? ar.inbox.broadcastOnly : "You are seeing broadcast messages only"}
       </p>
 
       {loading ? (
-        <p className="helper">{lang === "ar" ? "جاري التحميل..." : "Loading..."}</p>
+        <p className="helper">{isAr ? ar.inbox.loading : "Loading..."}</p>
       ) : items.length === 0 ? (
         <div className="empty">
-          <h2>{lang === "ar" ? "لا توجد إشعارات" : "No notifications yet"}</h2>
+          <h2>{isAr ? ar.inbox.empty : "No notifications yet"}</h2>
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 24 }}>
@@ -416,7 +422,7 @@ export default function InboxPage() {
                         color: "var(--accent)",
                         border: "1px solid var(--accent)",
                       }}>
-                        📊 {lang === "ar" ? "استطلاع" : "Poll"}
+                        📊 {isAr ? ar.inbox.poll : "Poll"}
                       </span>
                     )}
                     <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: "var(--ink)" }}>{item.title}</h3>
@@ -485,7 +491,7 @@ export default function InboxPage() {
                     className="btn btn-ghost"
                     style={{ alignSelf: "flex-start", marginTop: 4 }}
                   >
-                    {lang === "ar" ? "عرض الصفحة" : "View Page"} →
+                    {isAr ? ar.inbox.viewPage : "View Page"} →
                   </Link>
                 )}
 
@@ -496,7 +502,7 @@ export default function InboxPage() {
                       className="btn btn-primary"
                       style={{ fontSize: 12 }}
                     >
-                      📊 {lang === "ar" ? "فتح الاستطلاع" : "Open poll"} →
+                      📊 {isAr ? ar.inbox.openPoll : "Open poll"} →
                     </Link>
                     {showRecipe && relUrl && (
                       <Link
@@ -504,7 +510,7 @@ export default function InboxPage() {
                         className="btn btn-ghost"
                         style={{ fontSize: 12 }}
                       >
-                        🍽 {lang === "ar" ? "عرض الوصفة" : "View recipe"} →
+                        🍽 {isAr ? ar.inbox.viewRecipe : "View recipe"} →
                       </Link>
                     )}
                   </div>
@@ -520,7 +526,7 @@ export default function InboxPage() {
                     <div style={{ padding: 12, background: "var(--bg)", border: "1px solid var(--line)", borderRadius: 8, display: "flex", flexDirection: "column", gap: 10 }}>
                       <div>
                         <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--muted)", marginBottom: 4 }}>
-                          {lang === "ar" ? "الرسالة" : "Message"}
+                          {isAr ? ar.inbox.message : "Message"}
                         </div>
                         <div style={{ fontSize: 13, color: "var(--ink)" }}>{item.title}</div>
                         <div style={{ fontSize: 12, color: "var(--ink-soft)", marginTop: 2 }}>{item.body}</div>
@@ -528,11 +534,11 @@ export default function InboxPage() {
 
                       <div>
                         <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--muted)", marginBottom: 4 }}>
-                          {lang === "ar" ? "المستلمون" : "Recipients"}
+                          {isAr ? ar.inbox.recipients : "Recipients"}
                         </div>
                         {phones.length === 0 ? (
                           <div style={{ fontSize: 13, color: "var(--ink)" }}>
-                            {lang === "ar" ? "الجميع" : "All subscribers"}
+                            {isAr ? ar.inbox.all : "All subscribers"}
                           </div>
                         ) : (
                           <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
@@ -546,7 +552,7 @@ export default function InboxPage() {
                       </div>
 
                       <div style={{ fontSize: 10, color: "var(--muted)" }}>
-                        {lang === "ar" ? "أُرسلت" : "Sent"} {new Date(item.createdAt).toLocaleString()}
+                        {isAr ? ar.inbox.sent : "Sent"} {new Date(item.createdAt).toLocaleString()}
                       </div>
                     </div>
                   </div>

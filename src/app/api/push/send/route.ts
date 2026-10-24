@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import webpush from "web-push";
 import { getDb } from "@/db";
 import { pushSubscriptions, notifications, polls, recipes, settings } from "@/db/schema";
-import { inArray, eq } from "drizzle-orm";
+import { inArray, eq, and } from "drizzle-orm";
 import { isAdmin } from "@/lib/auth";
 
 function initWebPush() {
@@ -102,8 +102,14 @@ export async function POST(req: NextRequest) {
       subs = await db.select().from(pushSubscriptions).where(eq(pushSubscriptions.excluded, 0));
     } else {
       const phones = targetPhone.split(",").map((p: string) => p.trim()).filter(Boolean);
-      if (phones.length === 0) subs = await db.select().from(pushSubscriptions);
-      else subs = await db.select().from(pushSubscriptions).where(inArray(pushSubscriptions.phoneNumber, phones));
+      if (phones.length === 0) {
+        subs = await db.select().from(pushSubscriptions).where(eq(pushSubscriptions.excluded, 0));
+      } else {
+        subs = await db
+          .select()
+          .from(pushSubscriptions)
+          .where(and(inArray(pushSubscriptions.phoneNumber, phones), eq(pushSubscriptions.excluded, 0)));
+      }
     }
 
     if (subs.length === 0) {

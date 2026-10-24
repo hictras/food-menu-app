@@ -2,13 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { useLang } from "./LanguageProvider";
+import { ar } from "@/lib/ar";
+import { useModal } from "./ModalProvider";
 
 export default function PushSubscribe() {
   const { lang } = useLang();
+  const isAr = lang === "ar";
+  const { show, confirm, prompt } = useModal();
+  
   const [supported, setSupported] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState("");
 
   useEffect(() => {
     if ("serviceWorker" in navigator && "PushManager" in window) {
@@ -20,25 +24,30 @@ export default function PushSubscribe() {
   }, []);
 
   async function subscribe() {
-    setMsg("");
     setBusy(true);
 
     try {
       const permission = await Notification.requestPermission();
       if (permission !== "granted") {
-        setMsg(lang === "ar" ? "تم رفض الإذن" : "Permission denied");
+        show({
+          message: isAr ? ar.push.permissionDenied : "Permission denied",
+          tone: "error",
+        });
         setBusy(false);
         return;
       }
 
-      const phoneNumber = window.prompt(
-        lang === "ar"
-          ? "أدخل رقم هاتفك (مثال: 96170123456)"
-          : "Enter your phone number (e.g. 96170123456)"
-      );
+      // ✅ Use the custom modal prompt instead of window.prompt
+      const phoneNumber = await prompt({
+        message: isAr ? ar.push.enterPhone : "Enter your phone number (e.g. 96170123456)",
+        placeholder: "96170123456"
+      });
 
       if (!phoneNumber || !phoneNumber.trim()) {
-        setMsg(lang === "ar" ? "رقم الهاتف مطلوب" : "Phone number is required");
+        show({
+          message: isAr ? ar.push.phoneRequired : "Phone number is required",
+          tone: "error",
+        });
         setBusy(false);
         return;
       }
@@ -59,28 +68,44 @@ export default function PushSubscribe() {
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Server rejected the subscription");
+        if (res.status === 409) {
+          show({
+            message: isAr ? ar.push.phoneTaken : (data.error || "Phone already registered"),
+            tone: "error",
+          });
+          try { await sub.unsubscribe(); } catch {}
+          setBusy(false);
+          return;
+        }
+        show({
+          message: isAr ? ar.push.error : (data.error || "Server rejected the subscription"),
+          tone: "error",
+        });
+        setBusy(false);
+        return;
       }
 
-      // Save phone locally so /inbox knows who is viewing
       localStorage.setItem("viewer_phone", phoneNumber.trim());
-
       setSubscribed(true);
-      setMsg(lang === "ar" ? "تم التفعيل بنجاح!" : "Subscribed successfully!");
+      show({
+        message: isAr ? ar.push.subscribed : "Subscribed successfully!",
+        tone: "success",
+      });
     } catch (err) {
-      setMsg(err instanceof Error ? err.message : "Error");
+      show({
+        message: isAr ? ar.push.error : (err instanceof Error ? err.message : "Error"),
+        tone: "error",
+      });
     } finally {
       setBusy(false);
     }
   }
 
   async function unsubscribe() {
-    const confirmed = window.confirm(
-      lang === "ar"
-        ? "هل تريد إيقاف الإشعارات؟ لن تتلقى أي تحديثات."
-        : "Disable notifications? You won't receive any updates."
-    );
-    if (!confirmed) return;
+    const ok = await confirm({
+      message: isAr ? ar.push.unsubscribeConfirm : "Disable notifications? You won't receive any updates."
+    });
+    if (!ok) return;
 
     setBusy(true);
     try {
@@ -96,9 +121,15 @@ export default function PushSubscribe() {
       }
       localStorage.removeItem("viewer_phone");
       setSubscribed(false);
-      setMsg("Unsubscribed");
+      show({
+        message: isAr ? ar.push.unsubscribed : "Unsubscribed",
+        tone: "info",
+      });
     } catch (err) {
-      setMsg(err instanceof Error ? err.message : "Error");
+      show({
+        message: isAr ? ar.push.error : (err instanceof Error ? err.message : "Error"),
+        tone: "error",
+      });
     } finally {
       setBusy(false);
     }
@@ -106,21 +137,14 @@ export default function PushSubscribe() {
 
   if (!supported) return null;
 
-  if (subscribed) {
-    return (
-      <button type="button" className="btn btn-ghost" onClick={unsubscribe} disabled={busy}>
-        🔕 {lang === "ar" ? " " : " "}
-      </button>
-    );
-  }
-
-  return (
-    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-      <button type="button" className="btn btn-ghost" onClick={subscribe} disabled={busy}>
-        🔔 {lang === "ar" ? " " : " "}
-      </button>
-      {msg && <span style={{ fontSize: 11, color: "var(--accent)" }}>{msg}</span>}
-    </div>
+  return subscribed ? (
+    <button type="button" className="btn btn-ghost" onClick={unsubscribe} disabled={busy}>
+      🔕
+    </button>
+  ) : (
+    <button type="button" className="btn btn-ghost" onClick={subscribe} disabled={busy}>
+      🔔
+    </button>
   );
 }
 

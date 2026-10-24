@@ -16,38 +16,52 @@ export async function GET(
     if (Number.isNaN(recipeId)) return NextResponse.json({ error: "Invalid id" }, { status: 400 });
 
     const db = getDb();
-    const reviews = await db
+
+    const reviewRows = await db
       .select({
         id: recipeReviews.id,
         rating: recipeReviews.rating,
         comment: recipeReviews.comment,
         phone: recipeReviews.phone,
         updatedAt: recipeReviews.updatedAt,
-        name: pushSubscriptions.name,
       })
       .from(recipeReviews)
-      .leftJoin(pushSubscriptions, eq(recipeReviews.phone, pushSubscriptions.phoneNumber))
       .where(eq(recipeReviews.recipeId, recipeId))
       .orderBy(desc(recipeReviews.updatedAt));
+
+    const subs = await db
+      .select({ phoneNumber: pushSubscriptions.phoneNumber, name: pushSubscriptions.name })
+      .from(pushSubscriptions);
+
+    const nameByPhone = new Map<string, string | null>();
+    for (const s of subs) {
+      if (!s.phoneNumber) continue;
+      if (!nameByPhone.has(s.phoneNumber)) {
+        nameByPhone.set(s.phoneNumber, s.name);
+      } else if (!nameByPhone.get(s.phoneNumber) && s.name) {
+        nameByPhone.set(s.phoneNumber, s.name);
+      }
+    }
 
     const store = await cookies();
     const viewerPhone = (store.get(VIEWER_PHONE_COOKIE)?.value || "").trim();
 
     let mine = null;
     if (viewerPhone) {
-      const myReview = reviews.find((r) => r.phone === viewerPhone);
+      const myReview = reviewRows.find((r) => r.phone === viewerPhone);
       if (myReview) mine = { rating: myReview.rating, comment: myReview.comment };
     }
 
-    const total = reviews.length;
-    const average = total > 0 ? reviews.reduce((acc, r) => acc + r.rating, 0) / total : 0;
+    const total = reviewRows.length;
+    const average =
+      total > 0 ? reviewRows.reduce((acc, r) => acc + r.rating, 0) / total : 0;
 
-    const publicReviews = reviews.map((r) => ({
+    const publicReviews = reviewRows.map((r) => ({
       id: r.id,
       rating: r.rating,
       comment: r.comment,
       updatedAt: r.updatedAt,
-      name: r.name || null,
+      name: nameByPhone.get(r.phone) || null,
     }));
 
     return NextResponse.json({ average, count: total, mine, reviews: publicReviews });
@@ -68,8 +82,6 @@ export async function POST(
 
     const store = await cookies();
     const phone = (store.get(VIEWER_PHONE_COOKIE)?.value || "").trim();
-    
-    // If there is no phone cookie, we cannot verify who is submitting.
     if (!phone) return NextResponse.json({ error: "Verify your phone to rate." }, { status: 401 });
 
     const body = await req.json();
@@ -81,8 +93,6 @@ export async function POST(
     }
 
     const db = getDb();
-    
-    // Check if this specific user already reviewed this specific recipe
     const existing = await db
       .select()
       .from(recipeReviews)
@@ -90,19 +100,12 @@ export async function POST(
       .limit(1);
 
     if (existing.length > 0) {
-      // Update ONLY the row that belongs to this phone and recipe
       await db
         .update(recipeReviews)
         .set({ rating, comment, updatedAt: new Date().toISOString() })
-        .where(eq(recipeReviews.id, existing[0].id)); // Using the unique ID of the found review
+        .where(eq(recipeReviews.id, existing[0].id));
     } else {
-      // Insert new review
-      await db.insert(recipeReviews).values({
-        recipeId,
-        phone,
-        rating,
-        comment,
-      });
+      await db.insert(recipeReviews).values({ recipeId, phone, rating, comment });
     }
 
     return NextResponse.json({ ok: true });
@@ -112,12 +115,9 @@ export async function POST(
   }
 }
 
-
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = await params;
     const reviewId = Number(req.nextUrl.searchParams.get("reviewId"));
-
     const db = getDb();
     await db.delete(recipeReviews).where(eq(recipeReviews.id, reviewId));
     return NextResponse.json({ ok: true });

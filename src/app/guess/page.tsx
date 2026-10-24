@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { ar } from "@/lib/ar";
 import { useLang } from "@/components/LanguageProvider";
@@ -147,19 +147,67 @@ export default function GamePage() {
     startGame();
   }, []); // Empty dependency array ensures this runs only once
 
-    function playSound(type: 'correct' | 'wrong' | 'win') {
-    try {
-      const audio = new Audio();
-      if (type === 'correct') {
-        audio.src = 'https://actions.google.com/sounds/v1/cartoon/pop.ogg';
-      } else if (type === 'wrong') {
-        audio.src = 'https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg';
-      } else if (type === 'win') {
-        audio.src = 'https://actions.google.com/sounds/v1/cartoon/magic_chime.ogg';
+  const audioCtxRef = useRef<AudioContext | null>(null);
+
+  useEffect(() => {
+    // Initialize AudioContext on mount (requires user interaction on some browsers, 
+    // but it will be ready by the time they click a card)
+    if (typeof window !== "undefined") {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (AudioCtx) {
+        audioCtxRef.current = new AudioCtx();
       }
-      audio.volume = 0.5; // Keep it subtle
-      audio.play().catch(() => {}); // Ignore browser autoplay errors
-    } catch (e) {}
+    }
+  }, []);
+
+  function playSound(type: 'correct' | 'wrong' | 'win') {
+    try {
+      const ctx = audioCtxRef.current;
+      if (!ctx) return;
+      
+      // Resume context if suspended (browser autoplay policy)
+      if (ctx.state === 'suspended') ctx.resume();
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      const now = ctx.currentTime;
+
+      if (type === 'correct') {
+        // High pop
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, now);
+        osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+        osc.start(now);
+        osc.stop(now + 0.1);
+      } else if (type === 'wrong') {
+        // Low buzz
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.exponentialRampToValueAtTime(100, now + 0.2);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+        osc.start(now);
+        osc.stop(now + 0.2);
+      } else if (type === 'win') {
+        // Arpeggio
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(400, now);
+        osc.frequency.setValueAtTime(600, now + 0.1);
+        osc.frequency.setValueAtTime(800, now + 0.2);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+        osc.start(now);
+        osc.stop(now + 0.4);
+      }
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   function handleCardClick(index: number) {

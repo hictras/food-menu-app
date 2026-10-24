@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
-import Link from "next/link";
 import { useLang } from "./LanguageProvider";
 import { ar } from "@/lib/ar";
+import { useModal } from "./ModalProvider";
 
 type Recipe = { id: number; name: string; nameAr: string | null; imageUrl: string | null; };
 type Recipient = { id: number; phoneNumber: string | null; name: string | null; };
@@ -14,6 +14,8 @@ const LOCATION_PRESETS = ["Parent's house", "Home", "Beach house", "Work", "Othe
 export default function AdminSender() {
   const { lang } = useLang();
   const isAr = lang === "ar";
+  const { confirm } = useModal();
+  
   const [busy, setBusy] = useState(false);
   const [visitorCount, setVisitorCount] = useState<number | null>(null);
   const [result, setResult] = useState<string>("");
@@ -96,7 +98,6 @@ export default function AdminSender() {
     }, 0);
   }
 
-
   function insertTodayDate() {
     const today = new Date();
     const yyyy = today.getFullYear();
@@ -104,7 +105,6 @@ export default function AdminSender() {
     const dd = String(today.getDate()).padStart(2, '0');
     setUrl(`/calendar/${yyyy}-${mm}-${dd}`);
   }
-
 
   function insertYesterdayDate() {
     const yesterday = new Date();
@@ -141,7 +141,11 @@ export default function AdminSender() {
   }
 
   async function deletePreset(id: number) {
-    if (!window.confirm(isAr ? ar.pushPresets.deleteConfirm : "Delete this preset?")) return;
+    const ok = await confirm({ 
+      message: isAr ? ar.pushPresets.deleteConfirm : "Delete this preset?" 
+    });
+    if (!ok) return;
+    
     await fetch("/api/push/presets?id=" + id, { method: "DELETE" });
     setPresets(presets.filter(p => p.id !== id));
   }
@@ -199,7 +203,7 @@ export default function AdminSender() {
   return (
     <main className="container" style={{ paddingTop: 40 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 24 }}>
-        <h1>{isAr ? ar.pushPresets.title : "Send Push Notification"}</h1>
+        <h1>{isAr ? ar.sender.title : "Send Push Notification"}</h1>
         {visitorCount !== null && (
           <div style={{ fontSize: 13, color: "var(--muted)", background: "var(--surface-2)", padding: "4px 12px", borderRadius: 999, border: "1px solid var(--line)" }}>
             📱 {isAr ? ar.settingsPage.devices : "Devices"}: <strong style={{ color: "var(--ink)" }}>{visitorCount}</strong>
@@ -257,7 +261,7 @@ export default function AdminSender() {
         </div>
 
         <div className="field" style={{ position: "relative" }}>
-          <label>{isAr ? "المستلمون (اتركه فارغاً للجميع)" : "Recipients (leave empty for all)"}</label>
+          <label>{isAr ? ar.sender.recipients : "Recipients (leave empty for all)"}</label>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6, padding: 8, border: "1px solid var(--line)", borderRadius: 8, background: "var(--bg)", marginBottom: 8 }}>
             {selectedPhones.map(phone => {
               const rec = recipients.find(r => r.phoneNumber === phone);
@@ -268,7 +272,7 @@ export default function AdminSender() {
                 </span>
               );
             })}
-            {selectedPhones.length === 0 && <span style={{ color: "var(--muted)", fontSize: 12, padding: 4 }}>Everyone</span>}
+            {selectedPhones.length === 0 && <span style={{ color: "var(--muted)", fontSize: 12, padding: 4 }}>{isAr ? ar.sender.everyone : "Everyone"}</span>}
           </div>
           {groups.length > 0 && (
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
@@ -280,14 +284,14 @@ export default function AdminSender() {
             ))}
           </div>
         )}
-          <input type="text" placeholder="Search by name or phone..." value={phoneSearch} onChange={(e) => { setPhoneSearch(e.target.value); setShowRecipientDropdown(true); }} onFocus={() => setShowRecipientDropdown(true)} style={{ width: "100%", padding: 8 }} />
+          <input type="text" placeholder={isAr ? ar.sender.searchByName : "Search by name or phone..."} value={phoneSearch} onChange={(e) => { setPhoneSearch(e.target.value); setShowRecipientDropdown(true); }} onFocus={() => setShowRecipientDropdown(true)} style={{ width: "100%", padding: 8 }} />
           {showRecipientDropdown && phoneSearch.trim() !== "" && (
             <>
               <div style={{ position: "fixed", inset: 0, zIndex: 10 }} onClick={() => setShowRecipientDropdown(false)} />
               <div style={{ position: "absolute", top: "100%", left: 0, right: 0, maxHeight: 200, overflowY: "auto", background: "var(--surface-solid)", border: "1px solid var(--line)", borderRadius: 8, zIndex: 20, marginTop: 4, boxShadow: "var(--shadow-lg)" }}>
-                {filteredRecipients.length === 0 ? <div style={{ padding: 12, color: "var(--muted)", fontSize: 13 }}>No recipients found</div> : filteredRecipients.map(r => (
+                {filteredRecipients.length === 0 ? <div style={{ padding: 12, color: "var(--muted)", fontSize: 13 }}>{isAr ? ar.sender.noRecipients : "No recipients found"}</div> : filteredRecipients.map(r => (
                   <div key={r.id} onClick={() => { togglePhone(r.phoneNumber); setPhoneSearch(""); setShowRecipientDropdown(false); }} style={{ padding: "10px 12px", cursor: "pointer", borderBottom: "1px solid var(--line)", fontSize: 14, color: "var(--ink)" }} onMouseEnter={(e) => e.currentTarget.style.background = "var(--surface-2)"} onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
-                    <strong>{r.name || "Unnamed"}</strong> <span style={{ color: "var(--muted)" }}>({r.phoneNumber})</span>
+                    <strong>{r.name || (isAr ? ar.sender.unnamed : "Unnamed")}</strong> <span style={{ color: "var(--muted)" }}>({r.phoneNumber})</span>
                   </div>
                 ))}
               </div>
@@ -297,7 +301,7 @@ export default function AdminSender() {
 
         <div className="field">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-            <label>{isAr ? ar.pushPresets.presetTitle : "Title"}</label>
+            <label>{isAr ? ar.sender.titleLabel : "Title"}</label>
             <button type="button" className="btn btn-ghost" style={{ padding: "2px 8px", fontSize: 11 }} onClick={() => insertName("title")}>
               + {isAr ? ar.pushPresets.insertName : "{name}"}
             </button>
@@ -307,7 +311,7 @@ export default function AdminSender() {
 
         <div className="field">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-            <label>{isAr ? ar.pushPresets.presetBody : "Body"}</label>
+            <label>{isAr ? ar.sender.bodyLabel : "Body"}</label>
             <button type="button" className="btn btn-ghost" style={{ padding: "2px 8px", fontSize: 11 }} onClick={() => insertName("body")}>
               + {isAr ? ar.pushPresets.insertName : "{name}"}
             </button>
@@ -316,8 +320,8 @@ export default function AdminSender() {
         </div>
 
         <div className="field">
-          <label>{isAr ? "المكان (اختياري)" : "Location (optional)"}</label>
-          <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder={isAr ? "بيت الأهل، البيت، الشاليه" : "Parent's house, Home, Beach house"} style={{ width: "100%", padding: 8, marginBottom: 8 }} />
+          <label>{isAr ? ar.sender.locationLabel : "Location (optional)"}</label>
+          <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder={isAr ? ar.sender.locationPlaceholder : "Parent's house, Home, Beach house"} style={{ width: "100%", padding: 8, marginBottom: 8 }} />
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
             {LOCATION_PRESETS.map(p => (
               <button key={p} type="button" className="chip" onClick={() => setLocation(p)} style={{ fontSize: 11, cursor: "pointer" }}>📍 {p}</button>
@@ -328,21 +332,21 @@ export default function AdminSender() {
         <div style={{ marginBottom: 16, padding: 14, background: "var(--bg)", border: pollEnabled ? "1px solid var(--accent)" : "1px solid var(--line)", borderRadius: 10 }}>
           <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", margin: 0 }}>
             <input type="checkbox" checked={pollEnabled} onChange={(e) => setPollEnabled(e.target.checked)} />
-            <span style={{ fontSize: 13, fontWeight: 600 }}>📊 {isAr ? ar.pushPresets.addPoll : "Add a poll"}</span>
+            <span style={{ fontSize: 13, fontWeight: 600 }}>📊 {isAr ? ar.sender.addPoll : "Add a poll"}</span>
           </label>
           {pollEnabled && (
-            <input type="text" placeholder={isAr ? ar.pushPresets.questionPlaceholder : "Question..."} value={pollQuestion} onChange={(e) => setPollQuestion(e.target.value)} style={{ width: "100%", marginTop: 12, padding: 8, borderRadius: 8, border: "1px solid var(--line)" }} />
+            <input type="text" placeholder={isAr ? ar.sender.pollQuestionPlaceholder : "Question..."} value={pollQuestion} onChange={(e) => setPollQuestion(e.target.value)} style={{ width: "100%", marginTop: 12, padding: 8, borderRadius: 8, border: "1px solid var(--line)" }} />
           )}
         </div>
 
         <div className="field" style={{ position: "relative" }}>
-          <label>{isAr ? "ابحث عن وصفة لربطها (اختياري)" : "Search Recipe (Optional)"}</label>
-          <input type="text" placeholder="Type recipe name..." value={recipeSearch} onChange={(e) => { setRecipeSearch(e.target.value); setShowRecipeDropdown(true); }} onFocus={() => setShowRecipeDropdown(true)} style={{ width: "100%", padding: 8, marginBottom: 8 }} />
+          <label>{isAr ? ar.sender.searchRecipe : "Search Recipe (Optional)"}</label>
+          <input type="text" placeholder={isAr ? ar.sender.searchRecipePlaceholder : "Type recipe name..."} value={recipeSearch} onChange={(e) => { setRecipeSearch(e.target.value); setShowRecipeDropdown(true); }} onFocus={() => setShowRecipeDropdown(true)} style={{ width: "100%", padding: 8, marginBottom: 8 }} />
           {showRecipeDropdown && recipeSearch.trim() !== "" && (
             <>
               <div style={{ position: "fixed", inset: 0, zIndex: 10 }} onClick={() => setShowRecipeDropdown(false)} />
               <div style={{ position: "absolute", top: "100%", left: 0, right: 0, maxHeight: 200, overflowY: "auto", background: "var(--surface-solid)", border: "1px solid var(--line)", borderRadius: 8, zIndex: 20, marginTop: 4, boxShadow: "var(--shadow-lg)" }}>
-                {filteredRecipes.length === 0 ? <div style={{ padding: 12, color: "var(--muted)", fontSize: 13 }}>No recipes found</div> : filteredRecipes.map(r => (
+                {filteredRecipes.length === 0 ? <div style={{ padding: 12, color: "var(--muted)", fontSize: 13 }}>{isAr ? ar.sender.noRecipes : "No recipes found"}</div> : filteredRecipes.map(r => (
                   <div key={r.id} onClick={() => selectRecipe(r.id)} style={{ padding: "10px 12px", cursor: "pointer", borderBottom: "1px solid var(--line)", fontSize: 14, color: "var(--ink)" }} onMouseEnter={(e) => e.currentTarget.style.background = "var(--surface-2)"} onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
                     {isAr && r.nameAr ? r.nameAr : r.name}
                   </div>
@@ -355,13 +359,13 @@ export default function AdminSender() {
         <div className="field">
           <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
             <input type="checkbox" checked={noDish} onChange={(e) => setNoDish(e.target.checked)} />
-            <span style={{ fontWeight: 600 }}>🍽 {isAr ? "لا يوجد طبق اليوم" : "No dish today"}</span>
+            <span style={{ fontWeight: 600 }}>🍽 {isAr ? ar.sender.noDishLabel : "No dish today"}</span>
           </label>
         </div>
 
         <div className="field">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-            <label>{isAr ? ar.pushPresets.optionalUrl : "URL (Optional)"}</label>
+            <label>{isAr ? ar.sender.urlLabel : "URL (Optional)"}</label>
             <div style={{ display: "flex", gap: 4 }}>
               <button type="button" className="btn btn-ghost" style={{ padding: "2px 8px", fontSize: 11 }} onClick={insertTodayDate}>
                 📅 {isAr ? ar.todayBtn : "Today"}
@@ -376,17 +380,17 @@ export default function AdminSender() {
 
         {url.trim() !== "" && !pollEnabled && (
           <div style={{ marginBottom: 24 }}>
-            <label style={{ display: "block", marginBottom: 8, fontSize: 13, fontWeight: 600, color: "var(--muted)" }}>Inbox Preview</label>
+            <label style={{ display: "block", marginBottom: 8, fontSize: 13, fontWeight: 600, color: "var(--muted)" }}>{isAr ? ar.sender.inboxPreview : "Inbox Preview"}</label>
             <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: 16 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                 <h3 style={{ margin: 0, fontSize: 15, fontWeight: 600 }}>{title}</h3>
-                <span style={{ fontSize: 11, color: "var(--muted)" }}>Just now</span>
+                <span style={{ fontSize: 11, color: "var(--muted)" }}>{isAr ? ar.sender.justNow : "Just now"}</span>
               </div>
               <p style={{ margin: "0 0 12px 0", fontSize: 13, color: "var(--ink-soft)" }}>{body}</p>
               <div style={{ display: "flex", alignItems: "center", gap: 12, padding: 10, background: "var(--surface)", border: "1px solid var(--line)", borderRadius: 8 }}>
                 {previewRecipe?.imageUrl ? <img src={previewRecipe.imageUrl} alt="Preview" style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 6 }} /> : <div style={{ width: 60, height: 60, borderRadius: 6, background: "var(--line)" }} />}
                 <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  <strong style={{ fontSize: 13, color: "var(--accent)" }}>{previewRecipe ? previewRecipe.name : "View Link"}</strong>
+                  <strong style={{ fontSize: 13, color: "var(--accent)" }}>{previewRecipe ? previewRecipe.name : (isAr ? ar.sender.viewLink : "View Link")}</strong>
                   <span style={{ fontSize: 11, color: "var(--muted)" }}>{url}</span>
                 </div>
               </div>
@@ -395,7 +399,7 @@ export default function AdminSender() {
         )}
 
         <button className="btn btn-primary" onClick={send} disabled={busy} style={{ width: "100%", padding: 12 }}>
-          {busy ? (isAr ? ar.pushPresets.sending : "Sending...") : (isAr ? ar.pushPresets.send : "Send")}
+          {busy ? (isAr ? ar.sender.sending : "Sending...") : (isAr ? ar.sender.send : "Send")}
         </button>
 
         {result && <pre style={{ marginTop: 16, fontSize: 13, background: "var(--bg)", padding: 12, borderRadius: 8, overflow: "auto" }}>{result}</pre>}

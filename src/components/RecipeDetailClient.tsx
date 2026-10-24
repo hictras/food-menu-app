@@ -10,6 +10,7 @@ import { extractYouTubeId } from "@/lib/youtube";
 import { categoryIcon, categoryLabel } from "@/lib/categories";
 import CookMode from "./CookMode";
 import RecipeReviews from "./RecipeReviews";
+import { useModal } from "./ModalProvider";
 
 type RecipeRow = {
   id: number; name: string; nameAr: string | null;
@@ -28,16 +29,6 @@ type IngredientRow = {
 };
 type InstructionRow = { id: number; stepNumber: number; text: string; textAr: string | null };
 
-const TAG_AR: Record<string, string> = {
-  Vegetarian: "نباتي", Vegan: "نباتي صرف", Pescatarian: "بيسكاتاري",
-  "Gluten-Free": "خالٍ من الغلوتين", "Dairy-Free": "خالٍ من الألبان",
-  "Nut-Free": "خالٍ من المكسرات", Halal: "حلال", Kosher: "كوشير",
-  "Low-Carb": "قليل الكربوهيدرات", Keto: "كيتو", Paleo: "باليو",
-  Meat: "لحوم", Chicken: "دجاج", Seafood: "مأكولات بحرية",
-  Fish: "سمك", Lamb: "لحم غنم", Beef: "لحم بقري",
-  Legumes: "بقوليات", Spicy: "حار", Quick: "سريع",
-};
-
 export default function RecipeDetailClient({
   recipe, ingredients, instructions, isAdmin,
   lastMadeDate
@@ -55,14 +46,26 @@ export default function RecipeDetailClient({
 
   const { lang } = useLang();
   const isAr = lang === "ar";
+  const L: "ar" | "en" = isAr ? "ar" : "en";
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
   const formattedLastMade = lastMadeDate ? lastMadeDate.split("-").reverse().join("-") : null;
   const [cookModeOpen, setCookModeOpen] = useState(false);
+  const { show, confirm } = useModal();
 
-  const tags: string[] = recipe.dietaryTags ? Array.from(new Set(JSON.parse(recipe.dietaryTags))) : [];
+  let tags: string[] = [];
+  try {
+    if (recipe.dietaryTags) {
+      const parsed = JSON.parse(recipe.dietaryTags);
+      if (Array.isArray(parsed)) {
+        tags = Array.from(new Set(parsed));
+      }
+    }
+  } catch (e) {
+    tags = [];
+  }
   const youtubeId = extractYouTubeId(recipe.videoUrl);
-  const minLabel = lang === "ar" ? "د" : "min";
+  const minLabel = isAr ? ar.units.min : "min";
 
   const displayName = typeof recipe.name === "string" 
   ? pick(lang, recipe.name, recipe.nameAr) 
@@ -82,11 +85,9 @@ export default function RecipeDetailClient({
   }
 
   async function handleDelete() {
-    const ok = window.confirm(
-      lang === "ar"
-        ? `هل أنت متأكد من حذف "${displayName}"؟ لا يمكن التراجع.`
-        : `Delete "${displayName}"? This cannot be undone.`
-    );
+    const ok = await confirm({
+      message: ar.messages.deleteConfirm[L]
+    });
     if (!ok) return;
     setDeleting(true);
     try {
@@ -95,7 +96,7 @@ export default function RecipeDetailClient({
       router.push("/");
       router.refresh();
     } catch (err) {
-      alert(lang === "ar" ? "فشل الحذف" : "Delete failed");
+      show({ message: ar.messages.deleteFailed[L], tone: "error" });
       setDeleting(false);
     }
   }
@@ -115,7 +116,6 @@ export default function RecipeDetailClient({
 
       <header className="detail-head" style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 24 }}>
         
-        {/* Row 1: Title and Share */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", width: "100%" }}>
           <h1 style={{ margin: 0, fontSize: 36, fontFamily: "var(--font-head)", fontWeight: 400, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {displayName}
@@ -125,7 +125,6 @@ export default function RecipeDetailClient({
           </button>
         </div>
 
-        {/* Row 2: Badge and Start Cooking + Admin buttons */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
           
           {lastMadeDate && (
@@ -222,7 +221,7 @@ export default function RecipeDetailClient({
                       {ingName}
                       {ingPrep && (
                         <span style={{ color: "var(--muted)", fontStyle: "italic" }}>
-                          {lang === "ar" ? "، " : ", "}{ingPrep}
+                          {isAr ? ar.units.comma : ", "}{ingPrep}
                         </span>
                       )}
                     </span>
