@@ -23,6 +23,7 @@ type RecipeRow = {
   imageUrl: string | null;
   videoUrl: string | null;
   dietaryTags: string | null;
+  isHidden?: number | null;
 };
 
 const TAG_AR: Record<string, string> = {

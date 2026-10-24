@@ -16,7 +16,30 @@ export default function Nav() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
   const [logoUrl, setLogoUrl] = useState<string>("");
+  const [unreadCount, setUnreadCount] = useState(0);
 
+
+  useEffect(() => {
+    async function checkUnread() {
+      try {
+        const res = await fetch("/api/notifications");
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          const lastRead = localStorage.getItem("last_read_inbox");
+          const unread = data.filter(n => {
+            if (!n.createdAt) return false;
+            return !lastRead || new Date(n.createdAt) > new Date(lastRead);
+          });
+          setUnreadCount(unread.length);
+        }
+      } catch (e) {}
+    }
+    checkUnread();
+    // Check every minute
+    const interval = setInterval(checkUnread, 60000);
+    return () => clearInterval(interval);
+  }, []);
+  
   useEffect(() => {
     fetch("/api/auth/me")
       .then((r) => r.json())
@@ -95,8 +118,13 @@ export default function Nav() {
           <Link className="nav-link" href="/week" onClick={closeAll}>
             {lang === "ar" ? ar.nav.week : "Week"}
           </Link>
-          <Link className="nav-link" href="/inbox" onClick={closeAll}>
+          <Link className="nav-link" href="/inbox" onClick={closeAll} style={{ position: "relative" }}>
             {lang === "ar" ? ar.nav.inbox : "Inbox"}
+            {unreadCount > 0 && (
+              <span style={{ position: "absolute", top: -4, right: -8, background: "var(--accent)", color: "white", fontSize: 10, fontWeight: "bold", padding: "2px 6px", borderRadius: 999, lineHeight: 1 }}>
+                {unreadCount}
+              </span>
+            )}
           </Link>
         </div>
 
@@ -150,8 +178,12 @@ export default function Nav() {
                   <Link href="/admin" className="nav-menu-item" onClick={closeAll}>
                     {lang === "ar" ? ar.nav.sendPush : "Send Push"}
                   </Link>
-                  <Link href="/hidden-recipes" className="nav-menu-item">{lang === "ar" ? ar.hiddenRecipes.title : "Hidden Recipes"}</Link>
-                  <Link href="/visitors" className="nav-menu-item">{lang === "ar" ? ar.visitorsPage.title : "Devices Log"}</Link>
+                  <Link href="/hidden-recipes" className="nav-menu-item" onClick={closeAll}>
+                    🙈 {lang === "ar" ? ar.hiddenRecipes.title : "Hidden Recipes"}
+                  </Link>
+                  <Link href="/visitors" className="nav-menu-item" onClick={closeAll}>
+                    📱 {lang === "ar" ? ar.visitorsPage.title : "Devices Log"}
+                  </Link>
                   <Link href="/recipients" className="nav-menu-item" onClick={closeAll}>
                     {lang === "ar" ? ar.nav.recipients : "Recipients"}
                   </Link>
@@ -165,17 +197,7 @@ export default function Nav() {
                     🍽 {lang === "ar" ? "لا طبق اليوم" : "No Dish page"}
                   </Link>
                   <div className="nav-menu-divider" />
-                  <Link className="mobile-nav-link" href="/hidden-recipes" onClick={closeAll}>
-                <span>🙈</span> {lang === "ar" ? ar.hiddenRecipes.title : "Hidden Recipes"}
-              </Link>
-              <Link className="mobile-nav-link" href="/visitors" onClick={closeAll}>
-                <span>📱</span> {lang === "ar" ? ar.visitorsPage.title : "Devices Log"}
-              </Link>
-              <button
-                    type="button"
-                    onClick={logout}
-                    className="nav-menu-item nav-menu-danger"
-                  >
+                  <button type="button" onClick={logout} className="nav-menu-item nav-menu-danger">
                     {lang === "ar" ? ar.nav.logout : "Logout"}
                   </button>
                 </div>

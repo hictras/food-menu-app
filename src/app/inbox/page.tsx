@@ -103,6 +103,7 @@ export default function InboxPage() {
       });
 
     loadMessages();
+    localStorage.setItem("last_read_inbox", new Date().toISOString());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

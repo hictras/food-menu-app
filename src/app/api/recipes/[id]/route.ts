@@ -12,7 +12,7 @@ type Payload = {
   servedWith: string; servedWithAr: string;
   howToServe: string; howToServeAr: string;
   prepTime: number; cookTime: number; servings: number;
-  dietaryTags: string[]; imageUrl: string | null; videoUrl: string | null;
+  dietaryTags: string[]; imageUrl: string | null; videoUrl: string | null; isHidden: number;
   ingredients: { name: string; nameAr: string; amount: string; unit: string; unitAr: string; preparation: string; preparationAr: string }[];
   instructions: { text: string; textAr: string }[];
 };
