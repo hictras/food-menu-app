@@ -37,7 +37,7 @@ export default function HiddenRecipesPage() {
   }, [router]);
 
   function loadRecipes() {
-    fetch("/api/recipes")
+    fetch("/api/recipes", { cache: "no-store" })
       .then(r => r.json())
       .then(data => {
         setRecipes(Array.isArray(data) ? data : []);

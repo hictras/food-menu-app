@@ -112,7 +112,7 @@ export default function InboxPage() {
 
   function loadMessages() {
     setLoading(true);
-    fetch("/api/notifications")
+    fetch("/api/notifications", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
         const list = Array.isArray(data) ? data : [];

@@ -47,7 +47,7 @@ export default function AdminSender() {
   const bodyRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    fetch("/api/recipes").then(res => res.json()).then(data => setRecipes(Array.isArray(data) ? data : []));
+    fetch("/api/recipes", { cache: "no-store" }).then(res => res.json()).then(data => setRecipes(Array.isArray(data) ? data : []));
     fetch("/api/recipients").then(res => res.json()).then(data => setRecipients(Array.isArray(data) ? data : []));
     fetch("/api/recipients/groups").then(res => res.json()).then(data => setGroups(Array.isArray(data) ? data : []));
     fetch("/api/visitors").then(res => res.json()).then(data => setVisitorCount(data.count || 0)).catch(() => {});
