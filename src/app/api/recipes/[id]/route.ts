@@ -48,6 +48,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       dietaryTags: JSON.stringify(body.dietaryTags ?? []),
       imageUrl: body.imageUrl ?? null,
       videoUrl: body.videoUrl ?? null,
+      isHidden: body.isHidden ?? 0,
     }).where(eq(recipes.id, recipeId));
 
     await db.delete(ingredients).where(eq(ingredients.recipeId, recipeId));

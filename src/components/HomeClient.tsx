@@ -138,7 +138,7 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
     setIsRolling(true);
     setDailyDish(null);
     setTimeout(() => {
-      const mainDishes = recipes.filter((r) => r.category === "Main Dish" || r.categoryAr === "طبق رئيسي" || r.categoryAr === "Main Course" || r.category === "Main Course");
+      const mainDishes = filtered;
       if (mainDishes.length === 0) { alert(isAr ? ar.home.emptyTitle : "No main dishes found!"); setDailyDishOpen(false); return; }
       setDailyDish(mainDishes[Math.floor(Math.random() * mainDishes.length)]);
       setIsRolling(false);
@@ -247,7 +247,13 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
                   <div className="category-section-line" />
                   <div className="recipe-grid">
                     {group.items.map((r) => {
-                      const tags: string[] = r.dietaryTags ? JSON.parse(r.dietaryTags) : [];
+                      let tags: string[] = [];
+                      try {
+                        if (r.dietaryTags) {
+                          const parsed = JSON.parse(r.dietaryTags);
+                          if (Array.isArray(parsed)) tags = parsed;
+                        }
+                      } catch (e) { tags = []; }
                       const displayName = pick(lang, r.name, r.nameAr);
                       const displayCuisine = pick(lang, r.cuisine, r.cuisineAr);
                       const flagUrl = cuisineFlagUrl(r.cuisine) || cuisineFlagUrl(r.cuisineAr);
@@ -255,6 +261,11 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
                       return (
                         <Link key={r.id} href={`/recipes/${r.id}`} className="recipe-card">
                           <div className="recipe-card-img-wrap">
+                        {r.isHidden === 1 && (
+                          <span style={{ position: "absolute", top: 8, left: 8, background: "var(--accent)", color: "white", padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 700, zIndex: 10 }}>
+                            {isAr ? ar.home.hidden : "Hidden"}
+                          </span>
+                        )}
                             {r.imageUrl ? (
                               <div className="img-with-watermark">
                                 <img src={r.imageUrl} alt={displayName} className="recipe-card-img" loading="lazy" decoding="async" />
@@ -293,15 +304,31 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
           {viewMode === "list" && (
             <div className="recipe-list">
               {filtered.map((r) => {
-                const tags: string[] = r.dietaryTags ? JSON.parse(r.dietaryTags) : [];
+                let tags: string[] = [];
+                      try {
+                        if (r.dietaryTags) {
+                          const parsed = JSON.parse(r.dietaryTags);
+                          if (Array.isArray(parsed)) tags = parsed;
+                        }
+                      } catch (e) { tags = []; }
                 const displayName = pick(lang, r.name, r.nameAr);
                 const displayCuisine = pick(lang, r.cuisine, r.cuisineAr);
                 const hasVideo = !!(r.videoUrl && r.videoUrl.trim());
                 return (
                   <Link key={r.id} href={`/recipes/${r.id}`} className="recipe-list-item">
                     <div className="recipe-list-img">
+                      {r.isHidden === 1 && (
+                        <span style={{ position: "absolute", top: 4, left: 4, background: "var(--accent)", color: "white", padding: "2px 6px", borderRadius: 4, fontSize: 9, fontWeight: 700, zIndex: 10 }}>
+                          {isAr ? ar.home.hidden : "Hidden"}
+                        </span>
+                      )}
                       {r.imageUrl ? <img src={r.imageUrl} alt={displayName} loading="lazy" decoding="async" /> : <div className="recipe-list-img-placeholder" />}
                       {hasVideo && <span className="recipe-list-video">🎬</span>}
+                      {r.isHidden === 1 && (
+                        <span style={{ position: "absolute", top: 4, left: 4, background: "var(--accent)", color: "white", padding: "2px 6px", borderRadius: 4, fontSize: 9, fontWeight: 700 }}>
+                          {isAr ? "مخفي" : "Hidden"}
+                        </span>
+                      )}
                     </div>
                     <div className="recipe-list-body">
                       <h3>{displayName}</h3>

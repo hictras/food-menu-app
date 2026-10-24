@@ -845,6 +845,22 @@ export const ar = {
     deleteBtn: "حذف",
   },
 
+  hiddenRecipes: {
+    title: "الوصفات المخفية",
+    subtitle: "اختر الوصفات التي تريد إخفاءها من القائمة",
+    name: "الاسم",
+    category: "الفئة",
+    status: "الحالة",
+    hidden: "مخفي",
+    visible: "ظاهر",
+    loading: "جاري التحميل...",
+    noRecipes: "لا توجد وصفات.",
+    toggleConfirm: "تغيير حالة هذه الوصفة؟",
+    searchPlaceholder: "ابحث عن وصفة...",
+    allCategories: "كل الفئات",
+  },
+
+
 } as const;
 
 export type Ar = typeof ar;

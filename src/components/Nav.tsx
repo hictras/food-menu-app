@@ -150,6 +150,7 @@ export default function Nav() {
                   <Link href="/admin" className="nav-menu-item" onClick={closeAll}>
                     {lang === "ar" ? ar.nav.sendPush : "Send Push"}
                   </Link>
+                  <Link href="/hidden-recipes" className="nav-menu-item">{lang === "ar" ? ar.hiddenRecipes.title : "Hidden Recipes"}</Link>
                   <Link href="/visitors" className="nav-menu-item">{lang === "ar" ? ar.visitorsPage.title : "Devices Log"}</Link>
                   <Link href="/recipients" className="nav-menu-item" onClick={closeAll}>
                     {lang === "ar" ? ar.nav.recipients : "Recipients"}
@@ -164,7 +165,10 @@ export default function Nav() {
                     🍽 {lang === "ar" ? "لا طبق اليوم" : "No Dish page"}
                   </Link>
                   <div className="nav-menu-divider" />
-                  <Link className="mobile-nav-link" href="/visitors" onClick={closeAll}>
+                  <Link className="mobile-nav-link" href="/hidden-recipes" onClick={closeAll}>
+                <span>🙈</span> {lang === "ar" ? ar.hiddenRecipes.title : "Hidden Recipes"}
+              </Link>
+              <Link className="mobile-nav-link" href="/visitors" onClick={closeAll}>
                 <span>📱</span> {lang === "ar" ? ar.visitorsPage.title : "Devices Log"}
               </Link>
               <button

@@ -20,6 +20,7 @@ export const recipes = sqliteTable("recipes", {
   howToServeAr: text("how_to_serve_ar"),
   dietaryTags: text("dietary_tags"),
   imageUrl: text("image_url"),
+  isHidden: integer("is_hidden").default(0),
   videoUrl: text("video_url"),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
 });

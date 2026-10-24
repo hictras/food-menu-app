@@ -67,9 +67,11 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [devices, setDevices] = useState<any[]>([]);
+  const [recipes, setRecipes] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<"branding" | "typography" | "colors" | "noDish" | "devices">("branding");
 
   useEffect(() => {
+    fetch("/api/recipes").then(r => r.json()).then(d => setRecipes(Array.isArray(d) ? d : []));
     fetch("/api/auth/me")
       .then((res) => res.json())
       .then((data) => {
@@ -146,6 +148,7 @@ export default function SettingsPage() {
         <button type="button" className={`btn ${activeTab === "devices" ? "btn-primary" : "btn-ghost"}`} onClick={() => setActiveTab("devices")}>
           {lang === "ar" ? ar.settingsPage.devices : "Devices"}
         </button>
+        
         
         
       </div>
