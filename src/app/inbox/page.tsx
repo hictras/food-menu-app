@@ -138,7 +138,7 @@ export default function InboxPage() {
     e.stopPropagation();
     const ok = await confirm({ 
       message: isAr ? ar.messages.deleteMessageConfirm : "Delete message?",
-      confirmText: isAr ? "حذف" : "Delete",
+      confirmText: isAr ? ar.modal.deleteBtn : "Delete",
       tone: "danger"
     });
     if (!ok) return;

@@ -143,7 +143,7 @@ export default function AdminSender() {
   async function deletePreset(id: number) {
     const ok = await confirm({ 
       message: isAr ? ar.pushPresets.deleteConfirm : "Delete this preset?",
-      confirmText: isAr ? "حذف" : "Delete",
+      confirmText: isAr ? ar.modal.deleteBtn : "Delete",
       tone: "danger"
     });
     if (!ok) return;

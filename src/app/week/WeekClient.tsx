@@ -105,9 +105,9 @@ export default function WeekClient() {
       .then((lists) => {
         const merged: PlanEntry[] = [];
         const seen = new Set<number>();
-        for (const list of lists) {
-          if (!Array.isArray(list)) continue;
-          for (const e of list as PlanEntry[]) {
+        for (const result of lists) {
+          if (!result || !Array.isArray(result.entries)) continue;
+          for (const e of result.entries as PlanEntry[]) {
             if (seen.has(e.id)) continue;
             seen.add(e.id);
             merged.push(e);
