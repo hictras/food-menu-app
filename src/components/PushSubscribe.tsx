@@ -37,7 +37,6 @@ export default function PushSubscribe() {
         return;
       }
 
-      // ✅ Use the custom modal prompt instead of window.prompt
       const phoneNumber = await prompt({
         message: isAr ? ar.push.enterPhone : "Enter your phone number (e.g. 96170123456)",
         placeholder: "96170123456"

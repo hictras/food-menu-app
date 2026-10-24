@@ -102,7 +102,8 @@ export function ModalProvider({ children }: { children: ReactNode }) {
             style={{
               background: "var(--surface-solid)", border: "1px solid var(--line-strong)",
               borderRadius: 14, padding: 24, maxWidth: 400, width: "100%",
-              boxShadow: "var(--shadow-lg)", display: "flex", flexDirection: "column", gap: 16
+              boxShadow: "var(--shadow-lg)", display: "flex", flexDirection: "column", gap: 16,
+              animation: "modalPopIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards"
             }}
           >
             <div style={{ textAlign: "center", fontSize: 40, marginBottom: -8 }}>

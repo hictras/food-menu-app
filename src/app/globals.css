@@ -3660,3 +3660,143 @@ html[data-theme="light"] .cook-overlay {
     opacity: 1 !important;
   }
 }
+
+/* ========== SMOOTH ANIMATIONS & MICRO-INTERACTIONS ========== */
+
+/* Modal Bounce-In */
+@keyframes modalPopIn {
+  0% { opacity: 0; transform: scale(0.95) translateY(10px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Recipe Card Hover Lift */
+.recipe-card {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, border-color 0.2s ease !important;
+}
+.recipe-card:hover {
+  transform: translateY(-4px) scale(1.01) !important;
+  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.5) !important;
+  border-color: var(--line-strong) !important;
+}
+
+/* Button Press Effect */
+.btn:active {
+  transform: scale(0.96) !important;
+}
+
+/* Mobile Menu Slide */
+.nav-mobile-menu {
+  transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), visibility 0.2s !important;
+}
+.nav-mobile-menu:not(.is-open) {
+  transform: translateY(-10px) scale(0.98) !important;
+}
+.nav-mobile-menu.is-open {
+  transform: translateY(0) scale(1) !important;
+}
+
+/* ========== MOBILE TOUCH TARGETS & SPACING ========== */
+@media (max-width: 768px) {
+  /* Bigger tap targets */
+  .btn {
+    min-height: 44px;
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .nav-icon-btn,
+  .nav-language,
+  .nav-menu-toggle {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .icon-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .search-clear {
+    min-width: 32px;
+    min-height: 32px;
+  }
+
+  /* More space in forms */
+  .form-card {
+    padding: 20px;
+    margin: 20px 0;
+  }
+
+  .field {
+    margin-bottom: 20px;
+  }
+
+  .field input[type="text"],
+  .field input[type="number"],
+  .field textarea,
+  .field select {
+    padding: 12px 14px;
+    font-size: 16px; /* Prevents iOS zoom */
+    min-height: 44px;
+  }
+
+  /* More space in nav */
+  .nav-inner {
+    padding: 10px 16px;
+    min-height: 64px;
+  }
+
+  /* Recipe cards breathing room */
+  .recipe-grid {
+    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+
+  .recipe-card-body {
+    padding: 12px 14px 14px;
+  }
+
+  .recipe-card h3 {
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .recipe-card-meta {
+    font-size: 11px;
+    gap: 8px;
+  }
+
+  /* Container less cramped on mobile */
+  .container {
+    padding: 0 16px;
+  }
+
+  /* Page head more space */
+  .page-head {
+    margin: 24px 0 8px;
+  }
+
+  .page-head h1 {
+    font-size: 28px;
+  }
+
+  /* Detail page padding */
+  .detail-head {
+    margin-bottom: 20px;
+  }
+
+  .detail-desc {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* Tables scroll on mobile */
+  .form-card table {
+    font-size: 12px;
+  }
+
+  .form-card table th,
+  .form-card table td {
+    padding: 10px 6px;
+  }
+}

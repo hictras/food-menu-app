@@ -4,6 +4,7 @@ import { getDb } from "@/db";
 import { recipes } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 import HomeClient from "@/components/HomeClient";
+import Spinner from "@/components/Spinner";
 import { isAdmin } from "@/lib/auth";
 
 async function RecipeList() {
@@ -16,26 +17,11 @@ async function RecipeList() {
   return <HomeClient recipes={all} />;
 }
 
-function RecipeSkeleton() {
-  return (
-    <div className="recipe-grid" style={{ opacity: 0.4, marginTop: 24 }}>
-      {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="recipe-card">
-          <div className="recipe-card-img" style={{ background: "var(--line)" }} />
-          <div className="recipe-card-body">
-            <div style={{ height: 18, background: "var(--line)", borderRadius: 4, marginBottom: 8 }} />
-            <div style={{ height: 14, background: "var(--line)", borderRadius: 4, width: "60%" }} />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
 
 export default function RecipesPage() {
   return (
     <main className="container">
-      <Suspense fallback={<RecipeSkeleton />}>
+      <Suspense fallback={<Spinner />}>
         <RecipeList />
       </Suspense>
     </main>

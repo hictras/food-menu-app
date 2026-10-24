@@ -58,12 +58,20 @@ export default function HiddenRecipesPage() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return recipes.filter(r => {
+    const list = recipes.filter(r => {
       const name = (isAr ? (r.nameAr || r.name) : r.name).toLowerCase();
       const category = isAr ? (r.categoryAr || r.category) : r.category;
       if (q && !name.includes(q)) return false;
       if (categoryFilter && category !== categoryFilter && r.category !== categoryFilter && r.categoryAr !== categoryFilter) return false;
       return true;
+    });
+
+    // Sort: Hidden first (1), then visible (0)
+    return [...list].sort((a, b) => {
+      const aHidden = a.isHidden === 1 ? 1 : 0;
+      const bHidden = b.isHidden === 1 ? 1 : 0;
+      // Descending order (1 comes before 0)
+      return bHidden - aHidden;
     });
   }, [recipes, query, categoryFilter, isAr]);
 
