@@ -51,38 +51,6 @@ const inlineBootstrap = `
 })();
 `;
 
-const visitorTracker = `
-(function() {
-  // Check if user is admin via API before tracking
-  fetch("/api/auth/me")
-    .then(function(res) { return res.json(); })
-    .then(function(data) {
-      if (data.admin) return; // Skip tracking if admin
-      
-      var visitorId = localStorage.getItem("visitor_id");
-      if (!visitorId) {
-        visitorId = Math.random().toString(36).substring(2) + Date.now().toString(36);
-        localStorage.setItem("visitor_id", visitorId);
-      }
-      
-      var phone = null;
-      var match = document.cookie.match(/viewer_phone=([^;]+)/);
-      if (match) phone = decodeURIComponent(match[1]);
-
-      return fetch("/api/visitors", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          id: visitorId, 
-          phone: phone,
-          lastPage: window.location.pathname,
-          lastPage: window.location.pathname 
-        })
-      });
-    })
-    .catch(function(){});
-})();
-`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -102,8 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </ModalProvider>
           </LanguageProvider>
         </ThemeProvider>
-        <script dangerouslySetInnerHTML={{ __html: visitorTracker }} />
-                <BackToTop />
+                        <BackToTop />
       </body>
     </html>
   );
