@@ -92,7 +92,8 @@ export default function CalendarPage() {
     fetch(`/api/meal-plan?month=${monthParam}`)
       .then((r) => r.json())
       .then((data) => {
-        setEntries(Array.isArray(data) ? data : []);
+        setEntries(Array.isArray(data.entries) ? data.entries : []);
+        if (Array.isArray(data.recipes)) setRecipes(data.recipes);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -119,7 +120,7 @@ export default function CalendarPage() {
 
   useEffect(() => {
     if (pickerDate && recipes.length === 0) {
-      fetch("/api/recipes")
+      fetch("/api/recipes?light=true")
         .then((r) => r.json())
         .then((d) => setRecipes(Array.isArray(d) ? d : []))
         .catch(() => {});
