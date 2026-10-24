@@ -365,8 +365,8 @@ export default function GamePage() {
   const remainingCorrect = cards.filter(c => correctSet.has(c.name) && !c.correct && !c.wrong).length;
 
   return (
-    <main style={{ minHeight: "100vh", background: "#0d1117", color: "#e6edf3", fontFamily: "system-ui, sans-serif", padding: "80px 1rem 120px 1rem", direction: isAr ? "rtl" : "ltr" }}>
-      
+    <main style={{ minHeight: "100vh", background: "var(--bg)", color: "var(--ink)", fontFamily: "system-ui, sans-serif", padding: "80px 1rem 120px 1rem", direction: isAr ? "rtl" : "ltr" }}>
+            
       {/* BACKGROUND DECORATION */}
       <div style={{ position: "fixed", inset: 0, backgroundImage: "radial-gradient(circle at 50% 0%, rgba(28, 42, 36, 0.5) 0%, rgba(13, 17, 23, 1) 70%)", zIndex: 0, pointerEvents: "none" }}></div>
 
@@ -388,7 +388,7 @@ export default function GamePage() {
           {/* Middle Row: Title */}
           <div style={{ textAlign: "center" }}>
             <h1 style={{ fontSize: "1.8rem", fontWeight: 700, margin: 0, letterSpacing: "-0.02em" }}>
-              {isAr ? ar.game.title1 : "Guess the "}<span style={{ color: "#3fb950" }}>{isAr ? ar.game.title2 : "Ingredients"}</span>
+              <span style={{ color: "#e6edf3" }}>{isAr ? ar.game.title1 : "Guess the "}</span><span style={{ color: "#3fb950" }}>{isAr ? ar.game.title2 : "Ingredients"}</span>
             </h1>
             <p style={{ color: "#8b949e", fontSize: "13px", margin: "4px 0 0 0" }}>{isAr ? ar.game.subtitle : "Can you identify what goes into this dish?"}</p>
           </div>
@@ -413,7 +413,7 @@ export default function GamePage() {
 
         {/* HERO RECIPE CARD */}
         <div className="hero-card-responsive" style={{ display: "flex", background: "#161b22", border: "1px solid #30363d", borderRadius: "16px", overflow: "hidden", marginBottom: "2rem", minHeight: "140px", position: "sticky", top: "70px", zIndex: 40, boxShadow: "0 10px 30px -10px rgba(0,0,0,0.8)", backdropFilter: "blur(12px)" }}>
-          <div className="hero-image" style={{ width: "40%", background: "#0d1117", position: "relative" }}>
+          <div className="hero-image" style={{ width: "40%", background: "var(--bg)", position: "relative" }}>
             {recipe?.imageUrl ? (
               <img src={recipe.imageUrl} alt={recipe.name} style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }} />
             ) : (
@@ -465,7 +465,7 @@ export default function GamePage() {
                 </span>
               )}
             </div>
-            <div style={{ display: "flex", gap: "12px", marginTop: "2.5rem", background: "#0d1117", padding: "8px 16px", borderRadius: "8px", width: "fit-content", border: "1px solid #30363d", alignItems: "center" }}>
+            <div style={{ display: "flex", gap: "12px", marginTop: "2.5rem", background: "var(--bg)", padding: "8px 16px", borderRadius: "8px", width: "fit-content", border: "1px solid #30363d", alignItems: "center" }}>
               <span style={{ color: "#8b949e", fontSize: "13px" }}>🍴 {isAr ? ar.game.remaining : "Remaining"}: <strong style={{ color: "#e6edf3" }}>{remainingCorrect}</strong></span>
               <span style={{ color: "#30363d" }}>|</span>
               <span style={{ color: "#8b949e", fontSize: "13px" }}>❤️ {isAr ? ar.game.lives : "Lives"}: <strong style={{ color: lives > 2 ? "#3fb950" : "#ff6b4a" }}>{lives}</strong></span>

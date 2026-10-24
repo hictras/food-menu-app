@@ -9,8 +9,8 @@ export default function GamesHubPage() {
   const isAr = lang === "ar";
 
   return (
-    <main style={{ minHeight: "100vh", background: "#0d1117", color: "#e6edf3", fontFamily: "system-ui, sans-serif", padding: "80px 1rem 120px 1rem", direction: isAr ? "rtl" : "ltr" }}>
-      
+    <main style={{ minHeight: "100vh", background: "var(--bg)", color: "var(--ink)", fontFamily: "system-ui, sans-serif", padding: "80px 1rem 120px 1rem", direction: isAr ? "rtl" : "ltr" }}>
+            
       <div style={{ maxWidth: 800, margin: "0 auto" }}>
         
         {/* Header */}

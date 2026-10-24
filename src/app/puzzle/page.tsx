@@ -185,8 +185,8 @@ export default function PuzzlePage() {
   }
 
   return (
-    <main style={{ minHeight: "100vh", background: "#0d1117", color: "#e6edf3", fontFamily: "system-ui, sans-serif", padding: "1.5rem 1rem 120px 1rem", direction: isAr ? "rtl" : "ltr" }}>
-      
+    <main style={{ minHeight: "100vh", background: "var(--bg)", color: "var(--ink)", fontFamily: "system-ui, sans-serif", padding: "1.5rem 1rem 120px 1rem", direction: isAr ? "rtl" : "ltr" }}>
+            
       <div style={{ maxWidth: 600, margin: "0 auto" }}>
         
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "1.5rem", gap: "1rem" }}>
@@ -227,7 +227,7 @@ export default function PuzzlePage() {
           {loading ? (
             <div style={{ height: 300, display: "flex", alignItems: "center", justifyContent: "center" }}>Loading...</div>
           ) : (
-            <div ref={boardRef} style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "4px", width: "100%", aspectRatio: "1 / 1", background: "#0d1117", borderRadius: "12px", padding: "4px", marginTop: "2rem", direction: "ltr", touchAction: "none", userSelect: "none" }}>
+            <div ref={boardRef} style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "4px", width: "100%", aspectRatio: "1 / 1", background: "var(--bg)", borderRadius: "12px", padding: "4px", marginTop: "2rem", direction: "ltr", touchAction: "none", userSelect: "none" }}>
               {pieces.map((pieceId, index) => {
                 const x = (pieceId % 3) * 50;
                 const y = Math.floor(pieceId / 3) * 50;

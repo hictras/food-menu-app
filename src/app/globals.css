@@ -3652,3 +3652,11 @@ html[data-theme="light"] .cook-overlay {
     gap: 8px !important;
   }
 }
+
+/* ========== MOBILE MENU SOLID BACKGROUND ========== */
+@media (max-width: 760px) {
+  .nav-mobile-menu {
+    background-color: var(--surface-solid) !important;
+    opacity: 1 !important;
+  }
+}
