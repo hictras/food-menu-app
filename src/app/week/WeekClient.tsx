@@ -98,8 +98,8 @@ export default function WeekClient() {
     Promise.all(
       Array.from(months).map((m) =>
         fetch(`/api/meal-plan?month=${m}`)
-          .then((r) => (r.ok ? r.json() : []))
-          .catch(() => [])
+          .then((r) => (r.ok ? r.json() : { entries: [] }))
+          .catch(() => ({ entries: [] }))
       )
     )
       .then((lists) => {
