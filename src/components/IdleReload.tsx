@@ -6,13 +6,15 @@ import { usePathname } from "next/navigation";
 export default function IdleReload() {
   const pathname = usePathname();
 
+  // 1. Track Page Navigation safely
   useEffect(() => {
-    // This runs every time the page changes (even via soft navigation)
+    // Only run on the client side, after mount
+    if (typeof window === "undefined") return;
+
     const trackPage = async () => {
       const visitorId = localStorage.getItem("visitor_id");
       if (visitorId && pathname) {
         try {
-          // Get the phone from cookie if available
           const match = document.cookie.match(/viewer_phone=([^;]+)/);
           const phone = match ? decodeURIComponent(match[1]) : null;
 
@@ -31,11 +33,12 @@ export default function IdleReload() {
       }
     };
     
-    // Call it when the page changes
-    trackPage();
+    // Use a small timeout so it doesn't block the initial render
+    const t = setTimeout(trackPage, 500);
+    return () => clearTimeout(t);
   }, [pathname]);
 
-  // Keep the idle reload timer
+  // 2. Idle Timer
   useEffect(() => {
     const TIMEOUT_MS = 15 * 60 * 1000;
     let timer: NodeJS.Timeout;

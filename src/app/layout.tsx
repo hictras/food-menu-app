@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import "./globals.css";
 import { LanguageProvider } from "@/components/LanguageProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -8,25 +9,11 @@ import TitleThemeSync from "@/components/TitleThemeSync";
 import BackToTop from "@/components/BackToTop";
 import { ModalProvider } from "@/components/ModalProvider";
 import IdleReload from "@/components/IdleReload";
-import { cacheLife, cacheTag } from "next/cache";
-import { getDb } from "@/db";
-import { settings } from "@/db/schema";
 
-export async function generateMetadata(): Promise<Metadata> {
-  'use cache'
-  cacheLife('hours')
-  cacheTag('app-settings')
-
-  try {
-    const db = getDb();
-    const rows = await db.select().from(settings);
-    const s = Object.fromEntries(rows.map((r) => [r.key, r.value]));
-    const appName = s.app_name || "Menu";
-    return { title: appName, description: "Your personal cookbook" };
-  } catch {
-    return { title: "Menu", description: "Your personal cookbook" };
-  }
-}
+export const metadata: Metadata = {
+  title: "Menu — Recipes",
+  description: "Your personal cookbook",
+};
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -51,7 +38,6 @@ const inlineBootstrap = `
 })();
 `;
 
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" data-theme="dark" suppressHydrationWarning>
@@ -61,7 +47,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <ThemeProvider>
           <LanguageProvider>
-            <IdleReload />
+            <Suspense fallback={null}>
+              <IdleReload />
+            </Suspense>
             <ModalProvider>
               <DynamicFavicon />
               <TitleThemeSync />
@@ -70,7 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </ModalProvider>
           </LanguageProvider>
         </ThemeProvider>
-                        <BackToTop />
+        <BackToTop />
       </body>
     </html>
   );
