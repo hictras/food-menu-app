@@ -1,11 +1,11 @@
 "use client";
-import DayReviews from "@/components/DayReviews";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useLang } from "@/components/LanguageProvider";
 import { ar } from "@/lib/ar";
+import DayReviews from "@/components/DayReviews";
 
 type Slot = "breakfast" | "lunch" | "dinner" | "snack" | "dessert";
 
@@ -82,10 +82,12 @@ export default function DayPage() {
       setLoading(false);
       return;
     }
+    
+    // The API now returns { entries: [...] } instead of just an array
     fetch(`/api/meal-plan?date=${dateStr}`)
       .then((r) => r.json())
       .then((data) => {
-        setEntries(Array.isArray(data) ? data : []);
+        setEntries(Array.isArray(data.entries) ? data.entries : []);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -110,10 +112,7 @@ export default function DayPage() {
             {isAr ? ar.calendar.backToCalendar : "← Back to calendar"}
           </Link>
         </div>
-      {dateStr && (
-        <DayReviews date={dateStr} isAdmin={isAdmin} />
-      )}
-    </main>
+      </main>
     );
   }
 
@@ -214,7 +213,7 @@ export default function DayPage() {
                           </div>
                           {desc && <p style={{ margin: 0, fontSize: 12, color: "var(--ink-soft)", lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{desc}</p>}
                           <div style={{ fontSize: 11, color: "var(--muted)", display: "flex", gap: 12, marginTop: "auto", fontVariantNumeric: "tabular-nums" }}>
-                            <span>⏱ {entry.recipe.prepTime + entry.recipe.cookTime} {isAr ? "د" : "min"}</span>
+                            <span>⏱ {entry.recipe.prepTime + entry.recipe.cookTime} {isAr ? ar.detail.min : "min"}</span>
                             <span>🍽 {entry.recipe.servings}</span>
                           </div>
                         </div>
