@@ -7,6 +7,7 @@ import DynamicFavicon from "@/components/DynamicFavicon";
 import TitleThemeSync from "@/components/TitleThemeSync";
 import BackToTop from "@/components/BackToTop";
 import { ModalProvider } from "@/components/ModalProvider";
+import IdleReload from "@/components/IdleReload";
 import { cacheLife, cacheTag } from "next/cache";
 import { getDb } from "@/db";
 import { settings } from "@/db/schema";
@@ -87,6 +88,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <ThemeProvider>
           <LanguageProvider>
+            <IdleReload />
             <ModalProvider>
               <DynamicFavicon />
               <TitleThemeSync />
