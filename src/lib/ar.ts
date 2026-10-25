@@ -669,6 +669,8 @@ export const ar = {
 
   // ── Games Hub ─────────────────────────────────────────────
   gamesHub: {
+    guessTitle: "خمن المكونات",
+    puzzleTitle: "لغز الوصفة",
     title: "الألعاب",
     subtitle: "اختر لعبة لتبدأ",
     game1Title: "خمّن المكونات",
@@ -1015,26 +1017,9 @@ export const ar = {
     noRecipes: "لا توجد وصفات متاحة.",
   },
 
-  catch: {
-    title: "اجمع المكونات",
-    subtitle: "حرك السلة لالتقاط المكونات الساقطة",
-    newGame: "↻ لعبة جديدة",
-    rules: "? القواعد",
-    playAgain: "العب مجدداً",
-    rulesTitle: "قواعد اللعبة",
-    rulesText: "<strong>الهدف:</strong> حرك السلة لالتقاط المكونات الساقطة.<br><br><strong>الحياة:</strong> لديك 3 قلوب. إذا سقط مكون أو لمسته بالحذاء (👟)، تخسر قلباً.<br><br><strong>النقاط:</strong> كل مكون تلتقطه يمنحك نقطة!",
-    gotIt: "فهمت",
-    gameOver: "انتهت اللعبة",
-    youCaught: "لقد التقطت",
-    ingredients: "مكونات!",
-    score: "النقاط",
-    lives: "الحياة",
-    loading: "جاري التحميل...",
-  },
-
   snake: {
-    title: "ثعبان الشوكة",
-    subtitle: "اجمع المكونات بالشوكة",
+    title: "الأفعى",
+    subtitle: "اجمع أكبر عدد من المكونات دون أن تصطدم",
     newGame: "↻ لعبة جديدة",
     rules: "? القواعد",
     playAgain: "العب مجدداً",
@@ -1048,6 +1033,19 @@ export const ar = {
     loading: "جاري التحميل...",
   },
 
-} as const;
+  catch: {
+    gameOverTitle: "انتهت اللعبة",
+    youCaught: "لقد التقطت",
+    ingredientsCount: "مكونات!",
+    title: "اجمع المكونات",
+    subtitle: "حرك السلة لالتقاط المكونات الساقطة",
+    newGame: "↻ لعبة جديدة",
+    rules: "? القواعد",
+    playAgain: "العب مجدداً",
+    rulesTitle: "قواعد اللعبة",
+    rulesText: "<strong>الهدف:</strong> حرك السلة لالتقاط المكونات الساقطة.<br><br><strong>الحياة:</strong> لديك 3 قلوب. إذا سقط مكون أو لمسته بالحذاء (👟)، تخسر قلباً.<br><br><strong>النقاط:</strong> كل مكون تلتقطه يمنحك نقطة!",
+    gotIt: "فهمت",
+    gameOver: "انتهت اللعبة",
+  },
 
-export type Ar = typeof ar;
+} as const;

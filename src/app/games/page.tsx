@@ -27,7 +27,7 @@ export default function GamesHubPage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px" }}>
           
           {/* Game 1: Guess the Ingredients */}
-          <Link href="/guess" style={{ textDecoration: "none" }}>
+          <Link href="/games/guess" style={{ textDecoration: "none" }}>
             <div style={{ 
               background: "#161b22", 
               border: "1px solid #30363d", 
@@ -67,7 +67,7 @@ export default function GamesHubPage() {
           </Link>
 
           {/* Game 2: Recipe Puzzle */}
-          <Link href="/puzzle" style={{ textDecoration: "none" }}>
+          <Link href="/games/puzzle" style={{ textDecoration: "none" }}>
             <div style={{ 
               background: "#161b22", 
               border: "1px solid #30363d", 

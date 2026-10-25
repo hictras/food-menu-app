@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useLang } from "@/components/LanguageProvider";
+import GameHeader from "@/components/GameHeader";
 import { ar } from "@/lib/ar";
 
 const KEYBOARD_ROWS = [
@@ -180,7 +181,8 @@ export default function WordleGamePage() {
   const activeLetters = currentGuess.split("");
 
   return (
-    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", padding: 10, background: "var(--bg)", overflow: "hidden" }} dir={isAr ? "rtl" : "ltr"}>
+    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", padding: 10, background: "var(--bg)", overflow: "hidden", position: "relative" }} dir={isAr ? "rtl" : "ltr"}>
+      <Link href="/games" style={{ position: "absolute", top: 12, insetInlineEnd: 12, zIndex: 50, background: "var(--surface)", border: "1px solid var(--line)", borderRadius: 10, padding: "8px 14px", fontSize: 14, fontWeight: 600, textDecoration: "none", color: "var(--ink)" }}>✕ {isAr ? "خروج" : "Exit"}</Link>
       
       {/* Hidden Input to trigger mobile keyboard */}
       <input 
@@ -193,21 +195,14 @@ export default function WordleGamePage() {
       <div style={{ maxWidth: 600, margin: "0 auto", width: "100%", display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
         
         {/* HEADER */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0, marginBottom: 10 }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <h1 style={{ fontFamily: "var(--font-head)", fontSize: "1.5rem", margin: 0 }}>
-              {isAr ? ar.wordle.title : "Recipe Wordle"}
-            </h1>
-            <div style={{ display: "flex", gap: 8 }}>
-              <button className="btn btn-ghost" onClick={startGame} style={{ fontSize: "0.7rem", padding: "4px 8px" }}>
-                {isAr ? ar.wordle.newGame : "↻ New Game"}
-              </button>
-              <button className="btn btn-ghost" onClick={() => setShowRules(true)} style={{ fontSize: "0.7rem", padding: "4px 8px" }}>
-                {isAr ? ar.wordle.rules : "? Rules"}
-              </button>
-            </div>
-          </div>
-        </div>
+        <GameHeader 
+        title="Recipe Wordle" 
+        titleAr="خمن الوصفة" 
+        onNewGame={startGame} 
+        onShowRules={() => setShowRules(true)} 
+        
+        
+      />
 
         {/* GRID */}
         <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", minHeight: 0 }}>

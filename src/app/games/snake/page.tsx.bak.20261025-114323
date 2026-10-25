@@ -1,0 +1,257 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { useLang } from "@/components/LanguageProvider";
+import GameHeader from "@/components/GameHeader";
+import { ar } from "@/lib/ar";
+
+const GRID_SIZE = 20;
+const FOOD_EMOJIS = ["🥔", "🧅", "🍅", "🥕", "🥦", "🌽", "🍄", "🫑"];
+
+type Point = { x: number; y: number };
+
+export default function SnakeGamePage() {
+  const { lang } = useLang();
+  const isAr = lang === "ar";
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const [score, setScore] = useState(0);
+  const [best, setBest] = useState(0);
+  const [gameOver, setGameOver] = useState(false);
+  const [showRules, setShowRules] = useState(false);
+
+  const snakeRef = useRef<Point[]>([]);
+  const dirRef = useRef<Point>({ x: 0, y: -1 });
+  const nextDirRef = useRef<Point>({ x: 0, y: -1 });
+  const foodRef = useRef<{ x: number, y: number, emoji: string }>({ x: 0, y: 0, emoji: "🍅" });
+  const loopRef = useRef<NodeJS.Timeout | null>(null);
+  const touchStartRef = useRef<Point>({ x: 0, y: 0 });
+  const isRunningRef = useRef(false);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("fork_snake_best");
+    if (stored) setBest(Number(stored));
+    startGame();
+    
+    return () => {
+      if (loopRef.current) clearInterval(loopRef.current);
+    };
+  }, []);
+
+  function spawnFood() {
+    let newFood: Point & { emoji: string };
+    while (true) {
+      newFood = {
+        x: Math.floor(Math.random() * GRID_SIZE),
+        y: Math.floor(Math.random() * GRID_SIZE),
+        emoji: FOOD_EMOJIS[Math.floor(Math.random() * FOOD_EMOJIS.length)]
+      };
+      const onSnake = snakeRef.current.some(seg => seg.x === newFood.x && seg.y === newFood.y);
+      if (!onSnake) break;
+    }
+    foodRef.current = newFood;
+  }
+
+  function startGame() {
+    if (loopRef.current) clearInterval(loopRef.current);
+    
+    setScore(0);
+    setGameOver(false);
+    isRunningRef.current = true;
+    
+    snakeRef.current = [
+      { x: 10, y: 10 },
+      { x: 10, y: 11 },
+      { x: 10, y: 12 }
+    ];
+    dirRef.current = { x: 0, y: -1 };
+    nextDirRef.current = { x: 0, y: -1 };
+    spawnFood();
+
+    draw();
+
+    loopRef.current = setInterval(() => {
+      gameLoop();
+    }, 130);
+  }
+
+  function gameLoop() {
+    if (!isRunningRef.current) return;
+
+    dirRef.current = nextDirRef.current;
+    const head = { x: snakeRef.current[0].x + dirRef.current.x, y: snakeRef.current[0].y + dirRef.current.y };
+
+    // Wall collision
+    if (head.x < 0 || head.x >= GRID_SIZE || head.y < 0 || head.y >= GRID_SIZE) {
+      endGame();
+      return;
+    }
+
+    // Self collision
+    for (let i = 0; i < snakeRef.current.length - 1; i++) {
+      if (head.x === snakeRef.current[i].x && head.y === snakeRef.current[i].y) {
+        endGame();
+        return;
+      }
+    }
+
+    snakeRef.current.unshift(head);
+
+    // Food collision
+    if (head.x === foodRef.current.x && head.y === foodRef.current.y) {
+      setScore(s => s + 1);
+      spawnFood();
+    } else {
+      snakeRef.current.pop();
+    }
+
+    draw();
+  }
+
+  function endGame() {
+    isRunningRef.current = false;
+    if (loopRef.current) clearInterval(loopRef.current);
+    setGameOver(true);
+    
+    // Update best score
+    if (score > best) {
+      localStorage.setItem("fork_snake_best", String(score));
+      setBest(score);
+    }
+  }
+
+  function draw() {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const tileSize = canvas.width / GRID_SIZE;
+
+    ctx.fillStyle = "#16161a";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Grid lines
+    ctx.strokeStyle = "rgba(255,255,255,0.03)";
+    for (let i = 0; i <= GRID_SIZE; i++) {
+      ctx.beginPath();
+      ctx.moveTo(i * tileSize, 0);
+      ctx.lineTo(i * tileSize, canvas.height);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0, i * tileSize);
+      ctx.lineTo(canvas.width, i * tileSize);
+      ctx.stroke();
+    }
+
+    // Food
+    ctx.font = `${tileSize - 4}px Arial`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(foodRef.current.emoji, foodRef.current.x * tileSize + tileSize / 2, foodRef.current.y * tileSize + tileSize / 2);
+
+    // Snake
+    snakeRef.current.forEach((seg, i) => {
+      if (i === 0) {
+        ctx.font = `${tileSize}px Arial`;
+        ctx.fillText("🍴", seg.x * tileSize + tileSize / 2, seg.y * tileSize + tileSize / 2);
+      } else {
+        ctx.fillStyle = "#7ba05b";
+        ctx.beginPath();
+        ctx.roundRect(seg.x * tileSize + 2, seg.y * tileSize + 2, tileSize - 4, tileSize - 4, 4);
+        ctx.fill();
+      }
+    });
+  }
+
+  function handleKey(e: KeyboardEvent) {
+    if (gameOver) return;
+    const { x, y } = dirRef.current;
+    if (e.key === "ArrowUp" && y === 0) nextDirRef.current = { x: 0, y: -1 };
+    if (e.key === "ArrowDown" && y === 0) nextDirRef.current = { x: 0, y: 1 };
+    if (e.key === "ArrowLeft" && x === 0) nextDirRef.current = { x: -1, y: 0 };
+    if (e.key === "ArrowRight" && x === 0) nextDirRef.current = { x: 1, y: 0 };
+  }
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [gameOver]);
+
+  function onTouchStart(e: React.TouchEvent) {
+    touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  }
+
+  function onTouchEnd(e: React.TouchEvent) {
+    if (gameOver) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    const dx = touchEndX - touchStartRef.current.x;
+    const dy = touchEndY - touchStartRef.current.y;
+
+    const { x, y } = dirRef.current;
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (dx > 0 && x === 0) nextDirRef.current = { x: 1, y: 0 };
+      if (dx < 0 && x === 0) nextDirRef.current = { x: -1, y: 0 };
+    } else {
+      if (dy > 0 && y === 0) nextDirRef.current = { x: 0, y: 1 };
+      if (dy < 0 && y === 0) nextDirRef.current = { x: 0, y: -1 };
+    }
+  }
+
+  return (
+    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", padding: 12, background: "var(--bg)", overflow: "hidden" }}>
+      <div style={{ maxWidth: 600, margin: "0 auto", width: "100%", display: "flex", flexDirection: "column", gap: 12, height: "100%" }}>
+        
+        {/* Header */}
+        <GameHeader 
+        title="Fork Snake" 
+        titleAr="ثعبان الشوكة" 
+        onNewGame={startGame} 
+        onShowRules={() => setShowRules(true)} 
+        score={score}
+        best={best}
+      />
+
+        {/* Play Area */}
+        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", minHeight: 0, position: "relative" }}
+             onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+          <canvas
+            ref={canvasRef}
+            width={400}
+            height={400}
+            style={{ background: "var(--surface)", border: "1px solid var(--line)", borderRadius: "var(--radius)", maxWidth: "100%", maxHeight: "100%", aspectRatio: "1/1", touchAction: "none" }}
+          />
+
+          {gameOver && (
+            <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", zIndex: 10, borderRadius: "var(--radius)" }}>
+              <h2 style={{ fontFamily: "var(--font-head)", fontSize: "2rem", margin: "0 0 8px 0" }}>
+                {isAr ? ar.snake.gameOver : "Game Over"}
+              </h2>
+              <p style={{ color: "var(--muted)", marginBottom: 24 }}>
+                {isAr ? ar.snake.gameOverMsg : "You hit the wall or your tail!"}
+              </p>
+              <div style={{ fontSize: "3rem", fontWeight: 700, color: "var(--accent)", marginBottom: 24 }}>{score}</div>
+              <button className="btn btn-primary" onClick={startGame} style={{ padding: "14px 28px" }}>
+                {isAr ? ar.snake.playAgain : "Play Again"}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {showRules && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, zIndex: 100 }}>
+          <div style={{ background: "var(--surface)", padding: 32, borderRadius: 20, maxWidth: 400, width: "100%" }}>
+            <h2 style={{ marginTop: 0 }}>{isAr ? ar.snake.rulesTitle : "Game Rules"}</h2>
+            <p style={{ fontSize: "0.9rem", lineHeight: 1.5, color: "var(--ink-soft)" }} dangerouslySetInnerHTML={{ __html: isAr ? ar.snake.rulesText : "<strong>Goal:</strong> Eat as many ingredients as possible.<br><br><strong>How to play:</strong> Swipe on mobile or use Arrow keys to move.<br><br><strong>⚠️ Warning:</strong> Do not hit the wall or your own tail, or the game is over!" }} />
+            <button className="btn btn-primary" onClick={() => setShowRules(false)} style={{ width: "100%", marginTop: 16 }}>
+              {isAr ? ar.snake.gotIt : "Got it"}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

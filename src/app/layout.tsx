@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import { LanguageProvider } from "@/components/LanguageProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import Nav from "@/components/Nav";
+import NavGate from "@/components/NavGate";
 import DynamicFavicon from "@/components/DynamicFavicon";
 import TitleThemeSync from "@/components/TitleThemeSync";
 import BackToTop from "@/components/BackToTop";
@@ -60,7 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <ModalProvider>
               <DynamicFavicon />
               <TitleThemeSync />
-              <Nav />
+              <Suspense fallback={null}><NavGate /></Suspense>
               {children}
             </ModalProvider>
           </LanguageProvider>

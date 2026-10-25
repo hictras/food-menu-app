@@ -1,7 +1,9 @@
 "use client";
+import Link from "next/link";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useLang } from "@/components/LanguageProvider";
+import GameHeader from "@/components/GameHeader";
 import { ar } from "@/lib/ar";
 
 const GRID_SIZE = 20;
@@ -22,104 +24,14 @@ export default function SnakeGamePage() {
   const snakeRef = useRef<Point[]>([]);
   const dirRef = useRef<Point>({ x: 0, y: -1 });
   const nextDirRef = useRef<Point>({ x: 0, y: -1 });
-  const foodRef = useRef<{ x: number, y: number, emoji: string }>({ x: 0, y: 0, emoji: "🍅" });
-  const loopRef = useRef<NodeJS.Timeout | null>(null);
+  const foodRef = useRef<{ x: number; y: number; emoji: string }>({ x: 0, y: 0, emoji: "🍅" });
+  const loopRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const touchStartRef = useRef<Point>({ x: 0, y: 0 });
   const isRunningRef = useRef(false);
+  const scoreRef = useRef(0);
+  const bestRef = useRef(0);
 
-  useEffect(() => {
-    const stored = localStorage.getItem("fork_snake_best");
-    if (stored) setBest(Number(stored));
-    startGame();
-    
-    return () => {
-      if (loopRef.current) clearInterval(loopRef.current);
-    };
-  }, []);
-
-  function spawnFood() {
-    let newFood: Point & { emoji: string };
-    while (true) {
-      newFood = {
-        x: Math.floor(Math.random() * GRID_SIZE),
-        y: Math.floor(Math.random() * GRID_SIZE),
-        emoji: FOOD_EMOJIS[Math.floor(Math.random() * FOOD_EMOJIS.length)]
-      };
-      const onSnake = snakeRef.current.some(seg => seg.x === newFood.x && seg.y === newFood.y);
-      if (!onSnake) break;
-    }
-    foodRef.current = newFood;
-  }
-
-  function startGame() {
-    if (loopRef.current) clearInterval(loopRef.current);
-    
-    setScore(0);
-    setGameOver(false);
-    isRunningRef.current = true;
-    
-    snakeRef.current = [
-      { x: 10, y: 10 },
-      { x: 10, y: 11 },
-      { x: 10, y: 12 }
-    ];
-    dirRef.current = { x: 0, y: -1 };
-    nextDirRef.current = { x: 0, y: -1 };
-    spawnFood();
-
-    draw();
-
-    loopRef.current = setInterval(() => {
-      gameLoop();
-    }, 130);
-  }
-
-  function gameLoop() {
-    if (!isRunningRef.current) return;
-
-    dirRef.current = nextDirRef.current;
-    const head = { x: snakeRef.current[0].x + dirRef.current.x, y: snakeRef.current[0].y + dirRef.current.y };
-
-    // Wall collision
-    if (head.x < 0 || head.x >= GRID_SIZE || head.y < 0 || head.y >= GRID_SIZE) {
-      endGame();
-      return;
-    }
-
-    // Self collision
-    for (let i = 0; i < snakeRef.current.length - 1; i++) {
-      if (head.x === snakeRef.current[i].x && head.y === snakeRef.current[i].y) {
-        endGame();
-        return;
-      }
-    }
-
-    snakeRef.current.unshift(head);
-
-    // Food collision
-    if (head.x === foodRef.current.x && head.y === foodRef.current.y) {
-      setScore(s => s + 1);
-      spawnFood();
-    } else {
-      snakeRef.current.pop();
-    }
-
-    draw();
-  }
-
-  function endGame() {
-    isRunningRef.current = false;
-    if (loopRef.current) clearInterval(loopRef.current);
-    setGameOver(true);
-    
-    // Update best score
-    if (score > best) {
-      localStorage.setItem("fork_snake_best", String(score));
-      setBest(score);
-    }
-  }
-
-  function draw() {
+  const draw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -130,7 +42,6 @@ export default function SnakeGamePage() {
     ctx.fillStyle = "#16161a";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Grid lines
     ctx.strokeStyle = "rgba(255,255,255,0.03)";
     for (let i = 0; i <= GRID_SIZE; i++) {
       ctx.beginPath();
@@ -143,36 +54,163 @@ export default function SnakeGamePage() {
       ctx.stroke();
     }
 
-    // Food
     ctx.font = `${tileSize - 4}px Arial`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(foodRef.current.emoji, foodRef.current.x * tileSize + tileSize / 2, foodRef.current.y * tileSize + tileSize / 2);
+    ctx.fillText(
+      foodRef.current.emoji,
+      foodRef.current.x * tileSize + tileSize / 2,
+      foodRef.current.y * tileSize + tileSize / 2
+    );
 
-    // Snake
     snakeRef.current.forEach((seg, i) => {
       if (i === 0) {
         ctx.font = `${tileSize}px Arial`;
         ctx.fillText("🍴", seg.x * tileSize + tileSize / 2, seg.y * tileSize + tileSize / 2);
       } else {
         ctx.fillStyle = "#7ba05b";
+        const x = seg.x * tileSize + 2;
+        const y = seg.y * tileSize + 2;
+        const w = tileSize - 4;
+        const h = tileSize - 4;
+        const r = Math.min(4, w / 2, h / 2);
         ctx.beginPath();
-        ctx.roundRect(seg.x * tileSize + 2, seg.y * tileSize + 2, tileSize - 4, tileSize - 4, 4);
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
         ctx.fill();
       }
     });
-  }
+  }, []);
 
-  function handleKey(e: KeyboardEvent) {
-    if (gameOver) return;
-    const { x, y } = dirRef.current;
-    if (e.key === "ArrowUp" && y === 0) nextDirRef.current = { x: 0, y: -1 };
-    if (e.key === "ArrowDown" && y === 0) nextDirRef.current = { x: 0, y: 1 };
-    if (e.key === "ArrowLeft" && x === 0) nextDirRef.current = { x: -1, y: 0 };
-    if (e.key === "ArrowRight" && x === 0) nextDirRef.current = { x: 1, y: 0 };
-  }
+  const spawnFood = useCallback(() => {
+    let newFood: { x: number; y: number; emoji: string } = { x: 0, y: 0, emoji: "🍅" };
+    for (let attempts = 0; attempts < 200; attempts++) {
+      newFood = {
+        x: Math.floor(Math.random() * GRID_SIZE),
+        y: Math.floor(Math.random() * GRID_SIZE),
+        emoji: FOOD_EMOJIS[Math.floor(Math.random() * FOOD_EMOJIS.length)],
+      };
+      const onSnake = snakeRef.current.some((s) => s.x === newFood.x && s.y === newFood.y);
+      if (!onSnake) break;
+    }
+    foodRef.current = newFood;
+  }, []);
+
+  const endGame = useCallback(() => {
+    isRunningRef.current = false;
+    if (loopRef.current) {
+      clearInterval(loopRef.current);
+      loopRef.current = null;
+    }
+    setGameOver(true);
+    if (scoreRef.current > bestRef.current) {
+      bestRef.current = scoreRef.current;
+      setBest(scoreRef.current);
+      try {
+        localStorage.setItem("fork_snake_best", String(scoreRef.current));
+      } catch {}
+    }
+  }, []);
+
+  const gameLoop = useCallback(() => {
+    if (!isRunningRef.current) return;
+
+    dirRef.current = nextDirRef.current;
+    const head = {
+      x: snakeRef.current[0].x + dirRef.current.x,
+      y: snakeRef.current[0].y + dirRef.current.y,
+    };
+
+    if (head.x < 0 || head.x >= GRID_SIZE || head.y < 0 || head.y >= GRID_SIZE) {
+      endGame();
+      return;
+    }
+
+    for (let i = 0; i < snakeRef.current.length - 1; i++) {
+      if (head.x === snakeRef.current[i].x && head.y === snakeRef.current[i].y) {
+        endGame();
+        return;
+      }
+    }
+
+    snakeRef.current.unshift(head);
+
+    if (head.x === foodRef.current.x && head.y === foodRef.current.y) {
+      scoreRef.current += 1;
+      setScore(scoreRef.current);
+      spawnFood();
+    } else {
+      snakeRef.current.pop();
+    }
+
+    draw();
+  }, [endGame, spawnFood, draw]);
+
+  const startGame = useCallback(() => {
+    if (loopRef.current) {
+      clearInterval(loopRef.current);
+      loopRef.current = null;
+    }
+    setScore(0);
+    scoreRef.current = 0;
+    setGameOver(false);
+    isRunningRef.current = true;
+
+    snakeRef.current = [
+      { x: 10, y: 10 },
+      { x: 10, y: 11 },
+      { x: 10, y: 12 },
+    ];
+    dirRef.current = { x: 0, y: -1 };
+    nextDirRef.current = { x: 0, y: -1 };
+
+    let fx = 5;
+    let fy = 5;
+    let guard = 0;
+    while (snakeRef.current.some((s) => s.x === fx && s.y === fy) && guard++ < 200) {
+      fx = Math.floor(Math.random() * GRID_SIZE);
+      fy = Math.floor(Math.random() * GRID_SIZE);
+    }
+    foodRef.current = {
+      x: fx,
+      y: fy,
+      emoji: FOOD_EMOJIS[Math.floor(Math.random() * FOOD_EMOJIS.length)],
+    };
+
+    draw();
+
+    loopRef.current = setInterval(gameLoop, 130);
+  }, [draw, gameLoop]);
 
   useEffect(() => {
+    let storedBest = 0;
+    try {
+      const stored = localStorage.getItem("fork_snake_best");
+      if (stored) storedBest = Number(stored) || 0;
+    } catch {}
+    bestRef.current = storedBest;
+    setBest(storedBest);
+    startGame();
+
+    return () => {
+      isRunningRef.current = false;
+      if (loopRef.current) clearInterval(loopRef.current);
+    };
+  }, [startGame]);
+
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (gameOver) return;
+      const { x, y } = dirRef.current;
+      if (e.key === "ArrowUp" && y === 0) nextDirRef.current = { x: 0, y: -1 };
+      if (e.key === "ArrowDown" && y === 0) nextDirRef.current = { x: 0, y: 1 };
+      if (e.key === "ArrowLeft" && x === 0) nextDirRef.current = { x: -1, y: 0 };
+      if (e.key === "ArrowRight" && x === 0) nextDirRef.current = { x: 1, y: 0 };
+    }
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, [gameOver]);
@@ -187,7 +225,6 @@ export default function SnakeGamePage() {
     const touchEndY = e.changedTouches[0].clientY;
     const dx = touchEndX - touchStartRef.current.x;
     const dy = touchEndY - touchStartRef.current.y;
-
     const { x, y } = dirRef.current;
 
     if (Math.abs(dx) > Math.abs(dy)) {
@@ -200,33 +237,24 @@ export default function SnakeGamePage() {
   }
 
   return (
-    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", padding: 12, background: "var(--bg)", overflow: "hidden" }}>
-      <div style={{ maxWidth: 600, margin: "0 auto", width: "100%", display: "flex", flexDirection: "column", gap: 12, height: "100%" }}>
-        
-        {/* Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <h1 style={{ fontFamily: "var(--font-head)", fontSize: "1.5rem", margin: 0 }}>
-              {isAr ? ar.snake.title : "Fork Snake"}
-            </h1>
-            <div style={{ display: "flex", gap: 8 }}>
-              <button className="btn btn-ghost" onClick={startGame} style={{ fontSize: "0.7rem", padding: "4px 8px" }}>
-                {isAr ? ar.snake.newGame : "↻ New Game"}
-              </button>
-              <button className="btn btn-ghost" onClick={() => setShowRules(true)} style={{ fontSize: "0.7rem", padding: "4px 8px" }}>
-                {isAr ? ar.snake.rules : "? Rules"}
-              </button>
-            </div>
-          </div>
-          <div style={{ display: "flex", gap: 12, fontSize: "0.8rem", fontWeight: 600, color: "var(--muted)" }}>
-            <div>{isAr ? ar.snake.score : "Score"}: <span style={{ color: "var(--ink)" }}>{score}</span></div>
-            <div>{isAr ? ar.snake.best : "Best"}: <span style={{ color: "var(--olive)" }}>{best}</span></div>
-          </div>
-        </div>
+    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", padding: 12, background: "var(--bg)", overflow: "hidden", position: "relative" }}>
+      <Link href="/games" style={{ position: "absolute", top: 12, insetInlineEnd: 12, zIndex: 50, background: "var(--surface)", border: "1px solid var(--line)", borderRadius: 10, padding: "8px 14px", fontSize: 14, fontWeight: 600, textDecoration: "none", color: "var(--ink)" }}>✕ {isAr ? "خروج" : "Exit"}</Link>
 
-        {/* Play Area */}
-        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", minHeight: 0, position: "relative" }}
-             onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+      <div style={{ maxWidth: 600, margin: "0 auto", width: "100%", display: "flex", flexDirection: "column", gap: 12, height: "100%" }}>
+        <GameHeader
+          title="Fork Snake"
+          titleAr="ثعبان الشوكة"
+          onNewGame={startGame}
+          onShowRules={() => setShowRules(true)}
+          score={score}
+          best={best}
+        />
+
+        <div
+          style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", minHeight: 0, position: "relative" }}
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
+        >
           <canvas
             ref={canvasRef}
             width={400}
