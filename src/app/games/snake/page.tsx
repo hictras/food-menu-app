@@ -38,7 +38,7 @@ export default function SnakeGamePage() {
   }, []);
 
   function spawnFood() {
-    let newFood;
+    let newFood: Point & { emoji: string };
     while (true) {
       newFood = {
         x: Math.floor(Math.random() * GRID_SIZE),
