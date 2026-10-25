@@ -145,15 +145,15 @@ export default function DayPage() {
   return (
     <main className="container" style={{ paddingTop: 40, paddingBottom: 80, maxWidth: 800 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-        <Link href="/calendar" className="btn btn-ghost" style={{ fontSize: 12 }}>
+        <Link href="/calendar" className="btn btn-ghost" style={{ fontSize: "0.75rem" }}>
           {isAr ? ar.calendar.backToCalendar : "← Calendar"}
         </Link>
         
         <div style={{ display: "flex", gap: 8 }}>
-          <Link href={`/calendar/${getShiftedDate(-1)}`} className="btn btn-ghost" style={{ fontSize: 12, padding: "6px 12px" }}>
+          <Link href={`/calendar/${getShiftedDate(-1)}`} className="btn btn-ghost" style={{ fontSize: "0.75rem", padding: "6px 12px" }}>
             {isAr ? ar.calendar.prevDay : "← Prev Day"}
           </Link>
-          <Link href={`/calendar/${getShiftedDate(1)}`} className="btn btn-ghost" style={{ fontSize: 12, padding: "6px 12px" }}>
+          <Link href={`/calendar/${getShiftedDate(1)}`} className="btn btn-ghost" style={{ fontSize: "0.75rem", padding: "6px 12px" }}>
             {isAr ? ar.calendar.nextDay : "Next Day →"}
           </Link>
         </div>
@@ -186,10 +186,10 @@ export default function DayPage() {
               <section key={slot.key}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12, paddingBottom: 8, borderBottom: "1px solid var(--line)" }}>
                   <span style={{ display: "inline-block", width: 10, height: 10, borderRadius: "50%", background: slot.color }} />
-                  <h2 style={{ margin: 0, fontFamily: "var(--font-body)", fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--ink)" }}>
+                  <h2 style={{ margin: 0, fontFamily: "var(--font-body)", fontSize: "0.8125rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--ink)" }}>
                     {isAr ? slot.labelAr : slot.label}
                   </h2>
-                  <span style={{ fontSize: 11, color: "var(--muted)", marginInlineStart: "auto" }}>
+                  <span style={{ fontSize: "0.6875rem", color: "var(--muted)", marginInlineStart: "auto" }}>
                     {slotEntries.length} {isAr ? ar.calendar.recipes : slotEntries.length === 1 ? "recipe" : "recipes"}
                   </span>
                 </div>
@@ -208,11 +208,11 @@ export default function DayPage() {
                         )}
                         <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 4 }}>
                           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
-                            <h3 style={{ margin: 0, fontSize: 15, fontWeight: 600, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{name}</h3>
+                            <h3 style={{ margin: 0, fontSize: "0.9375rem", fontWeight: 600, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{name}</h3>
                             {category && <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 999, background: "var(--surface-2)", color: "var(--muted)", whiteSpace: "nowrap" }}>{category}</span>}
                           </div>
-                          {desc && <p style={{ margin: 0, fontSize: 12, color: "var(--ink-soft)", lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{desc}</p>}
-                          <div style={{ fontSize: 11, color: "var(--muted)", display: "flex", gap: 12, marginTop: "auto", fontVariantNumeric: "tabular-nums" }}>
+                          {desc && <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--ink-soft)", lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{desc}</p>}
+                          <div style={{ fontSize: "0.6875rem", color: "var(--muted)", display: "flex", gap: 12, marginTop: "auto", fontVariantNumeric: "tabular-nums" }}>
                             <span>⏱ {entry.recipe.prepTime + entry.recipe.cookTime} {isAr ? ar.detail.min : "min"}</span>
                             <span>🍽 {entry.recipe.servings}</span>
                           </div>

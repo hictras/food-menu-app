@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Suspense } from "react";
 import "./globals.css";
 import { LanguageProvider } from "@/components/LanguageProvider";
@@ -34,6 +35,12 @@ const inlineBootstrap = `
     var lang = localStorage.getItem("lang") || "en";
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+
+    var fontSize = localStorage.getItem("font_size");
+    if (fontSize) {
+      document.documentElement.style.fontSize = fontSize;
+    }
+
   } catch(e) {}
 })();
 `;
@@ -42,7 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" data-theme="dark" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: inlineBootstrap }} />
+        <Script id="bootstrap" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: inlineBootstrap }} />
       </head>
       <body>
         <ThemeProvider>

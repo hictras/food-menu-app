@@ -208,14 +208,14 @@ export default function WeekClient() {
   return (
     <main className="container" style={{ paddingTop: 40, paddingBottom: 80, maxWidth: 760 }}>
       <div className="no-print" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
-        <Link href="/calendar" className="btn btn-ghost" style={{ fontSize: 12 }}>
+        <Link href="/calendar" className="btn btn-ghost" style={{ fontSize: "0.75rem" }}>
           {ar.calendar.backToCalendar}
         </Link>
         <div style={{ display: "flex", gap: 8 }}>
-          <Link href={`/week?from=${toStr(addDays(weekStart, -7))}`} className="btn btn-ghost" style={{ fontSize: 12 }}>
+          <Link href={`/week?from=${toStr(addDays(weekStart, -7))}`} className="btn btn-ghost" style={{ fontSize: "0.75rem" }}>
             {isAr ? ar.weeklySummary.prevWeek : ar.weeklySummaryEn.prevWeek}
           </Link>
-          <Link href={`/week?from=${toStr(addDays(weekStart, 7))}`} className="btn btn-ghost" style={{ fontSize: 12 }}>
+          <Link href={`/week?from=${toStr(addDays(weekStart, 7))}`} className="btn btn-ghost" style={{ fontSize: "0.75rem" }}>
             {isAr ? ar.weeklySummary.nextWeek : ar.weeklySummaryEn.nextWeek}
           </Link>
         </div>

@@ -164,3 +164,20 @@ export const visitors = sqliteTable("visitors", {
   lastPage: text("last_page"),
 });
 
+export const notificationReads = sqliteTable("notification_reads", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  notificationId: integer("notification_id")
+    .notNull()
+    .references(() => notifications.id, { onDelete: "cascade" }),
+  phone: text("phone").notNull(),
+  readAt: text("read_at").default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const userSettings = sqliteTable("user_settings", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  phone: text("phone").notNull(),
+  key: text("key").notNull(),
+  value: text("value").notNull(),
+  updatedAt: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
+});
+

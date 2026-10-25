@@ -221,20 +221,20 @@ export default function CalendarPage() {
       </p>
 
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-        <button type="button" className="btn btn-ghost" onClick={prevMonth} style={{ fontSize: 14, padding: "6px 12px" }}>←</button>
-        <div style={{ fontSize: 20, fontWeight: 600, fontFamily: "var(--font-head)", flex: 1, textAlign: "center" }}>
+        <button type="button" className="btn btn-ghost" onClick={prevMonth} style={{ fontSize: "0.875rem", padding: "6px 12px" }}>←</button>
+        <div style={{ fontSize: "1.25rem", fontWeight: 600, fontFamily: "var(--font-head)", flex: 1, textAlign: "center" }}>
           {isAr ? MONTH_NAMES_AR[month] : MONTH_NAMES_EN[month]} {year}
         </div>
-        <button type="button" className="btn btn-ghost" onClick={nextMonth} style={{ fontSize: 14, padding: "6px 12px" }}>→</button>
-        <button type="button" className="btn btn-ghost" onClick={goToday} style={{ fontSize: 12, padding: "6px 12px" }}>
+        <button type="button" className="btn btn-ghost" onClick={nextMonth} style={{ fontSize: "0.875rem", padding: "6px 12px" }}>→</button>
+        <button type="button" className="btn btn-ghost" onClick={goToday} style={{ fontSize: "0.75rem", padding: "6px 12px" }}>
           {isAr ? ar.calendar.today : "Today"}
         </button>
-        <Link href="/week" className="btn btn-ghost" style={{ fontSize: 12, padding: "6px 12px" }}>📄 {isAr ? ar.nav.week : "Weekly summary"}</Link>
+        <Link href="/week" className="btn btn-ghost" style={{ fontSize: "0.75rem", padding: "6px 12px" }}>📄 {isAr ? ar.nav.week : "Weekly summary"}</Link>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4, marginBottom: 4 }}>
         {(isAr ? DAY_NAMES_AR : DAY_NAMES_EN).map((d) => (
-          <div key={d} style={{ textAlign: "center", fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--muted)", padding: "6px 0" }}>
+          <div key={d} style={{ textAlign: "center", fontSize: "0.625rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--muted)", padding: "6px 0" }}>
             {d}
           </div>
         ))}
@@ -277,13 +277,13 @@ export default function CalendarPage() {
                 display: "flex",
                 flexDirection: "column",
                 gap: 4,
-                fontSize: 10,
+                fontSize: "0.625rem",
                 cursor: "pointer",
                 position: "relative",
               }}
             >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontWeight: 700, fontSize: 11, color: isToday ? "var(--accent)" : "var(--ink)" }}>
+                <span style={{ fontWeight: 700, fontSize: "0.6875rem", color: isToday ? "var(--accent)" : "var(--ink)" }}>
                   {day}
                 </span>
                 {isAdmin && (
@@ -302,7 +302,7 @@ export default function CalendarPage() {
                       border: "1px solid var(--accent)",
                       color: "#fff",
                       cursor: "pointer",
-                      fontSize: 13,
+                      fontSize: "0.8125rem",
                       fontWeight: 700,
                       width: 18,
                       height: 18,
@@ -409,7 +409,7 @@ export default function CalendarPage() {
                           border: "none",
                           textAlign: "start",
                           padding: "5px 8px",
-                          fontSize: 11,
+                          fontSize: "0.6875rem",
                           color: firstEmpty ? "var(--ink)" : "var(--muted)",
                           cursor: firstEmpty ? "pointer" : "not-allowed",
                           borderRadius: 4,
@@ -471,17 +471,17 @@ export default function CalendarPage() {
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
-                <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: "var(--muted)" }}>
+                <div style={{ fontSize: "0.6875rem", fontWeight: 700, textTransform: "uppercase", color: "var(--muted)" }}>
                   {pickerDate}
                 </div>
-                <div style={{ fontSize: 16, fontWeight: 600, color: "var(--ink)" }}>
+                <div style={{ fontSize: "1rem", fontWeight: 600, color: "var(--ink)" }}>
                   {SLOTS.find((s) => s.key === pickerSlot)?.[isAr ? "labelAr" : "label"]} · {isAr ? ar.calendar.slotRecipe : "Recipe"} {pickerPosition}
                 </div>
               </div>
               <button
                 type="button"
                 onClick={closePicker}
-                style={{ background: "transparent", border: "none", fontSize: 20, cursor: "pointer", color: "var(--muted)" }}
+                style={{ background: "transparent", border: "none", fontSize: "1.25rem", cursor: "pointer", color: "var(--muted)" }}
               >
                 ×
               </button>
@@ -489,7 +489,7 @@ export default function CalendarPage() {
 
             {pickerCurrentEntry && (
               <div style={{ padding: 10, background: "var(--bg)", border: "1px solid var(--line)", borderRadius: 8 }}>
-                <div style={{ fontSize: 11, color: "var(--muted)", marginBottom: 4 }}>
+                <div style={{ fontSize: "0.6875rem", color: "var(--muted)", marginBottom: 4 }}>
                   {isAr ? ar.calendar.currentRecipe : "Current"}
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -498,14 +498,14 @@ export default function CalendarPage() {
                   ) : (
                     <div style={{ width: 40, height: 40, background: "var(--line)", borderRadius: 6 }} />
                   )}
-                  <div style={{ flex: 1, fontSize: 13, fontWeight: 500 }}>
+                  <div style={{ flex: 1, fontSize: "0.8125rem", fontWeight: 500 }}>
                     {isAr ? (pickerCurrentEntry.recipe.nameAr || pickerCurrentEntry.recipe.name) : pickerCurrentEntry.recipe.name}
                   </div>
                   <button
                     type="button"
                     className="btn btn-ghost"
                     onClick={() => removeEntry(pickerCurrentEntry.id)}
-                    style={{ fontSize: 11, padding: "4px 10px" }}
+                    style={{ fontSize: "0.6875rem", padding: "4px 10px" }}
                   >
                     {isAr ? ar.calendar.deleteBtn : "Remove"}
                   </button>
@@ -518,7 +518,7 @@ export default function CalendarPage() {
               placeholder={isAr ? ar.calendar.searchRecipePlaceholder : "Search recipes..."}
               value={recipeSearch}
               onChange={(e) => setRecipeSearch(e.target.value)}
-              style={{ width: "100%", padding: "8px 12px", border: "1px solid var(--line)", borderRadius: 8, background: "var(--input-bg)", color: "var(--ink)", fontSize: 13 }}
+              style={{ width: "100%", padding: "8px 12px", border: "1px solid var(--line)", borderRadius: 8, background: "var(--input-bg)", color: "var(--ink)", fontSize: "0.8125rem" }}
               autoFocus
             />
 
@@ -542,7 +542,7 @@ export default function CalendarPage() {
                       cursor: "pointer",
                       color: "var(--ink)",
                       textAlign: "start",
-                      fontSize: 13,
+                      fontSize: "0.8125rem",
                     }}
                     onMouseEnter={(e) => { e.currentTarget.style.background = "var(--surface-2)"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
@@ -555,7 +555,7 @@ export default function CalendarPage() {
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 500 }}>{isAr ? (r.nameAr || r.name) : r.name}</div>
                       {r.category && (
-                        <div style={{ fontSize: 11, color: "var(--muted)" }}>
+                        <div style={{ fontSize: "0.6875rem", color: "var(--muted)" }}>
                           {isAr ? (r.categoryAr || r.category) : r.category}
                         </div>
                       )}

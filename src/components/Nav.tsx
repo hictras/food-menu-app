@@ -119,6 +119,7 @@ export default function Nav() {
 
           <Link className="nav-link" href="/games" onClick={closeAll}>{lang === "ar" ? ar.nav.gamesHubNav : "Games"}</Link>
 
+          <Link className="nav-link" href="/appearance" onClick={closeAll}>{lang === "ar" ? ar.appearance.title : "Appearance"}</Link>
           <Link className="nav-link" href="/calendar" onClick={closeAll}>
             {lang === "ar" ? ar.nav.calendar : "Calendar"}
           </Link>
@@ -137,26 +138,6 @@ export default function Nav() {
 
         <div className="nav-actions">
           <PushSubscribe />
-
-          <button
-            type="button"
-            className="nav-icon-btn"
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-            title={theme === "dark" ? "Switch to light" : "Switch to dark"}
-          >
-            {theme === "dark" ? "☀" : "☾"}
-          </button>
-
-          <button
-            type="button"
-            className="nav-language"
-            onClick={toggleLang}
-            aria-label="Toggle language"
-          >
-            <span className="nav-globe">🌐</span>
-            <span>{t(lang, "lang_toggle")}</span>
-          </button>
 
           {loaded && isAdmin && (
             <div className="nav-admin-wrap nav-desktop-only" style={{ position: "relative" }}>
@@ -185,6 +166,7 @@ export default function Nav() {
                   <Link href="/admin" className="nav-menu-item" onClick={closeAll}>
                     {lang === "ar" ? ar.nav.sendPush : "Send Push"}
                   </Link>
+                  <Link href="/inbox/admin" className="nav-menu-item" onClick={closeAll}>{lang === "ar" ? ar.inboxDetail.adminTitle : "Inbox Admin"}</Link>
                   <Link href="/hidden-recipes" className="nav-menu-item" onClick={closeAll}>
                     🙈 {lang === "ar" ? ar.hiddenRecipes.title : "Hidden Recipes"}
                   </Link>
@@ -201,7 +183,7 @@ export default function Nav() {
                     {lang === "ar" ? ar.nav.settings : "Settings"}
                   </Link>
                   <Link href="/no-dish-today" className="nav-menu-item" onClick={closeAll}>
-                    🍽 {lang === "ar" ? "لا طبق اليوم" : "No Dish page"}
+                    🍽 {lang === "ar" ? ar.nav.noDishPage : "No Dish page"}
                   </Link>
                   <div className="nav-menu-divider" />
                   <button type="button" onClick={logout} className="nav-menu-item nav-menu-danger">
@@ -237,25 +219,25 @@ export default function Nav() {
           <Link className="mobile-nav-link" href="/games" onClick={closeAll}>
             <span>🎮</span> {lang === "ar" ? ar.nav.gamesHubNav : "Games"}
           </Link>
-
+          <Link className="mobile-nav-link" href="/appearance" onClick={closeAll}><span>🎨</span> {lang === "ar" ? ar.appearance.title : "Appearance"}</Link>
           <Link className="mobile-nav-link" href="/calendar" onClick={closeAll}>
             <span>📅</span> {lang === "ar" ? ar.nav.calendar : "Calendar"}
           </Link>
           <Link className="mobile-nav-link" href="/week" onClick={closeAll}>
             <span>📄</span> {lang === "ar" ? ar.nav.week : "This Week"}
           </Link>
-          <Link className="mobile-nav-link" href="/inbox" onClick={closeAll} style={{ position: "relative" }}>
+          <Link className="mobile-nav-link" href="/inbox" onClick={closeAll} style={{ position: "relative", display: "flex", alignItems: "center", gap: 8 }}>
             <span>✉️</span> {lang === "ar" ? ar.nav.inbox : "Inbox"}
             {unreadCount > 0 && (
-              <span style={{ marginInlineStart: "auto", background: "var(--accent)", color: "white", fontSize: 10, fontWeight: "bold", padding: "2px 6px", borderRadius: 999, lineHeight: 1 }}>
+              <span style={{ background: "var(--accent)", color: "white", fontSize: 11, fontWeight: "bold", padding: "2px 6px", borderRadius: 999, marginInlineStart: "auto" }}>
                 {unreadCount}
               </span>
             )}
           </Link>
-
+          <div className="nav-menu-divider" />
+          
           {loaded && isAdmin && (
             <>
-              <div className="nav-menu-divider" />
               <Link className="mobile-nav-link" href="/admin/import" onClick={closeAll}>
                 <span>📥</span> {lang === "ar" ? ar.nav.import : "Import"}
               </Link>
@@ -268,6 +250,15 @@ export default function Nav() {
               <Link className="mobile-nav-link" href="/admin" onClick={closeAll}>
                 <span>📤</span> {lang === "ar" ? ar.nav.sendPush : "Send Push"}
               </Link>
+              <Link className="mobile-nav-link" href="/inbox/admin" onClick={closeAll}>
+                <span>📊</span> {lang === "ar" ? ar.inboxDetail.adminTitle : "Inbox Admin"}
+              </Link>
+              <Link className="mobile-nav-link" href="/hidden-recipes" onClick={closeAll}>
+                <span>🙈</span> {lang === "ar" ? ar.hiddenRecipes.title : "Hidden Recipes"}
+              </Link>
+              <Link className="mobile-nav-link" href="/visitors" onClick={closeAll}>
+                <span>📱</span> {lang === "ar" ? ar.visitorsPage.title : "Devices Log"}
+              </Link>
               <Link className="mobile-nav-link" href="/recipients" onClick={closeAll}>
                 <span>👥</span> {lang === "ar" ? ar.nav.recipients : "Recipients"}
               </Link>
@@ -278,10 +269,7 @@ export default function Nav() {
                 <span>⚙️</span> {lang === "ar" ? ar.nav.settings : "Settings"}
               </Link>
               <Link className="mobile-nav-link" href="/no-dish-today" onClick={closeAll}>
-                <span>🍽</span> {lang === "ar" ? "لا طبق اليوم" : "No Dish page"}
-              </Link>
-              <Link className="mobile-nav-link" href="/visitors" onClick={closeAll}>
-                <span>📱</span> {lang === "ar" ? ar.visitorsPage.title : "Devices Log"}
+                <span>🍽</span> {lang === "ar" ? ar.nav.noDishPage : "No Dish page"}
               </Link>
               <button
                 type="button"

@@ -12,6 +12,7 @@
 export const ar = {
   // ── Navigation ────────────────────────────────────────────
   nav: {
+    noDishPage: "لا طبق اليوم",
     brand: "منيو",
     recipes: "الوصفات",
     inbox: "📥 الرسائل",
@@ -933,6 +934,49 @@ export const ar = {
     nextWeek: "Next week →",
     empty: "No meals planned this week.",
     sharedFrom: "Shared from Menu",
+  },
+
+  inboxDetail: {
+    messageNotFound: "الرسالة غير موجودة",
+    title: "الرسالة",
+    back: "← العودة إلى صندوق الرسائل",
+    from: "من",
+    location: "المكان",
+    openPoll: "فتح الاستطلاع",
+    viewRecipe: "عرض الوصفة",
+    adminTitle: "إدارة القراءات",
+    readBy: "تمت القراءة بواسطة",
+    notReadYet: "لم يقرأ بعد",
+    loading: "جاري التحميل...",
+    noReads: "لا أحد قرأ هذه الرسالة بعد.",
+  },
+
+  textSize: {
+    title: "حجم الخط",
+    subtitle: "اختر الحجم المناسب لك",
+    small: "صغير",
+    normal: "افتراضي",
+    large: "كبير",
+    extraLarge: "كبير جداً",
+    saved: "تم الحفظ",
+    back: "← العودة",
+  },
+
+  appearance: {
+    title: "المظهر",
+    subtitle: "تخصيص شكل التطبيق",
+    language: "اللغة",
+    english: "English",
+    arabic: "العربية",
+    theme: "الوضع",
+    textSize: "حجم الخط",
+    light: "فاتح",
+    dark: "داكن",
+    small: "صغير",
+    normal: "افتراضي",
+    large: "كبير",
+    extraLarge: "كبير جداً",
+    back: "← العودة",
   },
 
 } as const;

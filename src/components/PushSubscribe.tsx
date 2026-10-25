@@ -105,9 +105,22 @@ export default function PushSubscribe() {
     const data = await res.json();
     const phone = data.phone || null;
     
-    const confirmMsg = phone
-      ? (isAr ? ar.push.unsubscribeConfirm : ar.unsubscribeConfirmEn).replace("{number}", phone)
-      : (isAr ? ar.push.unsubscribeConfirmNoNum : ar.unsubscribeConfirmNoNumEn);
+    let confirmMsg: any = "";
+    if (phone) {
+      const rawMsg = isAr ? ar.push.unsubscribeConfirm : ar.unsubscribeConfirmEn;
+      const parts = rawMsg.split("{number}");
+      confirmMsg = (
+        <>
+          {parts[0]}
+          <strong style={{ fontSize: "1.1em", color: "var(--accent)", fontWeight: 700, display: "inline-block", padding: "0 4px" }}>
+            {phone}
+          </strong>
+          {parts[1]}
+        </>
+      );
+    } else {
+      confirmMsg = isAr ? ar.push.unsubscribeConfirmNoNum : ar.unsubscribeConfirmNoNumEn;
+    }
 
     const ok = await confirm({
       message: confirmMsg,

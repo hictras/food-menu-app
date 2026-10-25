@@ -361,7 +361,7 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
             {isRolling ? (
               <div style={{ padding: 40, textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
                 <div style={{ fontSize: 64, animation: "spin 1s linear infinite" }}>🎲</div>
-                <h2 style={{ fontSize: 20, margin: 0 }}>{isAr ? "جاري اختيار الطبق..." : "Rolling the dice..."}</h2>
+                <h2 style={{ fontSize: "1.25rem", margin: 0 }}>{isAr ? "جاري اختيار الطبق..." : "Rolling the dice..."}</h2>
                 <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
               </div>
             ) : dailyDish ? (
@@ -370,8 +370,8 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
                   <img src={dailyDish.imageUrl} alt={pick(lang, dailyDish.name, dailyDish.nameAr)} style={{ width: "100%", height: 220, objectFit: "cover" }} />
                 ) : <div style={{ width: "100%", height: 220, background: "var(--line)" }} />}
                 <div style={{ padding: 24, textAlign: "center" }}>
-                  <h2 style={{ fontSize: 24, margin: "0 0 8px", fontFamily: "var(--font-head)" }}>{pick(lang, dailyDish.name, dailyDish.nameAr)}</h2>
-                  <p style={{ color: "var(--muted)", margin: "0 0 24px", fontSize: 14 }}>{isAr ? "هل توافق على هذا الطبق لليوم؟" : "Do you agree to make this the dish of the day?"}</p>
+                  <h2 style={{ fontSize: "1.5rem", margin: "0 0 8px", fontFamily: "var(--font-head)" }}>{pick(lang, dailyDish.name, dailyDish.nameAr)}</h2>
+                  <p style={{ color: "var(--muted)", margin: "0 0 24px", fontSize: "0.875rem" }}>{isAr ? "هل توافق على هذا الطبق لليوم؟" : "Do you agree to make this the dish of the day?"}</p>
                   <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                     <button className="btn btn-ghost" onClick={openRandomMainDish} style={{ flex: 1, padding: 12 }}>🎲 {isAr ? "رمي النرد" : "Re-roll"}</button>
                     <button className="btn btn-ghost" onClick={() => setDailyDishOpen(false)} style={{ flex: 1, padding: 12 }}>{isAr ? "إلغاء" : "Cancel"}</button>

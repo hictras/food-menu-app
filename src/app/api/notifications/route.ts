@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getDb } from "@/db";
-import { notifications, polls, pushSubscriptions } from "@/db/schema";
+import { notifications, polls, pushSubscriptions, notificationReads } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 import { isAdmin } from "@/lib/auth";
 
@@ -27,11 +27,9 @@ export async function GET(req: NextRequest) {
       viewerName = sub[0]?.name || null;
     }
 
-    // Replace {name} with the actual name, or "Admin" if admin, or empty
     function personalizeText(t: string | null | undefined): string {
       if (!t) return "";
       let replacement = viewerName ? viewerName.trim() : (admin ? "Admin" : "");
-      
       if (replacement) return t.replace(/\{name\}/g, replacement);
       return t
         .replace(/\{name\}/g, "")
@@ -51,9 +49,19 @@ export async function GET(req: NextRequest) {
       pollByNotifId.set(p.notificationId, { id: p.id, question: p.question, isOpen: p.isOpen });
     }
 
+    const allReads = await db.select().from(notificationReads);
+    const readsByNotif = new Map<number, Set<string>>();
+    for (const r of allReads) {
+      if (!readsByNotif.has(r.notificationId)) readsByNotif.set(r.notificationId, new Set());
+      readsByNotif.get(r.notificationId)!.add(r.phone);
+    }
+
     function enrich(n: typeof notifications.$inferSelect) {
       const poll = pollByNotifId.get(n.id);
       const storedPollUrl = (n as unknown as { pollUrl?: string | null }).pollUrl;
+      const readers = readsByNotif.get(n.id);
+      const isRead = phone && readers ? readers.has(phone) : false;
+
       return {
         ...n,
         title: personalizeText(n.title),
@@ -63,6 +71,7 @@ export async function GET(req: NextRequest) {
         pollIsOpen: poll?.isOpen ?? null,
         pollUrl: storedPollUrl ?? (poll ? `/poll/${poll.id}` : null),
         location: (n as unknown as { location?: string | null }).location || null,
+        isRead,
       };
     }
 
