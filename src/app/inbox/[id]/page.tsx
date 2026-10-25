@@ -1,11 +1,10 @@
 import { Suspense } from "react";
-import InboxDetailClient from "./InboxDetailClient";
+import InboxDetailShell from "./InboxDetailShell";
 
-export default async function InboxDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default function InboxDetailPage({ params }: { params: Promise<{ id: string }> }) {
   return (
     <Suspense fallback={<div className="container" style={{ padding: 40 }}>Loading…</div>}>
-      <InboxDetailClient id={id} />
+      <InboxDetailShell params={params} />
     </Suspense>
   );
 }
