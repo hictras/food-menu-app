@@ -538,7 +538,6 @@ export const ar = {
     remaining: "متبقي",
     lives: "محاولات",
     hints: "تلميحات",
-    hintBtn: "تلميح",
     eliminateBtn: "حذف المحدد",
     checkBtn: "تأكيد الوصفة",
     revealBtn: "كعيت",
