@@ -10,6 +10,19 @@
  */
 
 export const ar = {
+  gameGuess: {
+    title: "Guess the Ingredients",
+    titleAr: "خمن المكونات",
+    rulesTitle: "Game Rules",
+    rulesTitleAr: "قواعد اللعبة",
+    rulesText: "Click the ingredients you think belong to the recipe. Wrong picks cost a life. You have 5 lives and 5 hints.",
+    rulesTextAr: "اضغط على المكونات التي تظن أنها من الوصفة. المكونات الخاطئة تكلفك قلباً. لديك 5 قلوب و5 تلميحات.",
+    gotIt: "Got it",
+    gotItAr: "فهمت",
+    loading: "Loading...",
+    loadingAr: "جاري التحميل..."
+  },
+
   // ── Navigation ────────────────────────────────────────────
   nav: {
     noDishPage: "لا طبق اليوم",
@@ -507,6 +520,16 @@ export const ar = {
 
   // ── Game ──────────────────────────────────────────────────
   game: {
+    hintBtn: "Hint",
+    hintBtnAr: "تلميح",
+    hintsLabel: "Hints",
+    hintsLabelAr: "تلميحات",
+    scoreLabel: "Score",
+    scoreLabelAr: "النقاط",
+    livesLabel: "Lives",
+    livesLabelAr: "أرواح",
+    exitBtn: "خروج",
+    exitBtnEn: "Exit",
     back: "→ العودة للوصفات",
     newRecipe: "⟳ وصفة جديدة",
     title1: "خمّن ",
@@ -935,7 +958,7 @@ export const ar = {
     prevWeek: "← Prev week",
     nextWeek: "Next week →",
     empty: "No meals planned this week.",
-    sharedFrom: "Shared from Menu",
+    sharedFrom: "Shared from Hictra",
   },
 
   inboxDetail: {

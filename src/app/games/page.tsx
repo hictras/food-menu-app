@@ -239,6 +239,13 @@ export default function GamesHubPage() {
             </div>
           </Link>
 
+          <Link href="/games/leaderboard" style={{ textDecoration: "none" }}>
+            <div style={{ background: "var(--surface)", border: "1px solid var(--line)", borderRadius: "16px", padding: "24px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%" }}>
+              <span style={{ fontSize: "48px", marginBottom: "12px" }}>🏆</span>
+              <h2 style={{ margin: 0, fontSize: "1.2rem", color: "var(--ink)" }}>{isAr ? "المتصدرين" : "Leaderboard"}</h2>
+            </div>
+          </Link>
+
         </div>
       </div>
     </main>

@@ -57,6 +57,7 @@ export default function AppearancePage() {
   }
 
   function handleLang(l: "en" | "ar") {
+    document.cookie = `lang=${l}; path=/; max-age=31536000`; // 1 year
     setLang(l);
     fetch("/api/user-settings", {
       method: "POST",

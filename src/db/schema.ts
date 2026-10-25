@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, uniqueIndex } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
 
 export const recipes = sqliteTable("recipes", {
@@ -181,3 +181,18 @@ export const userSettings = sqliteTable("user_settings", {
   updatedAt: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
+
+
+export const gameStats = sqliteTable(
+  "game_stats",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    phone: text("phone").notNull(),
+    game: text("game").notNull(),
+    stats: text("stats").notNull().default("{}"),
+    updatedAt: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
+  },
+  (t) => ({
+    uniqPhoneGame: uniqueIndex("uniq_phone_game").on(t.phone, t.game),
+  })
+);

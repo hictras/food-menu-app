@@ -106,6 +106,13 @@
       "when": 1792357304020,
       "tag": "0014_salty_omega_flight",
       "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "6",
+      "when": 1792946071137,
+      "tag": "0015_acoustic_scalphunter",
+      "breakpoints": true
     }
   ]
 }

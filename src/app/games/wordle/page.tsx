@@ -1,16 +1,11 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import Link from "next/link";
 import { useLang } from "@/components/LanguageProvider";
-import GameHeader from "@/components/GameHeader";
+import Link from "next/link";
 import { ar } from "@/lib/ar";
-
-const EN_KEYBOARD_ROWS = [
-  ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
-  ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
-  ["ENTER", "Z", "X", "C", "V", "B", "N", "M", "BACKSPACE"],
-];
+import GameHeader from "@/components/GameHeader";
+import { useGameStats } from "@/hooks/useGameStats";
 
 const AR_KEYBOARD_ROWS = [
   ["ض", "ص", "ث", "ق", "ف", "غ", "ع", "ه", "خ", "ح", "ج"],
@@ -18,11 +13,18 @@ const AR_KEYBOARD_ROWS = [
   ["ENTER", "ذ", "ط", "ظ", "ر", "ز", "و", "ة", "ى", "ء", "BACKSPACE"],
 ];
 
+const KEYBOARD_ROWS = [
+  ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
+  ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
+  ["ENTER", "Z", "X", "C", "V", "B", "N", "M", "BACKSPACE"]
+];
+
 export default function WordleGamePage() {
   const { lang } = useLang();
   const isAr = lang === "ar";
+  const keyboardRows = isAr ? AR_KEYBOARD_ROWS : KEYBOARD_ROWS;
 
-  const keyboardRows = isAr ? AR_KEYBOARD_ROWS : EN_KEYBOARD_ROWS;
+  const { stats, saveStats } = useGameStats("wordle", { wins: 0, played: 0 });
 
   const [targetWord, setTargetWord] = useState("");
   const [wordLength, setWordLength] = useState(0);
@@ -80,7 +82,17 @@ export default function WordleGamePage() {
 
   useEffect(() => {
     startGame();
-  }, [lang]);
+  }, []);
+
+  // Save stats when game over
+  useEffect(() => {
+    if (gameOver) {
+      saveStats((prev) => ({
+        wins: (prev.wins || 0) + (isWon ? 1 : 0),
+        played: (prev.played || 0) + 1
+      }));
+    }
+  }, [gameOver]);
 
   function handleKeyPress(key: string) {
     if (gameOver || loading) return;
@@ -168,32 +180,32 @@ export default function WordleGamePage() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [currentGuess, gameOver, loading, showRules, wordLength]);
 
-  if (loading) return <div className="container" style={{ padding: 40 }}>{isAr ? ar.wordle.loading : "Loading..."}</div>;
-
-  if (wordLength === 0) return <div className="container" style={{ padding: 40 }}>{isAr ? ar.wordle.noRecipes : "No recipes available."}</div>;
+  if (loading) return <div className="container" style={{ padding: 40 }}>{isAr ? "جاري التحميل..." : "Loading..."}</div>;
+  if (wordLength === 0) return <div className="container" style={{ padding: 40 }}>{isAr ? "لا توجد وصفات" : "No recipes available."}</div>;
 
   const activeLetters = currentGuess.split("");
 
   return (
-    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", padding: 10, background: "var(--bg)", overflow: "hidden", position: "relative" }} dir={isAr ? "rtl" : "ltr"}>
-      <Link href="/games" style={{ position: "absolute", top: 12, insetInlineEnd: 12, zIndex: 50, background: "var(--surface)", border: "1px solid var(--line)", borderRadius: 10, padding: "8px 14px", fontSize: 14, fontWeight: 600, textDecoration: "none", color: "var(--ink)" }}>✕ {isAr ? "خروج" : "Exit"}</Link>
+    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", padding: 10, background: "var(--bg)", overflow: "hidden", position: "relative" }}>
+      <Link href="/games" style={{ position: "absolute", top: 12, insetInlineEnd: 12, zIndex: 50, background: "var(--surface)", border: "1px solid var(--line)", borderRadius: 10, padding: "8px 14px", fontSize: 14, fontWeight: 600, textDecoration: "none", color: "var(--ink)" }}>
+        ✕ {isAr ? "خروج" : "Exit"}
+      </Link>
 
-      <input
-        ref={inputRef}
-        type="text"
-        style={{ position: "absolute", opacity: 0, height: 0, width: 0 }}
-        autoFocus
-      />
+      <input ref={inputRef} type="text" style={{ position: "absolute", opacity: 0, height: 0, width: 0 }} autoFocus />
 
       <div style={{ maxWidth: 600, margin: "0 auto", width: "100%", display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
-
+        
         <GameHeader
-          title="Recipe Wordle"
+          title={isAr ? "خمن الوصفة" : "Recipe Wordle"}
           titleAr="خمن الوصفة"
           onNewGame={startGame}
           onShowRules={() => setShowRules(true)}
+          best={`${stats.wins || 0} / ${stats.played || 0}`}
+          bestLabel="WINS"
+          bestLabelAr="فوز"
         />
 
+        {/* GRID */}
         <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", minHeight: 0 }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 6, width: "100%", maxWidth: 400, height: "100%", maxHeight: 400 }}>
             {gridData.map((row, r) => (
@@ -212,7 +224,7 @@ export default function WordleGamePage() {
                       display: "flex", alignItems: "center", justifyContent: "center",
                       border: "2px solid",
                       borderColor: state === "correct" ? "var(--olive)" : state === "present" ? "var(--accent)" : state === "absent" ? "var(--line-strong)" : (letter ? "var(--muted)" : "var(--line)"),
-                      background: state === "correct" ? "var(--olive)" : state === "present" ? "var(--accent)" : state === "absent" ? "rgba(255,255,255,0.05)" : "transparent",
+                      background: state === "correct" ? "var(--olive)" : state === "present" ? "var(--accent)" : state === "absent" ? "var(--line-strong)" : "transparent",
                       color: state ? "#fff" : "var(--ink)",
                       borderRadius: 6,
                       fontSize: "clamp(1rem, 4vw, 1.5rem)",
@@ -229,15 +241,13 @@ export default function WordleGamePage() {
           </div>
         </div>
 
-        {/* KEYBOARD — raised with extra bottom gap, Enter wider */}
+        {/* KEYBOARD */}
         <div style={{ display: "flex", flexDirection: "column", gap: 6, flexShrink: 0, paddingBottom: 16, marginBottom: "env(safe-area-inset-bottom, 10px)" }}>
           {keyboardRows.map((row, i) => (
             <div key={i} style={{ display: "flex", justifyContent: "center", gap: 4 }}>
               {row.map((key) => {
                 const kState = keyStates[key];
-                const isEnter = key === "ENTER";
-                const isBack = key === "BACKSPACE";
-                const isWide = isEnter || isBack;
+                const isWide = key === "ENTER" || key === "BACKSPACE";
                 const isDisabled = kState === "absent";
 
                 return (
@@ -246,14 +256,14 @@ export default function WordleGamePage() {
                     onClick={() => handleKeyPress(key)}
                     disabled={isDisabled}
                     style={{
-                      height: isEnter ? 50 : 44,
-                      flex: isEnter ? 2.5 : isBack ? 1.5 : 1,
-                      maxWidth: isEnter ? 110 : isBack ? 70 : 45,
+                      height: 44,
+                      flex: isWide ? 1.5 : 1,
+                      maxWidth: isWide ? 65 : 45,
                       borderRadius: 4,
                       border: "none",
                       background: kState === "correct" ? "var(--olive)" : kState === "present" ? "var(--accent)" : kState === "absent" ? "var(--line-strong)" : "var(--surface-2)",
                       color: kState === "absent" ? "var(--muted)" : "var(--ink)",
-                      fontSize: isWide ? "0.8rem" : "0.9rem",
+                      fontSize: isWide ? "0.75rem" : "0.9rem",
                       fontWeight: 600,
                       textTransform: "uppercase",
                       cursor: isDisabled ? "not-allowed" : "pointer",
@@ -270,31 +280,32 @@ export default function WordleGamePage() {
         </div>
       </div>
 
+      {/* RULES MODAL */}
       {showRules && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, zIndex: 100 }}>
           <div style={{ background: "var(--surface)", padding: 32, borderRadius: 20, maxWidth: 400, width: "100%" }}>
-            <h2 style={{ marginTop: 0 }}>{isAr ? ar.wordle.rulesTitle : "Game Rules"}</h2>
-            <p style={{ fontSize: "0.9rem", lineHeight: 1.5, color: "var(--ink-soft)" }} dangerouslySetInnerHTML={{ __html: isAr ? ar.wordle.rulesText : "<strong>Goal:</strong> Guess the Recipe Name in 6 tries.<br><br><strong>Colors:</strong><br>🟩 Green = Correct letter in the correct spot.<br>🟧 Orange = Correct letter but in the wrong spot.<br>⬛ Gray = Letter is not in the word.<br><br><em>The keyboard will disable letters that are not in the word!</em>" }} />
-            <button className="btn btn-primary" onClick={() => setShowRules(false)} style={{ width: "100%", marginTop: 16 }}>
-              {isAr ? ar.wordle.gotIt : "Got it"}
-            </button>
+            <h2 style={{ marginTop: 0 }}>Game Rules</h2>
+            <p style={{ fontSize: "0.9rem", lineHeight: 1.5, color: "var(--ink-soft)" }} dangerouslySetInnerHTML={{ __html: "<strong>Goal:</strong> Guess the Recipe Name in 6 tries.<br><br><strong>Colors:</strong><br>🟩 Green = Correct letter in the correct spot.<br>🟧 Orange = Correct letter but in the wrong spot.<br>⬛ Gray = Letter is not in the word.<br><br><em>The keyboard will disable letters that are not in the word!</em>" }} />
+            <button className="btn btn-primary" onClick={() => setShowRules(false)} style={{ width: "100%", marginTop: 16 }}>Got it</button>
           </div>
         </div>
       )}
 
+      {/* WIN/LOSS MODAL */}
       {gameOver && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, zIndex: 100 }}>
-          <div style={{ background: "var(--surface)", padding: 32, borderRadius: 20, maxWidth: 400, width: "100%", textAlign: "center" }}>
-            <h2 style={{ fontFamily: "var(--font-head)", fontSize: "2rem", margin: "0 0 8px 0" }}>
-              {isWon ? (isAr ? ar.wordle.youWin : "🎉 You Win!") : (isAr ? ar.wordle.gameOver : "😢 Game Over")}
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, zIndex: 100 }}>
+          <div style={{ background: "white", padding: 32, borderRadius: 24, maxWidth: 400, width: "100%", textAlign: "center", boxShadow: "0 20px 40px rgba(0,0,0,0.2)" }}>
+            <div style={{ fontSize: "64px", marginBottom: "16px" }}>{isWon ? "🎉" : "😢"}</div>
+            <h2 style={{ fontSize: 28, fontWeight: 800, color: "#1a1a1a", margin: "0 0 12px" }}>
+              {isWon ? (isAr ? "!لقد فزت" : "You Win!") : (isAr ? "!انتهت اللعبة" : "Game Over")}
             </h2>
-            <p style={{ color: "var(--muted)", marginBottom: 24 }}>
-              {isWon
-                ? (isAr ? ar.wordle.youWinMsg : "You guessed the recipe!")
-                : (isAr ? `${ar.wordle.gameOverMsg} ${targetWord}` : `The recipe was: ${targetWord}`)}
+            <p style={{ color: "#666", fontSize: 16, marginBottom: 24 }}>
+              {isWon 
+                ? (isAr ? "لقد خمنت الوصفة بنجاح" : "You guessed the recipe!") 
+                : (isAr ? `الوصفة كانت: ${targetWord}` : `The recipe was: ${targetWord}`)}
             </p>
-            <button className="btn btn-primary" onClick={startGame} style={{ width: "100%" }}>
-              {isAr ? ar.wordle.playAgain : "Play Again"}
+            <button onClick={startGame} style={{ width: "100%", background: "#2e7d32", color: "white", border: "none", padding: "14px", borderRadius: 12, fontSize: 16, fontWeight: 700, cursor: "pointer" }}>
+              {isAr ? "العب مجدداً" : "Play Again"}
             </button>
           </div>
         </div>

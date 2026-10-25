@@ -286,7 +286,7 @@ export default function WeekClient() {
 
       <div className="week-footer">
         {logoUrl && <img src={logoUrl} alt="" className="week-logo" />}
-        <span>{isAr ? ar.weeklySummary.sharedFrom : ar.weeklySummaryEn.sharedFrom}</span>
+        <span>{isAr ? appName : `Shared from ${appName}`}</span>
       </div>
     </main>
   );
