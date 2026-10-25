@@ -1,0 +1,243 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useLang } from "@/components/LanguageProvider";
+import { ar } from "@/lib/ar";
+
+type Card = {
+  id: string;
+  matchId: number;
+  text: string;
+  type: "recipe" | "ingredient" | "bonus";
+};
+
+type Recipe = {
+  id: number;
+  name: string;
+  nameAr: string | null;
+  ingredients: { name: string; nameAr: string | null }[];
+};
+
+export default function MemoryGamePage() {
+  const { lang } = useLang();
+  const isAr = lang === "ar";
+
+  const [cards, setCards] = useState<Card[]>([]);
+  const [flipped, setFlipped] = useState<number[]>([]);
+  const [matched, setMatched] = useState<number[]>([]);
+  const [moves, setMoves] = useState(0);
+  const [time, setTime] = useState(0);
+  const [isLocked, setIsLocked] = useState(false);
+  const [isWon, setIsWon] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [showRules, setShowRules] = useState(false);
+
+  // Fetch recipes and build the deck
+  async function startGame() {
+    setLoading(true);
+    setIsWon(false);
+    setFlipped([]);
+    setMatched([]);
+    setMoves(0);
+    setTime(0);
+    setIsLocked(false);
+
+    try {
+      const res = await fetch("/api/recipes");
+      const data = await res.json();
+      
+      // Filter recipes that have at least 1 ingredient
+      const validRecipes = (Array.isArray(data) ? data : []).filter(
+        (r: Recipe) => r.ingredients && r.ingredients.length > 0
+      );
+
+      if (validRecipes.length < 7) {
+        setLoading(false);
+        return; // Not enough recipes to play
+      }
+
+      // Pick 7 random recipes
+      const shuffledRecipes = validRecipes.sort(() => 0.5 - Math.random()).slice(0, 7);
+
+      let newCards: Card[] = [];
+
+      shuffledRecipes.forEach((r: Recipe, index: number) => {
+        const recipeName = isAr ? (r.nameAr || r.name) : r.name;
+        const ingName = isAr ? (r.ingredients[0].nameAr || r.ingredients[0].name) : r.ingredients[0].name;
+
+        newCards.push({ id: `r-${index}`, matchId: index, text: recipeName, type: "recipe" });
+        newCards.push({ id: `i-${index}`, matchId: index, text: ingName, type: "ingredient" });
+      });
+
+      // Add 1 Bonus card
+      newCards.push({ id: "bonus", matchId: 999, text: isAr ? ar.memory.bonus : "⭐ BONUS", type: "bonus" });
+
+      // Shuffle
+      newCards = newCards.sort(() => 0.5 - Math.random());
+
+      setCards(newCards);
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    startGame();
+  }, [lang]);
+
+  // Timer
+  useEffect(() => {
+    if (loading || isWon || showRules) return;
+    const interval = setInterval(() => setTime((t) => t + 1), 1000);
+    return () => clearInterval(interval);
+  }, [loading, isWon, showRules]);
+
+  function handleCardClick(index: number) {
+    if (isLocked || isWon) return;
+    if (flipped.includes(index) || matched.includes(index)) return;
+
+    const card = cards[index];
+    const newFlipped = [...flipped, index];
+    setFlipped(newFlipped);
+
+    // Bonus Card Logic
+    if (card.type === "bonus") {
+      setIsLocked(true);
+      setTimeout(() => {
+        const allIndices = cards.map((_, i) => i);
+        setMatched(allIndices);
+        setFlipped([]);
+        setTimeout(() => {
+          setIsWon(true);
+          setIsLocked(false);
+        }, 5000); // 5 second reveal
+      }, 500);
+      return;
+    }
+
+    if (newFlipped.length === 2) {
+      setMoves((m) => m + 1);
+      const [first, second] = newFlipped;
+      const card1 = cards[first];
+      const card2 = cards[second];
+
+      if (card1.matchId === card2.matchId && card1.type !== card2.type) {
+        // Match
+        setMatched((prev) => [...prev, first, second]);
+        setFlipped([]);
+        
+        if (matched.length + 2 === 14) {
+          setTimeout(() => setIsWon(true), 500);
+        }
+      } else {
+        // No match
+        setIsLocked(true);
+        setTimeout(() => {
+          setFlipped([]);
+          setIsLocked(false);
+        }, 800);
+      }
+    }
+  }
+
+  if (loading) return <div className="container" style={{ padding: 40 }}>{isAr ? ar.calendar.loading : "Loading..."}</div>;
+
+  if (cards.length === 0) return <div className="container" style={{ padding: 40 }}>Not enough recipes to play.</div>;
+
+  return (
+    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", padding: 12, background: "var(--bg)", overflow: "hidden" }}>
+      <div style={{ maxWidth: 600, margin: "0 auto", width: "100%", display: "flex", flexDirection: "column", gap: 12, height: "100%" }}>
+        
+        {/* HEADER */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <h1 style={{ fontFamily: "var(--font-head)", fontSize: "1.5rem", margin: 0 }}>
+              {isAr ? ar.memory.title : "Masterchef Memory"}
+            </h1>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button className="btn btn-ghost" onClick={startGame} style={{ fontSize: "0.7rem", padding: "4px 8px" }}>
+                {isAr ? ar.memory.newGame : "↻ New Game"}
+              </button>
+              <button className="btn btn-ghost" onClick={() => setShowRules(true)} style={{ fontSize: "0.7rem", padding: "4px 8px" }}>
+                {isAr ? ar.memory.rules : "? Rules"}
+              </button>
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 12, fontSize: "0.8rem", fontWeight: 600, color: "var(--muted)" }}>
+            <div>{isAr ? ar.memory.moves : "Moves"}: <span style={{ color: "var(--ink)" }}>{moves}</span></div>
+            <div>{isAr ? ar.memory.time : "Time"}: <span style={{ color: "var(--ink)" }}>{time}s</span></div>
+          </div>
+        </div>
+
+        {/* GRID */}
+        <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gridTemplateRows: "repeat(5, 1fr)", gap: 8, minHeight: 0 }}>
+          {cards.map((card, index) => {
+            const isFlipped = flipped.includes(index) || matched.includes(index);
+            const isMatched = matched.includes(index);
+            const isBonus = card.type === "bonus";
+
+            return (
+              <div
+                key={card.id}
+                onClick={() => handleCardClick(index)}
+                style={{
+                  background: isMatched ? (isBonus ? "rgba(255, 215, 0, 0.15)" : "rgba(123, 160, 91, 0.15)") : (isFlipped ? "var(--surface-2)" : "var(--surface)"),
+                  border: `1px solid ${isMatched ? (isBonus ? "#ffd700" : "var(--olive)") : (isFlipped ? "var(--accent)" : "var(--line)")}`,
+                  borderRadius: 8,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textAlign: "center",
+                  fontSize: "0.8rem",
+                  fontWeight: 600,
+                  padding: 4,
+                  cursor: isMatched ? "default" : "pointer",
+                  color: isFlipped ? (isMatched ? (isBonus ? "#ffd700" : "var(--olive)") : "var(--accent)") : "transparent",
+                  transition: "all 0.2s",
+                  userSelect: "none",
+                  wordBreak: "break-word",
+                  opacity: isMatched ? 0.6 : 1,
+                }}
+              >
+                {isFlipped ? card.text : <span style={{ fontSize: "1.5rem", opacity: 0.3 }}>🍽️</span>}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* RULES MODAL */}
+      {showRules && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, zIndex: 100 }}>
+          <div style={{ background: "var(--surface)", padding: 32, borderRadius: 20, maxWidth: 400, width: "100%" }}>
+            <h2 style={{ marginTop: 0 }}>{isAr ? ar.memory.rulesTitle : "Game Rules"}</h2>
+            <p style={{ fontSize: "0.9rem", lineHeight: 1.5, color: "var(--ink-soft)" }} dangerouslySetInnerHTML={{ __html: isAr ? ar.memory.rulesText : "<strong>Goal:</strong> Match every Recipe with its main Ingredient.<br><br><strong>How to play:</strong> Click on two cards. If they belong together, they turn green. If not, they flip back.<br><br><strong>⭐ Bonus Card:</strong> Find the golden Star to reveal the whole board for 5 seconds!" }} />
+            <button className="btn btn-primary" onClick={() => setShowRules(false)} style={{ width: "100%", marginTop: 16 }}>
+              {isAr ? ar.memory.gotIt : "Got it"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* WIN MODAL */}
+      {isWon && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, zIndex: 100 }}>
+          <div style={{ background: "var(--surface)", padding: 32, borderRadius: 20, maxWidth: 400, width: "100%", textAlign: "center" }}>
+            <h2 style={{ fontFamily: "var(--font-head)", fontSize: "2rem", margin: "0 0 8px 0" }}>
+              {isAr ? ar.memory.winTitle : "🎉 You Win!"}
+            </h2>
+            <p style={{ color: "var(--muted)", marginBottom: 24 }}>
+              {isAr ? ar.memory.winMsg : "You matched all the dishes."}
+            </p>
+            <div style={{ fontSize: "2rem", fontWeight: 700, color: "var(--accent)", marginBottom: 24 }}>{time}s</div>
+            <button className="btn btn-primary" onClick={startGame} style={{ width: "100%" }}>
+              {isAr ? ar.memory.playAgain : "Play Again"}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
