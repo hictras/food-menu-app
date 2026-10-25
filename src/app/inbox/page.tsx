@@ -133,7 +133,7 @@ export default function InboxPage() {
                     cursor: "pointer",
                     fontSize: "1.1rem",
                   }}
-                  title={isAr ? ar.messages.deleteBtn : "Delete"}
+                  title={isAr ? ar.modal.deleteBtn : "Delete"}
                 >
                   🗑
                 </button>
