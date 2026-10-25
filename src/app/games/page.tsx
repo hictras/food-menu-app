@@ -208,6 +208,37 @@ export default function GamesHubPage() {
             </div>
           </Link>
 
+          {/* Game 6: Fork Snake */}
+          <Link href="/games/snake" style={{ textDecoration: "none" }}>
+            <div style={{ 
+              background: "#161b22", border: "1px solid #30363d", borderRadius: "20px", 
+              padding: "40px 24px", textAlign: "center", cursor: "pointer", 
+              height: "100%", display: "flex", flexDirection: "column", 
+              alignItems: "center", justifyContent: "center", gap: "16px" 
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "#3fb950";
+              e.currentTarget.style.transform = "translateY(-4px)";
+              e.currentTarget.style.boxShadow = "0 10px 30px -10px rgba(63, 185, 80, 0.2)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "#30363d";
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "none";
+            }}>
+              <div style={{ fontSize: "56px", lineHeight: 1 }}>🍴</div>
+              <h2 style={{ fontSize: "1.5rem", fontWeight: 700, margin: 0, color: "#ffffff" }}>
+                {isAr ? ar.snake.title : "Fork Snake"}
+              </h2>
+              <p style={{ color: "#8b949e", fontSize: "14px", margin: 0, lineHeight: 1.5 }}>
+                {isAr ? ar.snake.subtitle : "Collect ingredients with the fork."}
+              </p>
+              <div style={{ marginTop: "8px", color: "#3fb950", fontWeight: 600, fontSize: "14px" }}>
+                {isAr ? ar.gamesHub.playBtn : "Play Now"} →
+              </div>
+            </div>
+          </Link>
+
         </div>
       </div>
     </main>

@@ -1032,6 +1032,22 @@ export const ar = {
     loading: "جاري التحميل...",
   },
 
+  snake: {
+    title: "ثعبان الشوكة",
+    subtitle: "اجمع المكونات بالشوكة",
+    newGame: "↻ لعبة جديدة",
+    rules: "? القواعد",
+    playAgain: "العب مجدداً",
+    rulesTitle: "قواعد اللعبة",
+    rulesText: "<strong>الهدف:</strong> اجمع أكبر عدد من المكونات.<br><br><strong>طريقة اللعب:</strong> اسحب على الشاشة أو استخدم أسهم لوحة المفاتيح.<br><br><strong>⚠️ تحذير:</strong> لا تضرب الحائط أو ذيلك، وإلا انتهت اللعبة!",
+    gotIt: "فهمت",
+    gameOver: "انتهت اللعبة",
+    gameOverMsg: "لقد اصطدمت بالحائط أو بذيلك!",
+    score: "النقاط",
+    best: "الأفضل",
+    loading: "جاري التحميل...",
+  },
+
 } as const;
 
 export type Ar = typeof ar;
