@@ -962,6 +962,8 @@ export const ar = {
   },
 
   inboxDetail: {
+    refresh: "تحديث",
+    refreshEn: "Refresh",
     messageNotFound: "الرسالة غير موجودة",
     title: "الرسالة",
     back: "← العودة إلى صندوق الرسائل",

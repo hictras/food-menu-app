@@ -1,8 +1,8 @@
 "use client";
 
+import Spinner from "@/components/Spinner";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-
 import { useLang } from "@/components/LanguageProvider";
 import { ar } from "@/lib/ar";
 
@@ -21,29 +21,33 @@ type Notification = {
 export default function InboxDetailClient({ id }: { id: string }) {
   const { lang } = useLang();
   const isAr = lang === "ar";
-  
-  
 
   const [item, setItem] = useState<Notification | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  async function loadData() {
     if (!id) return;
-    fetch("/api/notifications")
-      .then((r) => r.json())
-      .then((data) => {
-        const found = Array.isArray(data) ? data.find((n: Notification) => n.id === Number(id)) : null;
-        setItem(found || null);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    setLoading(true);
+    try {
+      const res = await fetch("/api/notifications", { cache: "no-store" });
+      const data = await res.json();
+      const found = Array.isArray(data) ? data.find((n: Notification) => n.id === Number(id)) : null;
+      setItem(found || null);
+    } catch {
+      setItem(null);
+    } finally {
+      setLoading(false);
+    }
+  }
 
+  useEffect(() => {
+    loadData();
     // Mark as read
     fetch(`/api/notifications/${id}/read`, { method: "POST" }).catch(() => {});
   }, [id]);
 
   if (loading) {
-    return <div className="container" style={{ padding: 40 }}>{ar.calendar.loading}</div>;
+    return <Spinner />;
   }
 
   if (!item) {
@@ -54,9 +58,16 @@ export default function InboxDetailClient({ id }: { id: string }) {
 
   return (
     <main className="container" style={{ paddingTop: 40, paddingBottom: 80, maxWidth: 700 }}>
-      <Link href="/inbox" className="btn btn-ghost" style={{ fontSize: "0.75rem", marginBottom: 24 }}>
-        {isAr ? ar.inboxDetail.back : "← Back to Inbox"}
-      </Link>
+      
+      {/* Top Bar with Back and Refresh */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+        <Link href="/inbox" className="btn btn-ghost" style={{ fontSize: "0.75rem" }}>
+          {isAr ? ar.inboxDetail.back : "← Back to Inbox"}
+        </Link>
+        <button onClick={loadData} className="btn btn-ghost" style={{ fontSize: "0.75rem" }}>
+          ↻ {isAr ? ar.inboxDetail.refresh : ar.inboxDetail.refreshEn}
+        </button>
+      </div>
 
       <div style={{ background: "var(--surface)", border: "1px solid var(--line)", borderRadius: "var(--radius-lg)", padding: 32 }}>
         <h1 style={{ fontFamily: "var(--font-head)", fontSize: "2rem", margin: "0 0 8px 0", fontWeight: 400 }}>

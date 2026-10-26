@@ -13,11 +13,9 @@ export default function AppearancePage() {
   const [fontSize, setFontSize] = useState("16px");
 
   useEffect(() => {
-    // Load from localStorage first (instant)
     const saved = localStorage.getItem("font_size") || "16px";
     setFontSize(saved);
 
-    // Then try to load from DB (overrides if phone is set)
     fetch("/api/user-settings")
       .then((r) => r.json())
       .then((data) => {
@@ -57,7 +55,7 @@ export default function AppearancePage() {
   }
 
   function handleLang(l: "en" | "ar") {
-    document.cookie = `lang=${l}; path=/; max-age=31536000`; // 1 year
+    document.cookie = `lang=${l}; path=/; max-age=31536000`;
     setLang(l);
     fetch("/api/user-settings", {
       method: "POST",
@@ -68,13 +66,19 @@ export default function AppearancePage() {
 
   return (
     <main className="container" style={{ paddingTop: 40, paddingBottom: 80, maxWidth: 600 }}>
-      <div className="page-head">
-<button onClick={() => window.history.back()} className="btn btn-ghost" style={{ fontSize: "0.75rem" }}>
-  {isAr ? ar.appearance.back : "← Back"}
-</button>
+      
+      {/* Back Button on its own line at the top left */}
+      <div style={{ marginBottom: 24 }}>
+        <button onClick={() => window.history.back()} className="btn btn-ghost" style={{ fontSize: "0.75rem" }}>
+          {isAr ? ar.appearance.back : "← Back"}
+        </button>
+      </div>
+
+      {/* Title Centered */}
+      <div className="page-head" style={{ textAlign: "center" }}>
         <h1>{isAr ? ar.appearance.title : "Appearance"}</h1>
       </div>
-      <p className="page-sub">
+      <p className="page-sub" style={{ textAlign: "center" }}>
         {isAr ? ar.appearance.subtitle : "Customize how the app looks and feels."}
       </p>
 
@@ -161,12 +165,6 @@ export default function AppearancePage() {
             {isAr ? ar.appearance.extraLarge : "Extra Large"} A++
           </button>
         </div>
-      </div>
-
-      <div style={{ marginTop: 40, textAlign: "center" }}>
-      {/*  <Link href="/" className="btn btn-ghost">
-          {isAr ? ar.appearance.back : "← Back"}
-        </Link> */}
       </div>
     </main>
   );

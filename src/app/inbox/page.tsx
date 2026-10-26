@@ -1,5 +1,6 @@
 "use client";
 
+import Spinner from "@/components/Spinner";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useLang } from "@/components/LanguageProvider";
@@ -19,12 +20,14 @@ export default function InboxPage() {
   const { lang } = useLang();
   const isAr = lang === "ar";
   const { show, confirm } = useModal();
-  
+
   const [items, setItems] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  useEffect(() => {
+  async function loadData() {
+    setLoading(true);
+    
     // 1. CLEAR APP BADGE (Set notification dot to 0)
     if ('clearAppBadge' in navigator) {
       navigator.clearAppBadge().catch((error) => console.error('Badge clear error:', error));
@@ -38,13 +41,19 @@ export default function InboxPage() {
     localStorage.setItem("last_read_inbox", new Date().toISOString());
 
     // 2. FETCH DATA
-    fetch("/api/notifications")
-      .then((res) => res.json())
-      .then((data) => {
-        setItems(Array.isArray(data) ? data : []);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    try {
+      const res = await fetch("/api/notifications", { cache: "no-store" });
+      const data = await res.json();
+      setItems(Array.isArray(data) ? data : []);
+    } catch {
+      setItems([]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadData();
 
     fetch("/api/auth/me")
       .then((res) => res.json())
@@ -75,13 +84,16 @@ export default function InboxPage() {
   }
 
   if (loading) {
-    return <div className="container" style={{ padding: 40 }}>{isAr ? ar.inbox.loading : "Loading..."}</div>;
+    return <Spinner />;
   }
 
   return (
     <main className="container" style={{ paddingTop: 40, paddingBottom: 80, maxWidth: 700 }}>
-      <div className="page-head">
-        <h1>{isAr ? ar.inbox.title : "Inbox"}</h1>
+      <div className="page-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+        <h1 style={{ margin: 0 }}>{isAr ? ar.inbox.title : "Inbox"}</h1>
+        <button onClick={loadData} className="btn btn-ghost" style={{ fontSize: "0.8rem" }}>
+          ↻ {isAr ? ar.inboxDetail.refresh : ar.inboxDetail.refreshEn}
+        </button>
       </div>
 
       {items.length === 0 ? (

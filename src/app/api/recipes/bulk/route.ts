@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/db";
 import { recipes, ingredients, instructions } from "@/db/schema";
 import { isAdmin } from "@/lib/auth";
+import { eq } from "drizzle-orm";
 
 type BulkRecipe = {
+  id?: number;
   name: string;
   nameAr?: string;
   description?: string;
@@ -19,9 +21,12 @@ type BulkRecipe = {
   prepTime?: number;
   cookTime?: number;
   servings?: number;
-  dietaryTags?: string[];
+  dietaryTags?: string[] | string;
   imageUrl?: string | null;
   videoUrl?: string | null;
+  image1Url?: string | null;
+  image2Url?: string | null;
+  useImage2?: boolean | number | null;
   ingredients?: {
     name: string;
     nameAr?: string;
@@ -48,41 +53,76 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Expected non-empty array" }, { status: 400 });
     }
 
-    const ids: number[] = [];
+    const insertedIds: number[] = [];
+    const updatedIds: number[] = [];
 
     for (const r of list) {
       if (!r.name?.trim() && !r.nameAr?.trim()) continue;
 
-      const [inserted] = await db
-        .insert(recipes)
-        .values({
-          name: r.name?.trim() || r.nameAr?.trim() || "",
-          nameAr: r.nameAr?.trim() || null,
-          description: r.description?.trim() || null,
-          descriptionAr: r.descriptionAr?.trim() || null,
-          cuisine: r.cuisine?.trim() || null,
-          cuisineAr: r.cuisineAr?.trim() || null,
-          category: r.category?.trim() || null,
-          categoryAr: r.categoryAr?.trim() || null,
-          servedWith: r.servedWith?.trim() || null,
-          servedWithAr: r.servedWithAr?.trim() || null,
-          howToServe: r.howToServe?.trim() || null,
-          howToServeAr: r.howToServeAr?.trim() || null,
-          prepTime: Number(r.prepTime) || 0,
-          cookTime: Number(r.cookTime) || 0,
-          servings: Number(r.servings) || 4,
-          dietaryTags: JSON.stringify(Array.from(new Set(r.dietaryTags ?? []))),
-          imageUrl: r.imageUrl ?? null,
-          videoUrl: r.videoUrl ?? null,
-        })
-        .returning();
+      let tags: string[] = [];
+      if (Array.isArray(r.dietaryTags)) {
+        tags = r.dietaryTags;
+      } else if (typeof r.dietaryTags === "string") {
+        try {
+          const parsed = JSON.parse(r.dietaryTags);
+          tags = Array.isArray(parsed) ? parsed : [];
+        } catch {
+          tags = r.dietaryTags.split(",").map((s) => s.trim()).filter(Boolean);
+        }
+      }
+      tags = Array.from(new Set(tags));
+
+      const values = {
+        name: r.name?.trim() || r.nameAr?.trim() || "",
+        nameAr: r.nameAr?.trim() || null,
+        description: r.description?.trim() || null,
+        descriptionAr: r.descriptionAr?.trim() || null,
+        cuisine: r.cuisine?.trim() || null,
+        cuisineAr: r.cuisineAr?.trim() || null,
+        category: r.category?.trim() || null,
+        categoryAr: r.categoryAr?.trim() || null,
+        servedWith: r.servedWith?.trim() || null,
+        servedWithAr: r.servedWithAr?.trim() || null,
+        howToServe: r.howToServe?.trim() || null,
+        howToServeAr: r.howToServeAr?.trim() || null,
+        prepTime: Number(r.prepTime) || 0,
+        cookTime: Number(r.cookTime) || 0,
+        servings: Number(r.servings) || 4,
+        dietaryTags: JSON.stringify(tags),
+        
+        
+        
+        
+        
+      };
+
+      let recipeId: number;
+
+      if (r.id) {
+        const existing = await db.select().from(recipes).where(eq(recipes.id, r.id)).limit(1);
+        if (existing.length > 0) {
+          await db.update(recipes).set(values).where(eq(recipes.id, r.id));
+          recipeId = r.id;
+          updatedIds.push(r.id);
+          await db.delete(ingredients).where(eq(ingredients.recipeId, r.id));
+          await db.delete(instructions).where(eq(instructions.recipeId, r.id));
+        } else {
+          const [inserted] = await db.insert(recipes).values({ ...values, id: r.id }).returning();
+          recipeId = inserted.id;
+          insertedIds.push(recipeId);
+        }
+      } else {
+        const [inserted] = await db.insert(recipes).values(values).returning();
+        recipeId = inserted.id;
+        insertedIds.push(recipeId);
+      }
 
       if (r.ingredients?.length) {
         await db.insert(ingredients).values(
           r.ingredients
             .filter((i) => i.name?.trim() || i.nameAr?.trim())
             .map((i) => ({
-              recipeId: inserted.id,
+              recipeId,
               name: i.name?.trim() || i.nameAr?.trim() || "",
               nameAr: i.nameAr?.trim() || null,
               amount: i.amount?.trim() || null,
@@ -99,18 +139,21 @@ export async function POST(req: NextRequest) {
           r.instructions
             .filter((s) => s.text?.trim() || s.textAr?.trim())
             .map((s, idx) => ({
-              recipeId: inserted.id,
+              recipeId,
               stepNumber: idx + 1,
               text: s.text?.trim() || s.textAr?.trim() || "",
               textAr: s.textAr?.trim() || null,
             }))
         );
       }
-
-      ids.push(inserted.id);
     }
 
-    return NextResponse.json({ inserted: ids.length, ids });
+    return NextResponse.json({
+      inserted: insertedIds.length,
+      updated: updatedIds.length,
+      insertedIds,
+      updatedIds,
+    });
   } catch (err) {
     console.error("Bulk import error:", err);
     return NextResponse.json(

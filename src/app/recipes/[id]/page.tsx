@@ -7,6 +7,7 @@ import RecipeDetailClient from "@/components/RecipeDetailClient";
 import { isAdmin } from "@/lib/auth";
 import type { Metadata } from "next";
 
+import { getRecipeImage } from "@/lib/get-recipe-image";
 export async function generateMetadata({ 
   params, searchParams 
 }: { 
@@ -30,7 +31,7 @@ export async function generateMetadata({
   
   const title = isToday ? `${customTitle} - ${recipe.name}` : recipe.name;
   const description = recipe.description || "View this recipe on Menu.";
-  const image = recipe.imageUrl || "https://food-menu-app-xxww.onrender.com/icon-192.png";
+  const image = getRecipeImage(recipe) || "https://food-menu-app-xxww.onrender.com/icon-192.png";
 
   return {
     title,

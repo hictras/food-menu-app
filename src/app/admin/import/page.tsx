@@ -51,10 +51,11 @@ export default function ImportRecipesPage() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [json, setJson] = useState("");
+  const [targetId, setTargetId] = useState("");
   const [preview, setPreview] = useState<PreviewRow[] | null>(null);
   const [parseError, setParseError] = useState("");
   const [importing, setImporting] = useState(false);
-  const [result, setResult] = useState<{ inserted: number; ids: number[] } | null>(null);
+  const [result, setResult] = useState<{ inserted: number; updated?: number; ids: number[]; updatedIds?: number[] } | null>(null);
   const [dragOver, setDragOver] = useState(false);
 
   const reset = () => {
@@ -81,10 +82,18 @@ export default function ImportRecipesPage() {
     return data as ParsedRecipe[];
   }
 
+  function applyTargetId(list: ParsedRecipe[]): ParsedRecipe[] {
+    if (!targetId.trim()) return list;
+    const idNum = parseInt(targetId.trim(), 10);
+    if (isNaN(idNum)) throw new Error("ID must be a number");
+    return list.map((r) => ({ ...r, id: idNum }));
+  }
+
   function handleParse() {
     reset();
     try {
-      const list = normalize(json);
+      let list = normalize(json);
+      list = applyTargetId(list);
       const rows: PreviewRow[] = list.map((r, i) => {
         const name = (r.name as string) || (r.nameAr as string) || "";
         const ing = Array.isArray(r.ingredients) ? r.ingredients.length : 0;
@@ -128,6 +137,7 @@ export default function ImportRecipesPage() {
     let list: ParsedRecipe[];
     try {
       list = normalize(json);
+      list = applyTargetId(list);
     } catch (e) {
       setParseError((e as Error).message);
       return;
@@ -144,7 +154,12 @@ export default function ImportRecipesPage() {
       if (!res.ok) {
         setParseError(data.error || "Import failed");
       } else {
-        setResult({ inserted: data.inserted || 0, ids: data.ids || [] });
+        setResult({
+          inserted: data.inserted || 0,
+          updated: data.updated || 0,
+          ids: data.insertedIds || data.ids || [],
+          updatedIds: data.updatedIds || [],
+        });
         setPreview(null);
       }
     } catch (e) {
@@ -161,6 +176,7 @@ export default function ImportRecipesPage() {
 
   function clearAll() {
     setJson("");
+    setTargetId("");
     reset();
   }
 
@@ -176,6 +192,33 @@ export default function ImportRecipesPage() {
       </p>
 
       <div className="form-card">
+        {/* TARGET ID FIELD */}
+        <div className="field" style={{ marginBottom: 16 }}>
+          <label style={{ display: "block", marginBottom: 6, fontWeight: 600 }}>
+            {lang === "ar" ? "معرف الوصفة (اتركه فارغاً لإنشاء جديدة)" : "Recipe ID (leave blank to create new)"}
+          </label>
+          <input
+            type="number"
+            value={targetId}
+            onChange={(e) => { setTargetId(e.target.value); reset(); }}
+            placeholder={lang === "ar" ? "مثال: 105" : "e.g. 105"}
+            style={{
+              width: "100%",
+              padding: "10px 14px",
+              fontSize: 14,
+              border: "1px solid var(--line)",
+              borderRadius: 8,
+              background: "var(--bg)",
+              color: "var(--ink)",
+            }}
+          />
+          <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 4 }}>
+            {lang === "ar"
+              ? "إذا أدخلت معرفاً موجوداً، سيتم تحديث الوصفة. إذا تركته فارغاً، سيتم إنشاء وصفة جديدة."
+              : "If you enter an existing ID, the recipe will be updated. Leave blank to create a new recipe."}
+          </div>
+        </div>
+
         <div className="field">
           <label>JSON</label>
           <textarea
@@ -219,6 +262,11 @@ export default function ImportRecipesPage() {
           <div style={{ marginTop: 20 }}>
             <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--muted)", marginBottom: 10 }}>
               Preview ({preview.length})
+              {targetId.trim() && (
+                <span style={{ marginLeft: 8, color: "var(--accent)" }}>
+                  · Will update ID {targetId}
+                </span>
+              )}
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {preview.map((row) => (
@@ -253,15 +301,31 @@ export default function ImportRecipesPage() {
         {result && (
           <div style={{ marginTop: 20, padding: 14, background: "var(--olive-soft)", border: "1px solid var(--olive)", borderRadius: 8 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: "var(--olive)", marginBottom: 6 }}>
-              Imported {result.inserted} recipe(s)
+              {result.inserted > 0 && `Inserted ${result.inserted} new recipe(s). `}
+              {result.updated && result.updated > 0 && `Updated ${result.updated} existing recipe(s).`}
             </div>
             {result.ids.length > 0 && (
-              <div style={{ fontSize: 11, color: "var(--ink-soft)", marginBottom: 10 }}>
-                IDs: {result.ids.join(", ")}
+              <div style={{ fontSize: 11, color: "var(--ink-soft)", marginBottom: 4 }}>
+                New IDs: {result.ids.join(", ")}
               </div>
             )}
-            <Link href="/" className="btn btn-primary" style={{ fontSize: 12 }}>
-              View recipes
+            {result.updatedIds && result.updatedIds.length > 0 && (
+              <div style={{ fontSize: 11, color: "var(--ink-soft)", marginBottom: 10 }}>
+                Updated IDs: {result.updatedIds.join(", ")}
+              </div>
+            )}
+            <Link 
+              href={
+                result.updatedIds && result.updatedIds.length > 0 
+                  ? `/recipes/${result.updatedIds[0]}`
+                  : result.ids.length > 0 
+                  ? `/recipes/${result.ids[0]}`
+                  : "/"
+              } 
+              className="btn btn-primary" 
+              style={{ fontSize: 12 }}
+            >
+              {result.updatedIds && result.updatedIds.length > 0 ? "View Updated Recipe" : "View New Recipe"}
             </Link>
           </div>
         )}
@@ -277,7 +341,7 @@ export default function ImportRecipesPage() {
             disabled={importing || !json.trim()}
             style={{ flex: 2 }}
           >
-            {importing ? "Importing..." : "Import"}
+            {importing ? "Importing..." : targetId.trim() ? `Update ID ${targetId}` : "Import as New"}
           </button>
         </div>
       </div>

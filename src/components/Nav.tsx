@@ -185,6 +185,9 @@ export default function Nav() {
                   <Link href="/hidden-recipes" className="nav-menu-item" onClick={closeAll}>
                     🙈 {lang === "ar" ? ar.hiddenRecipes.title : "Hidden Recipes"}
                   </Link>
+                  <Link href="/active-image" className="nav-menu-item" onClick={closeAll}>
+                    🖼️ {lang === "ar" ? "الصور النشطة" : "Active Image"}
+                  </Link>
                   <Link href="/visitors" className="nav-menu-item" onClick={closeAll}>
                     📱 {lang === "ar" ? ar.visitorsPage.title : "Devices Log"}
                   </Link>
@@ -279,6 +282,9 @@ export default function Nav() {
               </Link>
               <Link className="mobile-nav-link" href="/hidden-recipes" onClick={closeAll}>
                 <span>🙈</span> {lang === "ar" ? ar.hiddenRecipes.title : "Hidden Recipes"}
+              </Link>
+              <Link className="mobile-nav-link" href="/active-image" onClick={closeAll}>
+                <span>🖼️</span> {lang === "ar" ? "الصور النشطة" : "Active Image"}
               </Link>
               <Link className="mobile-nav-link" href="/visitors" onClick={closeAll}>
                 <span>📱</span> {lang === "ar" ? ar.visitorsPage.title : "Devices Log"}

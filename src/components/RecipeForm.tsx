@@ -29,7 +29,10 @@ type InitialData = {
   servedWith: string | null; servedWithAr: string | null;
   howToServe: string | null; howToServeAr: string | null;
   prepTime: number; cookTime: number; servings: number;
-  dietaryTags: string | null; imageUrl: string | null; videoUrl: string | null;
+  dietaryTags: string | null; imageUrl: string | null;
+  image1Url?: string | null;
+  image2Url?: string | null;
+  useImage2?: boolean | null; videoUrl: string | null;
   ingredients: {
     name: string; nameAr: string | null; amount: string | null;
     unit: string | null; unitAr: string | null;
@@ -102,6 +105,9 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
 
       
   const [imageUrl, setImageUrl] = useState<string | null>(initial?.imageUrl ?? null);
+  const [image1Url, setImage1Url] = useState<string | null>(initial?.image1Url ?? null);
+  const [image2Url, setImage2Url] = useState<string | null>(initial?.image2Url ?? null);
+  const [useImage2, setUseImage2] = useState<boolean>(initial?.useImage2 ?? false);
   const [videoUrl, setVideoUrl] = useState(initial?.videoUrl ?? "");
 
   
@@ -219,7 +225,7 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
           prepTime: parseInt(prepTime) || 0,
           cookTime: parseInt(cookTime) || 0,
           servings: parseInt(servings) || 1,
-          dietaryTags: tags, imageUrl,
+          dietaryTags: tags, imageUrl, image1Url, image2Url, useImage2,
           videoUrl: videoUrl.trim() || null,
           ingredients: ingredientsList.filter((i) => i.name.trim() || i.nameAr.trim()),
           instructions: steps.filter((s) => s.text.trim() || s.textAr.trim()),
@@ -385,7 +391,104 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
 
       <section className="form-section">
         <h2>{t(lang, "photo")}</h2>
-        <ImageUpload onUploaded={(u) => { setImageUrl(u); markDirty(); }} initialUrl={imageUrl ?? undefined} />
+        
+        {/* ACTIVE IMAGE PREVIEW */}
+        <div style={{ marginBottom: 24, padding: 16, background: "var(--surface-2)", borderRadius: 12, textAlign: "center" }}>
+          <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--muted)", marginBottom: 8, textTransform: "uppercase" }}>
+            {lang === "ar" ? "الصورة النشطة" : "Active Image"}
+          </div>
+          {imageUrl ? (
+            <img src={imageUrl} alt="Active" style={{ maxWidth: 300, width: "100%", height: 200, objectFit: "cover", borderRadius: 8, border: "2px solid var(--accent)" }} />
+          ) : (
+            <div style={{ width: 300, height: 200, background: "var(--surface)", borderRadius: 8, display: "inline-flex", alignItems: "center", justifyContent: "center", color: "var(--muted)" }}>No active image</div>
+          )}
+          <div style={{ marginTop: 12, display: "flex", gap: 16, justifyContent: "center", fontSize: "0.85rem" }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
+              <input
+                type="radio"
+                name="activeImage"
+                checked={imageUrl === image1Url && !!image1Url || (!image2Url && !useImage2)}
+                onChange={() => { setUseImage2(false); setImageUrl(image1Url); markDirty(); }}
+              />
+              {lang === "ar" ? "استخدام صورة 1" : "Use Image 1"}
+            </label>
+            <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: image2Url ? "pointer" : "not-allowed", opacity: image2Url ? 1 : 0.4 }}>
+              <input
+                type="radio"
+                name="activeImage"
+                checked={imageUrl === image2Url && !!image2Url}
+                disabled={!image2Url}
+                onChange={() => { setUseImage2(true); setImageUrl(image2Url); markDirty(); }}
+              />
+              {lang === "ar" ? "استخدام صورة 2" : "Use Image 2"}
+            </label>
+          </div>
+        </div>
+
+        {/* TWO UPLOAD BOXES SIDE BY SIDE */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+          
+          {/* IMAGE 1 */}
+          <div style={{ padding: 16, border: "1px dashed var(--line)", borderRadius: 12 }}>
+            <label style={{ fontSize: "0.85rem", fontWeight: 700, display: "block", marginBottom: 8 }}>
+              {lang === "ar" ? "الصورة 1" : "Image 1"}
+            </label>
+            {image1Url && (
+              <img src={image1Url} alt="Image 1" style={{ width: "100%", height: 120, objectFit: "cover", borderRadius: 6, marginBottom: 8 }} />
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                const fd = new FormData();
+                fd.append("file", file);
+                try {
+                  const res = await fetch("/api/upload-latest", { method: "POST", body: fd });
+                  const data = await res.json();
+                  if (data.url) {
+                    setImage1Url(data.url);
+                    if (!useImage2) setImageUrl(data.url);
+                    markDirty();
+                  }
+                } catch (err) { alert("Upload failed"); }
+              }}
+              style={{ fontSize: "0.8rem", width: "100%" }}
+            />
+          </div>
+
+          {/* IMAGE 2 */}
+          <div style={{ padding: 16, border: "1px dashed var(--line)", borderRadius: 12 }}>
+            <label style={{ fontSize: "0.85rem", fontWeight: 700, display: "block", marginBottom: 8 }}>
+              {lang === "ar" ? "الصورة 2" : "Image 2"}
+            </label>
+            {image2Url && (
+              <img src={image2Url} alt="Image 2" style={{ width: "100%", height: 120, objectFit: "cover", borderRadius: 6, marginBottom: 8 }} />
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                const fd = new FormData();
+                fd.append("file", file);
+                try {
+                  const res = await fetch("/api/upload-latest", { method: "POST", body: fd });
+                  const data = await res.json();
+                  if (data.url) {
+                    setImage2Url(data.url);
+                    if (useImage2) setImageUrl(data.url);
+                    markDirty();
+                  }
+                } catch (err) { alert("Upload failed"); }
+              }}
+              style={{ fontSize: "0.8rem", width: "100%" }}
+            />
+          </div>
+
+        </div>
       </section>
 
       <section className="form-section">

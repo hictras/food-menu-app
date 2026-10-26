@@ -33,7 +33,7 @@ export default function InboxAdminPage() {
   }, [router]);
 
   function load() {
-    fetch("/api/inbox/admin")
+    fetch("/api/inbox/admin", { cache: "no-store" })
       .then((r) => r.json())
       .then((data) => {
         setItems(Array.isArray(data) ? data : []);
@@ -52,8 +52,11 @@ export default function InboxAdminPage() {
         {isAr ? ar.inboxDetail.back : "← Back to Inbox"}
       </Link>
 
-      <div className="page-head">
+      <div className="page-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h1>{isAr ? ar.inboxDetail.adminTitle : "Inbox Admin"}</h1>
+        <button onClick={load} className="btn btn-ghost" style={{ fontSize: "0.8rem" }}>
+          ↻ {isAr ? ar.inboxDetail.refresh : ar.inboxDetail.refreshEn}
+        </button>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>

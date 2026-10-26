@@ -12,6 +12,7 @@ import CookMode from "./CookMode";
 import RecipeReviews from "./RecipeReviews";
 import { useModal } from "./ModalProvider";
 
+import { getRecipeImage } from "@/lib/get-recipe-image";
 type RecipeRow = {
   id: number; name: string; nameAr: string | null;
   description: string | null; descriptionAr: string | null;
@@ -109,9 +110,9 @@ export default function RecipeDetailClient({
         <Link href="/recipes" className="btn btn-ghost">{t(lang, "back_cookbook")}</Link>
       </div>
 
-      {recipe.imageUrl && (
+      {getRecipeImage(recipe) && (
         <div className="img-with-watermark">
-          <img src={recipe.imageUrl} alt={displayName} className="detail-hero" loading="eager" decoding="async" />
+          <img src={getRecipeImage(recipe)!} alt={displayName} className="detail-hero" loading="eager" decoding="async" />
           {logoUrl && <img src={logoUrl} alt="" className="watermark" style={{ width: 48, height: 48, bottom: 16, right: 16 }} />}
         </div>
       )}

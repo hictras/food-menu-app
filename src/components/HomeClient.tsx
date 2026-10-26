@@ -10,6 +10,7 @@ import { CATEGORIES } from "@/lib/categories";
 import { ar } from "@/lib/ar";
 import { useModal } from "./ModalProvider";
 
+import { getRecipeImage } from "@/lib/get-recipe-image";
 type RecipeRow = {
   id: number;
   name: string;
@@ -269,9 +270,9 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
                             {isAr ? ar.home.hidden : "Hidden"}
                           </span>
                         )}
-                            {r.imageUrl ? (
+                            {getRecipeImage(r) ? (
                               <div className="img-with-watermark">
-                                <img src={r.imageUrl} alt={displayName} className="recipe-card-img" loading="lazy" decoding="async" />
+                                <img src={getRecipeImage(r)!} alt={displayName} className="recipe-card-img" loading="lazy" decoding="async" />
                                 {logoUrl && <img src={logoUrl} alt="" className="watermark" />}
                               </div>
                             ) : <div className="recipe-card-img" />}
@@ -325,7 +326,7 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
                           {isAr ? ar.home.hidden : "Hidden"}
                         </span>
                       )}
-                      {r.imageUrl ? <img src={r.imageUrl} alt={displayName} loading="lazy" decoding="async" /> : <div className="recipe-list-img-placeholder" />}
+                      {getRecipeImage(r) ? <img src={getRecipeImage(r)!} alt={displayName} loading="lazy" decoding="async" /> : <div className="recipe-list-img-placeholder" />}
                       {hasVideo && <span className="recipe-list-video">🎬</span>}
                       {r.isHidden === 1 && (
                         <span style={{ position: "absolute", top: 4, left: 4, background: "var(--accent)", color: "white", padding: "2px 6px", borderRadius: 4, fontSize: 9, fontWeight: 700 }}>

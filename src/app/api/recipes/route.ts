@@ -19,6 +19,9 @@ export async function GET(req: NextRequest) {
             name: recipes.name,
             nameAr: recipes.nameAr,
             imageUrl: recipes.imageUrl,
+            image1Url: recipes.image1Url,
+            image2Url: recipes.image2Url,
+            useImage2: recipes.useImage2,
             category: recipes.category,
             categoryAr: recipes.categoryAr,
           }).from(recipes).orderBy(desc(recipes.createdAt))
@@ -27,6 +30,9 @@ export async function GET(req: NextRequest) {
             name: recipes.name,
             nameAr: recipes.nameAr,
             imageUrl: recipes.imageUrl,
+            image1Url: recipes.image1Url,
+            image2Url: recipes.image2Url,
+            useImage2: recipes.useImage2,
             category: recipes.category,
             categoryAr: recipes.categoryAr,
           }).from(recipes).where(eq(recipes.isHidden, 0)).orderBy(desc(recipes.createdAt));
