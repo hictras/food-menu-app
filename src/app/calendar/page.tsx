@@ -229,7 +229,7 @@ export default function CalendarPage() {
         <button type="button" className="btn btn-ghost" onClick={goToday} style={{ fontSize: "0.75rem", padding: "6px 12px" }}>
           {isAr ? ar.calendar.today : "Today"}
         </button>
-        <Link href="/week" className="btn btn-ghost" style={{ fontSize: "0.75rem", padding: "6px 12px" }}>📄 {isAr ? ar.nav.week : "Weekly summary"}</Link>
+        <Link href="/week" className="btn btn-ghost" style={{ fontSize: "0.75rem", padding: "6px 12px" }}>📄 {isAr ? ar.nav.week : "Weekly"}</Link>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4, marginBottom: 4 }}>
