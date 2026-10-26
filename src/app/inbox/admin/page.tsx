@@ -42,7 +42,7 @@ export default function InboxAdminPage() {
   }
 
   if (loading) {
-    return <div className="container" style={{ padding: 40 }}>{ar.calendar.loading}</div>;
+    return <Spinner />;
   }
 
   return (
