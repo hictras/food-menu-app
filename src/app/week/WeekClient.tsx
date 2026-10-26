@@ -1,5 +1,6 @@
 "use client";
 
+import Spinner from "@/components/Spinner";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -236,7 +237,9 @@ export default function WeekClient() {
       </div>
 
       {loading ? (
-        <p className="helper">{ar.calendar.loading}</p>
+        <div style={{ display: "flex", justifyContent: "center", padding: 40 }}>
+  <Spinner />
+</div>
       ) : (
         <div className="week-summary">
           {days.map((day) => {
