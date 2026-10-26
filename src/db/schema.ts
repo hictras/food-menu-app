@@ -199,3 +199,17 @@ export const gameStats = sqliteTable(
     uniqPhoneGame: uniqueIndex("uniq_phone_game").on(t.phone, t.game),
   })
 );
+
+
+export const chessRooms = sqliteTable("chess_rooms", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  code: text("code").notNull().unique(),
+  whitePhone: text("white_phone").notNull(),
+  blackPhone: text("black_phone"),
+  board: text("board").notNull(),
+  turn: text("turn").notNull().default("w"),
+  status: text("status").notNull().default("waiting"),
+  winner: text("winner"),
+  createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
+});
