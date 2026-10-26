@@ -1,5 +1,6 @@
 "use client";
 
+import Spinner from "@/components/Spinner";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -72,8 +73,8 @@ export default function InboxAdminPage() {
               </p>
             ) : (
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                {item.readers.map((r) => (
-                  <span key={r.phone} style={{ fontSize: "0.75rem", padding: "4px 10px", background: "var(--olive-soft)", color: "var(--olive)", borderRadius: 999, fontWeight: 500 }}>
+                {item.readers.map((r, index) => (
+                  <span key={`${r.phone}-${index}`} style={{ fontSize: "0.75rem", padding: "4px 10px", background: "var(--olive-soft)", color: "var(--olive)", borderRadius: 999, fontWeight: 500 }}>
                     {r.name || (isAr ? ar.inbox.unnamed : "Unnamed")} ({r.phone})
                   </span>
                 ))}
