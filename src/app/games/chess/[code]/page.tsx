@@ -153,10 +153,9 @@ export default function ChessRoomPage() {
           setRoom(joinData.room);
           setBoard(JSON.parse(joinData.room.board));
           lastTurnRef.current = joinData.room.turn;
-          // Determine my color from phone
-          const phoneCookie = document.cookie.split("; ").find(c => c.startsWith("viewer_phone="))?.split("=")[1] || "";
-          if (joinData.room.whitePhone === phoneCookie) setMyColor("w");
-          else if (joinData.room.blackPhone === phoneCookie) setMyColor("b");
+          // Use the role returned by the server (it reads the httpOnly cookie)
+          if (joinData.role === "white") setMyColor("w");
+          else if (joinData.role === "black") setMyColor("b");
           else setMyColor("spectator");
         }
       } catch (e) {
@@ -190,6 +189,21 @@ export default function ChessRoomPage() {
     }, 1500);
     return () => clearInterval(interval);
   }, [code, isAr]);
+
+  // Retry role detection if we're still a spectator but should be a player
+  useEffect(() => {
+    if (!code || myColor !== "spectator" || !room) return;
+    const retry = async () => {
+      try {
+        const res = await fetch(`/api/chess/rooms/${code}`, { method: "POST" });
+        const data = await res.json();
+        if (data.role === "white") setMyColor("w");
+        else if (data.role === "black") setMyColor("b");
+      } catch {}
+    };
+    const t = setTimeout(retry, 500);
+    return () => clearTimeout(t);
+  }, [code, myColor, room]);
 
   async function pushMove(newBoard: Board, newTurn: "w" | "b", winner: string | null) {
     try {

@@ -239,6 +239,38 @@ export default function GamesHubPage() {
             </div>
           </Link>
 
+          
+          {/* Game 7: Online Chess */}
+          <Link href="/games/chess/lobby" style={{ textDecoration: "none" }}>
+            <div style={{
+              background: "#161b22", border: "1px solid #30363d", borderRadius: "20px",
+              padding: "40px 24px", textAlign: "center", cursor: "pointer",
+              height: "100%", display: "flex", flexDirection: "column",
+              alignItems: "center", justifyContent: "center", gap: "16px"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "#a855f7";
+              e.currentTarget.style.transform = "translateY(-4px)";
+              e.currentTarget.style.boxShadow = "0 10px 30px -10px rgba(168, 85, 247, 0.2)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "#30363d";
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "none";
+            }}>
+              <div style={{ fontSize: "56px", lineHeight: 1 }}>♟️</div>
+              <h2 style={{ fontSize: "1.5rem", fontWeight: 700, margin: 0, color: "#ffffff" }}>
+                {isAr ? "شطرنج أونلاين" : "Online Chess"}
+              </h2>
+              <p style={{ color: "#8b949e", fontSize: "14px", margin: 0, lineHeight: 1.5 }}>
+                {isAr ? "العب مع صديق على جهاز آخر." : "Play with a friend on another device."}
+              </p>
+              <div style={{ marginTop: "8px", color: "#a855f7", fontWeight: 600, fontSize: "14px" }}>
+                {isAr ? "ابدأ اللعب" : "Play Now"} →
+              </div>
+            </div>
+          </Link>
+
           <Link href="/games/leaderboard" style={{ textDecoration: "none" }}>
             <div style={{ background: "var(--surface)", border: "1px solid var(--line)", borderRadius: "16px", padding: "24px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%" }}>
               <span style={{ fontSize: "48px", marginBottom: "12px" }}>🏆</span>
