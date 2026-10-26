@@ -114,6 +114,33 @@ function hasAnyLegalMove(board: Board, color: "w" | "b"): boolean {
   return false;
 }
 
+
+// Compute captured pieces by comparing current board to initial board
+function getCapturedPieces(board: Board): { w: PieceType[]; b: PieceType[] } {
+  const initial: Record<"w" | "b", Record<PieceType, number>> = {
+    w: { p: 8, n: 2, b: 2, r: 2, q: 1, k: 1 },
+    b: { p: 8, n: 2, b: 2, r: 2, q: 1, k: 1 },
+  };
+  const current: Record<"w" | "b", Record<PieceType, number>> = {
+    w: { p: 0, n: 0, b: 0, r: 0, q: 0, k: 0 },
+    b: { p: 0, n: 0, b: 0, r: 0, q: 0, k: 0 },
+  };
+  for (const row of board) {
+    for (const sq of row) {
+      if (sq) current[sq[1]][sq[0]]++;
+    }
+  }
+  const capturedW: PieceType[] = []; // Black pieces captured by White
+  const capturedB: PieceType[] = []; // White pieces captured by Black
+  for (const type of ["p","n","b","r","q"] as PieceType[]) {
+    const lostBlack = initial.b[type] - current.b[type];
+    const lostWhite = initial.w[type] - current.w[type];
+    for (let i = 0; i < lostBlack; i++) capturedW.push(type);
+    for (let i = 0; i < lostWhite; i++) capturedB.push(type);
+  }
+  return { w: capturedW, b: capturedB };
+}
+
 export default function ChessRoomPage() {
   const params = useParams();
   const code = String(params.code || "").toUpperCase();
@@ -276,7 +303,7 @@ export default function ChessRoomPage() {
   }
 
   return (
-    <div style={{ minHeight: "100dvh", display: "flex", flexDirection: "column", padding: 12, background: "var(--bg)" }}>
+    <div style={{ minHeight: "100dvh", display: "flex", flexDirection: "column", padding: 8, background: "var(--bg)", overflowX: "hidden" }}>
       <Link href="/games/chess/lobby" style={{ position: "absolute", top: 12, insetInlineEnd: 12, zIndex: 50, background: "var(--surface)", border: "1px solid var(--line)", borderRadius: 10, padding: "8px 14px", fontSize: 14, fontWeight: 600, textDecoration: "none", color: "var(--ink)" }}>
         ✕ {isAr ? "خروج" : "Exit"}
       </Link>
@@ -311,11 +338,13 @@ export default function ChessRoomPage() {
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(8, 1fr)",
+            gridTemplateRows: "repeat(8, 1fr)",
             aspectRatio: "1 / 1",
             width: "100%",
-            maxWidth: 560,
+            maxWidth: "100%",
             margin: "0 auto",
             border: "4px solid #5c3a1a",
+            boxSizing: "border-box",
             borderRadius: 8,
             overflow: "hidden",
             boxShadow: "0 10px 30px rgba(0,0,0,0.4)",
@@ -336,9 +365,12 @@ export default function ChessRoomPage() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: "clamp(24px, 7vw, 48px)",
+                    fontSize: "clamp(36px, 13vw, 60px)",
                     lineHeight: 1,
                     cursor: "pointer",
+                    minWidth: 0,
+                    minHeight: 0,
+                    overflow: "hidden",
                     position: "relative",
                     userSelect: "none",
                     outline: isSelected ? "3px solid #ff6b4a" : "none",
@@ -358,6 +390,34 @@ export default function ChessRoomPage() {
             })
           )}
         </div>
+
+        {(() => {
+          const captured = getCapturedPieces(board);
+          return (
+            <div style={{ display: "flex", flexDirection: "column", gap: 6, background: "var(--surface)", padding: 12, borderRadius: 10 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: "var(--muted)", minWidth: 50 }}>
+                  {isAr ? "الأبيض" : "White"}
+                </span>
+                <span style={{ fontSize: 22, letterSpacing: 2, color: "var(--ink)" }}>
+                  {captured.w.length === 0 ? "—" : captured.w.map((t, i) => (
+                    <span key={i} style={{ color: "#000", textShadow: "0 0 1px #fff" }}>{PIECES.b[t]}</span>
+                  ))}
+                </span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: "var(--muted)", minWidth: 50 }}>
+                  {isAr ? "الأسود" : "Black"}
+                </span>
+                <span style={{ fontSize: 22, letterSpacing: 2, color: "var(--ink)" }}>
+                  {captured.b.length === 0 ? "—" : captured.b.map((t, i) => (
+                    <span key={i} style={{ color: "#fff", textShadow: "0 0 1px #000" }}>{PIECES.w[t]}</span>
+                  ))}
+                </span>
+              </div>
+            </div>
+          );
+        })()}
 
         {gameOver && (
           <div style={{ background: "var(--olive-soft)", border: "1px solid var(--olive)", padding: 16, borderRadius: 12, textAlign: "center", fontWeight: 700, fontSize: 18, color: "var(--olive)" }}>
