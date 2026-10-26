@@ -69,6 +69,9 @@ export default function AppearancePage() {
   return (
     <main className="container" style={{ paddingTop: 40, paddingBottom: 80, maxWidth: 600 }}>
       <div className="page-head">
+<button onClick={() => window.history.back()} className="btn btn-ghost" style={{ fontSize: "0.75rem" }}>
+  {isAr ? ar.appearance.back : "← Back"}
+</button>
         <h1>{isAr ? ar.appearance.title : "Appearance"}</h1>
       </div>
       <p className="page-sub">
@@ -161,9 +164,9 @@ export default function AppearancePage() {
       </div>
 
       <div style={{ marginTop: 40, textAlign: "center" }}>
-        <Link href="/" className="btn btn-ghost">
+      {/*  <Link href="/" className="btn btn-ghost">
           {isAr ? ar.appearance.back : "← Back"}
-        </Link>
+        </Link> */}
       </div>
     </main>
   );

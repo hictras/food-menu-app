@@ -4,7 +4,7 @@ export const translations = {
   en: {
     brand: "Menu",
     nav_recipes: "Recipes",
-    nav_add: "+ Add Recipe",
+    nav_add: "Add Recipe",
     home_title: "Your Cookbook",
     home_sub: "All your saved recipes",
     home_empty_title: "No recipes yet",
@@ -72,9 +72,9 @@ export const translations = {
     lang_toggle: "العربية",
   },
   ar: {
-    brand: "منيو",
+    brand: "Hictra",
     nav_recipes: "الوصفات",
-    nav_add: "+ وصفة جديدة",
+    nav_add: "وصفة جديدة",
     home_title: "كتاب وصفاتك",
     home_sub: "كل الوصفات المحفوظة",
     home_empty_title: "لا توجد وصفات بعد",

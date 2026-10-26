@@ -3,7 +3,7 @@
  *
  * Usage:
  *   import { ar } from "@/lib/ar";
- *   ar.nav.inbox // "📥 الرسائل"
+ *   ar.nav.inbox // "الرسائل"
  *
  * Every string the app shows in Arabic lives here.
  * If a page needs a new string, add it to this file, then use `ar.section.key`.
@@ -26,15 +26,15 @@ export const ar = {
   // ── Navigation ────────────────────────────────────────────
   nav: {
     noDishPage: "لا طبق اليوم",
-    brand: "منيو",
+    brand: "Hictra",
     recipes: "الوصفات",
-    inbox: "📥 الرسائل",
-    replies: "💬 الردود",
-    add: "+ وصفة جديدة",
-    sendPush: "📤 إرسال إشعار",
-    recipients: "👥 المستلمون",
-    whatsapp: "💬 واتساب",
-    settings: "⚙️ الإعدادات",
+    inbox: "الرسائل",
+    replies: "الردود",
+    add: "وصفة جديدة",
+    sendPush: "إرسال إشعار",
+    recipients: "المستلمون",
+    whatsapp: "واتساب",
+    settings: "الإعدادات",
     logout: "خروج",
     login: "دخول",
     admin: "الإدارة",
@@ -42,6 +42,7 @@ export const ar = {
   
     calendar: "التقويم",
     week: "هذا الأسبوع",
+    today: "وصفة اليوم",
     game: "لعبة",
     import: "استيراد وصفات",
     puzzleNav: "لغز",
@@ -728,7 +729,7 @@ export const ar = {
     empty: "لا وجبات مخططة هذا الأسبوع.",
     print: "طباعة",
     share: "مشاركة على واتساب",
-    sharedFrom: "من منيو",
+    sharedFrom: "من Hictra",
     prevWeek: "→ الأسبوع السابق",
     nextWeek: "الأسبوع التالي ←",
   },

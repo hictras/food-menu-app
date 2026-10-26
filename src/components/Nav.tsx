@@ -41,7 +41,8 @@ export default function Nav() {
     const interval = setInterval(checkUnread, 60000);
     const onFocus = () => checkUnread();
     window.addEventListener("focus", onFocus);
-    return () => {
+    
+  return () => {
       mounted = false;
       clearInterval(interval);
       window.removeEventListener("focus", onFocus);
@@ -117,17 +118,29 @@ export default function Nav() {
             {t(lang, "nav_recipes")}
           </Link>
 
-          <Link className="nav-link" href="/games" onClick={closeAll}>{lang === "ar" ? ar.nav.gamesHubNav : "Games"}</Link>
 
-          <Link className="nav-link" href="/appearance" onClick={closeAll}>{lang === "ar" ? ar.appearance.title : "Appearance"}</Link>
-          <Link className="nav-link" href="/calendar" onClick={closeAll}>
-            {lang === "ar" ? ar.nav.calendar : "Calendar"}
+
+
+          <Link className="nav-link" href={`/calendar/${new Date().toISOString().split("T")[0]}`} onClick={closeAll}>
+            📍 {lang === "ar" ? ar.nav.today : "Today"}
           </Link>
+
           <Link className="nav-link" href="/week" onClick={closeAll}>
-            {lang === "ar" ? ar.nav.week : "Week"}
+            📄 {lang === "ar" ? ar.nav.week : "Week"}
+          </Link>
+
+          <Link className="nav-link" href="/calendar" onClick={closeAll}>
+            📅 {lang === "ar" ? ar.nav.calendar : "Calendar"}
+          </Link>
+          <Link className="nav-link" href="/games" onClick={closeAll}>
+            🎮 {lang === "ar" ? ar.nav.gamesHubNav : "Games"}
+          </Link>
+
+          <Link className="nav-link" href="/appearance" onClick={closeAll}>
+            🎨 {lang === "ar" ? ar.appearance.title : "Appearance"}
           </Link>
           <Link className="nav-link" href="/inbox" onClick={closeAll} style={{ position: "relative" }}>
-            {lang === "ar" ? ar.nav.inbox : "Inbox"}
+            ✉️ {lang === "ar" ? ar.nav.inbox : "Inbox"}
             {unreadCount > 0 && (
               <span style={{ position: "absolute", top: -4, right: -8, background: "var(--accent)", color: "white", fontSize: 10, fontWeight: "bold", padding: "2px 6px", borderRadius: 999, lineHeight: 1 }}>
                 {unreadCount}
@@ -155,18 +168,20 @@ export default function Nav() {
               {adminOpen && (
                 <div className="nav-admin-menu">
                   <Link href="/admin/import" className="nav-menu-item" onClick={closeAll}>
-                    {lang === "ar" ? ar.nav.import : "Import recipes"}
+                    📥 {lang === "ar" ? ar.nav.import : "Import recipes"}
                   </Link>
                   <Link href="/recipes/new" className="nav-menu-item" onClick={closeAll}>
                     ✚ {t(lang, "nav_add")}
                   </Link>
                   <Link href="/replies" className="nav-menu-item" onClick={closeAll}>
-                    {lang === "ar" ? ar.nav.replies : "Replies"}
+                    💬 {lang === "ar" ? ar.nav.replies : "Replies"}
                   </Link>
                   <Link href="/admin" className="nav-menu-item" onClick={closeAll}>
-                    {lang === "ar" ? ar.nav.sendPush : "Send Push"}
+                    📤 {lang === "ar" ? ar.nav.sendPush : "Send Push"}
                   </Link>
-                  <Link href="/inbox/admin" className="nav-menu-item" onClick={closeAll}>{lang === "ar" ? ar.inboxDetail.adminTitle : "Inbox Admin"}</Link>
+                  <Link href="/inbox/admin" className="nav-menu-item" onClick={closeAll}>
+                    📊 {lang === "ar" ? ar.inboxDetail.adminTitle : "Inbox Admin"}
+                  </Link>
                   <Link href="/hidden-recipes" className="nav-menu-item" onClick={closeAll}>
                     🙈 {lang === "ar" ? ar.hiddenRecipes.title : "Hidden Recipes"}
                   </Link>
@@ -174,20 +189,20 @@ export default function Nav() {
                     📱 {lang === "ar" ? ar.visitorsPage.title : "Devices Log"}
                   </Link>
                   <Link href="/recipients" className="nav-menu-item" onClick={closeAll}>
-                    {lang === "ar" ? ar.nav.recipients : "Recipients"}
+                    👥 {lang === "ar" ? ar.nav.recipients : "Recipients"}
                   </Link>
                   <Link href="/whatsapp" className="nav-menu-item" onClick={closeAll}>
-                    {lang === "ar" ? ar.nav.whatsapp : "WhatsApp"}
+                    💬 {lang === "ar" ? ar.nav.whatsapp : "WhatsApp"}
                   </Link>
                   <Link href="/settings" className="nav-menu-item" onClick={closeAll}>
-                    {lang === "ar" ? ar.nav.settings : "Settings"}
+                    ⚙️ {lang === "ar" ? ar.nav.settings : "Settings"}
                   </Link>
                   <Link href="/no-dish-today" className="nav-menu-item" onClick={closeAll}>
                     🍽 {lang === "ar" ? ar.nav.noDishPage : "No Dish page"}
                   </Link>
                   <div className="nav-menu-divider" />
                   <button type="button" onClick={logout} className="nav-menu-item nav-menu-danger">
-                    {lang === "ar" ? ar.nav.logout : "Logout"}
+                    🚪 {lang === "ar" ? ar.nav.logout : "Logout"}
                   </button>
                 </div>
               )}
@@ -196,7 +211,7 @@ export default function Nav() {
 
           {loaded && !isAdmin && (
             <Link className="nav-login" href="/login" onClick={closeAll}>
-              {lang === "ar" ? ar.nav.login : "Login"}
+              👤 {lang === "ar" ? ar.nav.login : "Login"}
             </Link>
           )}
 
@@ -216,16 +231,6 @@ export default function Nav() {
         </div>
 
         <div className={`nav-mobile-menu${mobileOpen ? " is-open" : ""}`} id="nav-mobile-menu">
-          <Link className="mobile-nav-link" href="/games" onClick={closeAll}>
-            <span>🎮</span> {lang === "ar" ? ar.nav.gamesHubNav : "Games"}
-          </Link>
-          <Link className="mobile-nav-link" href="/appearance" onClick={closeAll}><span>🎨</span> {lang === "ar" ? ar.appearance.title : "Appearance"}</Link>
-          <Link className="mobile-nav-link" href="/calendar" onClick={closeAll}>
-            <span>📅</span> {lang === "ar" ? ar.nav.calendar : "Calendar"}
-          </Link>
-          <Link className="mobile-nav-link" href="/week" onClick={closeAll}>
-            <span>📄</span> {lang === "ar" ? ar.nav.week : "This Week"}
-          </Link>
           <Link className="mobile-nav-link" href="/inbox" onClick={closeAll} style={{ position: "relative", display: "flex", alignItems: "center", gap: 8 }}>
             <span>✉️</span> {lang === "ar" ? ar.nav.inbox : "Inbox"}
             {unreadCount > 0 && (
@@ -234,6 +239,25 @@ export default function Nav() {
               </span>
             )}
           </Link>
+
+          <Link className="mobile-nav-link" href={`/calendar/${new Date().toISOString().split("T")[0]}`} onClick={closeAll}>
+            <span>📍</span> {lang === "ar" ? ar.nav.today : "Today"}
+          </Link>
+
+           <Link className="mobile-nav-link" href="/week" onClick={closeAll}>
+            <span>📄</span> {lang === "ar" ? ar.nav.week : "This Week"}
+          </Link>
+
+          <Link className="mobile-nav-link" href="/calendar" onClick={closeAll}>
+            <span>📅</span> {lang === "ar" ? ar.nav.calendar : "Calendar"}
+          </Link>
+
+          <Link className="mobile-nav-link" href="/games" onClick={closeAll}>
+            <span>🎮</span> {lang === "ar" ? ar.nav.gamesHubNav : "Games"}
+          </Link>
+
+          <Link className="mobile-nav-link" href="/appearance" onClick={closeAll}><span>🎨</span> {lang === "ar" ? ar.appearance.title : "Appearance"}</Link>
+
           <div className="nav-menu-divider" />
           
           {loaded && isAdmin && (
