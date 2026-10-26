@@ -18,13 +18,26 @@ type Notification = {
 export default function InboxPage() {
   const { lang } = useLang();
   const isAr = lang === "ar";
-  const { show, confirm } = useModal(); // <-- Using your custom modal hook
+  const { show, confirm } = useModal();
   
   const [items, setItems] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    // 1. CLEAR APP BADGE (Set notification dot to 0)
+    if ('clearAppBadge' in navigator) {
+      navigator.clearAppBadge().catch((error) => console.error('Badge clear error:', error));
+    }
+    if ('caches' in window) {
+      caches.open('badge-count').then((cache) => {
+        cache.delete('count');
+      });
+    }
+    // Save last read time
+    localStorage.setItem("last_read_inbox", new Date().toISOString());
+
+    // 2. FETCH DATA
     fetch("/api/notifications")
       .then((res) => res.json())
       .then((data) => {
@@ -42,7 +55,6 @@ export default function InboxPage() {
   async function handleDelete(e: React.MouseEvent, id: number) {
     e.preventDefault();
     
-    // Using the custom confirm modal
     const ok = await confirm({
       message: isAr ? ar.messages.deleteMessageConfirm : "Delete message?",
       confirmText: isAr ? ar.modal.deleteBtn : "Delete",
@@ -55,7 +67,6 @@ export default function InboxPage() {
       if (res.ok) {
         setItems((prev) => prev.filter((item) => item.id !== id));
       } else {
-        // Using the custom error modal
         show({ message: isAr ? ar.messages.deleteFailed.ar : "Delete failed", tone: "danger" });
       }
     } catch (err) {
