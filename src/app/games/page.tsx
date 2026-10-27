@@ -241,7 +241,7 @@ export default function GamesHubPage() {
 
           
           {/* Game 7: Online Chess */}
-          <Link href="/games/chess/lobby" style={{ textDecoration: "none" }}>
+          <Link href="/games/chess" style={{ textDecoration: "none" }}>
             <div style={{
               background: "#161b22", border: "1px solid #30363d", borderRadius: "20px",
               padding: "40px 24px", textAlign: "center", cursor: "pointer",
