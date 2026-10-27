@@ -174,7 +174,9 @@ export const notificationReads = sqliteTable("notification_reads", {
     .references(() => notifications.id, { onDelete: "cascade" }),
   phone: text("phone").notNull(),
   readAt: text("read_at").default(sql`CURRENT_TIMESTAMP`),
-});
+}, (t) => ({
+  uniqNotificationPhone: uniqueIndex("uniq_notif_phone").on(t.notificationId, t.phone),
+}));
 
 export const userSettings = sqliteTable("user_settings", {
   id: integer("id").primaryKey({ autoIncrement: true }),
