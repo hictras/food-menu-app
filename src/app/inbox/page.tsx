@@ -25,6 +25,7 @@ export default function InboxPage() {
   const [items, setItems] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   async function loadData() {
     setLoading(true);
@@ -84,6 +85,41 @@ export default function InboxPage() {
     }
   }
 
+  function toggleSelection(id: number) {
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  }
+
+  function toggleAll() {
+    if (selectedIds.length === items.length) setSelectedIds([]);
+    else setSelectedIds(items.map(i => i.id));
+  }
+
+  async function handleBulkDelete() {
+    if (selectedIds.length === 0) return;
+    const ok = await confirm({
+      message: isAr ? "حذف الرسائل المحددة؟" : "Delete selected messages?",
+      confirmText: isAr ? ar.modal.deleteBtn : "Delete",
+      tone: "danger"
+    });
+    if (!ok) return;
+
+    try {
+      const res = await fetch("/api/notifications/bulk-delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: selectedIds }),
+      });
+      if (res.ok) {
+        setItems((prev) => prev.filter((item) => !selectedIds.includes(item.id)));
+        setSelectedIds([]);
+      } else {
+        show({ message: isAr ? "فشل الحذف" : "Delete failed", tone: "danger" });
+      }
+    } catch {
+      show({ message: isAr ? "فشل الحذف" : "Delete failed", tone: "danger" });
+    }
+  }
+
   if (loading) {
     return <Spinner />;
   }
@@ -92,9 +128,23 @@ export default function InboxPage() {
     <main className="container" style={{ paddingTop: 40, paddingBottom: 80, maxWidth: 700 }}>
       <div className="page-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
         <h1 style={{ margin: 0 }}>{isAr ? ar.inbox.title : "Inbox"}</h1>
-        <button onClick={loadData} className="btn btn-ghost" style={{ fontSize: "0.8rem" }}>
-          ↻ {isAr ? ar.inboxDetail.refresh : ar.inboxDetail.refreshEn}
-        </button>
+        <div style={{ display: "flex", gap: 8 }}>
+          {isAdmin && items.length > 0 && (
+            <>
+              <button onClick={toggleAll} className="btn btn-ghost" style={{ fontSize: "0.8rem" }}>
+                {selectedIds.length === items.length ? (isAr ? "إلغاء تحديد الكل" : "Deselect All") : (isAr ? "تحديد الكل" : "Select All")}
+              </button>
+              {selectedIds.length > 0 && (
+                <button onClick={handleBulkDelete} className="btn btn-danger" style={{ fontSize: "0.8rem" }}>
+                  🗑 {isAr ? "حذف المحدد" : "Delete Selected"} ({selectedIds.length})
+                </button>
+              )}
+            </>
+          )}
+          <button onClick={loadData} className="btn btn-ghost" style={{ fontSize: "0.8rem" }}>
+            ↻ {isAr ? ar.inboxDetail.refresh : ar.inboxDetail.refreshEn}
+          </button>
+        </div>
       </div>
 
       {items.length === 0 ? (
@@ -110,10 +160,20 @@ export default function InboxPage() {
                 display: "flex",
                 alignItems: "center",
                 borderBottom: "1px solid var(--line)",
-                background: item.isRead ? "transparent" : "rgba(255, 255, 255, 0.02)",
+                background: selectedIds.includes(item.id) ? "var(--accent-soft)" : (item.isRead ? "transparent" : "rgba(255, 255, 255, 0.02)"),
                 transition: "background 0.15s",
               }}
             >
+              {isAdmin && (
+                <div style={{ padding: "0 0 0 16px", display: "flex", alignItems: "center" }}>
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.includes(item.id)}
+                    onChange={() => toggleSelection(item.id)}
+                    style={{ width: 18, height: 18, cursor: "pointer", accentColor: "var(--accent)" }}
+                  />
+                </div>
+              )}
               <Link
                 href={`/inbox/${item.id}`}
                 style={{
