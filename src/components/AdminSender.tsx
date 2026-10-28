@@ -17,12 +17,12 @@ export default function AdminSender() {
   const { confirm } = useModal();
   
   const [busy, setBusy] = useState(false);
-  const [visitorCount, setVisitorCount] = useState<number | null>(null);
   const [result, setResult] = useState<string>("");
 
   const [title, setTitle] = useState("Menu");
   const [body, setBody] = useState("New recipe added!");
   const [location, setLocation] = useState("");
+  const [time, setTime] = useState("");
   const [noDish, setNoDish] = useState(false);
   const [url, setUrl] = useState("");
 
@@ -50,7 +50,6 @@ export default function AdminSender() {
     fetch("/api/recipes", { cache: "no-store" }).then(res => res.json()).then(data => setRecipes(Array.isArray(data) ? data : []));
     fetch("/api/recipients").then(res => res.json()).then(data => setRecipients(Array.isArray(data) ? data : []));
     fetch("/api/recipients/groups").then(res => res.json()).then(data => setGroups(Array.isArray(data) ? data : []));
-    fetch("/api/visitors").then(res => res.json()).then(data => setVisitorCount(data.count || 0)).catch(() => {});
     fetch("/api/push/presets").then(res => res.json()).then(data => setPresets(Array.isArray(data) ? data : []));
   }, []);
 
@@ -142,7 +141,6 @@ export default function AdminSender() {
 
   async function deletePreset(id: number) {
     const ok = await confirm({ 
-      message: isAr ? ar.pushPresets.deleteConfirm : "Delete this preset?",
       confirmText: isAr ? ar.modal.deleteBtn : "Delete",
       tone: "danger"
     });
@@ -177,6 +175,10 @@ export default function AdminSender() {
         payload.location = location.trim();
       }
 
+      if (time.trim()) {
+        payload.time = time.trim();
+      }
+
       const res = await fetch("/api/push/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -206,14 +208,6 @@ export default function AdminSender() {
     <main className="container" style={{ paddingTop: 40 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 24 }}>
         <h1>{isAr ? ar.sender.title : "Send Push Notification"}</h1>
-        {visitorCount !== null && (
-          <div style={{ fontSize: 13, color: "var(--muted)", background: "var(--surface-2)", padding: "4px 12px", borderRadius: 999, border: "1px solid var(--line)" }}>
-            📱 {isAr ? ar.settingsPage.devices : "Devices"}: <strong style={{ color: "var(--ink)" }}>{visitorCount}</strong>
-          </div>
-        )}
-        <button type="button" className="btn btn-ghost" onClick={() => setShowPresetManager(!showPresetManager)}>
-          ⚙️ {isAr ? ar.pushPresets.title : "Manage Presets"}
-        </button>
       </div>
 
       {showPresetManager && (
@@ -254,14 +248,6 @@ export default function AdminSender() {
       )}
 
       <div className="form-card">
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
-          {presets.map(p => (
-            <button key={p.id} type="button" className="chip" onClick={() => { setTitle(p.title); setBody(p.body); if (p.pollQuestion) { setPollEnabled(true); setPollQuestion(p.pollQuestion); } else { setPollEnabled(false); setPollQuestion(""); } }}>
-              {p.name}
-            </button>
-          ))}
-        </div>
-
         <div className="field" style={{ position: "relative" }}>
           <label>{isAr ? ar.sender.recipients : "Recipients (leave empty for all)"}</label>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6, padding: 8, border: "1px solid var(--line)", borderRadius: 8, background: "var(--bg)", marginBottom: 8 }}>
@@ -301,7 +287,20 @@ export default function AdminSender() {
           )}
         </div>
 
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
+          <button type="button" className="btn btn-ghost" onClick={() => setShowPresetManager(!showPresetManager)}>
+            ⚙️ {isAr ? ar.pushPresets.title : "Manage Presets"}
+          </button>
+        </div>
+
         <div className="field">
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
+          {presets.map(p => (
+            <button key={p.id} type="button" className="chip" onClick={() => { setTitle(p.title); setBody(p.body); if (p.pollQuestion) { setPollEnabled(true); setPollQuestion(p.pollQuestion); } else { setPollEnabled(false); setPollQuestion(""); } }}>
+              {p.name}
+            </button>
+          ))}
+        </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
             <label>{isAr ? ar.sender.titleLabel : "Title"}</label>
             <button type="button" className="btn btn-ghost" style={{ padding: "2px 8px", fontSize: 11 }} onClick={() => insertName("title")}>
@@ -329,6 +328,11 @@ export default function AdminSender() {
               <button key={p} type="button" className="chip" onClick={() => setLocation(p)} style={{ fontSize: 11, cursor: "pointer" }}>📍 {p}</button>
             ))}
           </div>
+
+        <div className="field">
+          <label>{isAr ? "الوقت" : "Time"}</label>
+          <input type="time" value={time} onChange={(e) => setTime(e.target.value)} style={{ width: "100%", padding: 8 }} />
+        </div>
         </div>
 
         <div style={{ marginBottom: 16, padding: 14, background: "var(--bg)", border: pollEnabled ? "1px solid var(--accent)" : "1px solid var(--line)", borderRadius: 10 }}>

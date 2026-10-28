@@ -74,6 +74,7 @@ export const notifications = sqliteTable("notifications", {
   targetPhone: text("target_phone").notNull().default("all"),
   pollUrl: text("poll_url"),
   location: text("location"),
+  time: text("time"),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 

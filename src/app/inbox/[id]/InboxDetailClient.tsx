@@ -12,6 +12,7 @@ type Notification = {
   body: string;
   createdAt: string;
   location: string | null;
+  time: string | null;
   pollId: number | null;
   pollQuestion: string | null;
   pollUrl: string | null;
@@ -78,8 +79,13 @@ export default function InboxDetailClient({ id }: { id: string }) {
         </p>
 
         {item.location && (
-          <div style={{ padding: "10px 16px", background: "var(--accent-soft)", color: "var(--accent)", borderRadius: 8, fontSize: "0.875rem", fontWeight: 600, marginBottom: 24 }}>
+          <div style={{ padding: "10px 16px", background: "var(--accent-soft)", color: "var(--accent)", borderRadius: 8, fontSize: "0.875rem", fontWeight: 600, marginBottom: 8 }}>
             📍 {item.location}
+          </div>
+        )}
+        {item.time && (
+          <div style={{ padding: "10px 16px", background: "var(--surface-2)", color: "var(--ink)", borderRadius: 8, fontSize: "0.875rem", fontWeight: 600, marginBottom: 24 }}>
+            ⏰ {item.time}
           </div>
         )}
 

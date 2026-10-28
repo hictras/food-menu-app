@@ -29,6 +29,7 @@ export async function POST(req: NextRequest) {
     const url = body.url || "/inbox";
     const targetPhone = body.targetPhone || "all";
     const location = (body.location || "").trim() || null;
+    const time = (body.time || "").trim() || null;
     const pollQuestion = (body.poll?.question || "").trim();
     const personalize = !!body.personalize || title.includes("{name}") || text.includes("{name}");
 
@@ -71,6 +72,7 @@ export async function POST(req: NextRequest) {
       targetPhone,
       pollUrl: null,
       location,
+      time,
     }).returning();
 
     let pollId: number | null = null;
@@ -96,6 +98,7 @@ export async function POST(req: NextRequest) {
     };
     if (pollId) payloadObj.pollId = pollId;
     if (location) payloadObj.location = location;
+    if (time) payloadObj.time = time;
 
     let subs;
     if (targetPhone === "all") {

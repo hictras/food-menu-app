@@ -16,7 +16,7 @@ self.addEventListener("push", function (event) {
   }
 
   const options = {
-    body: data.body || "New update from Menu",
+    body: data.time ? `${data.body || "New update"}\n⏰ ${data.time}` : (data.body || "New update from Menu"),
     icon: "/icon-192.png",
     badge: "/icon-192.png",
     data: { url: data.url || "/inbox" },

@@ -14,6 +14,7 @@ type Notification = {
   createdAt: string;
   isRead: boolean;
   location: string | null;
+  time: string | null;
 };
 
 export default function InboxPage() {
@@ -133,6 +134,9 @@ export default function InboxPage() {
                   </span>
                   {item.location && (
                     <span style={{ fontSize: "0.75rem", color: "var(--muted)" }}>📍 {item.location}</span>
+                  )}
+                  {item.time && (
+                    <span style={{ fontSize: "0.75rem", color: "var(--muted)" }}>⏰ {item.time}</span>
                   )}
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
