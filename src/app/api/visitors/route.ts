@@ -75,6 +75,7 @@ export async function GET() {
         phone: visitors.phone,
         visits: visitors.visits,
         lastSeen: visitors.lastSeen,
+        lastPage: visitors.lastPage,
         name: pushSubscriptions.name,
       })
       .from(visitors)
