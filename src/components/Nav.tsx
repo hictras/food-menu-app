@@ -174,7 +174,7 @@ export default function Nav() {
                   <Link href="/replies" className="nav-menu-item" onClick={closeAll}>
                     💬 {lang === "ar" ? ar.nav.replies : "Replies"}
                   </Link>
-                  <Link href="/admin" className="nav-menu-item" onClick={closeAll}>
+                  <Link href="/sendpush" className="nav-menu-item" onClick={closeAll}>
                     📤 {lang === "ar" ? ar.nav.sendPush : "Send Push"}
                   </Link>
                   <Link href="/inbox/admin" className="nav-menu-item" onClick={closeAll}>
@@ -272,7 +272,7 @@ export default function Nav() {
               <Link className="mobile-nav-link" href="/replies" onClick={closeAll}>
                 <span>💬</span> {lang === "ar" ? ar.nav.replies : "Replies"}
               </Link>
-              <Link className="mobile-nav-link" href="/admin" onClick={closeAll}>
+              <Link className="mobile-nav-link" href="/sendpush" onClick={closeAll}>
                 <span>📤</span> {lang === "ar" ? ar.nav.sendPush : "Send Push"}
               </Link>
               <Link className="mobile-nav-link" href="/inbox/admin" onClick={closeAll}>
