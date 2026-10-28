@@ -22,19 +22,17 @@ export default function Nav() {
     let mounted = true;
     async function checkUnread() {
       try {
-        const res = await fetch("/api/notifications", { cache: "no-store" });
+        const lastReadRaw = localStorage.getItem("last_read_inbox");
+        const since = lastReadRaw || "1970-01-01T00:00:00Z";
+        const res = await fetch(
+          `/api/notifications/unread-count?since=${encodeURIComponent(since)}`,
+          { cache: "no-store" }
+        );
         if (!mounted) return;
         const data = await res.json();
-        if (!Array.isArray(data)) return;
-
-        const lastReadRaw = localStorage.getItem("last_read_inbox");
-        const lastRead = lastReadRaw ? new Date(lastReadRaw).getTime() : 0;
-
-        const unread = data.filter((n) => {
-          if (!n.createdAt) return false;
-          return new Date(n.createdAt).getTime() > lastRead;
-        });
-        setUnreadCount(unread.length);
+        if (typeof data?.count === "number") {
+          setUnreadCount(data.count);
+        }
       } catch {}
     }
     checkUnread();
