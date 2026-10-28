@@ -165,7 +165,7 @@ export default function Nav() {
 
               {adminOpen && (
                 <div className="nav-admin-menu">
-                  <Link href="/admin/import" className="nav-menu-item" onClick={closeAll}>
+                  <Link href="/import" className="nav-menu-item" onClick={closeAll}>
                     📥 {lang === "ar" ? ar.nav.import : "Import recipes"}
                   </Link>
                   <Link href="/recipes/new" className="nav-menu-item" onClick={closeAll}>
@@ -263,7 +263,7 @@ export default function Nav() {
           
           {loaded && isAdmin && (
             <>
-              <Link className="mobile-nav-link" href="/admin/import" onClick={closeAll}>
+              <Link className="mobile-nav-link" href="/import" onClick={closeAll}>
                 <span>📥</span> {lang === "ar" ? ar.nav.import : "Import"}
               </Link>
               <Link className="mobile-nav-link" href="/recipes/new" onClick={closeAll}>

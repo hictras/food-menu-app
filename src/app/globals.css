@@ -3800,3 +3800,34 @@ html[data-theme="light"] .cook-overlay {
     padding: 10px 6px;
   }
 }
+
+.cook-mode-active .site-header {
+  display: none !important;
+}
+
+
+/* ========== COOK MODE FULL SCREEN FIX ========== */
+body.cook-mode-active .site-header {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+body.cook-mode-active {
+  overflow: hidden !important; /* Prevent background scrolling */
+}
+
+
+/* Clean Cook Title Rule - Controlled by React Settings */
+
+
+/* Clean Cook Title Rule - Controlled by Settings */
+.cook-title {
+  color: var(--cook-title-color, gold) !important;
+  font-size: var(--cook-title-size, 28px) !important;
+}
+
+/* Force theme backgrounds to work correctly */
+html, body {
+  background-color: var(--bg) !important;
+  color: var(--ink) !important;
+}

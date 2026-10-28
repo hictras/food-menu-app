@@ -31,14 +31,65 @@ export default function CookMode({ open, onClose, recipeName, steps }: Props) {
   const [index, setIndex] = useState(0);
   const [wakeStatus, setWakeStatus] = useState<"idle" | "on" | "unsupported" | "denied">("idle");
   const wakeRef = useRef<any>(null);
-  
+
   // Timer state
   const [activeTimer, setActiveTimer] = useState<TimerState>(null);
 
+  // Inject Settings CSS directly
   useEffect(() => {
-    if (open) setIndex(0);
+    if (!open) return;
+    
+    fetch("/api/settings")
+      .then(r => r.json())
+      .then(data => {
+        const size = data.cook_title_size || "28";
+        const colorLight = data.cook_title_color_light || "#FFD700";
+        const colorDark = data.cook_title_color_dark || "#FFD700";
+        
+        const isLight = document.documentElement.getAttribute("data-theme") === "light";
+        const activeColor = isLight ? colorLight : colorDark;
+
+        const styleId = "cook-mode-dynamic-styles";
+        let styleEl = document.getElementById(styleId);
+        if (!styleEl) {
+          styleEl = document.createElement("style");
+          styleEl.id = styleId;
+          document.head.appendChild(styleEl);
+        }
+
+        const insSize = data.cook_instruction_size || "32";
+        const insColorLight = data.cook_instruction_color_light || "#ededed";
+        const insColorDark = data.cook_instruction_color_dark || "#ededed";
+        const activeInsColor = isLight ? insColorLight : insColorDark;
+
+        styleEl.innerHTML = `
+          .dynamic-cook-title {
+            color: ${activeColor} !important;
+            font-size: ${size}px !important;
+          }
+          .dynamic-cook-instruction {
+            color: ${activeInsColor} !important;
+            font-size: clamp(16px, ${insSize}px, 48px) !important;
+          }
+        `;
+      })
+      .catch(() => {});
   }, [open]);
 
+  // Hide Navbar and reset index when open
+  useEffect(() => {
+    if (open) {
+      setIndex(0);
+      document.body.classList.add("cook-mode-active");
+    } else {
+      document.body.classList.remove("cook-mode-active");
+    }
+    return () => {
+      document.body.classList.remove("cook-mode-active");
+    };
+  }, [open]);
+
+  // Wake Lock
   useEffect(() => {
     if (!open) return;
     let cancelled = false;
@@ -72,6 +123,7 @@ export default function CookMode({ open, onClose, recipeName, steps }: Props) {
     };
   }, [open]);
 
+  // Keyboard navigation
   useEffect(() => {
     if (!open) return;
     function onKey(e: KeyboardEvent) {
@@ -104,7 +156,7 @@ export default function CookMode({ open, onClose, recipeName, steps }: Props) {
 
     while ((match = regex.exec(t)) !== null) {
       if (match.index > lastIndex) parts.push(t.slice(lastIndex, match.index));
-      
+
       const amount = parseInt(match[1], 10);
       const unit = match[2].toLowerCase();
       const isHour = unit.includes("hour") || unit.includes("hr") || unit.includes("ساعة");
@@ -144,7 +196,15 @@ export default function CookMode({ open, onClose, recipeName, steps }: Props) {
 
         {/* Fixed Title & Step Tracker */}
         <div style={{ flexShrink: 0, textAlign: "center", padding: "24px 20px 16px", display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
-          <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.02em", margin: 0, maxWidth: "90%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          <h1 className="dynamic-cook-title" style={{ 
+            fontWeight: 700, 
+            letterSpacing: "-0.02em", 
+            margin: 0, 
+            maxWidth: "90%", 
+            whiteSpace: "nowrap", 
+            overflow: "hidden", 
+            textOverflow: "ellipsis" 
+          }}>
             {recipeName}
           </h1>
           <div style={{ background: "rgba(255,107,74,0.15)", color: "#ff6b4a", border: "1px solid rgba(255,107,74,0.3)", padding: "6px 16px", borderRadius: 999, fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
@@ -154,7 +214,7 @@ export default function CookMode({ open, onClose, recipeName, steps }: Props) {
 
         {/* Scrollable Text */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "20px 24px", overflowY: "auto" }}>
-          <div style={{ fontSize: "clamp(24px, 6vw, 36px)", lineHeight: 1.4, fontWeight: 500, maxWidth: 900, textAlign: "center", display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "8px 4px" }}>
+          <div className="dynamic-cook-instruction" style={{ lineHeight: 1.4, fontWeight: 500, maxWidth: 900, textAlign: "center", display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "8px 4px" }}>
             {renderTextWithTimers(text)}
           </div>
         </div>
@@ -164,7 +224,7 @@ export default function CookMode({ open, onClose, recipeName, steps }: Props) {
           <button type="button" disabled={isFirst} onClick={() => setIndex((i) => Math.max(0, i - 1))} style={{ flex: 1, padding: "20px 16px", fontSize: 18, fontWeight: 700, borderRadius: 12, border: "1px solid #333", background: "#1a1a1a", color: "#fff", cursor: isFirst ? "not-allowed" : "pointer", opacity: isFirst ? 0.3 : 1 }}>
             {isAr ? "→ السابق" : "← Prev"}
           </button>
-          
+
           {isLast ? (
             <button type="button" onClick={onClose} style={{ flex: 1, padding: "20px 16px", fontSize: 18, fontWeight: 700, borderRadius: 12, border: "1px solid #3fb950", background: "#3fb950", color: "#fff", cursor: "pointer" }}>
               {isAr ? "✓ تم" : "✓ Done"}
@@ -178,10 +238,10 @@ export default function CookMode({ open, onClose, recipeName, steps }: Props) {
       </div>
 
       {activeTimer && (
-        <KitchenTimer 
-          seconds={activeTimer.seconds} 
+        <KitchenTimer
+          seconds={activeTimer.seconds}
           brief={activeTimer.brief}
-          onClose={() => setActiveTimer(null)} 
+          onClose={() => setActiveTimer(null)}
           onNextStep={!isLast ? () => { setActiveTimer(null); setIndex((i) => i + 1); } : undefined}
         />
       )}

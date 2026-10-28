@@ -18,6 +18,16 @@ type Settings = {
   inbox_title_color_dark: string;
   inbox_recipe_color_light: string;
   inbox_recipe_color_dark: string;
+  badge_location_color_light: string;
+  badge_location_color_dark: string;
+  badge_time_color_light: string;
+  badge_time_color_dark: string;
+  cook_title_size: string;
+  cook_title_color_light: string;
+  cook_title_color_dark: string;
+  cook_instruction_size: string;
+  cook_instruction_color_light: string;
+  cook_instruction_color_dark: string;
   logo_url: string;
   favicon_url: string;
   background_url: string;
@@ -44,6 +54,13 @@ const DEFAULT: Settings = {
   inbox_title_color_dark: "#ff6b4a",
   inbox_recipe_color_light: "#52525b",
   inbox_recipe_color_dark: "#a1a1aa",
+  badge_location_color_light: "#e2543a",
+  badge_location_color_dark: "#ff6b4a",
+  badge_time_color_light: "#17171a",
+  badge_time_color_dark: "#ededed",
+  cook_title_size: "28",
+  cook_title_color_light: "#FFD700",
+  cook_title_color_dark: "#FFD700",
   logo_url: "",
   favicon_url: "",
   background_url: "",
@@ -71,7 +88,7 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [devices, setDevices] = useState<any[]>([]);
   const [recipes, setRecipes] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<"branding" | "typography" | "colors" | "noDish" | "devices">("branding");
+  const [activeTab, setActiveTab] = useState<"branding" | "typography" | "colors" | "noDish">("branding");
 
   useEffect(() => {
     fetch("/api/recipes").then(r => r.json()).then(d => setRecipes(Array.isArray(d) ? d : []));
@@ -151,9 +168,7 @@ export default function SettingsPage() {
         <button type="button" className={`btn ${activeTab === "noDish" ? "btn-primary" : "btn-ghost"}`} onClick={() => setActiveTab("noDish")}>
           {isAr ? ar.settingsPage.noDishTab : "No Dish Today"}
         </button>
-        <button type="button" className={`btn ${activeTab === "devices" ? "btn-primary" : "btn-ghost"}`} onClick={() => setActiveTab("devices")}>
-          {isAr ? ar.settingsPage.devices : "Devices"}
-        </button>
+        
       </div>
 
       <div className="form-card">
@@ -201,6 +216,27 @@ export default function SettingsPage() {
             <hr style={{ borderColor: "var(--line)", margin: "16px 0" }} />
             <ColorPair label={isAr ? ar.settingsPage.inboxTitleColor : "Inbox: Main Title"} lightKey="inbox_title_color_light" darkKey="inbox_title_color_dark" />
             <ColorPair label={isAr ? ar.settingsPage.inboxRecipeColor : "Inbox: Recipe Name"} lightKey="inbox_recipe_color_light" darkKey="inbox_recipe_color_dark" />
+            <hr style={{ borderColor: "var(--line)", margin: "16px 0" }} />
+            <h3 style={{ fontSize: 14, marginBottom: 12, color: "var(--ink)" }}>{isAr ? "ألوان الشارات" : "Badge Colors"}</h3>
+            <ColorPair label={isAr ? "لون الموقع" : "Location Badge Color"} lightKey="badge_location_color_light" darkKey="badge_location_color_dark" />
+            <ColorPair label={isAr ? "لون الوقت" : "Time Badge Color"} lightKey="badge_time_color_light" darkKey="badge_time_color_dark" />
+            
+            <hr style={{ borderColor: "var(--line)", margin: "16px 0" }} />
+            <h3 style={{ fontSize: 14, marginBottom: 12, color: "var(--ink)" }}>{isAr ? "وضع الطبخ (Cook Mode)" : "Cook Mode"}</h3>
+            <div className="field" style={{ marginBottom: 16 }}>
+              <label>{isAr ? "حجم العنوان (بكسل)" : "Title Size (px)"}</label>
+              <input type="number" min="16" max="72" value={config.cook_title_size} onChange={(e) => setConfig({ ...config, cook_title_size: e.target.value })} style={{ width: "100%", padding: 10 }} />
+            </div>
+            <ColorPair label={isAr ? "لون عنوان الطبخ" : "Cook Title Color"} lightKey="cook_title_color_light" darkKey="cook_title_color_dark" />
+
+            <hr style={{ borderColor: "var(--line)", margin: "16px 0" }} />
+            <div className="field" style={{ marginBottom: 16 }}>
+              <label>{isAr ? "حجم نص الخطوات (بكسل)" : "Instruction Text Size (px)"}</label>
+              <input type="number" min="16" max="72" value={config.cook_instruction_size || "32"} onChange={(e) => setConfig({ ...config, cook_instruction_size: e.target.value })} style={{ width: "100%", padding: 10 }} />
+            </div>
+            <ColorPair label={isAr ? "لون نص الخطوات" : "Instruction Text Color"} lightKey="cook_instruction_color_light" darkKey="cook_instruction_color_dark" />
+
+
           </div>
         )}
 
@@ -211,11 +247,11 @@ export default function SettingsPage() {
           </div>
         )}
 
-        {activeTab !== "devices" && (<div style={{ marginTop: 24, paddingTop: 24, borderTop: "1px solid var(--line)" }}>
+        <div style={{ marginTop: 24, paddingTop: 24, borderTop: "1px solid var(--line)" }}>
           <button className="btn btn-primary" onClick={handleSave} disabled={saving} style={{ width: "100%", padding: 12 }}>
             {saving ? (isAr ? ar.settingsPage.saving : "Saving...") : (isAr ? ar.settingsPage.save : "Save Changes")}
           </button>
-        </div>)}
+        </div>
       </div>
     </main>
   );
