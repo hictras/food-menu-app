@@ -436,26 +436,7 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
             {image1Url && (
               <img src={image1Url} alt="Image 1" style={{ width: "100%", height: 120, objectFit: "cover", borderRadius: 6, marginBottom: 8 }} />
             )}
-            <input
-              type="file"
-              accept="image/*"
-              onChange={async (e) => {
-                const file = e.target.files?.[0];
-                if (!file) return;
-                const fd = new FormData();
-                fd.append("file", file);
-                try {
-                  const res = await fetch("/api/upload-latest", { method: "POST", body: fd });
-                  const data = await res.json();
-                  if (data.url) {
-                    setImage1Url(data.url);
-                    if (!useImage2) setImageUrl(data.url);
-                    markDirty();
-                  }
-                } catch (err) { alert("Upload failed"); }
-              }}
-              style={{ fontSize: "0.8rem", width: "100%" }}
-            />
+            <ImageUpload onUploaded={(url) => { setImage1Url(url); if (!useImage2) setImageUrl(url); markDirty(); }} initialUrl={image1Url || undefined} />
           </div>
 
           {/* IMAGE 2 */}
@@ -466,26 +447,7 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
             {image2Url && (
               <img src={image2Url} alt="Image 2" style={{ width: "100%", height: 120, objectFit: "cover", borderRadius: 6, marginBottom: 8 }} />
             )}
-            <input
-              type="file"
-              accept="image/*"
-              onChange={async (e) => {
-                const file = e.target.files?.[0];
-                if (!file) return;
-                const fd = new FormData();
-                fd.append("file", file);
-                try {
-                  const res = await fetch("/api/upload-latest", { method: "POST", body: fd });
-                  const data = await res.json();
-                  if (data.url) {
-                    setImage2Url(data.url);
-                    if (useImage2) setImageUrl(data.url);
-                    markDirty();
-                  }
-                } catch (err) { alert("Upload failed"); }
-              }}
-              style={{ fontSize: "0.8rem", width: "100%" }}
-            />
+            <ImageUpload onUploaded={(url) => { setImage2Url(url); if (useImage2) setImageUrl(url); markDirty(); }} initialUrl={image2Url || undefined} />
           </div>
 
         </div>
