@@ -52,7 +52,7 @@ const TAG_AR: Record<string, string> = {
 };
 
 const emptyIngredient: Ingredient = {
-    name: "", nameAr: "", amount: "", unit: "", unitAr: "", preparation: "", preparationAr: "", collapsed: false,
+    name: "", nameAr: "", amount: "", unit: "", unitAr: "", preparation: "", preparationAr: "", collapsed: true,
 };
 
 function moveItem<T>(arr: T[], from: number, to: number): T[] {
@@ -117,15 +117,15 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
                     name: i.name, nameAr: i.nameAr ?? "", amount: i.amount ?? "",
                     unit: i.unit ?? "", unitAr: i.unitAr ?? "",
                     preparation: i.preparation ?? "", preparationAr: i.preparationAr ?? "",
-                    collapsed: false,
+                    collapsed: true,
                 }))
             : [{ ...emptyIngredient }]
     );
 
     const [steps, setSteps] = useState<Step[]>(
         initial?.instructions?.length
-            ? initial.instructions.map((s) => ({ text: s.text, textAr: s.textAr ?? "", collapsed: false }))
-            : [{ text: "", textAr: "", collapsed: false }]
+            ? initial.instructions.map((s) => ({ text: s.text, textAr: s.textAr ?? "", collapsed: true }))
+            : [{ text: "", textAr: "", collapsed: true }]
     );
 
     const [bulkIngredients, setBulkIngredients] = useState("");
@@ -171,7 +171,7 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
             const cleaned = prev.filter((i) => i.name.trim() || i.nameAr.trim() || i.amount.trim());
             return [...cleaned, ...parsed.map((p) => ({
                 name: p.name, nameAr: "", amount: p.amount, unit: p.unit,
-                unitAr: "", preparation: p.preparation, preparationAr: "", collapsed: false,
+                unitAr: "", preparation: p.preparation, preparationAr: "", collapsed: true,
             }))];
         });
         setBulkIngredients("");
@@ -182,7 +182,7 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
         setSteps((s) => s.map((st, idx) => (idx === i ? { ...st, ...patch } : st)));
         setDirty(true);
     }
-    function addStep() { setSteps((s) => [...s, { text: "", textAr: "", collapsed: false }]); setDirty(true); }
+    function addStep() { setSteps((s) => [...s, { text: "", textAr: "", collapsed: true }]); setDirty(true); }
     function removeStep(i: number) {
         setSteps((s) => (s.length === 1 ? s : s.filter((_, idx) => idx !== i)));
         setDirty(true);
@@ -194,7 +194,7 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
         if (lines.length === 0) return;
         setSteps((prev) => {
             const cleaned = prev.filter((s) => s.text.trim() || s.textAr.trim());
-            return [...cleaned, ...lines.map((text) => ({ text, textAr: "", collapsed: false }))];
+            return [...cleaned, ...lines.map((text) => ({ text, textAr: "", collapsed: true }))];
         });
         setBulkSteps("");
         setShowBulkStep(false);
@@ -498,194 +498,198 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
                 <h2>{t(lang, "ingredients")}</h2>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                    {ingredientsList.map((ing, i) => (
-                        <div
-                            className="ing-stack"
-                            key={i}
-                            draggable
-                            onDragStart={(e) => e.dataTransfer.setData("text/plain", `ing-${i}`)}
-                            onDragOver={(e) => e.preventDefault()}
-                            onDrop={(e) => {
-                                e.preventDefault();
-                                const data = e.dataTransfer.getData("text/plain");
-                                if (data.startsWith("ing-")) {
-                                    const fromIdx = parseInt(data.replace("ing-", ""), 10);
-                                    if (!isNaN(fromIdx) && fromIdx !== i) {
-                                        setIngredientsList((prev) => moveItem(prev, fromIdx, i));
-                                        setDirty(true);
+                    {ingredientsList.map((ing, i) => {
+                        const displayName = lang === "ar" ? (ing.nameAr || ing.name) : (ing.name || ing.nameAr);
+                        const displayUnit = lang === "ar" ? (ing.unitAr || ing.unit) : (ing.unit || ing.unitAr);
+                        return (
+                            <div
+                                className="ing-stack"
+                                key={i}
+                                draggable
+                                onDragStart={(e) => e.dataTransfer.setData("text/plain", `ing-${i}`)}
+                                onDragOver={(e) => e.preventDefault()}
+                                onDrop={(e) => {
+                                    e.preventDefault();
+                                    const data = e.dataTransfer.getData("text/plain");
+                                    if (data.startsWith("ing-")) {
+                                        const fromIdx = parseInt(data.replace("ing-", ""), 10);
+                                        if (!isNaN(fromIdx) && fromIdx !== i) {
+                                            setIngredientsList((prev) => moveItem(prev, fromIdx, i));
+                                            setDirty(true);
+                                        }
                                     }
-                                }
-                            }}
-                            style={{ background: "var(--surface-solid, #1c1c20)", border: "1px solid var(--line, #333)", borderRadius: 12, padding: 16, marginBottom: 16, boxShadow: "0 4px 12px rgba(0,0,0,0.2)" }}
-                        >
+                                }}
+                                style={{ background: "var(--surface-solid, #1c1c20)", border: "1px solid var(--line, #333)", borderRadius: 12, padding: 16, marginBottom: 16, boxShadow: "0 4px 12px rgba(0,0,0,0.2)" }}
+                            >
 
-                            <div className="ing-stack-head" style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: ing.collapsed ? 0 : 12 }}>
-                                <span style={{ color: "var(--muted, #666)", cursor: "grab", fontSize: "14px", userSelect: "none" }} title="Drag to reorder">⠿</span>
-                                <span className="ing-stack-num" style={{ background: "#ff6b4a", color: "white", width: 22, height: 22, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700 }}>
-                                    {i + 1}
-                                </span>
-                                <span className="ing-stack-label" style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--ink, #aaa)", textTransform: "uppercase" }}>
-                                    {ing.name ? `${ing.name} (${ing.amount || ""} ${ing.unit || ""})` : `INGREDIENT ${i + 1}`}
-                                </span>
-                                <button
-                                    type="button"
-                                    onClick={() => updateIngredient(i, { collapsed: !ing.collapsed })}
-                                    style={{ marginLeft: "auto", background: "transparent", border: "1px solid var(--line, #444)", color: "var(--ink, #888)", width: 24, height: 24, borderRadius: 4, cursor: "pointer", fontSize: "10px", display: "flex", alignItems: "center", justifyContent: "center" }}
-                                    title={ing.collapsed ? "Expand" : "Collapse"}
-                                >
-                                    {ing.collapsed ? "▼" : "▲"}
-                                </button>
-                                <button
-                                    type="button"
-                                    className="icon-btn"
-                                    onClick={() => removeIngredient(i)}
-                                    disabled={ingredientsList.length === 1}
-                                    style={{ background: "transparent", border: "1px solid var(--line, #444)", color: "var(--ink, #888)", width: 24, height: 24, borderRadius: 4, cursor: ingredientsList.length === 1 ? "not-allowed" : "pointer", opacity: ingredientsList.length === 1 ? 0.4 : 1, display: "flex", alignItems: "center", justifyContent: "center" }}
-                                >
-                                    ✕
-                                </button>
-                            </div>
+                                <div className="ing-stack-head" style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: ing.collapsed ? 0 : 12 }}>
+                                    <span style={{ color: "var(--muted, #666)", cursor: "grab", fontSize: "14px", userSelect: "none" }} title="Drag to reorder">⠿</span>
+                                    <span className="ing-stack-num" style={{ background: "#ff6b4a", color: "white", width: 22, height: 22, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700 }}>
+                                        {i + 1}
+                                    </span>
+                                    <span className="ing-stack-label" style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--ink, #aaa)", textTransform: "uppercase" }} dir={lang === "ar" ? "rtl" : "ltr"}>
+                                        {displayName ? `${displayName} (${ing.amount || ""} ${displayUnit || ""})` : (lang === "ar" ? `مكون ${i + 1}` : `INGREDIENT ${i + 1}`)}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => updateIngredient(i, { collapsed: !ing.collapsed })}
+                                        style={{ marginLeft: "auto", background: "transparent", border: "1px solid var(--line, #444)", color: "var(--ink, #888)", width: 24, height: 24, borderRadius: 4, cursor: "pointer", fontSize: "10px", display: "flex", alignItems: "center", justifyContent: "center" }}
+                                        title={ing.collapsed ? "Expand" : "Collapse"}
+                                    >
+                                        {ing.collapsed ? "▼" : "▲"}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="icon-btn"
+                                        onClick={() => removeIngredient(i)}
+                                        disabled={ingredientsList.length === 1}
+                                        style={{ background: "transparent", border: "1px solid var(--line, #444)", color: "var(--ink, #888)", width: 24, height: 24, borderRadius: 4, cursor: ingredientsList.length === 1 ? "not-allowed" : "pointer", opacity: ingredientsList.length === 1 ? 0.4 : 1, display: "flex", alignItems: "center", justifyContent: "center" }}
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
 
-                            {!ing.collapsed && (
-                                <>
-                                    {/* ENGLISH SECTION */}
-                                    <div className="ing-stack-en" style={{ background: "var(--surface-2, #242429)", padding: 12, borderRadius: 8, border: "1px solid var(--line, #333)", marginBottom: 8, display: "flex", flexDirection: "column", gap: 8, direction: "ltr" }}>
-                                        <div style={{ display: "grid", gridTemplateColumns: "50px 70px 1fr 2fr", gap: 6, alignItems: "center" }}>
-                                            <span style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "#555", color: "#eee", fontSize: "10.5px", fontWeight: 700, borderRadius: 6, height: 34 }}>EN</span>
-                                            <input
-                                                className="cell-qty"
-                                                type="text"
-                                                placeholder={t(lang, "qty")}
-                                                value={ing.amount}
-                                                onChange={(e) => updateIngredient(i, { amount: e.target.value })}
-                                                dir="ltr"
-                                                style={{ background: "var(--input-bg, #16161a)", border: "1px solid var(--line, #444)", color: "var(--ink, #ededed)", padding: "8px 10px", borderRadius: 6, height: 34, width: "100%", outline: "none" }}
-                                            />
-                                            <div className="input-with-tools" style={{ display: "flex", background: "var(--input-bg, #16161a)", border: "1px solid var(--line, #444)", borderRadius: 6, overflow: "visible", height: 34, position: "relative" }}>
+                                {!ing.collapsed && (
+                                    <>
+                                        {/* ENGLISH SECTION */}
+                                        <div className="ing-stack-en" style={{ background: "var(--surface-2, #242429)", padding: 12, borderRadius: 8, border: "1px solid var(--line, #333)", marginBottom: 8, display: "flex", flexDirection: "column", gap: 8, direction: "ltr" }}>
+                                            <div style={{ display: "grid", gridTemplateColumns: "50px 70px 1fr 2fr", gap: 6, alignItems: "center" }}>
+                                                <span style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "#555", color: "#eee", fontSize: "10.5px", fontWeight: 700, borderRadius: 6, height: 34 }}>EN</span>
                                                 <input
-                                                    className="cell-unit"
+                                                    className="cell-qty"
                                                     type="text"
-                                                    placeholder={t(lang, "unit")}
-                                                    value={ing.unit}
-                                                    onChange={(e) => updateIngredient(i, { unit: e.target.value })}
+                                                    placeholder={t(lang, "qty")}
+                                                    value={ing.amount}
+                                                    onChange={(e) => updateIngredient(i, { amount: e.target.value })}
                                                     dir="ltr"
-                                                    style={{ background: "transparent", border: "none", color: "var(--ink, #ededed)", padding: "8px 36px 8px 10px", width: "100%", outline: "none" }}
+                                                    style={{ background: "var(--input-bg, #16161a)", border: "1px solid var(--line, #444)", color: "var(--ink, #ededed)", padding: "8px 10px", borderRadius: 6, height: 34, width: "100%", outline: "none" }}
+                                                />
+                                                <div className="input-with-tools" style={{ display: "flex", background: "var(--input-bg, #16161a)", border: "1px solid var(--line, #444)", borderRadius: 6, overflow: "visible", height: 34, position: "relative" }}>
+                                                    <input
+                                                        className="cell-unit"
+                                                        type="text"
+                                                        placeholder={t(lang, "unit")}
+                                                        value={ing.unit}
+                                                        onChange={(e) => updateIngredient(i, { unit: e.target.value })}
+                                                        dir="ltr"
+                                                        style={{ background: "transparent", border: "none", color: "var(--ink, #ededed)", padding: "8px 36px 8px 10px", width: "100%", outline: "none" }}
+                                                    />
+                                                    <AutoTranslate
+                                                        kind="unit"
+                                                        value={ing.unit}
+                                                        sourceIsAr={false}
+                                                        onTranslated={(v) => updateIngredient(i, { unitAr: v })}
+                                                    />
+                                                    <div className="picker-wrap" style={{ position: "relative" }}>
+                                                        <PickerDropdown
+                                                            items={UNITS}
+                                                            title={lang === "ar" ? "اختر الوحدة" : "Pick unit"}
+                                                            onPick={(en, ar) => updateIngredient(i, { unit: en, unitAr: ar })}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <input
+                                                    className="cell-name"
+                                                    type="text"
+                                                    placeholder={t(lang, "ingredient")}
+                                                    value={ing.name}
+                                                    onChange={(e) => updateIngredient(i, { name: e.target.value })}
+                                                    dir="ltr"
+                                                    style={{ background: "var(--input-bg, #16161a)", border: "1px solid var(--line, #444)", color: "var(--ink, #ededed)", padding: "8px 10px", borderRadius: 6, height: 34, width: "100%", outline: "none" }}
+                                                />
+                                            </div>
+
+                                            <div className="input-with-tools" style={{ display: "flex", background: "var(--input-bg, #16161a)", border: "1px solid var(--line, #444)", borderRadius: 6, overflow: "visible", height: 34, width: "100%", position: "relative" }}>
+                                                <input
+                                                    className="cell-prep"
+                                                    type="text"
+                                                    placeholder="Prep (EN)"
+                                                    value={ing.preparation}
+                                                    onChange={(e) => updateIngredient(i, { preparation: e.target.value })}
+                                                    dir="ltr"
+                                                    style={{ background: "transparent", border: "none", color: "var(--ink, #ededed)", padding: "8px 70px 8px 10px", width: "100%", outline: "none" }}
                                                 />
                                                 <AutoTranslate
-                                                    kind="unit"
-                                                    value={ing.unit}
+                                                    kind="prep"
+                                                    value={ing.preparation}
                                                     sourceIsAr={false}
-                                                    onTranslated={(v) => updateIngredient(i, { unitAr: v })}
+                                                    onTranslated={(v) => updateIngredient(i, { preparationAr: v })}
                                                 />
                                                 <div className="picker-wrap" style={{ position: "relative" }}>
                                                     <PickerDropdown
-                                                        items={UNITS}
-                                                        title={lang === "ar" ? "اختر الوحدة" : "Pick unit"}
-                                                        onPick={(en, ar) => updateIngredient(i, { unit: en, unitAr: ar })}
+                                                        items={PREPARATIONS}
+                                                        title={lang === "ar" ? "اختر التحضير" : "Pick preparation"}
+                                                        onPick={(en, ar) => updateIngredient(i, { preparation: en, preparationAr: ar })}
                                                     />
                                                 </div>
                                             </div>
-                                            <input
-                                                className="cell-name"
-                                                type="text"
-                                                placeholder={t(lang, "ingredient")}
-                                                value={ing.name}
-                                                onChange={(e) => updateIngredient(i, { name: e.target.value })}
-                                                dir="ltr"
-                                                style={{ background: "var(--input-bg, #16161a)", border: "1px solid var(--line, #444)", color: "var(--ink, #ededed)", padding: "8px 10px", borderRadius: 6, height: 34, width: "100%", outline: "none" }}
-                                            />
                                         </div>
 
-                                        <div className="input-with-tools" style={{ display: "flex", background: "var(--input-bg, #16161a)", border: "1px solid var(--line, #444)", borderRadius: 6, overflow: "visible", height: 34, width: "100%", position: "relative" }}>
-                                            <input
-                                                className="cell-prep"
-                                                type="text"
-                                                placeholder="Prep (EN)"
-                                                value={ing.preparation}
-                                                onChange={(e) => updateIngredient(i, { preparation: e.target.value })}
-                                                dir="ltr"
-                                                style={{ background: "transparent", border: "none", color: "var(--ink, #ededed)", padding: "8px 70px 8px 10px", width: "100%", outline: "none" }}
-                                            />
-                                            <AutoTranslate
-                                                kind="prep"
-                                                value={ing.preparation}
-                                                sourceIsAr={false}
-                                                onTranslated={(v) => updateIngredient(i, { preparationAr: v })}
-                                            />
-                                            <div className="picker-wrap" style={{ position: "relative" }}>
-                                                <PickerDropdown
-                                                    items={PREPARATIONS}
-                                                    title={lang === "ar" ? "اختر التحضير" : "Pick preparation"}
-                                                    onPick={(en, ar) => updateIngredient(i, { preparation: en, preparationAr: ar })}
+                                        {/* ARABIC SECTION */}
+                                        <div className="ing-stack-ar" style={{ background: "var(--surface-2, #242429)", padding: 12, borderRadius: 8, border: "1px solid var(--line, #333)", display: "flex", flexDirection: "column", gap: 8, direction: "rtl" }}>
+                                            <div style={{ display: "grid", gridTemplateColumns: "50px 70px 1fr 2fr", gap: 6, alignItems: "center", direction: "rtl" }}>
+                                                <span className="ing-stack-tag" style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "#555", color: "#eee", fontSize: "10.5px", fontWeight: 700, borderRadius: 6, height: 34 }}>AR</span>
+                                                <input
+                                                    className="cell-qty"
+                                                    type="text"
+                                                    placeholder={t(lang, "qty")}
+                                                    value={ing.amount}
+                                                    onChange={(e) => updateIngredient(i, { amount: e.target.value })}
+                                                    dir="rtl"
+                                                    style={{ background: "var(--input-bg, #16161a)", border: "1px solid var(--line, #444)", color: "var(--ink, #ededed)", padding: "8px 10px", borderRadius: 6, height: 34, width: "100%", textAlign: "right", outline: "none" }}
+                                                />
+                                                <div className="input-with-tools" style={{ display: "flex", background: "var(--input-bg, #16161a)", border: "1px solid var(--line, #444)", borderRadius: 6, overflow: "visible", height: 34, position: "relative" }}>
+                                                    <input
+                                                        className="cell-unit"
+                                                        type="text"
+                                                        placeholder={t(lang, "unit_ar_label")}
+                                                        value={ing.unitAr}
+                                                        onChange={(e) => updateIngredient(i, { unitAr: e.target.value })}
+                                                        dir="rtl"
+                                                        style={{ background: "transparent", border: "none", color: "var(--ink, #ededed)", padding: "8px 10px 8px 36px", width: "100%", outline: "none", textAlign: "right" }}
+                                                    />
+                                                    <AutoTranslate
+                                                        kind="unit"
+                                                        value={ing.unitAr}
+                                                        sourceIsAr={true}
+                                                        onTranslated={(v) => updateIngredient(i, { unit: v })}
+                                                    />
+                                                </div>
+                                                <input
+                                                    className="cell-name"
+                                                    type="text"
+                                                    placeholder={t(lang, "ingredient_ar_label")}
+                                                    value={ing.nameAr}
+                                                    onChange={(e) => updateIngredient(i, { nameAr: e.target.value })}
+                                                    dir="rtl"
+                                                    style={{ background: "var(--input-bg, #16161a)", border: "1px solid var(--line, #444)", color: "var(--ink, #ededed)", padding: "8px 10px", borderRadius: 6, height: 34, width: "100%", textAlign: "right", outline: "none" }}
                                                 />
                                             </div>
-                                        </div>
-                                    </div>
 
-                                    {/* ARABIC SECTION */}
-                                    <div className="ing-stack-ar" style={{ background: "var(--surface-2, #242429)", padding: 12, borderRadius: 8, border: "1px solid var(--line, #333)", display: "flex", flexDirection: "column", gap: 8, direction: "rtl" }}>
-                                        <div style={{ display: "grid", gridTemplateColumns: "50px 70px 1fr 2fr", gap: 6, alignItems: "center", direction: "rtl" }}>
-                                            <span className="ing-stack-tag" style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "#555", color: "#eee", fontSize: "10.5px", fontWeight: 700, borderRadius: 6, height: 34 }}>AR</span>
-                                            <input
-                                                className="cell-qty"
-                                                type="text"
-                                                placeholder={t(lang, "qty")}
-                                                value={ing.amount}
-                                                onChange={(e) => updateIngredient(i, { amount: e.target.value })}
-                                                dir="rtl"
-                                                style={{ background: "var(--input-bg, #16161a)", border: "1px solid var(--line, #444)", color: "var(--ink, #ededed)", padding: "8px 10px", borderRadius: 6, height: 34, width: "100%", textAlign: "right", outline: "none" }}
-                                            />
-                                            <div className="input-with-tools" style={{ display: "flex", background: "var(--input-bg, #16161a)", border: "1px solid var(--line, #444)", borderRadius: 6, overflow: "visible", height: 34, position: "relative" }}>
+                                            <div className="input-with-tools" style={{ display: "flex", background: "var(--input-bg, #16161a)", border: "1px solid var(--line, #444)", borderRadius: 6, overflow: "visible", height: 34, width: "100%", position: "relative" }}>
                                                 <input
-                                                    className="cell-unit"
+                                                    className="cell-prep"
                                                     type="text"
-                                                    placeholder={t(lang, "unit_ar_label")}
-                                                    value={ing.unitAr}
-                                                    onChange={(e) => updateIngredient(i, { unitAr: e.target.value })}
+                                                    placeholder="Prep (AR)"
+                                                    value={ing.preparationAr}
+                                                    onChange={(e) => updateIngredient(i, { preparationAr: e.target.value })}
                                                     dir="rtl"
                                                     style={{ background: "transparent", border: "none", color: "var(--ink, #ededed)", padding: "8px 10px 8px 36px", width: "100%", outline: "none", textAlign: "right" }}
                                                 />
                                                 <AutoTranslate
-                                                    kind="unit"
-                                                    value={ing.unitAr}
+                                                    kind="prep"
+                                                    value={ing.preparationAr}
                                                     sourceIsAr={true}
-                                                    onTranslated={(v) => updateIngredient(i, { unit: v })}
+                                                    onTranslated={(v) => updateIngredient(i, { preparation: v })}
                                                 />
                                             </div>
-                                            <input
-                                                className="cell-name"
-                                                type="text"
-                                                placeholder={t(lang, "ingredient_ar_label")}
-                                                value={ing.nameAr}
-                                                onChange={(e) => updateIngredient(i, { nameAr: e.target.value })}
-                                                dir="rtl"
-                                                style={{ background: "var(--input-bg, #16161a)", border: "1px solid var(--line, #444)", color: "var(--ink, #ededed)", padding: "8px 10px", borderRadius: 6, height: 34, width: "100%", textAlign: "right", outline: "none" }}
-                                            />
                                         </div>
+                                    </>
+                                )}
 
-                                        <div className="input-with-tools" style={{ display: "flex", background: "var(--input-bg, #16161a)", border: "1px solid var(--line, #444)", borderRadius: 6, overflow: "visible", height: 34, width: "100%", position: "relative" }}>
-                                            <input
-                                                className="cell-prep"
-                                                type="text"
-                                                placeholder="Prep (AR)"
-                                                value={ing.preparationAr}
-                                                onChange={(e) => updateIngredient(i, { preparationAr: e.target.value })}
-                                                dir="rtl"
-                                                style={{ background: "transparent", border: "none", color: "var(--ink, #ededed)", padding: "8px 10px 8px 36px", width: "100%", outline: "none", textAlign: "right" }}
-                                            />
-                                            <AutoTranslate
-                                                kind="prep"
-                                                value={ing.preparationAr}
-                                                sourceIsAr={true}
-                                                onTranslated={(v) => updateIngredient(i, { preparation: v })}
-                                            />
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-
-                        </div>
-                    ))}
+                            </div>
+                        );
+                    })}
                 </div>
 
                 <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
@@ -706,56 +710,59 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
             <section className="form-section">
                 <h2>{t(lang, "instructions")}</h2>
                 <div className="step-stack-list">
-                    {steps.map((st, i) => (
-                        <div
-                            className="step-stack"
-                            key={i}
-                            draggable
-                            onDragStart={(e) => e.dataTransfer.setData("text/plain", `step-${i}`)}
-                            onDragOver={(e) => e.preventDefault()}
-                            onDrop={(e) => {
-                                e.preventDefault();
-                                const data = e.dataTransfer.getData("text/plain");
-                                if (data.startsWith("step-")) {
-                                    const fromIdx = parseInt(data.replace("step-", ""), 10);
-                                    if (!isNaN(fromIdx) && fromIdx !== i) {
-                                        setSteps((prev) => moveItem(prev, fromIdx, i));
-                                        setDirty(true);
+                    {steps.map((st, i) => {
+                        const displayStepText = lang === "ar" ? (st.textAr || st.text) : (st.text || st.textAr);
+                        return (
+                            <div
+                                className="step-stack"
+                                key={i}
+                                draggable
+                                onDragStart={(e) => e.dataTransfer.setData("text/plain", `step-${i}`)}
+                                onDragOver={(e) => e.preventDefault()}
+                                onDrop={(e) => {
+                                    e.preventDefault();
+                                    const data = e.dataTransfer.getData("text/plain");
+                                    if (data.startsWith("step-")) {
+                                        const fromIdx = parseInt(data.replace("step-", ""), 10);
+                                        if (!isNaN(fromIdx) && fromIdx !== i) {
+                                            setSteps((prev) => moveItem(prev, fromIdx, i));
+                                            setDirty(true);
+                                        }
                                     }
-                                }
-                            }}
-                            style={{ background: "var(--surface-solid, #1c1c20)", border: "1px solid var(--line, #333)", borderRadius: 12, padding: 16, marginBottom: 16, boxShadow: "0 4px 12px rgba(0,0,0,0.2)" }}
-                        >
-                            <div className="step-stack-head" style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: st.collapsed ? 0 : 12 }}>
-                                <span style={{ color: "var(--muted, #666)", cursor: "grab", fontSize: "14px", userSelect: "none" }} title="Drag to reorder">⠿</span>
-                                <span className="step-stack-num" style={{ background: "#ff6b4a", color: "white", width: 22, height: 22, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700 }}>
-                                    {i + 1}
-                                </span>
-                                <span className="step-stack-label" style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--ink, #aaa)" }}>
-                                    {st.text ? (st.text.length > 40 ? st.text.slice(0, 40) + "..." : st.text) : `Step ${i + 1}`}
-                                </span>
-                                <button
-                                    type="button"
-                                    onClick={() => updateStep(i, { collapsed: !st.collapsed })}
-                                    style={{ marginLeft: "auto", background: "transparent", border: "1px solid var(--line, #444)", color: "var(--ink, #888)", width: 24, height: 24, borderRadius: 4, cursor: "pointer", fontSize: "10px" }}
-                                    title={st.collapsed ? "Expand" : "Collapse"}
-                                >
-                                    {st.collapsed ? "▼" : "▲"}
-                                </button>
-                                <button type="button" className="icon-btn" onClick={() => removeStep(i)} disabled={steps.length === 1} style={{ background: "transparent", border: "1px solid var(--line, #444)", color: "var(--ink, #888)", width: 24, height: 24, borderRadius: 4, cursor: steps.length === 1 ? "not-allowed" : "pointer", opacity: steps.length === 1 ? 0.4 : 1 }}>✕</button>
-                            </div>
+                                }}
+                                style={{ background: "var(--surface-solid, #1c1c20)", border: "1px solid var(--line, #333)", borderRadius: 12, padding: 16, marginBottom: 16, boxShadow: "0 4px 12px rgba(0,0,0,0.2)" }}
+                            >
+                                <div className="step-stack-head" style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: st.collapsed ? 0 : 12 }}>
+                                    <span style={{ color: "var(--muted, #666)", cursor: "grab", fontSize: "14px", userSelect: "none" }} title="Drag to reorder">⠿</span>
+                                    <span className="step-stack-num" style={{ background: "#ff6b4a", color: "white", width: 22, height: 22, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700 }}>
+                                        {i + 1}
+                                    </span>
+                                    <span className="step-stack-label" style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--ink, #aaa)" }} dir={lang === "ar" ? "rtl" : "ltr"}>
+                                        {displayStepText ? (displayStepText.length > 40 ? displayStepText.slice(0, 40) + "..." : displayStepText) : (lang === "ar" ? `الخطوة ${i + 1}` : `Step ${i + 1}`)}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => updateStep(i, { collapsed: !st.collapsed })}
+                                        style={{ marginLeft: "auto", background: "transparent", border: "1px solid var(--line, #444)", color: "var(--ink, #888)", width: 24, height: 24, borderRadius: 4, cursor: "pointer", fontSize: "10px" }}
+                                        title={st.collapsed ? "Expand" : "Collapse"}
+                                    >
+                                        {st.collapsed ? "▼" : "▲"}
+                                    </button>
+                                    <button type="button" className="icon-btn" onClick={() => removeStep(i)} disabled={steps.length === 1} style={{ background: "transparent", border: "1px solid var(--line, #444)", color: "var(--ink, #888)", width: 24, height: 24, borderRadius: 4, cursor: steps.length === 1 ? "not-allowed" : "pointer", opacity: steps.length === 1 ? 0.4 : 1 }}>✕</button>
+                                </div>
 
-                            {!st.collapsed && (
-                                <>
-                                    <textarea placeholder={t(lang, "step_en")} value={st.text} onChange={(e) => updateStep(i, { text: e.target.value })} dir="ltr" style={{ width: "100%", minHeight: 80, padding: 10, background: "var(--input-bg, #16161a)", border: "1px solid var(--line, #444)", borderRadius: 6, color: "var(--ink, #ededed)", marginBottom: 8 }} />
-                                    <div className="step-stack-divider" />
-                                    <div className="step-stack-ar-0" style={{ marginTop: 8 }}>
-                                        <textarea placeholder={t(lang, "step_ar")} value={st.textAr} onChange={(e) => updateStep(i, { textAr: e.target.value })} dir="rtl" style={{ width: "100%", minHeight: 80, padding: 10, background: "var(--input-bg, #16161a)", border: "1px solid var(--line, #444)", borderRadius: 6, color: "var(--ink, #ededed)", textAlign: "right" }} />
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    ))}
+                                {!st.collapsed && (
+                                    <>
+                                        <textarea placeholder={t(lang, "step_en")} value={st.text} onChange={(e) => updateStep(i, { text: e.target.value })} dir="ltr" style={{ width: "100%", minHeight: 80, padding: 10, background: "var(--input-bg, #16161a)", border: "1px solid var(--line, #444)", borderRadius: 6, color: "var(--ink, #ededed)", marginBottom: 8 }} />
+                                        <div className="step-stack-divider" />
+                                        <div className="step-stack-ar-0" style={{ marginTop: 8 }}>
+                                            <textarea placeholder={t(lang, "step_ar")} value={st.textAr} onChange={(e) => updateStep(i, { textAr: e.target.value })} dir="rtl" style={{ width: "100%", minHeight: 80, padding: 10, background: "var(--input-bg, #16161a)", border: "1px solid var(--line, #444)", borderRadius: 6, color: "var(--ink, #ededed)", textAlign: "right" }} />
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
                 <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
                     <button type="button" className="add-row" onClick={addStep}>{t(lang, "add_step")}</button>
