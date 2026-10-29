@@ -12,24 +12,29 @@ export default function IdleReload() {
     if (typeof window === "undefined") return;
 
     const trackPage = async () => {
-      const visitorId = localStorage.getItem("visitor_id");
-      if (visitorId && pathname) {
-        try {
-          const match = document.cookie.match(/viewer_phone=([^;]+)/);
-          const phone = match ? decodeURIComponent(match[1]) : null;
+      let visitorId = localStorage.getItem("visitor_id");
+      if (!visitorId) {
+        visitorId = (crypto.randomUUID?.() ??
+          `${Date.now()}-${Math.random().toString(36).slice(2)}`);
+        localStorage.setItem("visitor_id", visitorId);
+      }
+      if (!pathname) return;
 
-          await fetch("/api/visitors", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-              id: visitorId, 
-              phone: phone,
-              lastPage: pathname 
-            }),
-          });
-        } catch (e) {
-          // Ignore errors
-        }
+      try {
+        const match = document.cookie.match(/viewer_phone=([^;]+)/);
+        const phone = match ? decodeURIComponent(match[1]) : null;
+
+        await fetch("/api/visitors", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: visitorId,
+            phone: phone,
+            lastPage: pathname,
+          }),
+        });
+      } catch (e) {
+        // Ignore errors
       }
     };
     

@@ -21,6 +21,10 @@ export default function VisitorsPage() {
   const [editId, setEditId] = useState<string | null>(null);
   const [editPhone, setEditPhone] = useState("");
 
+  // Sort state
+  const [sortKey, setSortKey] = useState<"name" | "visits" | "lastSeen" | "lastPage">("lastSeen");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+
   useEffect(() => {
     fetch("/api/auth/me")
       .then((res) => res.json())
@@ -79,6 +83,25 @@ export default function VisitorsPage() {
     loadVisitors();
   }
 
+  const sortedVisitors = [...visitors].sort((a, b) => {
+    const dir = sortDir === "asc" ? 1 : -1;
+    if (sortKey === "name") {
+      const an = (a.name || "").toLowerCase();
+      const bn = (b.name || "").toLowerCase();
+      return an.localeCompare(bn) * dir;
+    }
+    if (sortKey === "visits") {
+      return ((a.visits || 0) - (b.visits || 0)) * dir;
+    }
+    if (sortKey === "lastPage") {
+      const ap = (a.lastPage || "").toLowerCase();
+      const bp = (b.lastPage || "").toLowerCase();
+      return ap.localeCompare(bp) * dir;
+    }
+    // lastSeen
+    return (new Date(a.lastSeen).getTime() - new Date(b.lastSeen).getTime()) * dir;
+  });
+
   if (loading) return <div className="container" style={{ padding: 40 }}>{isAr ? ar.visitorsPage.loading : "Loading..."}</div>;
 
   return (
@@ -95,9 +118,34 @@ export default function VisitorsPage() {
           <span style={{ fontSize: 14, fontWeight: 600 }}>
             {visitors.length} {isAr ? ar.visitorsPage.totalDevices : "Devices"}
           </span>
-          <button type="button" className="btn btn-ghost" style={{ fontSize: 12 }} onClick={loadVisitors}>
-            ↻ {isAr ? ar.visitorsPage.refresh : "Refresh"}
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <label style={{ fontSize: 12, color: "var(--muted)" }}>
+              {isAr ? "ترتيب حسب:" : "Sort by:"}
+            </label>
+            <select
+              className="filter-select"
+              value={sortKey}
+              onChange={(e) => setSortKey(e.target.value as any)}
+              style={{ fontSize: 12, padding: "6px 10px" }}
+            >
+              <option value="lastSeen">{isAr ? "آخر ظهور" : "Last seen"}</option>
+              <option value="name">{isAr ? "الاسم" : "Name"}</option>
+              <option value="visits">{isAr ? "الزيارات" : "Visits"}</option>
+              <option value="lastPage">{isAr ? "آخر صفحة" : "Last page"}</option>
+            </select>
+            <button
+              type="button"
+              className="btn btn-ghost"
+              style={{ fontSize: 12, padding: "6px 10px" }}
+              onClick={() => setSortDir(sortDir === "asc" ? "desc" : "asc")}
+              title={sortDir === "asc" ? "Ascending" : "Descending"}
+            >
+              {sortDir === "asc" ? "↑" : "↓"}
+            </button>
+            <button type="button" className="btn btn-ghost" style={{ fontSize: 12 }} onClick={loadVisitors}>
+              ↻ {isAr ? ar.visitorsPage.refresh : "Refresh"}
+            </button>
+          </div>
         </div>
 
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14, minWidth: 700 }}>
@@ -120,7 +168,7 @@ export default function VisitorsPage() {
                 </td>
               </tr>
             ) : (
-              visitors.map((v, i) => (
+              sortedVisitors.map((v, i) => (
                 <tr key={v.id} style={{ borderBottom: "1px solid var(--line)" }}>
                   <td style={{ padding: 12, color: "var(--muted)", fontVariantNumeric: "tabular-nums" }}>{i + 1}</td>
                   
