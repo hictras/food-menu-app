@@ -674,8 +674,8 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
                             </div>
                             <textarea placeholder={t(lang, "step_en")} value={st.text} onChange={(e) => updateStep(i, { text: e.target.value })} dir="ltr" />
                             <div className="step-stack-divider" />
-                            <div className="step-stack-ar">
-                                <span className="ing-stack-tag">AR</span>
+                            <div className="step-stack-ar-0">
+                                <span></span>
                                 <textarea placeholder={t(lang, "step_ar")} value={st.textAr} onChange={(e) => updateStep(i, { textAr: e.target.value })} dir="rtl" />
                             </div>
                         </div>
