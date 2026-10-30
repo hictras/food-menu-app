@@ -1,11 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRef } from "react";
 
 export default function ChessPage() {
-    const iframeRef = useRef<HTMLIFrameElement>(null);
-
     return (
         <div style={{ height: "100dvh", display: "flex", flexDirection: "column", background: "#0f1110", position: "relative" }}>
 
@@ -37,14 +34,8 @@ export default function ChessPage() {
                     ← Back
                 </Link>
 
-                <button
-                    onClick={() => {
-                        // Attempt to tell the iframe to go back, then go back in React
-                        if (iframeRef.current?.contentWindow) {
-                            iframeRef.current.contentWindow.history.back();
-                        }
-                        window.history.back();
-                    }}
+                <Link
+                    href="/"
                     style={{
                         background: "rgba(224, 104, 79, 0.15)",
                         border: "1px solid rgba(224, 104, 79, 0.4)",
@@ -58,11 +49,10 @@ export default function ChessPage() {
                     }}
                 >
                     ✕ Close
-                </button>
+                </Link>
             </div>
 
             <iframe
-                ref={iframeRef}
                 src="https://chess-v7v5.onrender.com"
                 title="Online Chess"
                 style={{ width: "100%", height: "100%", border: "none", display: "block" }}
