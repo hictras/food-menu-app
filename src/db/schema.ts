@@ -216,3 +216,15 @@ export const chessRooms = sqliteTable("chess_rooms", {
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
 });
+
+export const recipeLikes = sqliteTable("recipe_likes", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  recipeId: integer("recipe_id")
+    .notNull()
+    .references(() => recipes.id, { onDelete: "cascade" }),
+  visitorId: text("visitor_id").notNull(),
+  phone: text("phone"),
+  createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
+}, (t) => ({
+  uniqRecipeVisitor: uniqueIndex("uniq_like_recipe_visitor").on(t.recipeId, t.visitorId),
+}));

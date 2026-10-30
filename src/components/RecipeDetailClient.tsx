@@ -1,4 +1,5 @@
 "use client";
+import LikeButton from "./LikeButton";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -123,6 +124,7 @@ export default function RecipeDetailClient({
           <h1 style={{ margin: 0, fontSize: 36, fontFamily: "var(--font-head)", fontWeight: 400, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {displayName}
           </h1>
+          <LikeButton recipeId={recipe.id} />
           <button type="button" className="btn btn-ghost" onClick={() => shareToWhatsApp(false)} style={{ height: 42, padding: "0 16px", borderRadius: 8, fontSize: 13, display: "inline-flex", alignItems: "center", gap: 6, border: "1px solid var(--line)", background: "var(--surface)", color: "var(--ink)", cursor: "pointer", flexShrink: 0 }}>
             💬 {isAr ? ar.share : "Share"}
           </button>

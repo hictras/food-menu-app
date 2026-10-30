@@ -1,4 +1,5 @@
 "use client";
+import { useMemo } from "react";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -76,6 +77,10 @@ export default function DayPage() {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  const [likeMap, setLikeMap] = useState<Record<string, { count: number; liked: boolean }>>({});
+  const [visitorId, setVisitorId] = useState<string>("");
+
+
   useEffect(() => {
     fetch("/api/auth/me").then(r => r.json()).then(d => setIsAdmin(d.admin)).catch(() => {});
     if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
@@ -92,6 +97,25 @@ export default function DayPage() {
       })
       .catch(() => setLoading(false));
   }, [dateStr]);
+
+  useEffect(() => {
+    let vid = localStorage.getItem("visitor_id");
+    if (!vid) {
+      vid = (crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`);
+      localStorage.setItem("visitor_id", vid);
+    }
+    setVisitorId(vid);
+  }, []);
+
+  useEffect(() => {
+    if (entries.length === 0) return;
+    const ids = Array.from(new Set(entries.map((e) => e.recipe.id)));
+    const qs = new URLSearchParams({ ids: ids.join(","), ...(visitorId ? { visitorId } : {}) });
+    fetch(`/api/recipes/likes?${qs.toString()}`, { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => { if (d && typeof d === "object") setLikeMap(d); })
+      .catch(() => {});
+  }, [entries, visitorId]);
 
   function getShiftedDate(days: number) {
     const [y, m, d] = dateStr.split("-").map(Number);
@@ -212,9 +236,43 @@ export default function DayPage() {
                             {category && <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 999, background: "var(--surface-2)", color: "var(--muted)", whiteSpace: "nowrap" }}>{category}</span>}
                           </div>
                           {desc && <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--ink-soft)", lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{desc}</p>}
-                          <div style={{ fontSize: "0.6875rem", color: "var(--muted)", display: "flex", gap: 12, marginTop: "auto", fontVariantNumeric: "tabular-nums" }}>
+                          <div style={{ fontSize: "0.6875rem", color: "var(--muted)", display: "flex", gap: 12, marginTop: "auto", fontVariantNumeric: "tabular-nums", alignItems: "center", flexWrap: "wrap" }}>
                             <span>⏱ {entry.recipe.prepTime + entry.recipe.cookTime} {isAr ? ar.detail.min : "min"}</span>
                             <span>🍽 {entry.recipe.servings}</span>
+                            <button
+                              type="button"
+                              onClick={async (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (!visitorId) return;
+                                const res = await fetch(`/api/recipes/${entry.recipe.id}/like`, {
+                                  method: "POST",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({ visitorId }),
+                                });
+                                if (res.ok) {
+                                  const d = await res.json();
+                                  setLikeMap((prev) => ({ ...prev, [String(entry.recipe.id)]: { count: d.count, liked: d.liked } }));
+                                }
+                              }}
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: 4,
+                                padding: "2px 8px",
+                                borderRadius: 999,
+                                fontSize: 11.5,
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                border: (likeMap[String(entry.recipe.id)]?.liked) ? "1px solid var(--accent)" : "1px solid var(--line)",
+                                background: (likeMap[String(entry.recipe.id)]?.liked) ? "var(--accent-soft)" : "var(--surface-2)",
+                                color: (likeMap[String(entry.recipe.id)]?.liked) ? "var(--accent)" : "var(--muted)",
+                                fontVariantNumeric: "tabular-nums",
+                              }}
+                            >
+                              <span style={{ fontSize: 12 }}>{(likeMap[String(entry.recipe.id)]?.liked) ? "❤️" : "🤍"}</span>
+                              <span>{likeMap[String(entry.recipe.id)]?.count ?? 0}</span>
+                            </button>
                           </div>
                         </div>
                       </Link>
