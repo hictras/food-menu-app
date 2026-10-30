@@ -32,7 +32,7 @@ export default function ChessPage() {
                         marginRight: "12px",
                     }}
                 >
-                    ← Back
+                    ← Exit
                 </Link>
 
 
