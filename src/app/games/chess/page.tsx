@@ -20,36 +20,22 @@ export default function ChessPage() {
                 <Link
                     href="/games"
                     style={{
-                        background: "var(--surface, #1f2716)",
-                        border: "1px solid var(--line, #2f3a24)",
-                        borderRadius: 10,
-                        padding: "8px 14px",
+                        background: "transparent",
+                        border: "1px solid #2f3a24",
+                        borderRadius: 6,
+                        padding: "6px 12px",
                         fontSize: 14,
-                        fontWeight: 600,
+                        fontWeight: "bold",
                         textDecoration: "none",
-                        color: "var(--ink, #f1f4e8)",
+                        color: "#b8c0a8",
                         cursor: "pointer",
+                        marginRight: "12px",
                     }}
                 >
                     ← Back
                 </Link>
 
-                <Link
-                    href="/"
-                    style={{
-                        background: "rgba(224, 104, 79, 0.15)",
-                        border: "1px solid rgba(224, 104, 79, 0.4)",
-                        borderRadius: 10,
-                        padding: "8px 14px",
-                        fontSize: 14,
-                        fontWeight: 600,
-                        textDecoration: "none",
-                        color: "#e0684f",
-                        cursor: "pointer",
-                    }}
-                >
-                    ✕ Close
-                </Link>
+
             </div>
 
             <iframe
