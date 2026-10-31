@@ -215,7 +215,7 @@ export default function Nav() {
               👤 {lang === "ar" ? ar.nav.login : "Login"}
             </Link>
           )}
-
+           <style>{`.mobile-nav-link { min-height: 32px; }`}</style>
           <div className="nav-mobile-wrap">
             <button
               type="button"
@@ -232,7 +232,7 @@ export default function Nav() {
         </div>
 
         <div className={`nav-mobile-menu${mobileOpen ? " is-open" : ""}`} id="nav-mobile-menu">
-          <Link className="mobile-nav-link" href="/inbox" onClick={closeAll} style={{ position: "relative", display: "flex", alignItems: "center", gap: 8 }}>
+          <Link className="mobile-nav-link" href="/inbox" onClick={closeAll} style={{ position: "relative", display: "flex", alignItems: "center", gap: 8  }}>
             <span>✉️</span> {lang === "ar" ? ar.nav.inbox : "Inbox"}
             {unreadCount > 0 && (
               <span style={{ background: "var(--accent)", color: "white", fontSize: 11, fontWeight: "bold", padding: "2px 6px", borderRadius: 999, marginInlineStart: "auto" }}>
