@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useLang } from "@/components/LanguageProvider";
 import { useCart } from "@/components/CartProvider";
 import { useDebounce } from "use-debounce";
@@ -59,11 +59,13 @@ export default function StorePage() {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [logoUrl, setLogoUrl] = useState<string>("");
   
   const [totalCount, setTotalCount] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
+  const [infiniteScrollEnabled, setInfiniteScrollEnabled] = useState(false);
 
   const [activeMainCategory, setActiveMainCategory] = useState<string>("All");
   const [activeSubCategory, setActiveSubCategory] = useState<string>("All");
@@ -71,66 +73,96 @@ export default function StorePage() {
   const [debouncedSearch] = useDebounce(searchInput, 500);
 
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const observerTarget = useRef<HTMLDivElement>(null);
 
-  // Fetch logo (cached)
+  // Fetch settings and logo
   useEffect(() => {
     fetch("/api/settings")
       .then((res) => res.json())
       .then((data) => {
         if (data.logo_url) setLogoUrl(data.logo_url);
+        if (data.infinite_scroll === "1") setInfiniteScrollEnabled(true);
       })
       .catch(() => {});
   }, []);
 
-  // Fetch products with session cache
-  useEffect(() => {
-    const cacheKey = `store_cache_${currentPage}_${activeMainCategory}_${activeSubCategory}_${debouncedSearch}`;
-    const cachedData = sessionStorage.getItem(cacheKey);
+  // Fetch products
+  const fetchProducts = useCallback((page: number, append: boolean) => {
+    if (append) setLoadingMore(true);
+    else setLoading(true);
 
-    if (cachedData) {
-      // If cached, load instantly without spinner
-      try {
-        const parsed = JSON.parse(cachedData);
-        setProducts(parsed.products);
-        setTotalCount(parsed.totalCount);
-        setTotalPages(parsed.totalPages);
-        setLoading(false);
-        // Don't return here - we'll still fetch in the background to update the cache
-      } catch (e) {}
-    } else {
-      setLoading(true);
-    }
-
-    const params = new URLSearchParams({ page: currentPage.toString() });
+    const params = new URLSearchParams({ page: page.toString() });
     if (activeMainCategory !== "All") params.append("category", activeMainCategory);
     if (activeSubCategory !== "All") params.append("subCategory", activeSubCategory);
     if (debouncedSearch.trim().length >= 3) params.append("search", debouncedSearch.trim());
-    if (currentPage === 1) params.append("random", "true");
+    
+    // Only randomize the very first page
+    if (page === 1) params.append("random", "true");
 
     fetch(`/api/products?${params.toString()}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.products) {
-          setProducts(data.products);
+          if (append) {
+            // Prevent duplicates on infinite scroll
+            setProducts(prev => {
+              const existingIds = new Set(prev.map(p => p.id));
+              const newItems = data.products.filter((p: Product) => !existingIds.has(p.id));
+              return [...prev, ...newItems];
+            });
+          } else {
+            setProducts(data.products);
+          }
           setTotalCount(data.totalCount);
           setTotalPages(data.totalPages);
-          // Save to cache
-          sessionStorage.setItem(cacheKey, JSON.stringify(data));
         }
         setLoading(false);
+        setLoadingMore(false);
       })
-      .catch(() => setLoading(false));
-  }, [currentPage, activeMainCategory, activeSubCategory, debouncedSearch]);
+      .catch(() => {
+        setLoading(false);
+        setLoadingMore(false);
+      });
+  }, [activeMainCategory, activeSubCategory, debouncedSearch]);
+
+  // Initial load or filter change
+  useEffect(() => {
+    setCurrentPage(1);
+    fetchProducts(1, false);
+  }, [fetchProducts]);
+
+  // Infinite Scroll Observer
+  useEffect(() => {
+    if (!infiniteScrollEnabled) return;
+    
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loading && !loadingMore && currentPage < totalPages) {
+          const nextPage = currentPage + 1;
+          setCurrentPage(nextPage);
+          fetchProducts(nextPage, true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (observerTarget.current) observer.observe(observerTarget.current);
+    return () => observer.disconnect();
+  }, [infiniteScrollEnabled, loading, loadingMore, currentPage, totalPages, fetchProducts]);
 
   function handleMainCategoryClick(cat: string) {
     setActiveMainCategory(cat);
     setActiveSubCategory("All");
-    setCurrentPage(1);
   }
 
   function handleSubCategoryClick(sub: string) {
     setActiveSubCategory(sub);
-    setCurrentPage(1);
+  }
+
+  function goToPage(page: number) {
+    setCurrentPage(page);
+    fetchProducts(page, false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   const subCategories: Record<string, string[]> = {
@@ -172,8 +204,8 @@ export default function StorePage() {
       
       <p className="page-sub">
         {isAr 
-          ? `عرض ${totalCount} منتج (صفحة ${currentPage} من ${totalPages || 1})` 
-          : `Showing ${totalCount} products (Page ${currentPage} of ${totalPages || 1})`}
+          ? `عرض ${products.length} من ${totalCount} منتج` 
+          : `Showing ${products.length} of ${totalCount} products`}
       </p>
 
       <div className="filter-bar" style={{ marginBottom: 16 }}>
@@ -184,7 +216,7 @@ export default function StorePage() {
             className="search-input"
             placeholder={isAr ? "ابحث عن منتج... (3 أحرف على الأقل)" : "Search products... (min 3 chars)"}
             value={searchInput}
-            onChange={(e) => { setSearchInput(e.target.value); setCurrentPage(1); }}
+            onChange={(e) => setSearchInput(e.target.value)}
           />
           {searchInput && <button type="button" className="search-clear" onClick={() => setSearchInput("")}>✕</button>}
         </div>
@@ -236,7 +268,6 @@ export default function StorePage() {
         </div>
       )}
 
-      {/* LOADING SPINNER */}
       {loading ? (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 20px", gap: 20 }}>
           <div style={{ width: 48, height: 48, border: "4px solid var(--line-strong)", borderTopColor: "var(--accent)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
@@ -320,12 +351,27 @@ export default function StorePage() {
             })}
           </div>
 
-          {totalPages > 1 && (
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 12, marginTop: 40 }}>
-              <button className="btn btn-ghost" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>← {isAr ? "السابق" : "Prev"}</button>
-              <span style={{ fontSize: 14, fontWeight: 600, color: "var(--muted)" }}>{currentPage} / {totalPages}</span>
-              <button className="btn btn-ghost" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>{isAr ? "التالي" : "Next"} →</button>
+          {/* PAGINATION OR INFINITE SCROLL */}
+          {infiniteScrollEnabled ? (
+            <div ref={observerTarget} style={{ display: "flex", justifyContent: "center", padding: "40px 0", minHeight: 60 }}>
+              {loadingMore && (
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
+                  <div style={{ width: 32, height: 32, border: "3px solid var(--line-strong)", borderTopColor: "var(--accent)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+                  <span style={{ fontSize: 13, color: "var(--muted)" }}>{isAr ? "جاري تحميل المزيد..." : "Loading more..."}</span>
+                </div>
+              )}
+              {!loadingMore && currentPage >= totalPages && (
+                <span style={{ fontSize: 13, color: "var(--muted)", fontStyle: "italic" }}>{isAr ? "لقد وصلت إلى النهاية" : "You've reached the end"}</span>
+              )}
             </div>
+          ) : (
+            totalPages > 1 && (
+              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 12, marginTop: 40 }}>
+                <button className="btn btn-ghost" onClick={() => goToPage(Math.max(1, currentPage - 1))} disabled={currentPage === 1}>← {isAr ? "السابق" : "Prev"}</button>
+                <span style={{ fontSize: 14, fontWeight: 600, color: "var(--muted)" }}>{currentPage} / {totalPages}</span>
+                <button className="btn btn-ghost" onClick={() => goToPage(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages}>{isAr ? "التالي" : "Next"} →</button>
+              </div>
+            )
           )}
         </>
       )}

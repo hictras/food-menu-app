@@ -44,6 +44,7 @@ type Settings = {
   welcome_image2_size: string;
   welcome_show_image2: string;
   welcome_image2_align: string;
+  infinite_scroll: string;
   welcome_show_logo: string;
   no_dish_image_url: string;
   no_dish_video_url: string;
@@ -96,6 +97,7 @@ const DEFAULT: Settings = {
   welcome_image2_size: "300",
   welcome_show_image2: "1",
   welcome_image2_align: "center",
+  infinite_scroll: "0",
   welcome_show_logo: "1",
   no_dish_image_url: "",
   no_dish_video_url: "",
@@ -334,6 +336,13 @@ export default function SettingsPage() {
             </div>
 
             <hr style={{ borderColor: "var(--line)", margin: "24px 0" }} />
+
+            <div className="field" style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 24, marginBottom: 24 }}>
+              <input type="checkbox" id="infinite_scroll" checked={config.infinite_scroll === "1"} onChange={(e) => setConfig({ ...config, infinite_scroll: e.target.checked ? "1" : "0" })} style={{ width: 20, height: 20, cursor: "pointer" }} />
+              <label htmlFor="infinite_scroll" style={{ marginBottom: 0, cursor: "pointer", fontSize: 14 }}>
+                {isAr ? "تفعيل التمرير اللانهائي في المتجر" : "Enable Infinite Scroll in Store"}
+              </label>
+            </div>
 
             <div className="field"><label>{isAr ? ar.settingsPage.appName : "App Name"}</label><input type="text" value={config.app_name || ""} onChange={(e) => setConfig({ ...config, app_name: e.target.value })} placeholder="e.g. Hictra Recipes" style={{ width: "100%", padding: 10 }} /><p className="helper" style={{ marginTop: 6 }}>{isAr ? ar.settingsPage.appNameHint : "Shows in browser tab and shared messages."}</p></div>
           </div>
