@@ -189,6 +189,15 @@ export default function StorePage() {
 
   return (
     <main className="container" style={{ paddingTop: 40, paddingBottom: 100 }}>
+      <style>{`
+        .main-categories-desktop { display: flex; }
+        .main-categories-mobile { display: none; }
+        @media (max-width: 768px) {
+          .main-categories-desktop { display: none !important; }
+          .main-categories-mobile { display: block !important; }
+        }
+      `}</style>
+
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 16 }}>
         <div className="page-head" style={{ margin: 0 }}><h1>{isAr ? "المتجر" : "Store"}</h1></div>
       </div>
@@ -213,7 +222,8 @@ export default function StorePage() {
         </div>
       </div>
 
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
+      {/* DESKTOP: Main Category Buttons */}
+      <div className="main-categories-desktop" style={{ flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
         {mainCategories.map((cat) => (
           <button
             key={cat}
@@ -224,6 +234,25 @@ export default function StorePage() {
             {cat === "All" ? (isAr ? "الكل" : "All") : (isAr ? MAIN_CATEGORY_TRANSLATIONS[cat] || cat : cat)}
           </button>
         ))}
+      </div>
+
+      {/* MOBILE: Main Category Dropdown */}
+      <div className="main-categories-mobile" style={{ marginBottom: 16 }}>
+        <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--muted)", marginBottom: 6 }}>
+          {isAr ? "الفئة الرئيسية" : "Main Category"}
+        </label>
+        <select
+          className="filter-select"
+          value={activeMainCategory}
+          onChange={(e) => handleMainCategoryClick(e.target.value)}
+          style={{ width: "100%", padding: "10px 12px", fontSize: 14, borderRadius: 8, background: "var(--surface-solid)", border: "1px solid var(--line)", color: "var(--ink)" }}
+        >
+          {mainCategories.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat === "All" ? (isAr ? "الكل" : "All") : (isAr ? MAIN_CATEGORY_TRANSLATIONS[cat] || cat : cat)}
+            </option>
+          ))}
+        </select>
       </div>
 
       {activeMainCategory !== "All" && subCategories.length > 1 && (
@@ -304,12 +333,11 @@ export default function StorePage() {
                         {displayCat}
                       </div>
                       
-                      {/* Clean, bold, readable title */}
                       <h3 style={{ 
                         margin: 0, 
                         fontSize: 16, 
                         fontWeight: 700, 
-                        fontFamily: "var(--font-body)", // <-- Restored to body font
+                        fontFamily: "var(--font-body)",
                         color: "#ffffff", 
                         lineHeight: 1.35, 
                         display: "-webkit-box", 
