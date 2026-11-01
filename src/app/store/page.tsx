@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { useLang } from "@/components/LanguageProvider";
 import { useCart } from "@/components/CartProvider";
 
@@ -16,8 +16,6 @@ type Product = {
   price: number;
   imageUrl: string | null;
 };
-
-const ITEMS_PER_PAGE = 50;
 
 const ALLOWED_MAIN_CATEGORIES = [
   "Offers & Promotions", "Meat & Poultry", "Fresh Fish", "Back To School",
@@ -52,6 +50,16 @@ const MAIN_CATEGORY_TRANSLATIONS: Record<string, string> = {
   "Phone & Home electronics": "هواتف وإلكترونيات"
 };
 
+// Helper function to shuffle array
+function shuffleArray<T>(array: T[]): T[] {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 export default function StorePage() {
   const { lang } = useLang();
   const isAr = lang === "ar";
@@ -67,11 +75,17 @@ export default function StorePage() {
   const [activeSubCategory, setActiveSubCategory] = useState<string>("All");
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Store a shuffled version of products in a ref
+  const shuffledProductsRef = useRef<Product[]>([]);
+
   useEffect(() => {
     fetch("/api/products")
       .then((res) => res.json())
       .then((data) => {
-        if (Array.isArray(data)) setProducts(data);
+        if (Array.isArray(data)) {
+          setProducts(data);
+          shuffledProductsRef.current = shuffleArray(data);
+        }
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -114,7 +128,7 @@ export default function StorePage() {
   }, [categoryTree, activeMainCategory]);
 
   const filteredProducts = useMemo(() => {
-    let list = products;
+    let list = shuffledProductsRef.current;
     
     if (activeMainCategory !== "All") {
       list = list.filter(p => p.category === activeMainCategory);
@@ -123,14 +137,10 @@ export default function StorePage() {
       list = list.filter(p => p.subCategory === activeSubCategory);
     }
     
-    // SMART SEARCH LOGIC
     if (search.trim()) {
       const lower = search.toLowerCase().trim();
-      
-      // ONLY SEARCH IF 3+ CHARACTERS
       if (lower.length < 3) return list; 
 
-      // Grab ALL matching translations (not just the first one)
       const englishTranslations: string[] = [];
       for (const [arKey, enValue] of Object.entries(dictionary)) {
         if (arKey.startsWith(search.trim())) {
@@ -138,38 +148,33 @@ export default function StorePage() {
         }
       }
       
-      list = list.filter(
-        (p) => {
-          const titleEn = (p.title || "").toLowerCase();
-          
-          // 1. Match English Title direct
-          if (titleEn.includes(lower)) return true;
-          
-          // 2. Match any of the English dictionary translations
-          if (englishTranslations.length > 0 && englishTranslations.some(eng => titleEn.includes(eng))) {
-            return true;
-          }
-          
-          // 3. Match Arabic Title
-          if (p.titleAr && p.titleAr.includes(search)) return true;
-          
-          // 4. Match SKU, Brand, or Category
-          if (p.sku && p.sku.toLowerCase().includes(lower)) return true;
-          if (p.brand && p.brand.toLowerCase().includes(lower)) return true;
-          if (p.category && p.category.toLowerCase().includes(lower)) return true;
-          if (p.subCategory && p.subCategory.toLowerCase().includes(lower)) return true;
-
-          return false;
-        }
-      );
+      list = list.filter((p) => {
+        const titleEn = (p.title || "").toLowerCase();
+        if (titleEn.includes(lower)) return true;
+        if (englishTranslations.length > 0 && englishTranslations.some(eng => titleEn.includes(eng))) return true;
+        if (p.titleAr && p.titleAr.includes(search)) return true;
+        if (p.sku && p.sku.toLowerCase().includes(lower)) return true;
+        if (p.brand && p.brand.toLowerCase().includes(lower)) return true;
+        if (p.category && p.category.toLowerCase().includes(lower)) return true;
+        if (p.subCategory && p.subCategory.toLowerCase().includes(lower)) return true;
+        return false;
+      });
     }
     return list;
-  }, [products, search, activeMainCategory, activeSubCategory, dictionary]);
+  }, [search, activeMainCategory, activeSubCategory, dictionary, products]);
 
-  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+  // DYNAMIC ITEMS PER PAGE
+  const itemsPerPage = currentPage === 1 ? 10 : 30;
+
+  const totalPages = Math.ceil((filteredProducts.length - 10) / 30) + 1;
+  
   const paginatedProducts = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredProducts.slice(start, start + ITEMS_PER_PAGE);
+    if (currentPage === 1) {
+      return filteredProducts.slice(0, 10);
+    } else {
+      const start = 10 + (currentPage - 2) * 30;
+      return filteredProducts.slice(start, start + 30);
+    }
   }, [filteredProducts, currentPage]);
 
   useEffect(() => { setCurrentPage(1); }, [search, activeMainCategory, activeSubCategory]);
