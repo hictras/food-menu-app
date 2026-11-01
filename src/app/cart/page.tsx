@@ -10,11 +10,45 @@ export default function CartPage() {
   const { cart, updateQuantity, removeFromCart, cartTotal, clearCart } = useCart();
 
   function generateTextList() {
-    let text = isAr ? "🛒 *قائمة المشتريات*\n\n" : "🛒 *Shopping List*\n\n";
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const dateStr = new Date().toLocaleDateString(isAr ? "ar-LB" : "en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+
+    let text = "";
+
+    // Super clean, text-only header
+    if (isAr) {
+      text += `*هيكترا*\n`;
+      text += `*قائمة المشتريات*\n`;
+      text += `${dateStr}\n`;
+      text += `------------------\n\n`;
+    } else {
+      text += `*HICTRA*\n`;
+      text += `*Shopping List*\n`;
+      text += `${dateStr}\n`;
+      text += `------------------\n\n`;
+    }
+
     cart.forEach((item) => {
       text += `• ${item.quantity}x ${item.title} - $${(item.price * item.quantity).toFixed(2)}\n`;
     });
-    text += `\n*${isAr ? "المجموع" : "Total"}: $${cartTotal.toFixed(2)}*`;
+
+    text += `\n------------------\n`;
+    text += `*${isAr ? "المجموع الكلي" : "Total"}: $${cartTotal.toFixed(2)}*\n`;
+    text += `------------------\n\n`;
+    
+    if (isAr) {
+      text += `تسوق المزيد هنا: ${origin}/store\n`;
+      text += `_أُرسلت من تطبيق هيكترا_`;
+    } else {
+      text += `Shop more: ${origin}/store\n`;
+      text += `_Sent from Hictra App_`;
+    }
+
     return text;
   }
 
@@ -62,7 +96,7 @@ export default function CartPage() {
           
           {/* Print Header (Only visible when printing) */}
           <div style={{ display: "none", marginBottom: 20 }} className="print-only">
-            <h2 style={{ margin: 0, fontSize: 24, color: "black" }}>{isAr ? "قائمة المشتريات" : "Shopping List"}</h2>
+            <h2 style={{ margin: 0, fontSize: 24, color: "black" }}>{isAr ? "قائمة مشتريات هيكترا" : "Hictra Shopping List"}</h2>
             <p style={{ margin: 0, fontSize: 14, color: "gray" }}>{new Date().toLocaleDateString()}</p>
           </div>
 
