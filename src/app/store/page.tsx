@@ -1,0 +1,247 @@
+"use client";
+
+import { useEffect, useState, useMemo } from "react";
+import { useLang } from "@/components/LanguageProvider";
+import { useCart } from "@/components/CartProvider";
+
+type Product = {
+  id: number;
+  externalId: number;
+  sku: string;
+  title: string;
+  category: string | null;
+  subCategory: string | null;
+  brand: string | null;
+  price: number;
+  imageUrl: string | null;
+};
+
+const ITEMS_PER_PAGE = 50;
+
+const ALLOWED_MAIN_CATEGORIES = [
+  "Offers & Promotions", "Meat & Poultry", "Fresh Fish", "Back To School",
+  "Produce", "Dairy & Eggs", "Bakery", "Ready To Eat", "Grocery Food",
+  "Frozen Food", "Snack & Sweet", "Beverages", "Coffee & Tea",
+  "Organic & Healthy", "Toys", "Baby Care", "Home Care", "Personal Care",
+  "Pet Care", "Tobacco", "Kitchen Accessories", "Phone & Home electronics"
+];
+
+export default function StorePage() {
+  const { lang } = useLang();
+  const isAr = lang === "ar";
+  const { cart, addToCart, removeFromCart } = useCart();
+
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  
+  const [activeMainCategory, setActiveMainCategory] = useState<string>("All");
+  const [activeSubCategory, setActiveSubCategory] = useState<string>("All");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    fetch("/api/products")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) setProducts(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  const categoryTree = useMemo(() => {
+    const tree: Record<string, Set<string>> = {};
+    for (const p of products) {
+      if (!p.category) continue;
+      if (!tree[p.category]) tree[p.category] = new Set();
+      if (p.subCategory) tree[p.category].add(p.subCategory);
+    }
+    return tree;
+  }, [products]);
+
+  const mainCategories = useMemo(() => {
+    const validCats = ALLOWED_MAIN_CATEGORIES.filter(cat => 
+      products.some(p => p.category === cat)
+    );
+    return ["All", ...validCats];
+  }, [products]);
+  
+  const subCategories = useMemo(() => {
+    if (activeMainCategory === "All") return [];
+    const subs = categoryTree[activeMainCategory];
+    return subs ? ["All", ...Array.from(subs).sort()] : [];
+  }, [categoryTree, activeMainCategory]);
+
+  const filteredProducts = useMemo(() => {
+    let list = products;
+    
+    if (activeMainCategory !== "All") {
+      list = list.filter(p => p.category === activeMainCategory);
+    }
+    if (activeSubCategory !== "All") {
+      list = list.filter(p => p.subCategory === activeSubCategory);
+    }
+    if (search.trim()) {
+      const lower = search.toLowerCase();
+      list = list.filter(
+        (p) =>
+          p.title.toLowerCase().includes(lower) ||
+          (p.sku && p.sku.toLowerCase().includes(lower)) ||
+          (p.brand && p.brand.toLowerCase().includes(lower)) ||
+          (p.category && p.category.toLowerCase().includes(lower)) ||
+          (p.subCategory && p.subCategory.toLowerCase().includes(lower))
+      );
+    }
+    return list;
+  }, [products, search, activeMainCategory, activeSubCategory]);
+
+  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+  const paginatedProducts = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredProducts.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredProducts, currentPage]);
+
+  useEffect(() => { setCurrentPage(1); }, [search, activeMainCategory, activeSubCategory]);
+
+  function handleMainCategoryClick(cat: string) {
+    setActiveMainCategory(cat);
+    setActiveSubCategory("All");
+  }
+
+  return (
+    <main className="container" style={{ paddingTop: 40, paddingBottom: 100 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 16 }}>
+        <div className="page-head" style={{ margin: 0 }}><h1>{isAr ? "المتجر" : "Store"}</h1></div>
+      </div>
+      
+      <p className="page-sub">
+        {isAr 
+          ? `عرض ${filteredProducts.length} منتج (صفحة ${currentPage} من ${totalPages || 1})` 
+          : `Showing ${filteredProducts.length} products (Page ${currentPage} of ${totalPages || 1})`}
+      </p>
+
+      <div className="filter-bar" style={{ marginBottom: 16 }}>
+        <div className="search-wrap" style={{ width: "100%", maxWidth: 400 }}>
+          <span className="search-icon">🔍</span>
+          <input
+            type="text"
+            className="search-input"
+            placeholder={isAr ? "ابحث عن منتج..." : "Search products..."}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          {search && <button type="button" className="search-clear" onClick={() => setSearch("")}>✕</button>}
+        </div>
+      </div>
+
+      {/* Main Categories */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
+        {mainCategories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => handleMainCategoryClick(cat)}
+            className={`chip ${activeMainCategory === cat ? "active" : ""}`}
+            style={{ fontSize: 14, padding: "8px 16px", cursor: "pointer", fontWeight: activeMainCategory === cat ? 700 : 500 }}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      {/* Sub Categories (Horizontal Scroll Buttons) */}
+      {activeMainCategory !== "All" && subCategories.length > 1 && (
+        <div style={{ 
+          display: "flex", 
+          gap: 6, 
+          marginBottom: 24, 
+          paddingBottom: 8,
+          overflowX: "auto", 
+          whiteSpace: "nowrap",
+          WebkitOverflowScrolling: "touch"
+        }}>
+          {subCategories.map((sub) => (
+            <button
+              key={sub}
+              onClick={() => setActiveSubCategory(sub)}
+              className={`chip ${activeSubCategory === sub ? "active" : ""}`}
+              style={{ fontSize: 12, padding: "6px 14px", cursor: "pointer", flexShrink: 0 }}
+            >
+              {sub}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Products Grid */}
+      {loading ? (
+        <p className="helper">{isAr ? "جاري التحميل..." : "Loading..."}</p>
+      ) : filteredProducts.length === 0 ? (
+        <div className="empty">
+          <h2>{isAr ? "لا توجد منتجات" : "No products found"}</h2>
+          <p>{isAr ? "جرب البحث بكلمة أخرى أو فئة أخرى." : "Try a different search or category."}</p>
+        </div>
+      ) : (
+        <>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 16 }}>
+            {paginatedProducts.map((p) => {
+              const cartItem = cart.find((i) => i.id === p.id);
+              const displayCat = p.brand || p.subCategory || p.category || p.sku;
+
+              return (
+                <div key={p.id} style={{ background: "var(--surface)", border: "1px solid var(--line)", borderRadius: 16, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+                  <div style={{ width: "100%", aspectRatio: "1/1", background: "var(--surface-2)", position: "relative" }}>
+                    {p.imageUrl ? (
+                      <img src={p.imageUrl} alt={p.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
+                    ) : (
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", fontSize: 32, opacity: 0.3 }}>🛒</div>
+                    )}
+                  </div>
+
+                  <div style={{ padding: 12, display: "flex", flexDirection: "column", flex: 1, justifyContent: "space-between", gap: 8 }}>
+                    <div>
+                      <div style={{ fontSize: 10, color: "var(--accent)", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", marginBottom: 4 }}>
+                        {displayCat}
+                      </div>
+                      <h3 style={{ margin: 0, fontSize: 13.5, fontWeight: 600, color: "var(--ink)", lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                        {p.title}
+                      </h3>
+                    </div>
+
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
+                      <span style={{ fontSize: 15, fontWeight: 700, color: "var(--ink)" }}>
+                        ${p.price.toFixed(2)}
+                      </span>
+
+                      {cartItem ? (
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--accent-soft)", borderRadius: 8, padding: "2px 4px" }}>
+                          <button onClick={() => removeFromCart(p.id)} style={{ background: "none", border: "none", color: "var(--accent)", fontSize: 16, cursor: "pointer", width: 20 }}>-</button>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: "var(--accent)" }}>{cartItem.quantity}</span>
+                          <button onClick={() => addToCart({ id: p.id, title: p.title, price: p.price, imageUrl: p.imageUrl })} style={{ background: "none", border: "none", color: "var(--accent)", fontSize: 16, cursor: "pointer", width: 20 }}>+</button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => addToCart({ id: p.id, title: p.title, price: p.price, imageUrl: p.imageUrl })}
+                          style={{ background: "var(--surface-2)", border: "1px solid var(--line)", color: "var(--ink)", width: 30, height: 30, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, cursor: "pointer" }}
+                        >
+                          +
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {totalPages > 1 && (
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 12, marginTop: 40 }}>
+              <button className="btn btn-ghost" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>← {isAr ? "السابق" : "Prev"}</button>
+              <span style={{ fontSize: 14, fontWeight: 600, color: "var(--muted)" }}>{currentPage} / {totalPages}</span>
+              <button className="btn btn-ghost" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>{isAr ? "التالي" : "Next"} →</button>
+            </div>
+          )}
+        </>
+      )}
+    </main>
+  );
+}

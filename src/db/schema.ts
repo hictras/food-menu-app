@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, real, uniqueIndex } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
 
 export const recipes = sqliteTable("recipes", {
@@ -13,6 +13,8 @@ export const recipes = sqliteTable("recipes", {
   cuisine: text("cuisine"),
   cuisineAr: text("cuisine_ar"),
   category: text("category"),
+  subCategory: text("sub_category"),
+  brand: text("brand"),
   categoryAr: text("category_ar"),
   servedWith: text("served_with"),
   servedWithAr: text("served_with_ar"),
@@ -187,8 +189,6 @@ export const userSettings = sqliteTable("user_settings", {
   updatedAt: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
-
-
 export const gameStats = sqliteTable(
   "game_stats",
   {
@@ -202,7 +202,6 @@ export const gameStats = sqliteTable(
     uniqPhoneGame: uniqueIndex("uniq_phone_game").on(t.phone, t.game),
   })
 );
-
 
 export const chessRooms = sqliteTable("chess_rooms", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -228,3 +227,18 @@ export const recipeLikes = sqliteTable("recipe_likes", {
 }, (t) => ({
   uniqRecipeVisitor: uniqueIndex("uniq_like_recipe_visitor").on(t.recipeId, t.visitorId),
 }));
+
+// NEW: Store Products Table
+export const storeProducts = sqliteTable("store_products", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  externalId: integer("external_id").notNull().unique(),
+  sku: text("sku").notNull().unique(),
+  title: text("title").notNull(),
+  category: text("category"),
+  subCategory: text("sub_category"),
+  brand: text("brand"),
+  price: real("price").notNull(),
+  imageUrl: text("image_url"),
+  createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
+});
