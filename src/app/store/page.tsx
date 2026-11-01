@@ -61,7 +61,6 @@ export default function StorePage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   
-  // Dictionary state
   const [dictionary, setDictionary] = useState<Record<string, string>>({});
 
   const [activeMainCategory, setActiveMainCategory] = useState<string>("All");
@@ -69,7 +68,6 @@ export default function StorePage() {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    // Fetch Products
     fetch("/api/products")
       .then((res) => res.json())
       .then((data) => {
@@ -78,7 +76,6 @@ export default function StorePage() {
       })
       .catch(() => setLoading(false));
 
-    // Fetch Dictionary
     fetch("/api/dictionary")
       .then((res) => res.json())
       .then((data) => {
@@ -130,24 +127,40 @@ export default function StorePage() {
     if (search.trim()) {
       const lower = search.toLowerCase().trim();
       
-      // Find the translation from the DB dictionary
-      const englishTranslation = dictionary[lower] || "";
-      const engSearch = englishTranslation ? englishTranslation.toLowerCase() : "";
+      // ONLY SEARCH IF 3+ CHARACTERS
+      if (lower.length < 3) return list; 
 
+      // Grab ALL matching translations (not just the first one)
+      const englishTranslations: string[] = [];
+      for (const [arKey, enValue] of Object.entries(dictionary)) {
+        if (arKey.startsWith(search.trim())) {
+          englishTranslations.push(enValue.toLowerCase());
+        }
+      }
+      
       list = list.filter(
-        (p) =>
-          // 1. Match English Title (with dictionary translation)
-          (p.title && p.title.toLowerCase().includes(lower)) ||
-          (engSearch && p.title && p.title.toLowerCase().includes(engSearch)) ||
+        (p) => {
+          const titleEn = (p.title || "").toLowerCase();
           
-          // 2. Match Arabic Title (if it exists)
-          (p.titleAr && p.titleAr.includes(search)) ||
+          // 1. Match English Title direct
+          if (titleEn.includes(lower)) return true;
           
-          // 3. Match SKU, Brand, or Category
-          (p.sku && p.sku.toLowerCase().includes(lower)) ||
-          (p.brand && p.brand.toLowerCase().includes(lower)) ||
-          (p.category && p.category.toLowerCase().includes(lower)) ||
-          (p.subCategory && p.subCategory.toLowerCase().includes(lower))
+          // 2. Match any of the English dictionary translations
+          if (englishTranslations.length > 0 && englishTranslations.some(eng => titleEn.includes(eng))) {
+            return true;
+          }
+          
+          // 3. Match Arabic Title
+          if (p.titleAr && p.titleAr.includes(search)) return true;
+          
+          // 4. Match SKU, Brand, or Category
+          if (p.sku && p.sku.toLowerCase().includes(lower)) return true;
+          if (p.brand && p.brand.toLowerCase().includes(lower)) return true;
+          if (p.category && p.category.toLowerCase().includes(lower)) return true;
+          if (p.subCategory && p.subCategory.toLowerCase().includes(lower)) return true;
+
+          return false;
+        }
       );
     }
     return list;
@@ -184,7 +197,7 @@ export default function StorePage() {
           <input
             type="text"
             className="search-input"
-            placeholder={isAr ? "ابحث عن منتج..." : "Search products..."}
+            placeholder={isAr ? "ابحث عن منتج... (3 أحرف على الأقل)" : "Search products... (min 3 chars)"}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
