@@ -13,11 +13,16 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     if (Number.isNaN(productId)) return NextResponse.json({ error: "Invalid id" }, { status: 400 });
 
     const body = await req.json();
-    const { titleAr } = body; // Changed from nameAr to titleAr
+    const { titleAr, price, isPromotion } = body;
+
+    const updateData: any = {};
+    if (titleAr !== undefined) updateData.titleAr = titleAr || null;
+    if (price !== undefined) updateData.price = Number(price) || 0;
+    if (isPromotion !== undefined) updateData.isPromotion = isPromotion ? 1 : 0;
 
     const db = getDb();
     await db.update(storeProducts)
-      .set({ titleAr: titleAr || null })
+      .set(updateData)
       .where(eq(storeProducts.id, productId));
     
     return NextResponse.json({ ok: true });

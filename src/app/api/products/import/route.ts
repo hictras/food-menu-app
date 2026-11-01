@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/db";
 import { storeProducts } from "@/db/schema";
 import { isAdmin } from "@/lib/auth";
+import { sql } from "drizzle-orm";
 
-// The official Hardcore Main Categories
 const ALLOWED_MAIN_CATEGORIES = [
   "Offers & Promotions", "Meat & Poultry", "Fresh Fish", "Back To School",
   "Produce", "Dairy & Eggs", "Bakery", "Ready To Eat", "Grocery Food",
@@ -11,6 +11,24 @@ const ALLOWED_MAIN_CATEGORIES = [
   "Organic & Healthy", "Toys", "Baby Care", "Home Care", "Personal Care",
   "Pet Care", "Tobacco", "Kitchen Accessories", "Phone & Home electronics"
 ];
+
+// Helper to fix Minim's missing spaces and typos
+function normalizeCategory(cat: string) {
+  return cat
+    .replace(/&Home/gi, "& Home")
+    .replace(/&Promotions/gi, "& Promotions")
+    .replace(/&Sweet/gi, "& Sweet")
+    .replace(/&Poultry/gi, "& Poultry")
+    .replace(/&Eggs/gi, "& Eggs")
+    .replace(/&Creams/gi, "& Creams")
+    .replace(/&Crackers/gi, "& Crackers")
+    .replace(/&Tea/gi, "& Tea")
+    .replace(/&Healthy/gi, "& Healthy")
+    .replace(/&Toilet/gi, "& Toilet")
+    .replace(/&Floor/gi, "& Floor")
+    .replace(/&Body/gi, "& Body")
+    .trim();
+}
 
 export async function POST(req: NextRequest) {
   if (!(await isAdmin())) {
@@ -28,70 +46,78 @@ export async function POST(req: NextRequest) {
 
     let processed = 0;
     let skipped = 0;
+    const valuesToInsert: any[] = [];
 
     for (const p of list) {
       if (!p.id || !p.sku || !p.title) { skipped++; continue; }
 
       const catStr = p.categories ? String(p.categories).trim() : "";
-      const parts = catStr.split(",").map((s: string) => s.trim());
+      const isPromotion = /promotion/i.test(catStr) ? 1 : 0;
+
+      // NORMALIZE THE CATEGORIES BEFORE SPLITTING
+      const normalizedCatStr = normalizeCategory(catStr);
+      const parts = normalizedCatStr.split(",").map((s: string) => s.trim());
       
       let mainCategory = parts[0] || null;
       let subCategory = parts.length > 1 ? parts[1] : null;
 
-      // SMART SWAP LOGIC: Check if they are flipped
+      // SMART SWAP LOGIC
       if (subCategory && ALLOWED_MAIN_CATEGORIES.includes(subCategory) && !ALLOWED_MAIN_CATEGORIES.includes(mainCategory || "")) {
-        // Swap them
         const temp = mainCategory;
         mainCategory = subCategory;
         subCategory = temp;
       }
 
-      // If main category is still not in the allowed list, find the first allowed one, or default to "Grocery Food"
       if (mainCategory && !ALLOWED_MAIN_CATEGORIES.includes(mainCategory)) {
-        // Sometimes Minim puts the main category in the 2nd or 3rd position
         const foundValid = parts.find((part: string) => ALLOWED_MAIN_CATEGORIES.includes(part));
         if (foundValid) {
           const oldMain = mainCategory;
           mainCategory = foundValid;
-          subCategory = oldMain; // Use the previous main as the sub
+          subCategory = oldMain; 
         } else {
-          // If it's completely unknown, put it in Grocery Food and use the old main as sub
           subCategory = mainCategory;
           mainCategory = "Grocery Food";
         }
       }
 
-      // Extract brand
-      const brand = p.brandTitle ? String(p.brandTitle).trim() : null;
-
-      const values = {
+      valuesToInsert.push({
         externalId: Number(p.id),
         sku: String(p.sku).trim(),
         title: String(p.title).trim(),
         category: mainCategory,
         subCategory: subCategory,
-        brand: brand,
+        brand: p.brandTitle ? String(p.brandTitle).trim() : null,
         price: Number(p.finalPrice) || 0,
         imageUrl: p.imgSrc || p.localImgSrc || null,
+        isPromotion: isPromotion,
         updatedAt: new Date().toISOString(),
-      };
-
-      await db.insert(storeProducts)
-        .values(values)
-        .onConflictDoUpdate({
-          target: storeProducts.sku,
-          set: {
-            title: values.title,
-            category: values.category,
-            subCategory: values.subCategory,
-            brand: values.brand,
-            price: values.price,
-            imageUrl: values.imageUrl,
-            updatedAt: values.updatedAt,
-          }
-        });
-      
+      });
       processed++;
+    }
+
+    // Use SQLite Transaction for massive speed boost
+    if (valuesToInsert.length > 0) {
+      await db.transaction(async (tx) => {
+        const chunkSize = 500;
+        for (let i = 0; i < valuesToInsert.length; i += chunkSize) {
+          const chunk = valuesToInsert.slice(i, i + chunkSize);
+          await tx.insert(storeProducts)
+            .values(chunk)
+            .onConflictDoUpdate({
+              target: storeProducts.sku,
+              set: {
+                title: sql`excluded.title`,
+                category: sql`excluded.category`,
+                subCategory: sql`excluded.sub_category`,
+                brand: sql`excluded.brand`,
+                price: sql`excluded.price`,
+                imageUrl: sql`excluded.image_url`,
+                isPromotion: sql`excluded.is_promotion`,
+                updatedAt: sql`excluded.updated_at`,
+              }
+            });
+        }
+      });
     }
 
     return NextResponse.json({ success: true, total: list.length, processed, skipped });

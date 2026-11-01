@@ -3955,3 +3955,50 @@ html, body {
   transform: scale(1.1);
   background: rgba(0, 0, 0, 0.6);
 }
+
+/* ========== FORCE STICKY HEADER ========== */
+.site-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 999 !important; /* High z-index to stay above products */
+  width: 100%;
+}
+
+/* Ensure body doesn't overflow horizontally which breaks sticky */
+body {
+  overflow-x: hidden;
+}
+
+/* Add this to the VERY BOTTOM of globals.css */
+html, body {
+  overflow-x: clip !important; /* Changed from hidden to clip, which allows sticky to work */
+  overflow-y: auto !important;
+}
+
+.site-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 9999 !important;
+}
+
+
+/* ========== PERMANENT HEADER FIX ========== */
+.site-header {
+  position: fixed !important; /* Forces it to stay */
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 99999 !important;
+}
+
+/* Push the page content down so the header doesn't hide the top of the page */
+body {
+  padding-top: 65px !important; /* Adjust this value if your header is taller */
+  overflow-x: clip !important;
+}
+
+/* Make sure the mobile menu isn't hidden behind the header */
+.nav-mobile-menu {
+  top: 100% !important;
+  position: absolute !important;
+}

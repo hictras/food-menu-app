@@ -20,6 +20,7 @@ export const recipes = sqliteTable("recipes", {
   howToServeAr: text("how_to_serve_ar"),
   dietaryTags: text("dietary_tags"),
   imageUrl: text("image_url"),
+  isPromotion: integer("is_promotion").default(0),
   image1Url: text("image_1_url"),
   image2Url: text("image_2_url"),
   useImage2: integer("use_image_2", { mode: "boolean" }).default(false),
@@ -220,6 +221,7 @@ export const storeProducts = sqliteTable("store_products", {
   brand: text("brand"),
   price: real("price").notNull(),
   imageUrl: text("image_url"),
+  isPromotion: integer("is_promotion").default(0),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
 });

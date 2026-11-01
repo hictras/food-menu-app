@@ -1,18 +1,76 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/db";
 import { storeProducts } from "@/db/schema";
-import { desc } from "drizzle-orm";
+import { eq, like, or, and, desc, sql } from "drizzle-orm";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     const db = getDb();
-    // Drizzle fetches all columns including titleAr
-    const rows = await db.select().from(storeProducts).orderBy(desc(storeProducts.id));
+    const { searchParams } = new URL(req.url);
     
-    // Ensure the browser doesn't cache the API response
-    return NextResponse.json(rows, {
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = page === 1 ? 8 : 24;
+    const offset = page === 1 ? 0 : 8 + (page - 2) * 24;
+    
+    const category = searchParams.get("category");
+    const subCategory = searchParams.get("subCategory");
+    const search = searchParams.get("search")?.trim();
+    const random = searchParams.get("random") === "true";
+
+    // Build conditions
+    const conditions = [];
+    
+    if (category && category !== "All") {
+      conditions.push(eq(storeProducts.category, category));
+    }
+    if (subCategory && subCategory !== "All") {
+      conditions.push(eq(storeProducts.subCategory, subCategory));
+    }
+    if (search && search.length >= 3) {
+      const lowerSearch = `%${search.toLowerCase()}%`;
+      conditions.push(
+        or(
+          like(sql`lower(${storeProducts.title})`, lowerSearch),
+          like(storeProducts.titleAr, `%${search}%`),
+          like(sql`lower(${storeProducts.sku})`, lowerSearch),
+          like(sql`lower(${storeProducts.brand})`, lowerSearch)
+        )
+      );
+    }
+
+    // Combine conditions (if any)
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+    // Get total count for pagination (using SQL count)
+    const countResult = await db.select({ count: sql<number>`count(*)` })
+      .from(storeProducts)
+      .where(whereClause);
+    const totalCount = countResult[0]?.count || 0;
+
+    // Get the specific chunk of products
+    let query = db.select()
+      .from(storeProducts)
+      .where(whereClause)
+      .limit(limit)
+      .offset(offset);
+
+    // If random, sort by random. Otherwise, sort by newest.
+    if (random) {
+      query = query.orderBy(sql`RANDOM()`);
+    } else {
+      query = query.orderBy(desc(storeProducts.id));
+    }
+
+    const products = await query;
+
+    return NextResponse.json({
+      products,
+      totalCount,
+      totalPages: Math.ceil((totalCount - 8) / 24) + 1,
+    }, {
       headers: { "Cache-Control": "no-store, max-age=0" }
     });
+
   } catch (err) {
     console.error("Failed to load products:", err);
     return NextResponse.json({ error: "Failed to load products" }, { status: 500 });
