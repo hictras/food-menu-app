@@ -120,7 +120,7 @@ export default function Nav() {
           <Link className="nav-link" href={`/calendar/${new Date().toISOString().split("T")[0]}`} onClick={closeAll}>📍 {lang === "ar" ? ar.nav.today : "Today"}</Link>
           <Link className="nav-link" href="/week" onClick={closeAll}>📄 {lang === "ar" ? ar.nav.week : "Week"}</Link>
           <Link className="nav-link" href="/calendar" onClick={closeAll}>📅 {lang === "ar" ? ar.nav.calendar : "Calendar"}</Link>
-          <Link className="nav-link" href="/store" onClick={closeAll}>🛒 {lang === "ar" ? "المتجر" : "Store"}</Link>
+          <Link className="nav-link" href="/store-welcome" onClick={closeAll}>🛒 {lang === "ar" ? "المتجر" : "Store"}</Link>
           <Link className="nav-link" href="/games" onClick={closeAll}>🎮 {lang === "ar" ? ar.nav.gamesHubNav : "Games"}</Link>
           <Link className="nav-link" href="/appearance" onClick={closeAll}>🎨 {lang === "ar" ? ar.appearance.title : "Appearance"}</Link>
           
@@ -191,7 +191,7 @@ export default function Nav() {
           <Link className="mobile-nav-link" href={`/calendar/${new Date().toISOString().split("T")[0]}`} onClick={closeAll}><span>📍</span> {lang === "ar" ? ar.nav.today : "Today"}</Link>
           <Link className="mobile-nav-link" href="/week" onClick={closeAll}><span>📄</span> {lang === "ar" ? ar.nav.week : "This Week"}</Link>
           <Link className="mobile-nav-link" href="/calendar" onClick={closeAll}><span>📅</span> {lang === "ar" ? ar.nav.calendar : "Calendar"}</Link>
-          <Link className="mobile-nav-link" href="/store" onClick={closeAll}><span>🛒</span> {lang === "ar" ? "المتجر" : "Store"}</Link>
+          <Link className="mobile-nav-link" href="/store-welcome" onClick={closeAll}><span>🛒</span> {lang === "ar" ? "المتجر" : "Store"}</Link>
           <Link className="mobile-nav-link" href="/games" onClick={closeAll}><span>🎮</span> {lang === "ar" ? ar.nav.gamesHubNav : "Games"}</Link>
           <Link className="mobile-nav-link" href="/appearance" onClick={closeAll}><span>🎨</span> {lang === "ar" ? ar.appearance.title : "Appearance"}</Link>
           <div className="nav-menu-divider" />
