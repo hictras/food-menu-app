@@ -38,30 +38,23 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Combine conditions (if any)
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-    // Get total count for pagination (using SQL count)
+    // Get total count
     const countResult = await db.select({ count: sql<number>`count(*)` })
       .from(storeProducts)
       .where(whereClause);
     const totalCount = countResult[0]?.count || 0;
 
-    // Get the specific chunk of products
-    let query = db.select()
+    // Get products with order by included in the chain
+    const orderByClause = random ? sql`RANDOM()` : desc(storeProducts.id);
+    
+    const products = await db.select()
       .from(storeProducts)
       .where(whereClause)
+      .orderBy(orderByClause)
       .limit(limit)
       .offset(offset);
-
-    // If random, sort by random. Otherwise, sort by newest.
-    if (random) {
-      query = query.orderBy(sql`RANDOM()`);
-    } else {
-      query = query.orderBy(desc(storeProducts.id));
-    }
-
-    const products = await query;
 
     return NextResponse.json({
       products,
