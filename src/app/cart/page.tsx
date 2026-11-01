@@ -1,76 +1,104 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { useCart } from "@/components/CartProvider";
 import { useLang } from "@/components/LanguageProvider";
 
 export default function CartPage() {
   const { lang } = useLang();
   const isAr = lang === "ar";
-  const { cart, updateQuantity, removeFromCart, cartTotal, clearCart } = useCart();
+  const { cart, updateQuantity, removeFromCart, editCartItem, cartTotal, clearCart } = useCart();
+
+  const [editId, setEditId] = useState<number | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editPrice, setEditPrice] = useState("");
+
+  const [costModalOpen, setCostModalOpen] = useState(false);
+  const [costData, setCostData] = useState<any[]>([]);
+  const [grandTotal, setGrandTotal] = useState(0);
+
+  function startEdit(item: any) {
+    setEditId(item.id);
+    setEditTitle(item.title);
+    setEditPrice(item.price.toFixed(2));
+  }
+
+  function saveEdit() {
+    if (editId !== null) {
+      editCartItem(editId, editTitle, Number(editPrice) || 0);
+      setEditId(null);
+    }
+  }
+
+  function removeImage(id: number) {
+    editCartItem(id, editTitle, Number(editPrice) || 0, null);
+  }
+
+  function openCostModal() {
+    const initialData = cart.map(item => ({
+      id: item.id,
+      name: item.title,
+      price: item.price,
+      qtyUsed: item.quantity
+    }));
+    setCostData(initialData);
+    const initialTotal = initialData.reduce((sum, item) => sum + (item.qtyUsed * item.price), 0);
+    setGrandTotal(initialTotal);
+    setCostModalOpen(true);
+  }
+
+  function handleQtyChange(id: number, qty: string) {
+    const newData = costData.map(item => {
+      if (item.id === id) {
+        return { ...item, qtyUsed: parseFloat(qty) || 0 };
+      }
+      return item;
+    });
+    setCostData(newData);
+    const total = newData.reduce((sum, item) => sum + (item.qtyUsed * item.price), 0);
+    setGrandTotal(total);
+  }
+
+  function sendCostToWhatsApp() {
+    let text = isAr ? `*هيكترا*\n*تقدير تكلفة المشتريات*\n------------------\n\n` : `*HICTRA*\n*Shopping Cost Estimate*\n------------------\n\n`;
+    costData.forEach(item => {
+      if (item.qtyUsed > 0) {
+        text += `• ${item.qtyUsed}x ${item.name} - $${(item.qtyUsed * item.price).toFixed(2)}\n`;
+      }
+    });
+    text += `\n------------------\n*${isAr ? "المجموع" : "Total"}: $${grandTotal.toFixed(2)}*\n------------------\n\n`;
+    text += isAr ? `_أُرسلت من تطبيق هيكترا_` : `_Sent from Hictra App_`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+  }
 
   function generateTextList() {
     const origin = typeof window !== "undefined" ? window.location.origin : "";
-    const dateStr = new Date().toLocaleDateString(isAr ? "ar-LB" : "en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-
-    let text = "";
-
-    // Super clean, text-only header
-    if (isAr) {
-      text += `*هيكترا*\n`;
-      text += `*قائمة المشتريات*\n`;
-      text += `${dateStr}\n`;
-      text += `------------------\n\n`;
-    } else {
-      text += `*HICTRA*\n`;
-      text += `*Shopping List*\n`;
-      text += `${dateStr}\n`;
-      text += `------------------\n\n`;
-    }
-
-    cart.forEach((item) => {
-      text += `• ${item.quantity}x ${item.title} - $${(item.price * item.quantity).toFixed(2)}\n`;
-    });
-
-    text += `\n------------------\n`;
-    text += `*${isAr ? "المجموع الكلي" : "Total"}: $${cartTotal.toFixed(2)}*\n`;
-    text += `------------------\n\n`;
-    
-    if (isAr) {
-      text += `تسوق المزيد هنا: ${origin}/store\n`;
-      text += `_أُرسلت من تطبيق هيكترا_`;
-    } else {
-      text += `Shop more: ${origin}/store\n`;
-      text += `_Sent from Hictra App_`;
-    }
-
+    const dateStr = new Date().toLocaleDateString(isAr ? "ar-LB" : "en-US", { weekday: "long", year: "numeric", month: "short", day: "numeric" });
+    let text = isAr ? `*هيكترا*\n*قائمة المشتريات*\n${dateStr}\n------------------\n\n` : `*HICTRA*\n*Shopping List*\n${dateStr}\n------------------\n\n`;
+    cart.forEach((item) => { text += `• ${item.quantity}x ${item.title} - $${(item.price * item.quantity).toFixed(2)}\n`; });
+    text += `\n------------------\n*${isAr ? "المجموع الكلي" : "Total"}: $${cartTotal.toFixed(2)}*\n------------------\n\n`;
+    text += isAr ? `تسوق المزيد هنا: ${origin}/store\n_أُرسلت من تطبيق هيكترا_` : `Shop more: ${origin}/store\n_Sent from Hictra App_`;
     return text;
   }
 
-  function handlePrint() {
-    window.print();
-  }
-
+  function handlePrint() { window.print(); }
   function handleWhatsApp() {
-    const text = generateTextList();
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+    window.open(`https://wa.me/?text=${encodeURIComponent(generateTextList())}`, "_blank");
   }
 
   return (
     <main className="container" style={{ paddingTop: 40, paddingBottom: 100, maxWidth: 800 }}>
-      
-      {/* Hide header and buttons when printing */}
       <style>{`
         @media print {
           .no-print { display: none !important; }
           .site-header { display: none !important; }
           body { background: white !important; color: black !important; }
           .print-card { border: none !important; box-shadow: none !important; padding: 0 !important; }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
 
@@ -94,25 +122,43 @@ export default function CartPage() {
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
           
-          {/* Print Header (Only visible when printing) */}
           <div style={{ display: "none", marginBottom: 20 }} className="print-only">
             <h2 style={{ margin: 0, fontSize: 24, color: "black" }}>{isAr ? "قائمة مشتريات هيكترا" : "Hictra Shopping List"}</h2>
             <p style={{ margin: 0, fontSize: 14, color: "gray" }}>{new Date().toLocaleDateString()}</p>
           </div>
 
-          {/* Cart Items */}
           <div className="print-card" style={{ background: "var(--surface)", border: "1px solid var(--line)", borderRadius: 16, overflow: "hidden" }}>
             {cart.map((item) => (
               <div key={item.id} style={{ display: "flex", alignItems: "center", gap: 16, padding: 16, borderBottom: "1px solid var(--line)" }}>
                 
-                {/* Image (Hidden on print) */}
-                <div className="no-print" style={{ width: 64, height: 64, borderRadius: 8, overflow: "hidden", background: "var(--surface-2)", flexShrink: 0 }}>
-                  {item.imageUrl ? <img src={item.imageUrl} alt={item.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : null}
+                <div style={{ position: "relative" }}>
+                  <div className="no-print" style={{ width: 64, height: 64, borderRadius: 8, overflow: "hidden", background: "var(--surface-2)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    {item.imageUrl ? <img src={item.imageUrl} alt={item.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ fontSize: 24, opacity: 0.3 }}>🛒</span>}
+                  </div>
+                  {editId === item.id && item.imageUrl && (
+                    <button onClick={() => removeImage(item.id)} style={{ position: "absolute", top: -6, right: -6, background: "var(--accent)", color: "white", border: "none", borderRadius: "50%", width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, cursor: "pointer", zIndex: 5 }} title={isAr ? "إزالة الصورة" : "Remove image"}>✕</button>
+                  )}
                 </div>
                 
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <h3 style={{ margin: "0 0 4px 0", fontSize: 14, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.title}</h3>
-                  <div style={{ fontSize: 13, color: "var(--accent)", fontWeight: 700 }}>${item.price.toFixed(2)}</div>
+                  {editId === item.id ? (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                      <input type="text" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} style={{ padding: "4px 8px", fontSize: 13, borderRadius: 4, border: "1px solid var(--accent)", background: "var(--input-bg)", color: "var(--ink)", width: "100%" }} autoFocus />
+                      <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                        <span style={{ fontSize: 13, color: "var(--muted)" }}>$</span>
+                        <input type="number" step="0.01" value={editPrice} onChange={(e) => setEditPrice(e.target.value)} style={{ padding: "4px 8px", fontSize: 13, borderRadius: 4, border: "1px solid var(--accent)", background: "var(--input-bg)", color: "var(--ink)", width: 80 }} />
+                        <button onClick={saveEdit} className="btn btn-primary" style={{ padding: "2px 10px", fontSize: 11 }}>✓ {isAr ? "حفظ" : "Save"}</button>
+                        <button onClick={() => setEditId(null)} className="btn btn-ghost" style={{ padding: "2px 10px", fontSize: 11 }}>✕</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div onClick={() => startEdit(item)} style={{ cursor: "pointer" }} title={isAr ? "اضغط للتعديل" : "Click to edit"}>
+                      <h3 style={{ margin: "0 0 4px 0", fontSize: 14, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", display: "flex", alignItems: "center", gap: 6 }}>
+                        {item.title} <span style={{ fontSize: 10, color: "var(--muted)", opacity: 0.6 }}>✎</span>
+                      </h3>
+                      <div style={{ fontSize: 13, color: "var(--accent)", fontWeight: 700 }}>${item.price.toFixed(2)}</div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="no-print" style={{ display: "flex", alignItems: "center", gap: 10, background: "var(--surface-2)", borderRadius: 8, padding: "4px 8px" }}>
@@ -121,19 +167,11 @@ export default function CartPage() {
                   <button onClick={() => updateQuantity(item.id, item.quantity + 1)} style={{ background: "none", border: "none", fontSize: 16, cursor: "pointer", color: "var(--ink)" }}>+</button>
                 </div>
 
-                {/* Print Only Quantity */}
-                <div className="print-only" style={{ display: "none", fontSize: 16, fontWeight: 700, marginRight: 20 }}>
-                  x{item.quantity}
-                </div>
-
-                <button className="no-print" onClick={() => removeFromCart(item.id)} style={{ background: "none", border: "none", color: "var(--accent)", cursor: "pointer", fontSize: 18, padding: 8 }}>
-                  ✕
-                </button>
+                <button className="no-print" onClick={() => removeFromCart(item.id)} style={{ background: "none", border: "none", color: "var(--accent)", cursor: "pointer", fontSize: 18, padding: 8 }}>✕</button>
               </div>
             ))}
           </div>
 
-          {/* Summary & Actions */}
           <div className="print-card" style={{ background: "var(--surface)", border: "1px solid var(--line)", borderRadius: 16, padding: 24 }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 24, fontSize: 16, fontWeight: 700, paddingBottom: 12, borderBottom: "1px solid var(--line)" }}>
               <span>{isAr ? "المجموع الكلي" : "Total"}</span>
@@ -141,13 +179,66 @@ export default function CartPage() {
             </div>
             
             <div className="no-print" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+              <button className="btn btn-ghost" onClick={openCostModal} style={{ flex: 1, padding: 14, fontSize: 15, border: "1px solid var(--olive)", background: "var(--olive-soft)", color: "var(--olive)", fontWeight: 600 }}>
+                💰 {isAr ? "تقدير التكلفة" : "Calculate Cost"}
+              </button>
               <button className="btn btn-ghost" onClick={handlePrint} style={{ flex: 1, padding: 14, fontSize: 15, border: "1px solid var(--line)" }}>
                 🖨 {isAr ? "طباعة" : "Print"}
               </button>
-              <button className="btn btn-primary" onClick={handleWhatsApp} style={{ flex: 1, padding: 14, fontSize: 15, background: "#25D366", borderColor: "#25D366", color: "white" }}>
+              <button className="btn btn-primary" onClick={handleWhatsApp} style={{ flex: 2, padding: 14, fontSize: 15, background: "#25D366", borderColor: "#25D366", color: "white" }}>
                 💬 {isAr ? "إرسال واتساب" : "Send WhatsApp"}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {costModalOpen && (
+        <div onClick={() => setCostModalOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, animation: "fadeIn 0.2s ease-out" }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ background: "var(--surface-solid)", border: "1px solid var(--line)", borderRadius: 24, maxWidth: 500, width: "100%", maxHeight: "90vh", display: "flex", flexDirection: "column", boxShadow: "0 24px 48px rgba(0,0,0,0.5)", overflow: "hidden" }}>
+            
+            <div style={{ padding: "20px 24px", borderBottom: "1px solid var(--line)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ fontFamily: "var(--font-head)", fontSize: 24, fontWeight: 400 }}>{isAr ? "تقدير التكلفة" : "Cost Estimate"}</div>
+              <button onClick={() => setCostModalOpen(false)} style={{ background: "transparent", border: "none", color: "var(--muted)", fontSize: 24, cursor: "pointer" }}>✕</button>
+            </div>
+
+            <div style={{ padding: 24, overflowY: "auto", display: "flex", flexDirection: "column", gap: 16 }}>
+              {costData.map((item, idx) => (
+                <div key={idx} style={{ display: "flex", alignItems: "center", gap: 12, background: "var(--surface-2)", padding: 12, borderRadius: 12, border: "1px solid var(--line)", flexWrap: "wrap" }}>
+                  <div style={{ flex: 1, minWidth: 150 }}>
+                    <div style={{ fontSize: 13.5, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.name}</div>
+                    <div style={{ fontSize: 12, color: "var(--accent)", fontWeight: 700, marginTop: 2 }}>
+                      {item.price > 0 ? `$${item.price.toFixed(2)} / unit` : (isAr ? "غير متوفر" : "Not found")}
+                    </div>
+                  </div>
+                  <input 
+                    type="number" 
+                    step="0.01"
+                    min="0.01"
+                    placeholder="Qty"
+                    value={item.qtyUsed || ""}
+                    onChange={(e) => handleQtyChange(item.id, e.target.value)}
+                    style={{ width: 80, padding: 8, borderRadius: 8, border: "1px solid var(--line)", background: "var(--bg)", color: "var(--ink)", fontSize: 14, textAlign: "center", fontWeight: 600 }}
+                  />
+                  <div style={{ width: 70, textAlign: "end", fontSize: 14, fontWeight: 700, color: "var(--olive)" }}>
+                    ${(item.qtyUsed * item.price).toFixed(2)}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ padding: "20px 24px", borderTop: "1px solid var(--line)", background: "var(--surface)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                <span style={{ fontSize: 14, fontWeight: 600, color: "var(--muted)", textTransform: "uppercase" }}>{isAr ? "المجموع" : "Total Estimate"}</span>
+                <span style={{ fontSize: 32, fontWeight: 800, color: "var(--ink)" }}>${grandTotal.toFixed(2)}</span>
+              </div>
+              <div style={{ display: "flex", gap: 12 }}>
+                <button className="btn btn-whatsapp" onClick={sendCostToWhatsApp} style={{ flex: 1, padding: 14, borderRadius: 12, fontSize: 15, fontWeight: 600, background: "#25D366", border: "none", color: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                  💬 {isAr ? "إرسال واتساب" : "Send to WhatsApp"}
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
       )}

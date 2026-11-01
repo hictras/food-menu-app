@@ -129,6 +129,9 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
     );
 
     const [bulkIngredients, setBulkIngredients] = useState("");
+    const [searchIngredientIdx, setSearchIngredientIdx] = useState<number | null>(null);
+    const [ingredientSearchResults, setIngredientSearchResults] = useState<any[]>([]);
+    const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
     const [bulkSteps, setBulkSteps] = useState("");
     const [showBulkIng, setShowBulkIng] = useState(false);
     const [showBulkStep, setShowBulkStep] = useState(false);
@@ -199,6 +202,30 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
         setBulkSteps("");
         setShowBulkStep(false);
         setDirty(true);
+    }
+
+    function handleIngredientSearch(idx: number, query: string) {
+        updateIngredient(idx, { name: query });
+        if (searchTimeout) clearTimeout(searchTimeout);
+        if (query.length < 2) {
+            setIngredientSearchResults([]);
+            return;
+        }
+        const timeout = setTimeout(() => {
+            fetch(`/api/store/search-ingredient?q=${encodeURIComponent(query)}`)
+                .then(res => res.json())
+                .then(data => {
+                    setIngredientSearchResults(data.results || []);
+                    setSearchIngredientIdx(idx);
+                })
+                .catch(() => {});
+        }, 300);
+        setSearchTimeout(timeout);
+    }
+    function selectStoreItem(idx: number, item: any) {
+        updateIngredient(idx, { name: item.title });
+        setIngredientSearchResults([]);
+        setSearchIngredientIdx(null);
     }
 
     async function handleSubmit(e: React.FormEvent) {
@@ -588,15 +615,41 @@ export default function RecipeForm({ initial }: { initial?: InitialData }) {
                                                         />
                                                     </div>
                                                 </div>
-                                                <input
-                                                    className="cell-name"
-                                                    type="text"
-                                                    placeholder={t(lang, "ingredient")}
-                                                    value={ing.name}
-                                                    onChange={(e) => updateIngredient(i, { name: e.target.value })}
-                                                    dir="ltr"
-                                                    style={{ background: "var(--input-bg, #16161a)", border: "1px solid var(--line, #444)", color: "var(--ink, #ededed)", padding: "8px 10px", borderRadius: 6, height: 34, width: "100%", outline: "none" }}
-                                                />
+<div style={{ position: "relative", width: "100%" }}>
+    <input
+        className="cell-name"
+        type="text"
+        placeholder={t(lang, "ingredient")}
+        value={ing.name}
+        onChange={(e) => handleIngredientSearch(i, e.target.value)}
+        dir="ltr"
+        style={{ background: "var(--input-bg, #16161a)", border: "1px solid var(--line, #444)", color: "var(--ink, #ededed)", padding: "8px 10px", borderRadius: 6, height: 34, width: "100%", outline: "none" }}
+    />
+
+    {/* Dropdown */}
+    {searchIngredientIdx === i && ingredientSearchResults.length > 0 && (
+        <>
+            <div style={{ position: "fixed", inset: 0, zIndex: 50 }} onClick={() => setSearchIngredientIdx(null)} />
+            <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: "var(--surface-solid)", border: "1px solid var(--line)", borderRadius: 8, zIndex: 60, marginTop: 4, boxShadow: "0 10px 30px rgba(0,0,0,0.5)", maxHeight: 200, overflowY: "auto" }}>
+                {ingredientSearchResults.map((item) => (
+                    <div
+                        key={item.id}
+                        onClick={() => selectStoreItem(i, item)}
+                        style={{ padding: "10px 12px", cursor: "pointer", borderBottom: "1px solid var(--line)", display: "flex", alignItems: "center", gap: 10 }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = "var(--surface-2)"}
+                        onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                    >
+                        {item.imageUrl && <img src={item.imageUrl} alt="" style={{ width: 30, height: 30, borderRadius: 4, objectFit: "cover" }} />}
+                        <div style={{ display: "flex", flexDirection: "column" }}>
+                            <span style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)" }}>{item.title}</span>
+                            {item.brand && <span style={{ fontSize: 11, color: "var(--accent)" }}>{item.brand}</span>}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </>
+    )}
+</div>
                                             </div>
 
                                             <div className="input-with-tools" style={{ display: "flex", background: "var(--input-bg, #16161a)", border: "1px solid var(--line, #444)", borderRadius: 6, overflow: "visible", height: 34, width: "100%", position: "relative" }}>

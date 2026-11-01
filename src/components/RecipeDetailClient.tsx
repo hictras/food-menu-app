@@ -12,6 +12,7 @@ import { categoryIcon, categoryLabel } from "@/lib/categories";
 import CookMode from "./CookMode";
 import RecipeReviews from "./RecipeReviews";
 import { useModal } from "./ModalProvider";
+import { useCart } from "./CartProvider";
 
 import { getRecipeImage } from "@/lib/get-recipe-image";
 type RecipeRow = {
@@ -42,6 +43,9 @@ export default function RecipeDetailClient({
   lastMadeDate?: string | null;
 }) {
   const [logoUrl, setLogoUrl] = useState<string>("");
+  const { addToCart } = useCart();
+  const { show, confirm } = useModal();
+  
   useEffect(() => {
     fetch("/api/settings").then((r) => r.json()).then((d) => { if (d.logo_url) setLogoUrl(d.logo_url); }).catch(() => {});
   }, []);
@@ -51,47 +55,30 @@ export default function RecipeDetailClient({
   const L: "ar" | "en" = isAr ? "ar" : "en";
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
+  const [matching, setMatching] = useState(false);
   const formattedLastMade = lastMadeDate ? lastMadeDate.split("-").reverse().join("-") : null;
   const [cookModeOpen, setCookModeOpen] = useState(false);
-  const { show, confirm } = useModal();
 
   let tags: string[] = [];
   try {
     if (recipe.dietaryTags) {
       const parsed = JSON.parse(recipe.dietaryTags);
-      if (Array.isArray(parsed)) {
-        tags = Array.from(new Set(parsed));
-      }
+      if (Array.isArray(parsed)) tags = Array.from(new Set(parsed));
     }
-  } catch (e) {
-    tags = [];
-  }
-  const youtubeId = extractYouTubeId(recipe.videoUrl);
-  const minLabel = isAr ? ar.units.min : "min";
+  } catch (e) { tags = []; }
 
-  const displayName = typeof recipe.name === "string" 
-  ? pick(lang, recipe.name, recipe.nameAr) 
-  : recipe.name;
+  const youtubeId = extractYouTubeId(recipe.videoUrl);
+  const displayName = typeof recipe.name === "string" ? pick(lang, recipe.name, recipe.nameAr) : recipe.name;
   const displayDesc = pick(lang, recipe.description, recipe.descriptionAr);
-  const displayCuisine = pick(lang, recipe.cuisine, recipe.cuisineAr);
-  const displayServedWith = pick(lang, recipe.servedWith, recipe.servedWithAr);
-  const displayHowToServe = pick(lang, recipe.howToServe, recipe.howToServeAr);
-  const catIcon = categoryIcon(recipe.category) || categoryIcon(recipe.categoryAr);
-  const catLabel = categoryLabel(recipe.category, lang) || categoryLabel(recipe.categoryAr, lang);
 
   function shareToWhatsApp(withToday: boolean) {
     const origin = typeof window !== "undefined" ? window.location.origin : "";
     const url = `${origin}/recipes/${recipe.id}${withToday ? "?today" : ""}`;
-    const waUrl = `https://wa.me/?text=${encodeURIComponent(url)}`;
-    window.open(waUrl, "_blank");
+    window.open(`https://wa.me/?text=${encodeURIComponent(url)}`, "_blank");
   }
 
   async function handleDelete() {
-    const ok = await confirm({
-      message: ar.messages.deleteConfirm[L],
-      confirmText: isAr ? "حذف" : "Delete",
-      tone: "danger"
-    });
+    const ok = await confirm({ message: ar.messages.deleteConfirm[L], confirmText: isAr ? "حذف" : "Delete", tone: "danger" });
     if (!ok) return;
     setDeleting(true);
     try {
@@ -102,6 +89,44 @@ export default function RecipeDetailClient({
     } catch (err) {
       show({ message: ar.messages.deleteFailed[L], tone: "danger" });
       setDeleting(false);
+    }
+  }
+
+  // ONLY MATCH TO STORE (Create List)
+  async function handleMatchToStore() {
+    if (ingredients.length === 0) return;
+    
+    setMatching(true);
+    try {
+      const ingNames = ingredients.map(i => i.name).filter(Boolean);
+      
+      const res = await fetch("/api/store/match-ingredients", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ingredients: ingNames }),
+      });
+      
+      const data = await res.json();
+      
+      if (data.matches && data.matches.length > 0) {
+        for (const product of data.matches) {
+          addToCart({
+            id: product.id,
+            title: isAr && product.titleAr ? product.titleAr : product.title,
+            price: product.price,
+            imageUrl: product.imageUrl,
+          });
+        }
+        
+        show({ message: isAr ? `تمت إضافة ${data.matches.length} منتجات إلى السلة!` : `Added ${data.matches.length} items to your cart!`, tone: "info" });
+        setTimeout(() => router.push("/cart"), 1000);
+      } else {
+        show({ message: isAr ? "لم يتم العثور على تطابقات في المتجر." : "No matching products found in the store.", tone: "danger" });
+      }
+    } catch (err) {
+      show({ message: isAr ? "حدث خطأ." : "An error occurred.", tone: "danger" });
+    } finally {
+      setMatching(false);
     }
   }
 
@@ -130,16 +155,21 @@ export default function RecipeDetailClient({
           </button>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", flexWrap: "wrap", gap: 12 }}>
           
-          {lastMadeDate && (
-            <Link 
-              href={`/recipes/${recipe.id}/history`} 
-              style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--surface-2)", border: "1px solid var(--line-strong)", padding: "6px 14px", borderRadius: 999, fontSize: 13, fontWeight: 600, color: "var(--accent)", textDecoration: "none", whiteSpace: "nowrap", height: 42, boxSizing: "border-box" }}
-            >
-              🕒 {isAr ? ar.history.lastTimeMade : "Last time made:"} <strong>{formattedLastMade}</strong>
-            </Link>
-          )}
+          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            {lastMadeDate && (
+              <Link href={`/recipes/${recipe.id}/history`} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--surface-2)", border: "1px solid var(--line-strong)", padding: "6px 14px", borderRadius: 999, fontSize: 13, fontWeight: 600, color: "var(--accent)", textDecoration: "none", whiteSpace: "nowrap", height: 42, boxSizing: "border-box" }}>
+                🕒 {isAr ? ar.history.lastTimeMade : "Last time made:"} <strong>{formattedLastMade}</strong>
+              </Link>
+            )}
+
+            {ingredients.length > 0 && (
+              <button type="button" className="btn btn-ghost" onClick={handleMatchToStore} disabled={matching} style={{ height: 42, padding: "0 16px", borderRadius: 8, fontSize: 13, display: "inline-flex", alignItems: "center", gap: 6, border: "1px solid var(--accent)", background: "var(--accent-soft)", color: "var(--accent)", cursor: matching ? "wait" : "pointer" }}>
+                🛒 {matching ? (isAr ? "جاري البحث..." : "Searching...") : (isAr ? "إنشاء قائمة" : "Create List")}
+              </button>
+            )}
+          </div>
 
           <div style={{ display: "flex", gap: 8, marginInlineStart: "auto" }}>
             {isAdmin && (
@@ -157,12 +187,7 @@ export default function RecipeDetailClient({
             )}
 
             {instructions.length > 0 && (
-              <button 
-                type="button" 
-                className="btn btn-primary" 
-                onClick={() => setCookModeOpen(true)}
-                style={{ height: 42, padding: "0 16px", borderRadius: 8, fontSize: 13, display: "inline-flex", alignItems: "center", gap: 6, border: "1px solid var(--ink)", background: "var(--ink)", color: "var(--bg)", cursor: "pointer" }}
-              >
+              <button type="button" className="btn btn-primary" onClick={() => setCookModeOpen(true)} style={{ height: 42, padding: "0 16px", borderRadius: 8, fontSize: 13, display: "inline-flex", alignItems: "center", gap: 6, border: "1px solid var(--ink)", background: "var(--ink)", color: "var(--bg)", cursor: "pointer" }}>
                 🍳 {isAr ? ar.cookMode.start : "Start Cooking"}
               </button>
             )}
@@ -170,40 +195,15 @@ export default function RecipeDetailClient({
         </div>
       </header>
 
-      {displayDesc && (
-        <>
-          <div className="detail-desc-divider" />
-          <p className="detail-desc">{displayDesc}</p>
-        </>
-      )}
+      {displayDesc && (<><div className="detail-desc-divider" /><p className="detail-desc">{displayDesc}</p></>)}
 
       {recipe.videoUrl && (
         <section className="video-section">
           <h2>{t(lang, "video")}</h2>
           {youtubeId ? (
-            <div className="video-wrap">
-              <iframe
-                src={`https://www.youtube.com/embed/${youtubeId}`}
-                title="Recipe video"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
+            <div className="video-wrap"><iframe src={`https://www.youtube.com/embed/${youtubeId}`} title="Recipe video" allowFullScreen /></div>
           ) : (
-            <video
-              src={recipe.videoUrl}
-              controls
-              preload="metadata"
-              playsInline
-              style={{
-                width: "100%",
-                borderRadius: "var(--radius)",
-                border: "1px solid var(--line)",
-                background: "#000",
-                aspectRatio: "16 / 9",
-                objectFit: "contain",
-              }}
-            />
+            <video src={recipe.videoUrl} controls preload="metadata" playsInline style={{ width: "100%", borderRadius: "var(--radius)", border: "1px solid var(--line)", background: "#000", aspectRatio: "16 / 9", objectFit: "contain" }} />
           )}
         </section>
       )}
@@ -211,43 +211,24 @@ export default function RecipeDetailClient({
       <div className="detail-cols">
         <section className="detail-section">
           <h2>{t(lang, "ingredients")}</h2>
-          {ingredients.length === 0 ? (
-            <p className="helper">{t(lang, "no_ingredients")}</p>
-          ) : (
+          {ingredients.length === 0 ? <p className="helper">{t(lang, "no_ingredients")}</p> : (
             <ul className="ing-list">
-              {ingredients.map((i) => {
-                const ingName = pick(lang, i.name, i.nameAr);
-                const ingUnit = pick(lang, i.unit, i.unitAr);
-                const ingPrep = pick(lang, i.preparation, i.preparationAr);
-                return (
-                  <li key={i.id}>
-                    <span className="ing-amount">{[i.amount, ingUnit].filter(Boolean).join(" ")}</span>
-                    <span className="ing-name">
-                      {ingName}
-                      {ingPrep && (
-                        <span style={{ color: "var(--muted)", fontStyle: "italic" }}>
-                          {isAr ? ar.units.comma : ", "}{ingPrep}
-                        </span>
-                      )}
-                    </span>
-                  </li>
-                );
-              })}
+              {ingredients.map((i) => (
+                <li key={i.id}>
+                  <span className="ing-amount">{[i.amount, pick(lang, i.unit, i.unitAr)].filter(Boolean).join(" ")}</span>
+                  <span className="ing-name">{pick(lang, i.name, i.nameAr)}</span>
+                </li>
+              ))}
             </ul>
           )}
         </section>
 
         <section className="detail-section">
           <h2>{t(lang, "instructions")}</h2>
-          {instructions.length === 0 ? (
-            <p className="helper">{t(lang, "no_instructions")}</p>
-          ) : (
+          {instructions.length === 0 ? <p className="helper">{t(lang, "no_instructions")}</p> : (
             <ol className="steps-list">
               {instructions.map((s) => (
-                <li key={s.id}>
-                  <div className="step-num">{s.stepNumber}</div>
-                  <p>{pick(lang, s.text, s.textAr)}</p>
-                </li>
+                <li key={s.id}><div className="step-num">{s.stepNumber}</div><p>{pick(lang, s.text, s.textAr)}</p></li>
               ))}
             </ol>
           )}
@@ -255,13 +236,7 @@ export default function RecipeDetailClient({
       </div>
 
       <RecipeReviews recipeId={recipe.id} isAdmin={isAdmin} />
-
-      <CookMode
-        open={cookModeOpen}
-        onClose={() => setCookModeOpen(false)}
-        recipeName={displayName}
-        steps={instructions}
-      />
+      <CookMode open={cookModeOpen} onClose={() => setCookModeOpen(false)} recipeName={displayName} steps={instructions} />
     </>
   );
 }
