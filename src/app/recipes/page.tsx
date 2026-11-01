@@ -17,7 +17,6 @@ async function RecipeList() {
   return <HomeClient recipes={all} />;
 }
 
-
 export default function RecipesPage() {
   return (
     <main className="container">

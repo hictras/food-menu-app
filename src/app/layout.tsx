@@ -11,8 +11,9 @@ import BackToTop from "@/components/BackToTop";
 import { ModalProvider } from "@/components/ModalProvider";
 import IdleReload from "@/components/IdleReload";
 import PresenceTracker from "@/components/PresenceTracker";
+import PageThemeIcon from "@/components/PageThemeIcon";
+import GlobalBackground from "@/components/GlobalBackground";
 
-// Static Metadata (No DB calls here to avoid blocking)
 export const metadata: Metadata = {
   title: "Hictra",
   description: "Your personal cookbook",
@@ -83,6 +84,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Script id="bootstrap" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: inlineBootstrap }} />
       </head>
       <body>
+        <GlobalBackground />
         <ThemeProvider>
           <LanguageProvider>
             <Suspense fallback={null}>
@@ -92,6 +94,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <ModalProvider>
               <DynamicFavicon />
               <TitleThemeSync />
+              <PageThemeIcon />
               <Suspense fallback={null}><NavGate /></Suspense>
               {children}
             </ModalProvider>

@@ -18,6 +18,10 @@ export default function Nav() {
   const [logoUrl, setLogoUrl] = useState<string>("");
   const [unreadCount, setUnreadCount] = useState(0);
 
+  // Nav Image State
+  const [navImageUrl, setNavImageUrl] = useState<string>("");
+  const [navImageOpacity, setNavImageOpacity] = useState<number>(0.5);
+
   useEffect(() => {
     let mounted = true;
     async function checkUnread() {
@@ -53,13 +57,29 @@ export default function Nav() {
       .then((data) => setIsAdmin(!!data.admin))
       .catch(() => setIsAdmin(false))
       .finally(() => setLoaded(true));
+  }, []);
 
-    fetch("/api/settings")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.logo_url) setLogoUrl(data.logo_url);
-      })
-      .catch(() => {});
+  // Load Branding Settings (Logo & Nav Image)
+  useEffect(() => {
+    function loadSettings() {
+      fetch("/api/settings", { cache: "no-store" })
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.logo_url) setLogoUrl(data.logo_url);
+          if (data.nav_image_url) {
+            setNavImageUrl(data.nav_image_url);
+            setNavImageOpacity(parseFloat(data.nav_image_opacity) || 0.5);
+          } else {
+            setNavImageUrl("");
+          }
+        })
+        .catch(() => {});
+    }
+    loadSettings();
+
+    // Listen for changes from the Settings page
+    window.addEventListener("settings-updated", loadSettings);
+    return () => window.removeEventListener("settings-updated", loadSettings);
   }, []);
 
   useEffect(() => {
@@ -95,8 +115,35 @@ export default function Nav() {
   }
 
   return (
-    <header className="site-header">
-      <nav className="nav-inner" aria-label="Main navigation">
+    <header className="site-header" style={{ position: "relative" }}>
+      
+      {/* Navbar Background Image (Lower z-index) */}
+      {navImageUrl && (
+        <>
+          <div style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: `url(${navImageUrl})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: navImageOpacity,
+            zIndex: 0,
+            pointerEvents: "none",
+            overflow: "hidden"
+          }} />
+          <div style={{
+            position: "absolute",
+            inset: 0,
+            background: "rgba(0,0,0,0.3)",
+            zIndex: 0,
+            pointerEvents: "none",
+            overflow: "hidden"
+          }} />
+        </>
+      )}
+
+      {/* Main Nav Content (High z-index) */}
+      <nav className="nav-inner" aria-label="Main navigation" style={{ position: "relative", zIndex: 10 }}>
         <Link href="/" className="brand" aria-label="Home" onClick={closeAll}>
           {logoUrl ? (
             <img className="nav-logo" src={logoUrl} alt="Logo" />
@@ -115,9 +162,6 @@ export default function Nav() {
           <Link className="nav-link nav-recipes-main" href="/recipes" onClick={closeAll}>
             {t(lang, "nav_recipes")}
           </Link>
-
-
-
 
           <Link className="nav-link" href={`/calendar/${new Date().toISOString().split("T")[0]}`} onClick={closeAll}>
             📍 {lang === "ar" ? ar.nav.today : "Today"}
@@ -164,7 +208,7 @@ export default function Nav() {
               </button>
 
               {adminOpen && (
-                <div className="nav-admin-menu">
+                <div className="nav-admin-menu" style={{ zIndex: 20 }}>
                   <Link href="/import" className="nav-menu-item" onClick={closeAll}>
                     📥 {lang === "ar" ? ar.nav.import : "Import recipes"}
                   </Link>
@@ -224,102 +268,112 @@ export default function Nav() {
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileOpen}
               aria-controls="nav-mobile-menu"
+              style={{ zIndex: 15 }}
             >
               <span className="menu-lines">{mobileOpen ? "×" : "☰"}</span>
             </button>
           </div>
-
-        </div>
-
-        <div className={`nav-mobile-menu${mobileOpen ? " is-open" : ""}`} id="nav-mobile-menu">
-          <Link className="mobile-nav-link" href="/inbox" onClick={closeAll} style={{ position: "relative", display: "flex", alignItems: "center", gap: 8  }}>
-            <span>✉️</span> {lang === "ar" ? ar.nav.inbox : "Inbox"}
-            {unreadCount > 0 && (
-              <span style={{ background: "var(--accent)", color: "white", fontSize: 11, fontWeight: "bold", padding: "2px 6px", borderRadius: 999, marginInlineStart: "auto" }}>
-                {unreadCount}
-              </span>
-            )}
-          </Link>
-
-          <Link className="mobile-nav-link" href={`/calendar/${new Date().toISOString().split("T")[0]}`} onClick={closeAll}>
-            <span>📍</span> {lang === "ar" ? ar.nav.today : "Today"}
-          </Link>
-
-           <Link className="mobile-nav-link" href="/week" onClick={closeAll}>
-            <span>📄</span> {lang === "ar" ? ar.nav.week : "This Week"}
-          </Link>
-
-          <Link className="mobile-nav-link" href="/calendar" onClick={closeAll}>
-            <span>📅</span> {lang === "ar" ? ar.nav.calendar : "Calendar"}
-          </Link>
-
-          <Link className="mobile-nav-link" href="/games" onClick={closeAll}>
-            <span>🎮</span> {lang === "ar" ? ar.nav.gamesHubNav : "Games"}
-          </Link>
-
-          <Link className="mobile-nav-link" href="/appearance" onClick={closeAll}><span>🎨</span> {lang === "ar" ? ar.appearance.title : "Appearance"}</Link>
-
-          <div className="nav-menu-divider" />
-          
-          {loaded && isAdmin && (
-            <>
-              <Link className="mobile-nav-link" href="/import" onClick={closeAll}>
-                <span>📥</span> {lang === "ar" ? ar.nav.import : "Import"}
-              </Link>
-              <Link className="mobile-nav-link" href="/recipes/new" onClick={closeAll}>
-                <span>✚</span> {t(lang, "nav_add")}
-              </Link>
-              <Link className="mobile-nav-link" href="/replies" onClick={closeAll}>
-                <span>💬</span> {lang === "ar" ? ar.nav.replies : "Replies"}
-              </Link>
-              <Link className="mobile-nav-link" href="/sendpush" onClick={closeAll}>
-                <span>📤</span> {lang === "ar" ? ar.nav.sendPush : "Send Push"}
-              </Link>
-              <Link className="mobile-nav-link" href="/inbox/admin" onClick={closeAll}>
-                <span>📊</span> {lang === "ar" ? ar.inboxDetail.adminTitle : "Inbox Admin"}
-              </Link>
-              <Link className="mobile-nav-link" href="/hidden-recipes" onClick={closeAll}>
-                <span>🙈</span> {lang === "ar" ? ar.hiddenRecipes.title : "Hidden Recipes"}
-              </Link>
-              <Link className="mobile-nav-link" href="/active-image" onClick={closeAll}>
-                <span>🖼️</span> {lang === "ar" ? "الصور النشطة" : "Active Image"}
-              </Link>
-              <Link className="mobile-nav-link" href="/visitors" onClick={closeAll}>
-                <span>📱</span> {lang === "ar" ? ar.visitorsPage.title : "Devices Log"}
-              </Link>
-              <Link className="mobile-nav-link" href="/recipients" onClick={closeAll}>
-                <span>👥</span> {lang === "ar" ? ar.nav.recipients : "Recipients"}
-              </Link>
-              <Link className="mobile-nav-link" href="/whatsapp" onClick={closeAll}>
-                <span>💬</span> {lang === "ar" ? ar.nav.whatsapp : "WhatsApp"}
-              </Link>
-              <Link className="mobile-nav-link" href="/settings" onClick={closeAll}>
-                <span>⚙️</span> {lang === "ar" ? ar.nav.settings : "Settings"}
-              </Link>
-              <Link className="mobile-nav-link" href="/no-dish-today" onClick={closeAll}>
-                <span>🍽</span> {lang === "ar" ? ar.nav.noDishPage : "No Dish page"}
-              </Link>
-              <button
-                type="button"
-                onClick={logout}
-                className="mobile-nav-link nav-menu-danger"
-                style={{ border: "none", background: "transparent", textAlign: "start", width: "100%", cursor: "pointer" }}
-              >
-                <span>🚪</span> {lang === "ar" ? ar.nav.logout : "Logout"}
-              </button>
-            </>
-          )}
-
-          {loaded && !isAdmin && (
-            <>
-              <div className="nav-menu-divider" />
-              <Link className="mobile-nav-link" href="/login" onClick={closeAll}>
-                <span>👤</span> {lang === "ar" ? ar.nav.login : "Login"}
-              </Link>
-            </>
-          )}
         </div>
       </nav>
+
+      {/* Mobile Menu (Highest z-index to cover everything) */}
+      <div 
+        className={`nav-mobile-menu${mobileOpen ? " is-open" : ""}`} 
+        id="nav-mobile-menu"
+        style={{ 
+          zIndex: 20, 
+          position: "absolute", // Ensure it stays outside the normal flow
+          background: "var(--surface-solid)", // Solid background so image doesn't bleed
+          boxShadow: "var(--shadow-lg)" 
+        }}
+      >
+        <Link className="mobile-nav-link" href="/inbox" onClick={closeAll} style={{ position: "relative", display: "flex", alignItems: "center", gap: 8  }}>
+          <span>✉️</span> {lang === "ar" ? ar.nav.inbox : "Inbox"}
+          {unreadCount > 0 && (
+            <span style={{ background: "var(--accent)", color: "white", fontSize: 11, fontWeight: "bold", padding: "2px 6px", borderRadius: 999, marginInlineStart: "auto" }}>
+              {unreadCount}
+            </span>
+          )}
+        </Link>
+
+        <Link className="mobile-nav-link" href={`/calendar/${new Date().toISOString().split("T")[0]}`} onClick={closeAll}>
+          <span>📍</span> {lang === "ar" ? ar.nav.today : "Today"}
+        </Link>
+
+         <Link className="mobile-nav-link" href="/week" onClick={closeAll}>
+          <span>📄</span> {lang === "ar" ? ar.nav.week : "This Week"}
+        </Link>
+
+        <Link className="mobile-nav-link" href="/calendar" onClick={closeAll}>
+          <span>📅</span> {lang === "ar" ? ar.nav.calendar : "Calendar"}
+        </Link>
+
+        <Link className="mobile-nav-link" href="/games" onClick={closeAll}>
+          <span>🎮</span> {lang === "ar" ? ar.nav.gamesHubNav : "Games"}
+        </Link>
+
+        <Link className="mobile-nav-link" href="/appearance" onClick={closeAll}><span>🎨</span> {lang === "ar" ? ar.appearance.title : "Appearance"}</Link>
+
+        <div className="nav-menu-divider" />
+        
+        {loaded && isAdmin && (
+          <>
+            <Link className="mobile-nav-link" href="/import" onClick={closeAll}>
+              <span>📥</span> {lang === "ar" ? ar.nav.import : "Import"}
+            </Link>
+            <Link className="mobile-nav-link" href="/recipes/new" onClick={closeAll}>
+              <span>✚</span> {t(lang, "nav_add")}
+            </Link>
+            <Link className="mobile-nav-link" href="/replies" onClick={closeAll}>
+              <span>💬</span> {lang === "ar" ? ar.nav.replies : "Replies"}
+            </Link>
+            <Link className="mobile-nav-link" href="/sendpush" onClick={closeAll}>
+              <span>📤</span> {lang === "ar" ? ar.nav.sendPush : "Send Push"}
+            </Link>
+            <Link className="mobile-nav-link" href="/inbox/admin" onClick={closeAll}>
+              <span>📊</span> {lang === "ar" ? ar.inboxDetail.adminTitle : "Inbox Admin"}
+            </Link>
+            <Link className="mobile-nav-link" href="/hidden-recipes" onClick={closeAll}>
+              <span>🙈</span> {lang === "ar" ? ar.hiddenRecipes.title : "Hidden Recipes"}
+            </Link>
+            <Link className="mobile-nav-link" href="/active-image" onClick={closeAll}>
+              <span>🖼️</span> {lang === "ar" ? "الصور النشطة" : "Active Image"}
+            </Link>
+            <Link className="mobile-nav-link" href="/visitors" onClick={closeAll}>
+              <span>📱</span> {lang === "ar" ? ar.visitorsPage.title : "Devices Log"}
+            </Link>
+            <Link className="mobile-nav-link" href="/recipients" onClick={closeAll}>
+              <span>👥</span> {lang === "ar" ? ar.nav.recipients : "Recipients"}
+            </Link>
+            <Link className="mobile-nav-link" href="/whatsapp" onClick={closeAll}>
+              <span>💬</span> {lang === "ar" ? ar.nav.whatsapp : "WhatsApp"}
+            </Link>
+            <Link className="mobile-nav-link" href="/settings" onClick={closeAll}>
+              <span>⚙️</span> {lang === "ar" ? ar.nav.settings : "Settings"}
+            </Link>
+            <Link className="mobile-nav-link" href="/no-dish-today" onClick={closeAll}>
+              <span>🍽</span> {lang === "ar" ? ar.nav.noDishPage : "No Dish page"}
+            </Link>
+            <button
+              type="button"
+              onClick={logout}
+              className="mobile-nav-link nav-menu-danger"
+              style={{ border: "none", background: "transparent", textAlign: "start", width: "100%", cursor: "pointer" }}
+            >
+              <span>🚪</span> {lang === "ar" ? ar.nav.logout : "Logout"}
+            </button>
+          </>
+        )}
+
+        {loaded && !isAdmin && (
+          <>
+            <div className="nav-menu-divider" />
+            <Link className="mobile-nav-link" href="/login" onClick={closeAll}>
+              <span>👤</span> {lang === "ar" ? ar.nav.login : "Login"}
+            </Link>
+          </>
+        )}
+      </div>
     </header>
   );
 }

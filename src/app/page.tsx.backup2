@@ -1,0 +1,73 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useLang } from "@/components/LanguageProvider";
+
+export default function LandingPage() {
+  const { lang } = useLang();
+  const router = useRouter();
+  const isAr = lang === "ar";
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) router.push(`/recipes?q=${encodeURIComponent(searchQuery)}`);
+  };
+
+  const cards = [
+    { href: "/recipes?category=Main%20Dish", img: "/cat-main.jpg",    en: "Main Dishes",    ar: "الأطباق الرئيسية" },
+    { href: "/recipes?category=Salad",       img: "/cat-salad.jpg",   en: "Salads",         ar: "سلطات" },
+    { href: "/recipes?category=Soup",        img: "/cat-soup.jpg",    en: "Soups",          ar: "شوربات" },
+    { href: "/recipes?category=Dessert",     img: "/cat-dessert.jpg", en: "Desserts",       ar: "حلويات" },
+    { href: "/recipes?category=Drink",       img: "/cat-drink.jpg",   en: "Drinks",         ar: "مشروبات" },
+    { href: "/recipes?category=Dessert",     img: "/cat-festive.jpg", en: "Festive Treats", ar: "حلويات المناسبات" },
+  ];
+
+  return (
+    <>
+      <section className="hero-section">
+        <div className="hero-content">
+          <h1 className="hero-title">
+            {isAr ? "مرحباً بك في" : "Welcome to"} <br />
+            <span>Hictra Recipes</span>
+          </h1>
+          <p className="hero-subtitle">
+            {isAr ? "اكتشف وصفات لذيذة لكل مناسبة... مع لمسة من السحر 🎃"
+                  : "Discover delicious recipes for every occasion... with a touch of magic 🎃"}
+          </p>
+          <form onSubmit={handleSearch} className="hero-search">
+            <input type="text"
+              placeholder={isAr ? "ابحث عن وصفة..." : "Search for recipes..."}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)} />
+            <button type="submit">{isAr ? "بحث" : "Search"}</button>
+          </form>
+        </div>
+      </section>
+
+      <section className="popular-categories">
+        <div className="section-header">
+          <h2 className="section-title">🎃 {isAr ? "الفئات الشائعة" : "Popular Categories"}</h2>
+          <Link href="/recipes" className="view-all-btn">{isAr ? "عرض الكل <" : "View All >"}</Link>
+        </div>
+        <div className="category-cards-grid">
+          {cards.map((c) => (
+            <Link key={c.en} href={c.href} className="category-card">
+              <img src={c.img} alt={isAr ? c.ar : c.en} />
+              <div className="category-card-overlay">
+                <p className="category-card-title">
+                  {isAr ? c.ar : c.en}
+                  <span className="category-card-arrow">→</span>
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <div className="footer-banner">Cook • Enjoy • Share</div>
+    </>
+  );
+}

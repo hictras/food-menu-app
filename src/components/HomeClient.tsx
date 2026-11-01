@@ -9,8 +9,8 @@ import { cuisineFlagUrl } from "@/lib/cuisine-flag";
 import { CATEGORIES } from "@/lib/categories";
 import { ar } from "@/lib/ar";
 import { useModal } from "./ModalProvider";
-
 import { getRecipeImage } from "@/lib/get-recipe-image";
+
 type RecipeRow = {
   id: number;
   name: string;
@@ -42,8 +42,9 @@ type SortKey = "newest" | "name-asc" | "name-desc" | "time-asc" | "time-desc";
 
 export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
   const [logoUrl, setLogoUrl] = useState<string>("");
+  
   useEffect(() => {
-    fetch("/api/settings").then((r) => r.json()).then((d) => { if (d.logo_url) setLogoUrl(d.logo_url); }).catch(() => {});
+    fetch("/api/settings").then(r => r.json()).then(d => { if (d.logo_url) setLogoUrl(d.logo_url); }).catch(() => {});
   }, []);
   
   const { lang } = useLang();
@@ -178,16 +179,13 @@ export default function HomeClient({ recipes }: { recipes: RecipeRow[] }) {
 
       {total > 0 && (
         <div className="filter-bar" style={{ display: "block" }}>
-          
           <div className="filter-top-row">
             <div className="search-wrap">
               <span className="search-icon">🔍</span>
               <input type="text" className="search-input" placeholder={isAr ? ar.home.searchPlaceholder : "Search recipes..."} value={query} onChange={(e) => setQuery(e.target.value)} />
               {query && <button type="button" className="search-clear" onClick={() => setQuery("")} aria-label="Clear search">✕</button>}
             </div>
-            
             <button type="button" className="filter-toggle-small" onClick={() => document.querySelector(".filter-dropdowns")?.classList.toggle("open")}>☰</button>
-            
             <div className="view-toggle">
               <button type="button" className={`view-toggle-btn${viewMode === "grid" ? " active" : ""}`} onClick={() => { setViewMode("grid"); localStorage.setItem("recipes_view", "grid"); }}>▦</button>
               <button type="button" className={`view-toggle-btn${viewMode === "list" ? " active" : ""}`} onClick={() => { setViewMode("list"); localStorage.setItem("recipes_view", "list"); }}>☰</button>
