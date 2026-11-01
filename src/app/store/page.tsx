@@ -9,6 +9,7 @@ type Product = {
   externalId: number;
   sku: string;
   title: string;
+  titleAr: string | null; // <-- UPDATED
   category: string | null;
   subCategory: string | null;
   brand: string | null;
@@ -86,6 +87,7 @@ export default function StorePage() {
       list = list.filter(
         (p) =>
           p.title.toLowerCase().includes(lower) ||
+          (p.titleAr && p.titleAr.includes(search)) || // Search by Arabic title too
           (p.sku && p.sku.toLowerCase().includes(lower)) ||
           (p.brand && p.brand.toLowerCase().includes(lower)) ||
           (p.category && p.category.toLowerCase().includes(lower)) ||
@@ -134,7 +136,6 @@ export default function StorePage() {
         </div>
       </div>
 
-      {/* Main Categories */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
         {mainCategories.map((cat) => (
           <button
@@ -148,16 +149,10 @@ export default function StorePage() {
         ))}
       </div>
 
-      {/* Sub Categories (Horizontal Scroll Buttons) */}
       {activeMainCategory !== "All" && subCategories.length > 1 && (
         <div style={{ 
-          display: "flex", 
-          gap: 6, 
-          marginBottom: 24, 
-          paddingBottom: 8,
-          overflowX: "auto", 
-          whiteSpace: "nowrap",
-          WebkitOverflowScrolling: "touch"
+          display: "flex", gap: 6, marginBottom: 24, paddingBottom: 8,
+          overflowX: "auto", whiteSpace: "nowrap", WebkitOverflowScrolling: "touch"
         }}>
           {subCategories.map((sub) => (
             <button
@@ -172,7 +167,6 @@ export default function StorePage() {
         </div>
       )}
 
-      {/* Products Grid */}
       {loading ? (
         <p className="helper">{isAr ? "جاري التحميل..." : "Loading..."}</p>
       ) : filteredProducts.length === 0 ? (
@@ -186,12 +180,15 @@ export default function StorePage() {
             {paginatedProducts.map((p) => {
               const cartItem = cart.find((i) => i.id === p.id);
               const displayCat = p.brand || p.subCategory || p.category || p.sku;
+              
+              // Use Arabic title if available and language is Arabic
+              const displayTitle = isAr && p.titleAr ? p.titleAr : p.title;
 
               return (
                 <div key={p.id} style={{ background: "var(--surface)", border: "1px solid var(--line)", borderRadius: 16, overflow: "hidden", display: "flex", flexDirection: "column" }}>
                   <div style={{ width: "100%", aspectRatio: "1/1", background: "var(--surface-2)", position: "relative" }}>
                     {p.imageUrl ? (
-                      <img src={p.imageUrl} alt={p.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
+                      <img src={p.imageUrl} alt={displayTitle} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
                     ) : (
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", fontSize: 32, opacity: 0.3 }}>🛒</div>
                     )}
@@ -203,7 +200,7 @@ export default function StorePage() {
                         {displayCat}
                       </div>
                       <h3 style={{ margin: 0, fontSize: 13.5, fontWeight: 600, color: "var(--ink)", lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                        {p.title}
+                        {displayTitle}
                       </h3>
                     </div>
 
@@ -216,11 +213,11 @@ export default function StorePage() {
                         <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--accent-soft)", borderRadius: 8, padding: "2px 4px" }}>
                           <button onClick={() => removeFromCart(p.id)} style={{ background: "none", border: "none", color: "var(--accent)", fontSize: 16, cursor: "pointer", width: 20 }}>-</button>
                           <span style={{ fontSize: 13, fontWeight: 700, color: "var(--accent)" }}>{cartItem.quantity}</span>
-                          <button onClick={() => addToCart({ id: p.id, title: p.title, price: p.price, imageUrl: p.imageUrl })} style={{ background: "none", border: "none", color: "var(--accent)", fontSize: 16, cursor: "pointer", width: 20 }}>+</button>
+                          <button onClick={() => addToCart({ id: p.id, title: displayTitle, price: p.price, imageUrl: p.imageUrl })} style={{ background: "none", border: "none", color: "var(--accent)", fontSize: 16, cursor: "pointer", width: 20 }}>+</button>
                         </div>
                       ) : (
                         <button
-                          onClick={() => addToCart({ id: p.id, title: p.title, price: p.price, imageUrl: p.imageUrl })}
+                          onClick={() => addToCart({ id: p.id, title: displayTitle, price: p.price, imageUrl: p.imageUrl })}
                           style={{ background: "var(--surface-2)", border: "1px solid var(--line)", color: "var(--ink)", width: 30, height: 30, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, cursor: "pointer" }}
                         >
                           +

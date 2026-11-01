@@ -13,8 +13,6 @@ export const recipes = sqliteTable("recipes", {
   cuisine: text("cuisine"),
   cuisineAr: text("cuisine_ar"),
   category: text("category"),
-  subCategory: text("sub_category"),
-  brand: text("brand"),
   categoryAr: text("category_ar"),
   servedWith: text("served_with"),
   servedWithAr: text("served_with_ar"),
@@ -32,9 +30,7 @@ export const recipes = sqliteTable("recipes", {
 
 export const ingredients = sqliteTable("ingredients", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  recipeId: integer("recipe_id")
-    .notNull()
-    .references(() => recipes.id, { onDelete: "cascade" }),
+  recipeId: integer("recipe_id").notNull().references(() => recipes.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   nameAr: text("name_ar"),
   amount: text("amount"),
@@ -46,9 +42,7 @@ export const ingredients = sqliteTable("ingredients", {
 
 export const instructions = sqliteTable("instructions", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  recipeId: integer("recipe_id")
-    .notNull()
-    .references(() => recipes.id, { onDelete: "cascade" }),
+  recipeId: integer("recipe_id").notNull().references(() => recipes.id, { onDelete: "cascade" }),
   stepNumber: integer("step_number").notNull(),
   text: text("text").notNull(),
   textAr: text("text_ar"),
@@ -87,9 +81,7 @@ export const settings = sqliteTable("settings", {
 
 export const polls = sqliteTable("polls", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  notificationId: integer("notification_id")
-    .notNull()
-    .references(() => notifications.id, { onDelete: "cascade" }),
+  notificationId: integer("notification_id").notNull().references(() => notifications.id, { onDelete: "cascade" }),
   question: text("question").notNull(),
   isOpen: integer("is_open").notNull().default(1),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
@@ -97,9 +89,7 @@ export const polls = sqliteTable("polls", {
 
 export const pollResponses = sqliteTable("poll_responses", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  pollId: integer("poll_id")
-    .notNull()
-    .references(() => polls.id, { onDelete: "cascade" }),
+  pollId: integer("poll_id").notNull().references(() => polls.id, { onDelete: "cascade" }),
   phone: text("phone").notNull(),
   answer: text("answer").notNull(),
   name: text("name"),
@@ -111,17 +101,13 @@ export const mealPlan = sqliteTable("meal_plan", {
   date: text("date").notNull(),
   slot: text("slot").notNull(),
   position: integer("position").notNull().default(1),
-  recipeId: integer("recipe_id")
-    .notNull()
-    .references(() => recipes.id, { onDelete: "cascade" }),
+  recipeId: integer("recipe_id").notNull().references(() => recipes.id, { onDelete: "cascade" }),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
 export const recipeReviews = sqliteTable("recipe_reviews", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  recipeId: integer("recipe_id")
-    .notNull()
-    .references(() => recipes.id, { onDelete: "cascade" }),
+  recipeId: integer("recipe_id").notNull().references(() => recipes.id, { onDelete: "cascade" }),
   phone: text("phone").notNull(),
   rating: integer("rating").notNull(),
   comment: text("comment"),
@@ -156,9 +142,7 @@ export const recipientGroups = sqliteTable("recipient_groups", {
 
 export const recipientGroupMembers = sqliteTable("recipient_group_members", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  groupId: integer("group_id")
-    .notNull()
-    .references(() => recipientGroups.id, { onDelete: "cascade" }),
+  groupId: integer("group_id").notNull().references(() => recipientGroups.id, { onDelete: "cascade" }),
   phone: text("phone").notNull(),
 });
 
@@ -172,9 +156,7 @@ export const visitors = sqliteTable("visitors", {
 
 export const notificationReads = sqliteTable("notification_reads", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  notificationId: integer("notification_id")
-    .notNull()
-    .references(() => notifications.id, { onDelete: "cascade" }),
+  notificationId: integer("notification_id").notNull().references(() => notifications.id, { onDelete: "cascade" }),
   phone: text("phone").notNull(),
   readAt: text("read_at").default(sql`CURRENT_TIMESTAMP`),
 }, (t) => ({
@@ -218,9 +200,7 @@ export const chessRooms = sqliteTable("chess_rooms", {
 
 export const recipeLikes = sqliteTable("recipe_likes", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  recipeId: integer("recipe_id")
-    .notNull()
-    .references(() => recipes.id, { onDelete: "cascade" }),
+  recipeId: integer("recipe_id").notNull().references(() => recipes.id, { onDelete: "cascade" }),
   visitorId: text("visitor_id").notNull(),
   phone: text("phone"),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
@@ -228,12 +208,13 @@ export const recipeLikes = sqliteTable("recipe_likes", {
   uniqRecipeVisitor: uniqueIndex("uniq_like_recipe_visitor").on(t.recipeId, t.visitorId),
 }));
 
-// NEW: Store Products Table
+// STORE PRODUCTS (Cleaned up)
 export const storeProducts = sqliteTable("store_products", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   externalId: integer("external_id").notNull().unique(),
   sku: text("sku").notNull().unique(),
   title: text("title").notNull(),
+  titleAr: text("title_ar"),
   category: text("category"),
   subCategory: text("sub_category"),
   brand: text("brand"),
