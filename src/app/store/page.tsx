@@ -9,7 +9,7 @@ type Product = {
   externalId: number;
   sku: string;
   title: string;
-  titleAr: string | null; // <-- UPDATED
+  titleAr: string | null;
   category: string | null;
   subCategory: string | null;
   brand: string | null;
@@ -27,6 +27,31 @@ const ALLOWED_MAIN_CATEGORIES = [
   "Pet Care", "Tobacco", "Kitchen Accessories", "Phone & Home electronics"
 ];
 
+const MAIN_CATEGORY_TRANSLATIONS: Record<string, string> = {
+  "Offers & Promotions": "العروض والترويجات",
+  "Meat & Poultry": "لحوم ودواجن",
+  "Fresh Fish": "سمك طازج",
+  "Back To School": "العودة إلى المدرسة",
+  "Produce": "خضار وفواكه",
+  "Dairy & Eggs": "ألبان وبيض",
+  "Bakery": "مخبوزات",
+  "Ready To Eat": "أكل جاهز",
+  "Grocery Food": "بقالة",
+  "Frozen Food": "مأكولات مجمدة",
+  "Snack & Sweet": "وجبات خفيفة وحلويات",
+  "Beverages": "مشروبات",
+  "Coffee & Tea": "قهوة وشاي",
+  "Organic & Healthy": "عضوي وصحي",
+  "Toys": "ألعاب",
+  "Baby Care": "عناية بالطفل",
+  "Home Care": "عناية بالمنزل",
+  "Personal Care": "عناية شخصية",
+  "Pet Care": "عناية بالحيوانات",
+  "Tobacco": "دخان",
+  "Kitchen Accessories": "أدوات المطبخ",
+  "Phone & Home electronics": "هواتف وإلكترونيات"
+};
+
 export default function StorePage() {
   const { lang } = useLang();
   const isAr = lang === "ar";
@@ -36,11 +61,15 @@ export default function StorePage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   
+  // Dictionary state
+  const [dictionary, setDictionary] = useState<Record<string, string>>({});
+
   const [activeMainCategory, setActiveMainCategory] = useState<string>("All");
   const [activeSubCategory, setActiveSubCategory] = useState<string>("All");
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
+    // Fetch Products
     fetch("/api/products")
       .then((res) => res.json())
       .then((data) => {
@@ -48,6 +77,20 @@ export default function StorePage() {
         setLoading(false);
       })
       .catch(() => setLoading(false));
+
+    // Fetch Dictionary
+    fetch("/api/dictionary")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          const dict: Record<string, string> = {};
+          data.forEach((item: any) => {
+            dict[item.ar] = item.en;
+          });
+          setDictionary(dict);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const categoryTree = useMemo(() => {
@@ -82,12 +125,25 @@ export default function StorePage() {
     if (activeSubCategory !== "All") {
       list = list.filter(p => p.subCategory === activeSubCategory);
     }
+    
+    // SMART SEARCH LOGIC
     if (search.trim()) {
-      const lower = search.toLowerCase();
+      const lower = search.toLowerCase().trim();
+      
+      // Find the translation from the DB dictionary
+      const englishTranslation = dictionary[lower] || "";
+      const engSearch = englishTranslation ? englishTranslation.toLowerCase() : "";
+
       list = list.filter(
         (p) =>
-          p.title.toLowerCase().includes(lower) ||
-          (p.titleAr && p.titleAr.includes(search)) || // Search by Arabic title too
+          // 1. Match English Title (with dictionary translation)
+          (p.title && p.title.toLowerCase().includes(lower)) ||
+          (engSearch && p.title && p.title.toLowerCase().includes(engSearch)) ||
+          
+          // 2. Match Arabic Title (if it exists)
+          (p.titleAr && p.titleAr.includes(search)) ||
+          
+          // 3. Match SKU, Brand, or Category
           (p.sku && p.sku.toLowerCase().includes(lower)) ||
           (p.brand && p.brand.toLowerCase().includes(lower)) ||
           (p.category && p.category.toLowerCase().includes(lower)) ||
@@ -95,7 +151,7 @@ export default function StorePage() {
       );
     }
     return list;
-  }, [products, search, activeMainCategory, activeSubCategory]);
+  }, [products, search, activeMainCategory, activeSubCategory, dictionary]);
 
   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
   const paginatedProducts = useMemo(() => {
@@ -144,7 +200,7 @@ export default function StorePage() {
             className={`chip ${activeMainCategory === cat ? "active" : ""}`}
             style={{ fontSize: 14, padding: "8px 16px", cursor: "pointer", fontWeight: activeMainCategory === cat ? 700 : 500 }}
           >
-            {cat}
+            {cat === "All" ? (isAr ? "الكل" : "All") : (isAr ? MAIN_CATEGORY_TRANSLATIONS[cat] || cat : cat)}
           </button>
         ))}
       </div>
@@ -161,7 +217,7 @@ export default function StorePage() {
               className={`chip ${activeSubCategory === sub ? "active" : ""}`}
               style={{ fontSize: 12, padding: "6px 14px", cursor: "pointer", flexShrink: 0 }}
             >
-              {sub}
+              {sub === "All" ? (isAr ? "الكل" : "All") : sub}
             </button>
           ))}
         </div>
@@ -180,8 +236,6 @@ export default function StorePage() {
             {paginatedProducts.map((p) => {
               const cartItem = cart.find((i) => i.id === p.id);
               const displayCat = p.brand || p.subCategory || p.category || p.sku;
-              
-              // Use Arabic title if available and language is Arabic
               const displayTitle = isAr && p.titleAr ? p.titleAr : p.title;
 
               return (

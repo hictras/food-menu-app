@@ -151,6 +151,9 @@ export default function Nav() {
                   <Link href="/products-admin" className="nav-menu-item" onClick={closeAll}>
                   📋 {lang === "ar" ? "إدارة المنتجات" : "Products Admin"}
                   </Link>
+                  <Link href="/dictionary-admin" className="nav-menu-item" onClick={closeAll}>
+                  📖 {lang === "ar" ? "قاموس البحث" : "Search Dictionary"}
+                  </Link>
                   <Link href="/replies" className="nav-menu-item" onClick={closeAll}>💬 {lang === "ar" ? ar.nav.replies : "Replies"}</Link>
                   <Link href="/sendpush" className="nav-menu-item" onClick={closeAll}>📤 {lang === "ar" ? ar.nav.sendPush : "Send Push"}</Link>
                   <Link href="/inbox/admin" className="nav-menu-item" onClick={closeAll}>📊 {lang === "ar" ? ar.inboxDetail.adminTitle : "Inbox Admin"}</Link>
@@ -199,6 +202,9 @@ export default function Nav() {
               <Link className="mobile-nav-link" href="/import-products" onClick={closeAll}><span>🛒</span> {lang === "ar" ? "استيراد منتجات" : "Import Products"}</Link>
               <Link className="mobile-nav-link" href="/products-admin" onClick={closeAll}>
                   <span>📋</span> {lang === "ar" ? "إدارة المنتجات" : "Products Admin"}
+              </Link>
+              <Link className="mobile-nav-link" href="/dictionary-admin" onClick={closeAll}>
+                  <span>📖</span> {lang === "ar" ? "قاموس البحث" : "Search Dictionary"}
               </Link>
               <Link className="mobile-nav-link" href="/replies" onClick={closeAll}><span>💬</span> {lang === "ar" ? ar.nav.replies : "Replies"}</Link>
               <Link className="mobile-nav-link" href="/sendpush" onClick={closeAll}><span>📤</span> {lang === "ar" ? ar.nav.sendPush : "Send Push"}</Link>

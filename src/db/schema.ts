@@ -223,3 +223,10 @@ export const storeProducts = sqliteTable("store_products", {
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
 });
+
+export const storeDictionary = sqliteTable("store_dictionary", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  ar: text("ar").notNull().unique(),
+  en: text("en").notNull(),
+  createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
+});
