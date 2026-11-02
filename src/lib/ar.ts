@@ -1,14 +1,3 @@
-/**
- * All Arabic UI strings — centralized.
- *
- * Usage:
- *   import { ar } from "@/lib/ar";
- *   ar.nav.inbox // "الرسائل"
- *
- * Every string the app shows in Arabic lives here.
- * If a page needs a new string, add it to this file, then use `ar.section.key`.
- */
-
 export const ar = {
   gameGuess: {
     title: "Guess the Ingredients",
@@ -23,7 +12,6 @@ export const ar = {
     loadingAr: "جاري التحميل..."
   },
 
-  // ── Navigation ────────────────────────────────────────────
   nav: {
     noDishPage: "لا طبق اليوم",
     brand: "Hictra",
@@ -39,16 +27,15 @@ export const ar = {
     login: "دخول",
     admin: "الإدارة",
     langToggle: "English",
-  
     calendar: "التقويم",
     week: "هذا الأسبوع",
     today: "وصفة اليوم",
     game: "لعبة",
     import: "استيراد وصفات",
     puzzleNav: "لغز",
-    gamesHubNav: "الألعاب",},
+    gamesHubNav: "الألعاب",
+  },
 
-  // ── Home / recipe list ────────────────────────────────────
   home: {
     title: "كتاب وصفاتك",
     hidden: "مخفي",
@@ -75,7 +62,6 @@ export const ar = {
     other: "أخرى",
   },
 
-  // ── Recipe form ───────────────────────────────────────────
   form: {
     newTitle: "وصفة جديدة",
     newSub: "املأ التفاصيل أدناه.",
@@ -146,7 +132,6 @@ export const ar = {
     pickPrep: "اختر التحضير",
   },
 
-  // ── Recipe detail ─────────────────────────────────────────
   detail: {
     back: "← العودة إلى كتاب الوصفات",
     share: "مشاركة",
@@ -171,7 +156,6 @@ export const ar = {
     min: "د",
   },
 
-  // ── Inbox ─────────────────────────────────────────────────
   inbox: {
     title: "صندوق الإشعارات",
     sub: "كل التحديثات السابقة",
@@ -215,7 +199,6 @@ export const ar = {
     pendingGroup: "لم يصوت",
   },
 
-  // ── Poll vote page ────────────────────────────────────────
   poll: {
     title: "استطلاع",
     question: "السؤال",
@@ -235,7 +218,6 @@ export const ar = {
     loading: "جاري التحميل...",
   },
 
-  // ── Replies page (admin) ──────────────────────────────────
   replies: {
     title: "الردود",
     sub: "كل الردود على الاستطلاعات — اضغط لعرض من صوت",
@@ -260,7 +242,6 @@ export const ar = {
     chatSoon: "الدردشة قادمة قريباً",
   },
 
-  // ── Admin sender ──────────────────────────────────────────
   sender: {
     locationLabel: "المكان (اختياري)",
     locationPlaceholder: "بيت الأهل، البيت، الشاليه",
@@ -292,7 +273,6 @@ export const ar = {
     openInbox: "فتح صندوق الرسائل",
   },
 
-  // ── WhatsApp sender ───────────────────────────────────────
   whatsapp: {
     title: "إرسال واتساب",
     sub: "أرسل رسالة مخصصة مع روابط الوصفات",
@@ -310,7 +290,6 @@ export const ar = {
     openWhatsApp: "فتح واتساب",
   },
 
-  // ── Recipients page ───────────────────────────────────────
   recipients: {
     title: "المستلمون",
     sub: "إدارة قائمة المستلمين",
@@ -328,7 +307,6 @@ export const ar = {
     deleteConfirm: "حذف هذا المستلم؟",
   },
 
-  // ── Settings page ─────────────────────────────────────────
   settings: {
     title: "إعدادات العناوين",
     todayText: "نص عنوان \"اليوم\"",
@@ -343,7 +321,6 @@ export const ar = {
     saved: "تم الحفظ!",
   },
 
-  // ── Login ─────────────────────────────────────────────────
   login: {
     title: "تسجيل الدخول",
     username: "اسم المستخدم",
@@ -352,7 +329,6 @@ export const ar = {
     loading: "…",
   },
 
-  // ── Push subscribe ────────────────────────────────────────
   push: {
     disableEn: "Disable",
     enable: "🔔 تفعيل",
@@ -369,7 +345,6 @@ export const ar = {
     okBtn: "حسناً",
   },
 
-  // ── Categories ────────────────────────────────────────────
   categories: {
     mainDish: "طبق رئيسي",
     stew: "يخنة",
@@ -391,7 +366,6 @@ export const ar = {
     joke: "وصفة مزحة",
   },
 
-  // ── Dietary tags ──────────────────────────────────────────
   tags: {
     Vegetarian: "نباتي", Vegan: "نباتي صرف", Pescatarian: "بيسكاتاري",
     "Gluten-Free": "خالٍ من الغلوتين", "Dairy-Free": "خالٍ من الألبان",
@@ -422,7 +396,6 @@ export const ar = {
     quick: "سريع",
   },
 
-  // ── Cuisines ──────────────────────────────────────────────
   cuisines: {
     lebanese: "لبناني",
     syrian: "سوري",
@@ -457,7 +430,6 @@ export const ar = {
     peruvian: "بيروفي",
   },
 
-  // ── Units ─────────────────────────────────────────────────
   units: {
     min: "د",
     comma: "، ",
@@ -486,7 +458,6 @@ export const ar = {
     portion: "نصيب",
   },
 
-  // ── Preparations ──────────────────────────────────────────
   preps: {
     chopped: "مفروم",
     finelyChopped: "مفروم ناعماً",
@@ -519,7 +490,6 @@ export const ar = {
     baked: "مخبوز",
   },
 
-  // ── Game ──────────────────────────────────────────────────
   game: {
     hintBtn: "Hint",
     hintBtnAr: "تلميح",
@@ -558,7 +528,6 @@ export const ar = {
     msgHintUsed: "تم استخدام التلميح! تم كشف مكون صحيح.",
     msgGameEnded: "انتهت اللعبة. تم كشف المكونات الصحيحة.",
     msgWrongLeft: "لا يزال هناك {n} مكونات خاطئة.",
-  
     wrongLeftDesc: "لا يزال هناك {n} مكونات خاطئة.",
     correctMsg: "صحيح. استمر!",
     lostLifeMsg: "كان هذا مكوناً حقيقياً! خسرت محاولة.",
@@ -569,9 +538,8 @@ export const ar = {
     perfectModalBody: "لقد خمّنت كل المكونات بنجاح لـ",
     playAgainBtn: "العب مجدداً",
     cancelBtn: "إلغاء",
-},
+  },
 
-  // ── Calendar ──────────────────────────────────────────────
   calendar: {
     saveFailed: "فشل الحفظ.",
     removeFailed: "فشل الحذف.",
@@ -608,8 +576,6 @@ export const ar = {
     recipes: "وصفة",
   },
 
-
-  // ── Import Page ───────────────────────────────────────────
   importPage: {
     title: "استيراد وصفات",
     sub: "الصق مصفوفة JSON من الوصفات — سيتم عرضها للمعاينة قبل الحفظ",
@@ -630,14 +596,12 @@ export const ar = {
     errImport: "فشل الاستيراد",
   },
 
-  // ── No Dish Page ──────────────────────────────────────────
   noDish: {
     title: "عذراً، لا يوجد طبق اليوم",
     subtitle: "عُد غداً — شيء لذيذ قادم.",
     backBtn: "← تصفح الوصفات",
   },
 
-  // ── Dictionary ────────────────────────────────────────────
   dictionary: {
     title: "قاموس الكلمات",
     sub: "جميع الكلمات المستخدمة في المشروع",
@@ -647,31 +611,27 @@ export const ar = {
     goGame: "→ اذهب إلى اللعبة",
   },
 
-
-  // ── Game Decoys ───────────────────────────────────────────
   decoys: {
-    "sugar": "سكر", "flour": "طحين", "baking powder": "بيكنج باودر", "vanilla extract": "فانيليا", 
-    "honey": "عسل", "soy sauce": "صويا صوص", "mayonnaise": "مايونيز", "mustard": "خردل", 
-    "ketchup": "كاتشب", "paprika": "بابريكا", "cumin": "كمون", "coriander": "كزبرة", 
-    "cinnamon": "قرفة", "nutmeg": "جوزة الطيب", "chili powder": "شطة", "beef broth": "مرق لحم", 
-    "chicken broth": "مرق دجاج", "red wine": "نبيذ أحمر", "balsamic vinegar": "خل بلسمي", 
-    "worcestershire": "صصة ورشستر", "tabasco": "تاباسكو", "cornstarch": "نشا", "breadcrumbs": "بقسماط", 
-    "almonds": "لوز", "walnuts": "جوز", "pecans": "بيكان", "raisins": "زبيب", "coconut": "جوز هند", 
-    "spinach": "سبانخ", "mushrooms": "مشروم", "zucchini": "كوسا", "eggplant": "باذنجان", 
+    "sugar": "سكر", "flour": "طحين", "baking powder": "بيكنج باودر", "vanilla extract": "فانيليا",
+    "honey": "عسل", "soy sauce": "صويا صوص", "mayonnaise": "مايونيز", "mustard": "خردل",
+    "ketchup": "كاتشب", "paprika": "بابريكا", "cumin": "كمون", "coriander": "كزبرة",
+    "cinnamon": "قرفة", "nutmeg": "جوزة الطيب", "chili powder": "شطة", "beef broth": "مرق لحم",
+    "chicken broth": "مرق دجاج", "red wine": "نبيذ أحمر", "balsamic vinegar": "خل بلسمي",
+    "worcestershire": "صصة ورشستر", "tabasco": "تاباسكو", "cornstarch": "نشا", "breadcrumbs": "بقسماط",
+    "almonds": "لوز", "walnuts": "جوز", "pecans": "بيكان", "raisins": "زبيب", "coconut": "جوز هند",
+    "spinach": "سبانخ", "mushrooms": "مشروم", "zucchini": "كوسا", "eggplant": "باذنجان",
     "cauliflower": "قرنبيط", "peas": "بازيلا", "corn": "ذرة", "potato": "بطاطا", "sweet potato": "بطاطا حلوة",
-    "bacon": "لحم مقدد", "ham": "هام", "sausage": "سجق", "tofu": "توفو", "lentils": "عدس", 
-    "chickpeas": "حمص", "black beans": "فاصوليا سوداء", "quinoa": "كينوا", "feta": "جبنة فيتا", 
-    "cheddar": "شيدر", "brie": "بري", "blue cheese": "جبنة زرقاء", "cream cheese": "جبنة كريمية", 
-    "sour cream": "كريمة حامضة", "pesto": "بيستو", "hot sauce": "صوص حار", "maple syrup": "شراب القيقب", 
+    "bacon": "لحم مقدد", "ham": "هام", "sausage": "سجق", "tofu": "توفو", "lentils": "عدس",
+    "chickpeas": "حمص", "black beans": "فاصوليا سوداء", "quinoa": "كينوا", "feta": "جبنة فيتا",
+    "cheddar": "شيدر", "brie": "بري", "blue cheese": "جبنة زرقاء", "cream cheese": "جبنة كريمية",
+    "sour cream": "كريمة حامضة", "pesto": "بيستو", "hot sauce": "صوص حار", "maple syrup": "شراب القيقب",
     "molasses": "دبس", "cocoa powder": "كاكاو", "dark chocolate": "شوكولاتة داكنة", "white chocolate": "شوكولاتة بيضاء",
-    "peanut butter": "زبدة فول سوداني", "jam": "مربى", "capers": "كبر", "pickles": "مخلل", 
-    "artichoke": "خرشوف", "asparagus": "هليون", "beets": "شمندر", "radish": "فجل", "celery": "كرفس", 
-    "cabbage": "ملفوف", "kale": "كيل", "arugula": "جرجير", "bean sprouts": "براعم فاصوليا", 
+    "peanut butter": "زبدة فول سوداني", "jam": "مربى", "capers": "كبر", "pickles": "مخلل",
+    "artichoke": "خرشوف", "asparagus": "هليون", "beets": "شمندر", "radish": "فجل", "celery": "كرفس",
+    "cabbage": "ملفوف", "kale": "كيل", "arugula": "جرجير", "bean sprouts": "براعم فاصوليا",
     "water": "ماء", "salt": "ملح", "pepper": "فلفل", "oil": "زيت"
   },
 
-
-  // ── Puzzle Game ───────────────────────────────────────────
   puzzle: {
     back: "→ العودة",
     newImage: "صورة جديدة",
@@ -689,8 +649,6 @@ export const ar = {
     modalClose: "إغلاق",
   },
 
-
-  // ── Games Hub ─────────────────────────────────────────────
   gamesHub: {
     guessTitle: "خمن المكونات",
     puzzleTitle: "لغز الوصفة",
@@ -703,8 +661,6 @@ export const ar = {
     playBtn: "العب الآن",
   },
 
-
-  // ── Recipe History ────────────────────────────────────────
   history: {
     lastTimeMade: "آخر مرة تم تحضيره:",
     title: "سجل الوصفة",
@@ -722,8 +678,6 @@ export const ar = {
     },
   },
 
-
-  // ── Weekly Summary ────────────────────────────────────────
   weeklySummary: {
     title: "قائمة هذا الأسبوع",
     empty: "لا وجبات مخططة هذا الأسبوع.",
@@ -734,8 +688,6 @@ export const ar = {
     nextWeek: "الأسبوع التالي ←",
   },
 
-
-  // ── Cook Mode ────────────────────────────────────────────
   cookMode: {
     start: "ابدأ الطبخ",
     step: "الخطوة",
@@ -746,12 +698,6 @@ export const ar = {
     screenOn: "📱 الشاشة تبقى مضاءة",
     screenManual: "📱 اجعل الشاشة مضاءة يدوياً",
   },
-
-
-  // ── Reviews ──────────────────────────────────────────────
-
-
-  // ── Recipe Reviews ───────────────────────────────────────
 
   share: "💬 مشاركة",
   today: "✨ اليوم",
@@ -1072,5 +1018,4 @@ export const ar = {
     gotIt: "فهمت",
     gameOver: "انتهت اللعبة",
   },
-
 } as const;

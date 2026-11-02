@@ -17,6 +17,8 @@ type Product = {
   price: number;
   imageUrl: string | null;
   isPromotion: number | null;
+  packageSize: number | null;
+  packageUnit: string | null;
 };
 
 const ALLOWED_MAIN_CATEGORIES = [
@@ -74,7 +76,6 @@ export default function StorePage() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const observerTarget = useRef<HTMLDivElement>(null);
 
-  // Fetch settings for infinite scroll
   useEffect(() => {
     fetch("/api/settings")
       .then((res) => res.json())
@@ -84,7 +85,6 @@ export default function StorePage() {
       .catch(() => {});
   }, []);
 
-  // Fetch products
   const fetchProducts = useCallback((page: number, append: boolean) => {
     if (append) setLoadingMore(true);
     else setLoading(true);
@@ -94,7 +94,6 @@ export default function StorePage() {
     if (activeSubCategory !== "All") params.append("subCategory", activeSubCategory);
     if (debouncedSearch.trim().length >= 3) params.append("search", debouncedSearch.trim());
     
-    // Only randomize the very first page
     if (page === 1) params.append("random", "true");
 
     fetch(`/api/products?${params.toString()}`)
@@ -122,13 +121,11 @@ export default function StorePage() {
       });
   }, [activeMainCategory, activeSubCategory, debouncedSearch]);
 
-  // Initial load or filter change
   useEffect(() => {
     setCurrentPage(1);
     fetchProducts(1, false);
   }, [fetchProducts]);
 
-  // Infinite Scroll Observer
   useEffect(() => {
     if (!infiniteScrollEnabled) return;
     
@@ -308,6 +305,13 @@ export default function StorePage() {
                         {isAr ? "عرض" : "Promo"}
                       </div>
                     )}
+
+                    {/* NEW: Package Size Badge */}
+                    {p.packageSize && p.packageUnit && (
+                      <div style={{ position: "absolute", bottom: 8, left: 8, background: "rgba(0,0,0,0.7)", color: "white", padding: "2px 6px", borderRadius: 4, fontSize: 10, fontWeight: 700, zIndex: 3 }}>
+                        {p.packageSize}{p.packageUnit}
+                      </div>
+                    )}
                   </div>
 
                   <div style={{ padding: 14, display: "flex", flexDirection: "column", flex: 1, justifyContent: "space-between", gap: 10 }}>
@@ -316,7 +320,7 @@ export default function StorePage() {
                         {displayCat}
                       </div>
                       
-                      <h3 className="product-title" style={{ margin: 0, fontSize: 16, fontWeight: 700, fontFamily: "var(--font-body)", color: "#ffffff", lineHeight: 1.35, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden", transition: "color 0.2s" }}>
+                      <h3 className="product-title" style={{ margin: 0, fontSize: 16, fontWeight: 700, fontFamily: "var(--font-body)", color: "var(--ink)", lineHeight: 1.35, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden", transition: "color 0.2s" }}>
                         {displayTitle}
                       </h3>
                     </div>
@@ -386,9 +390,14 @@ export default function StorePage() {
                 <div style={{ fontSize: 12, color: "var(--accent)", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", marginBottom: 8 }}>
                   {selectedProduct.brand || selectedProduct.category || selectedProduct.sku}
                 </div>
-                <h2 style={{ margin: 0, fontSize: 24, fontWeight: 700, color: "white", lineHeight: 1.2 }}>
+                <h2 style={{ margin: 0, fontSize: 24, fontWeight: 700, color: "var(--ink)", lineHeight: 1.2 }}>
                   {isAr && selectedProduct.titleAr ? selectedProduct.titleAr : selectedProduct.title}
                 </h2>
+                {selectedProduct.packageSize && selectedProduct.packageUnit && (
+                  <div style={{ fontSize: 14, color: "var(--muted)", marginTop: 4 }}>
+                    {selectedProduct.packageSize} {selectedProduct.packageUnit}
+                  </div>
+                )}
               </div>
 
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8, paddingTop: 16, borderTop: "1px solid var(--line)" }}>
