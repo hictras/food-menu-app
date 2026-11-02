@@ -222,6 +222,7 @@ export const storeProducts = sqliteTable("store_products", {
   imageUrl: text("image_url"),
   packageSize: real("package_size"),
   packageUnit: text("package_unit"),
+  isPromotion: integer("is_promotion").default(0), 
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
 });

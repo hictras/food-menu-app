@@ -305,7 +305,11 @@ export default function StorePage() {
                     ) : (
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", fontSize: 32, opacity: 0.3 }}>🛒</div>
                     )}
-
+                    {p.isPromotion === 1 && (
+                      <div style={{ position: "absolute", top: 8, left: 8, background: "#61d509", color: "#000", padding: "4px 8px", borderRadius: 6, fontSize: 10, fontWeight: 800, textTransform: "uppercase", zIndex: 3, boxShadow: "0 2px 6px rgba(0,0,0,0.3)" }}>
+                        {isAr ? "عرض" : "Promo"}
+                      </div>
+                    )}
                     {pkgLabel && (
                       <div style={{ position: "absolute", bottom: 8, left: 8, background: "rgba(0,0,0,0.75)", color: "#fff", padding: "3px 8px", borderRadius: 6, fontSize: 11, fontWeight: 700, zIndex: 2, pointerEvents: "none" }}>
                         {pkgLabel}
