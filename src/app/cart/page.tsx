@@ -103,7 +103,9 @@ export default function CartPage() {
       `}</style>
 
       <div className="no-print" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-        <h1 style={{ margin: 0 }}>{isAr ? "سلة المشتريات" : "Shopping Cart"}</h1>
+        <div className="page-head" style={{ margin: 0 }}>
+          <h1 style={{ margin: 0 }}>{isAr ? "سلة المشتريات" : "Shopping Cart"}</h1>
+        </div>
         {cart.length > 0 && (
           <button onClick={clearCart} className="btn btn-danger" style={{ fontSize: 12 }}>
             🗑 {isAr ? "مسح السلة" : "Clear Cart"}

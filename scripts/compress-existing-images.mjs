@@ -1,31 +1,9 @@
-/**
- * Compress all recipe images in R2.
- *
- * For each recipe with an image_url pointing at our R2 public domain:
- *   1. Download the original
- *   2. If under 500KB, skip (already small)
- *   3. Otherwise, compress with sharp:
- *      - Resize if wider than 1600px
- *      - JPEG quality 82
- *      - Convert to WebP?  (no — keep original format to avoid 404 on old links)
- *   4. Re-upload to same key
- *   5. Log old vs new size
- *
- * Safe to re-run. Skips images already under threshold.
- *
- * Usage:
- *   node --env-file=.env.local scripts/compress-existing-images.mjs
- *   node --env-file=.env.local scripts/compress-existing-images.mjs --dry-run
- */
-
 import { createClient } from "@libsql/client";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import sharp from "sharp";
 
 const DRY_RUN = process.argv.includes("--dry-run");
-const SIZE_THRESHOLD = 500 * 1024; // 500KB — skip if already smaller
-const MAX_WIDTH = 1600;
-const QUALITY = 82;
+const TARGET_SIZE_BYTES = 30 * 1024; // 30 KB target
 
 const tursoUrl = process.env.TURSO_DATABASE_URL;
 const tursoToken = process.env.TURSO_AUTH_TOKEN;
@@ -47,91 +25,71 @@ if (!publicBase) { console.error("❌ NEXT_PUBLIC_R2_PUBLIC_URL not set"); proce
 
 console.log("Public base:", publicBase);
 console.log("Dry run:", DRY_RUN ? "YES (no writes)" : "no");
-console.log("Skip if under:", Math.round(SIZE_THRESHOLD / 1024), "KB");
-console.log("Max width:", MAX_WIDTH, "px");
-console.log("Quality:", QUALITY);
+console.log("Target size:", Math.round(TARGET_SIZE_BYTES / 1024), "KB");
 console.log("");
 
-const result = await db.execute("SELECT id, name, image_url FROM recipes WHERE image_url IS NOT NULL AND image_url != ''");
+// Fetch all 3 image columns
+const result = await db.execute("SELECT id, name, image_url, image_1_url, image_2_url FROM recipes");
 const rows = result.rows;
-console.log(`Found ${rows.length} recipe(s) with images\n`);
+console.log(`Found ${rows.length} recipe(s)\n`);
+
+// Extract all unique image URLs into a Set to avoid processing duplicates
+const allUrls = new Set();
+for (const row of rows) {
+  if (row.image_url) allUrls.add(String(row.image_url));
+  if (row.image_1_url) allUrls.add(String(row.image_1_url));
+  if (row.image_2_url) allUrls.add(String(row.image_2_url));
+}
+
+console.log(`Found ${allUrls.size} unique image(s) to process\n`);
 
 let processed = 0, skipped = 0, failed = 0;
 let bytesBefore = 0, bytesAfter = 0;
 
-for (const row of rows) {
-  const url = String(row.image_url);
-  if (!url.startsWith(publicBase)) {
-    console.log(`#${row.id} SKIP (not our R2): ${url.slice(0, 60)}`);
-    skipped++;
-    continue;
-  }
+for (const url of Array.from(allUrls)) {
+  if (!url.startsWith(publicBase)) continue;
 
   const key = url.slice(publicBase.length + 1);
-  const label = `#${row.id} ${(row.name || "").toString().slice(0, 30)}`;
+  const label = `Image: ${key}`;
 
   try {
-    console.log(`${label} → ${key}`);
+    console.log(`${label}`);
 
-    // Download
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Download ${res.status}`);
     const original = Buffer.from(await res.arrayBuffer());
     bytesBefore += original.length;
 
-    if (original.length < SIZE_THRESHOLD) {
+    // If under 30KB, skip
+    if (original.length < TARGET_SIZE_BYTES) {
       console.log(`  SKIP (already ${Math.round(original.length / 1024)}KB)`);
       bytesAfter += original.length;
       skipped++;
       continue;
     }
 
-    // Detect content type
-    const contentType = res.headers.get("content-type") || "image/jpeg";
-    const isJpeg = contentType.includes("jpeg") || key.endsWith(".jpg") || key.endsWith(".jpeg");
-    const isPng = contentType.includes("png") || key.endsWith(".png");
-    const isWebp = contentType.includes("webp") || key.endsWith(".webp");
-
-    // Compress
-    let pipeline = sharp(original).resize({
-      width: MAX_WIDTH,
-      withoutEnlargement: true,
-    });
-
-    let outputBuf, outputType;
-    if (isJpeg) {
-      outputBuf = await pipeline.jpeg({ quality: QUALITY, mozjpeg: true }).toBuffer();
-      outputType = "image/jpeg";
-    } else if (isPng) {
-      outputBuf = await pipeline.png({ quality: QUALITY, compressionLevel: 9 }).toBuffer();
-      outputType = "image/png";
-    } else if (isWebp) {
-      outputBuf = await pipeline.webp({ quality: QUALITY }).toBuffer();
-      outputType = "image/webp";
-    } else {
-      console.log(`  SKIP (unknown format: ${contentType})`);
-      bytesAfter += original.length;
-      skipped++;
-      continue;
-    }
+    // Aggressive compression
+    const outputBuf = await sharp(original)
+      .resize({ width: 800, withoutEnlargement: true })
+      .webp({ quality: 70 })
+      .toBuffer();
 
     const savings = original.length - outputBuf.length;
     const pct = Math.round((savings / original.length) * 100);
     console.log(`  ${Math.round(original.length / 1024)}KB → ${Math.round(outputBuf.length / 1024)}KB (−${pct}%)`);
 
     if (DRY_RUN) {
-      console.log(`  [dry-run] would upload to ${key}`);
       bytesAfter += outputBuf.length;
       processed++;
       continue;
     }
 
-    // Re-upload (same key, so URL doesn't change)
+    // Upload back to R2 (overwriting the original)
     await r2.send(new PutObjectCommand({
       Bucket: process.env.R2_BUCKET_NAME,
       Key: key,
       Body: outputBuf,
-      ContentType: outputType,
+      ContentType: "image/webp",
     }));
 
     console.log(`  ✅ uploaded`);

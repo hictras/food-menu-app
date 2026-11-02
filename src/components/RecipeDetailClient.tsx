@@ -92,7 +92,6 @@ export default function RecipeDetailClient({
     }
   }
 
-  // ONLY MATCH TO STORE (Create List)
   async function handleMatchToStore() {
     if (ingredients.length === 0) return;
     
@@ -132,6 +131,125 @@ export default function RecipeDetailClient({
 
   return (
     <>
+      <style>{`
+        /* ACTION BAR */
+        .recipe-actions-bar {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          align-items: center;
+          padding-top: 12px;
+          border-top: 1px solid var(--line);
+        }
+        .recipe-actions-bar .btn {
+          height: 40px;
+          padding: 0 16px;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 600;
+          white-space: nowrap;
+          background: var(--surface);
+          border: 1px solid var(--line);
+          color: var(--ink);
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          cursor: pointer;
+          transition: all 0.15s;
+        }
+        .recipe-actions-bar .btn:hover {
+          background: var(--surface-2);
+          border-color: var(--line-strong);
+        }
+        .recipe-actions-bar .btn-danger {
+          background: var(--accent-soft);
+          color: var(--accent);
+          border: 1px solid var(--accent);
+        }
+        
+        /* INGREDIENTS & INSTRUCTIONS HIGH VISIBILITY */
+        .detail-section h2 {
+          font-size: 20px !important;
+          font-weight: 700 !important;
+          color: var(--ink) !important;
+          text-transform: none !important;
+          letter-spacing: 0 !important;
+          border-bottom: 1px solid var(--line-strong) !important;
+          padding-bottom: 12px !important;
+          margin-bottom: 16px !important;
+          font-family: var(--font-head) !important;
+        }
+
+        .ing-list li {
+          font-size: 15px !important;
+          color: var(--ink) !important;
+          padding: 12px 0 !important;
+          border-bottom: 1px solid var(--line-strong) !important;
+        }
+        .ing-amount {
+          font-size: 14px !important;
+          color: var(--accent) !important;
+          font-weight: 700 !important;
+          min-width: 70px !important;
+        }
+        .ing-name {
+          font-weight: 500 !important;
+        }
+        
+        .steps-list li p {
+          font-size: 15px !important;
+          color: var(--ink) !important;
+          line-height: 1.7 !important;
+          margin-top: 4px !important;
+        }
+        .step-num {
+          background: var(--accent-soft) !important;
+          color: var(--accent) !important;
+          border: 1px solid var(--accent) !important;
+          font-weight: 700 !important;
+          font-size: 13px !important;
+          width: 28px !important;
+          height: 28px !important;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+        }
+
+        /* VERTICAL DIVIDER FOR DESKTOP */
+        @media (min-width: 721px) {
+          .detail-cols {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 48px;
+          }
+          .detail-cols > section:nth-child(2) {
+            border-inline-start: 1px solid var(--line-strong);
+            padding-inline-start: 48px;
+            /* Offset the border to the center of the gap */
+            margin-inline-start: -24px; 
+          }
+        }
+        
+        @media (max-width: 640px) {
+          .recipe-actions-bar {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+            gap: 6px;
+          }
+          .recipe-actions-bar .btn {
+            height: 34px;
+            padding: 0 8px;
+            font-size: 11.5px;
+            flex-shrink: 0;
+          }
+          .recipe-actions-bar::-webkit-scrollbar { display: none; }
+        }
+      `}</style>
+
       <div style={{ margin: "20px 0" }}>
         <Link href="/recipes" className="btn btn-ghost">{t(lang, "back_cookbook")}</Link>
       </div>
@@ -139,63 +257,59 @@ export default function RecipeDetailClient({
       {getRecipeImage(recipe) && (
         <div className="img-with-watermark">
           <img src={getRecipeImage(recipe)!} alt={displayName} className="detail-hero" loading="eager" decoding="async" />
-          {logoUrl && <img src={logoUrl} alt="" className="watermark" style={{ width: 48, height: 48, bottom: 16, right: 16 }} />}
         </div>
       )}
 
-      <header className="detail-head" style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 24 }}>
+      <header className="detail-head" style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 12 }}>
         
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", width: "100%" }}>
-          <h1 style={{ margin: 0, fontSize: 36, fontFamily: "var(--font-head)", fontWeight: 400, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", gap: 16 }}>
+          <h1 style={{ margin: 0, fontSize: 36, fontFamily: "var(--font-head)", fontWeight: 400, lineHeight: 1.1, color: "var(--ink)" }}>
             {displayName}
           </h1>
           <LikeButton recipeId={recipe.id} />
-          <button type="button" className="btn btn-ghost" onClick={() => shareToWhatsApp(false)} style={{ height: 42, padding: "0 16px", borderRadius: 8, fontSize: 13, display: "inline-flex", alignItems: "center", gap: 6, border: "1px solid var(--line)", background: "var(--surface)", color: "var(--ink)", cursor: "pointer", flexShrink: 0 }}>
-            💬 {isAr ? ar.share : "Share"}
-          </button>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", flexWrap: "wrap", gap: 12 }}>
-          
-          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-            {lastMadeDate && (
-              <Link href={`/recipes/${recipe.id}/history`} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--surface-2)", border: "1px solid var(--line-strong)", padding: "6px 14px", borderRadius: 999, fontSize: 13, fontWeight: 600, color: "var(--accent)", textDecoration: "none", whiteSpace: "nowrap", height: 42, boxSizing: "border-box" }}>
-                🕒 {isAr ? ar.history.lastTimeMade : "Last time made:"} <strong>{formattedLastMade}</strong>
-              </Link>
-            )}
-
-            {ingredients.length > 0 && (
-              <button type="button" className="btn btn-ghost" onClick={handleMatchToStore} disabled={matching} style={{ height: 42, padding: "0 16px", borderRadius: 8, fontSize: 13, display: "inline-flex", alignItems: "center", gap: 6, border: "1px solid var(--accent)", background: "var(--accent-soft)", color: "var(--accent)", cursor: matching ? "wait" : "pointer" }}>
-                🛒 {matching ? (isAr ? "جاري البحث..." : "Searching...") : (isAr ? "إنشاء قائمة" : "Create List")}
+        <div className="recipe-actions-bar">
+            {instructions.length > 0 && (
+              <button type="button" className="btn" onClick={() => setCookModeOpen(true)}>
+                {isAr ? ar.cookMode.start : "Start Cooking"}
               </button>
             )}
-          </div>
-
-          <div style={{ display: "flex", gap: 8, marginInlineStart: "auto" }}>
+            {ingredients.length > 0 && (
+              <button type="button" className="btn" onClick={handleMatchToStore} disabled={matching}>
+                🛒 {matching ? (isAr ? "جاري البحث..." : "Searching...") : (isAr ? "قائمة التسوق" : "Shop List")}
+              </button>
+            )}
+            <button type="button" className="btn" onClick={() => shareToWhatsApp(false)}>
+              {isAr ? "مشاركة" : "Share"}
+            </button>
+            {lastMadeDate && (
+              <Link href={`/recipes/${recipe.id}/history`} className="btn" style={{ color: "var(--muted)" }}>
+                📅 {formattedLastMade}
+              </Link>
+            )}
             {isAdmin && (
               <>
-                <button type="button" className="btn btn-ghost" onClick={() => shareToWhatsApp(true)} style={{ height: 42, padding: "0 16px", borderRadius: 8, fontSize: 13, display: "inline-flex", alignItems: "center", gap: 6, border: "1px solid var(--line)", background: "var(--surface)", color: "var(--ink)", cursor: "pointer" }}>
-                  ✨ {isAr ? ar.today : "Today"}
+                <button type="button" className="btn" onClick={() => shareToWhatsApp(true)}>
+                  {isAr ? ar.today : "Today"}
                 </button>
-                <Link href={`/recipes/${recipe.id}/edit`} className="btn btn-ghost" style={{ height: 42, padding: "0 16px", borderRadius: 8, fontSize: 13, display: "inline-flex", alignItems: "center", gap: 6, border: "1px solid var(--line)", background: "var(--surface)", color: "var(--ink)", textDecoration: "none" }}>
-                  {t(lang, "edit")}
+                <Link href={`/recipes/${recipe.id}/edit`} className="btn">
+                  {isAr ? "تعديل" : "Edit"}
                 </Link>
-                <button type="button" className="btn btn-danger" onClick={handleDelete} disabled={deleting} style={{ height: 42, padding: "0 16px", borderRadius: 8, fontSize: 13, display: "inline-flex", alignItems: "center", gap: 6, border: "1px solid rgba(255, 107, 74, 0.4)", background: "transparent", color: "var(--accent)", cursor: "pointer" }}>
-                  {deleting ? "…" : "🗑"}
+                <button type="button" className="btn btn-danger" onClick={handleDelete} disabled={deleting}>
+                  {deleting ? "…" : (isAr ? "حذف" : "Delete")}
                 </button>
               </>
             )}
-
-            {instructions.length > 0 && (
-              <button type="button" className="btn btn-primary" onClick={() => setCookModeOpen(true)} style={{ height: 42, padding: "0 16px", borderRadius: 8, fontSize: 13, display: "inline-flex", alignItems: "center", gap: 6, border: "1px solid var(--ink)", background: "var(--ink)", color: "var(--bg)", cursor: "pointer" }}>
-                🍳 {isAr ? ar.cookMode.start : "Start Cooking"}
-              </button>
-            )}
-          </div>
         </div>
       </header>
 
-      {displayDesc && (<><div className="detail-desc-divider" /><p className="detail-desc">{displayDesc}</p></>)}
+      {displayDesc && (
+        <>
+          <div className="detail-desc-divider" style={{ background: "var(--line-strong)" }} />
+          <p className="detail-desc" style={{ color: "var(--ink-soft)" }}>{displayDesc}</p>
+        </>
+      )}
 
       {recipe.videoUrl && (
         <section className="video-section">
@@ -228,7 +342,10 @@ export default function RecipeDetailClient({
           {instructions.length === 0 ? <p className="helper">{t(lang, "no_instructions")}</p> : (
             <ol className="steps-list">
               {instructions.map((s) => (
-                <li key={s.id}><div className="step-num">{s.stepNumber}</div><p>{pick(lang, s.text, s.textAr)}</p></li>
+                <li key={s.id}>
+                  <div className="step-num">{s.stepNumber}</div>
+                  <p>{pick(lang, s.text, s.textAr)}</p>
+                </li>
               ))}
             </ol>
           )}

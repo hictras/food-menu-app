@@ -25,13 +25,15 @@ export default function ImageUpload({ onUploaded, initialUrl }: Props) {
     try {
       let uploadFile: File | Blob = file;
 
-      if (file.type.startsWith("image/") && file.size > 200 * 1024) {
+      if (file.type.startsWith("image/") && file.size > 30 * 1024) {
         try {
+          // Aggressive compression to hit ~30KB
           uploadFile = await imageCompression(file, {
-            maxSizeMB: 1,
-            maxWidthOrHeight: 1600,
+            maxSizeMB: 0.03, // 30 KB
+            maxWidthOrHeight: 800,
             useWebWorker: true,
-            initialQuality: 0.82,
+            initialQuality: 0.7,
+            fileType: "image/webp", // Convert to WebP
           });
         } catch (err) {
           console.warn("Compression failed, uploading original:", err);
@@ -39,8 +41,8 @@ export default function ImageUpload({ onUploaded, initialUrl }: Props) {
         }
       }
 
-      const finalName = file.name;
-      const finalType = file.type || "image/jpeg";
+      const finalName = file.name.replace(/\.[^/.]+$/, "") + ".webp";
+      const finalType = "image/webp";
 
       setStatus("Uploading...");
 
