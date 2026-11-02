@@ -3901,3 +3901,6 @@ body {
   top: 100% !important;
   position: absolute !important;
 }
+.nav-link {
+    padding: 0 7px !important;
+}

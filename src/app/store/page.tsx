@@ -60,7 +60,6 @@ export default function StorePage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [logoUrl, setLogoUrl] = useState<string>("");
   
   const [totalCount, setTotalCount] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -75,12 +74,11 @@ export default function StorePage() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const observerTarget = useRef<HTMLDivElement>(null);
 
-  // Fetch settings and logo
+  // Fetch settings for infinite scroll
   useEffect(() => {
     fetch("/api/settings")
       .then((res) => res.json())
       .then((data) => {
-        if (data.logo_url) setLogoUrl(data.logo_url);
         if (data.infinite_scroll === "1") setInfiniteScrollEnabled(true);
       })
       .catch(() => {});
@@ -104,7 +102,6 @@ export default function StorePage() {
       .then((data) => {
         if (data.products) {
           if (append) {
-            // Prevent duplicates on infinite scroll
             setProducts(prev => {
               const existingIds = new Set(prev.map(p => p.id));
               const newItems = data.products.filter((p: Product) => !existingIds.has(p.id));
@@ -311,10 +308,6 @@ export default function StorePage() {
                         {isAr ? "عرض" : "Promo"}
                       </div>
                     )}
-                    
-                    {logoUrl && (
-                      <img src={logoUrl} alt="" style={{ position: "absolute", top: "-15px", right: "8px", width: "72px", height: "72px", objectFit: "contain", opacity: 1, filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))", borderRadius: 4, zIndex: 2, pointerEvents: "none" }} />
-                    )}
                   </div>
 
                   <div style={{ padding: 14, display: "flex", flexDirection: "column", flex: 1, justifyContent: "space-between", gap: 10 }}>
@@ -351,7 +344,6 @@ export default function StorePage() {
             })}
           </div>
 
-          {/* PAGINATION OR INFINITE SCROLL */}
           {infiniteScrollEnabled ? (
             <div ref={observerTarget} style={{ display: "flex", justifyContent: "center", padding: "40px 0", minHeight: 60 }}>
               {loadingMore && (
@@ -386,10 +378,6 @@ export default function StorePage() {
                 <img src={selectedProduct.imageUrl} alt={selectedProduct.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               ) : (
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", fontSize: 64, opacity: 0.3 }}>🛒</div>
-              )}
-              
-              {logoUrl && (
-                <img src={logoUrl} alt="" style={{ position: "absolute", bottom: 16, right: 16, width: 64, height: 64, objectFit: "contain", filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.5))", borderRadius: 8 }} />
               )}
             </div>
 
