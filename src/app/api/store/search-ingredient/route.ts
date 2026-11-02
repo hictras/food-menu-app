@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, connection } from "next/server";
 import { getDb } from "@/db";
 import { storeProducts } from "@/db/schema";
 import { like, or, sql } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
+  await connection();
   try {
     const search = req.nextUrl.searchParams.get("q")?.trim();
     if (!search || search.length < 2) return NextResponse.json({ results: [] });

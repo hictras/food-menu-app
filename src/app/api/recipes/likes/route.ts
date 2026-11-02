@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, connection } from "next/server";
 import { getDb } from "@/db";
 import { recipeLikes } from "@/db/schema";
 import { inArray } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
+  await connection();
   try {
     const idsParam = req.nextUrl.searchParams.get("ids") || "";
     const visitorId = (req.nextUrl.searchParams.get("visitorId") || "").trim();

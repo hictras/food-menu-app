@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, connection } from "next/server";
 import { getDb } from "@/db";
 import { storeProducts } from "@/db/schema";
 import { eq, like, or, and, desc, sql } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
+  await connection();
   try {
     const db = getDb();
     const { searchParams } = new URL(req.url);
@@ -17,7 +18,6 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get("search")?.trim();
     const random = searchParams.get("random") === "true";
 
-    // Build conditions
     const conditions = [];
     
     if (category && category !== "All") {
@@ -40,13 +40,11 @@ export async function GET(req: NextRequest) {
 
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-    // Get total count
     const countResult = await db.select({ count: sql<number>`count(*)` })
       .from(storeProducts)
       .where(whereClause);
     const totalCount = countResult[0]?.count || 0;
 
-    // Get products with order by included in the chain
     const orderByClause = random ? sql`RANDOM()` : desc(storeProducts.id);
     
     const products = await db.select()

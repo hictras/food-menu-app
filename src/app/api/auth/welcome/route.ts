@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, connection } from "next/server";
 import { cookies } from "next/headers";
 import { getDb } from "@/db";
 import { pushSubscriptions } from "@/db/schema";
@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 const VIEWER_PHONE_COOKIE = "viewer_phone";
 
 export async function GET() {
+  await connection();
   try {
     const store = await cookies();
     const phone = (store.get(VIEWER_PHONE_COOKIE)?.value || "").trim();

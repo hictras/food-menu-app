@@ -18,6 +18,8 @@ type Product = {
   price: number;
   imageUrl: string | null;
   isPromotion: number | null;
+  packageSize: number | null;
+  packageUnit: string | null;
 };
 
 const ITEMS_PER_PAGE = 50;
@@ -50,10 +52,17 @@ export default function ProductsAdminPage() {
 
   function loadProducts() {
     setLoading(true);
-    fetch("/api/products", { cache: "no-store" })
+    // Add admin=true so the API returns ALL products
+    fetch("/api/products?admin=true", { cache: "no-store" })
       .then((r) => r.json())
       .then((data) => {
-        setProducts(Array.isArray(data) ? data : []);
+        if (data.products && Array.isArray(data.products)) {
+          setProducts(data.products);
+        } else if (Array.isArray(data)) {
+          setProducts(data);
+        } else {
+          setProducts([]);
+        }
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -175,6 +184,7 @@ export default function ProductsAdminPage() {
               <th style={{ padding: 12, textAlign: "start", fontWeight: 600 }}>{isAr ? "الاسم (EN)" : "Title (EN)"}</th>
               <th style={{ padding: 12, textAlign: "start", fontWeight: 600 }}>{isAr ? "الاسم (AR)" : "Title (AR)"}</th>
               <th style={{ padding: 12, textAlign: "start", fontWeight: 600, width: 100 }}>SKU</th>
+              <th style={{ padding: 12, textAlign: "start", fontWeight: 600, width: 80 }}>Size</th>
               <th style={{ padding: 12, textAlign: "start", fontWeight: 600, width: 120 }}>{isAr ? "الفئة" : "Category"}</th>
               <th style={{ padding: 12, textAlign: "start", fontWeight: 600, width: 100 }}>{isAr ? "الماركة" : "Brand"}</th>
               <th style={{ padding: 12, textAlign: "center", fontWeight: 600, width: 80 }}>Promo</th>
@@ -185,7 +195,7 @@ export default function ProductsAdminPage() {
           <tbody>
             {paginated.length === 0 ? (
               <tr>
-                <td colSpan={10} style={{ padding: 24, textAlign: "center", color: "var(--muted)" }}>
+                <td colSpan={11} style={{ padding: 24, textAlign: "center", color: "var(--muted)" }}>
                   {isAr ? "لا توجد منتجات" : "No products found"}
                 </td>
               </tr>
@@ -226,6 +236,12 @@ export default function ProductsAdminPage() {
                   <td style={{ padding: 12, color: "var(--muted)", fontFamily: "var(--font-mono)", fontSize: 12 }}>
                     {p.sku}
                   </td>
+                  
+                  {/* Size */}
+                  <td style={{ padding: 12, color: "var(--muted)", fontSize: 12 }}>
+                    {p.packageSize && p.packageUnit ? `${p.packageSize}${p.packageUnit}` : "-"}
+                  </td>
+
                   <td style={{ padding: 12, color: "var(--ink-soft)", fontSize: 12 }}>
                     {p.category || "-"}
                   </td>

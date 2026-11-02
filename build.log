@@ -1,0 +1,153 @@
+
+> food-menu-app@0.1.0 build
+> next build
+
+▲ Next.js 16.4.2 (Turbopack)
+- Environments: .env.local
+✓ Running next.config.ts took 53ms
+- Cache Components enabled
+- Partial Prefetching enabled
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 15.7s
+  Running TypeScript ...
+  Finished TypeScript in 18.3s ...
+  Collecting page data using 3 workers ...
+  Generating static pages using 3 workers (0/84) ...
+  Generating static pages using 3 workers (21/84) 
+Failed to load products: Error: Route /api/products needs to bail out of prerendering at this point because it used request.url.
+    at c (src\app\api\products\route.ts:9:42)
+   7 |   try {
+   8 |     const db = getDb();
+>  9 |     const { searchParams } = new URL(req.url);
+     |                                          ^
+  10 |     
+  11 |     const page = parseInt(searchParams.get("page") || "1");
+  12 |     const limit = page === 1 ? 8 : 24; {
+  digest: 'NEXT_PRERENDER_INTERRUPTED'
+}
+  Generating static pages using 3 workers (42/84) 
+Failed to load products: Error: Route /api/products needs to bail out of prerendering at this point because it used request.url.
+    at c (src\app\api\products\route.ts:9:42)
+   7 |   try {
+   8 |     const db = getDb();
+>  9 |     const { searchParams } = new URL(req.url);
+     |                                          ^
+  10 |     
+  11 |     const page = parseInt(searchParams.get("page") || "1");
+  12 |     const limit = page === 1 ? 8 : 24; {
+  digest: 'NEXT_PRERENDER_INTERRUPTED'
+}
+  Generating static pages using 3 workers (63/84) 
+✓ Generating static pages using 3 workers (84/84) in 2.6s
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /active-image
+├ ƒ /api/auth/login
+├ ƒ /api/auth/logout
+├ ƒ /api/auth/me
+├ ƒ /api/auth/verify-phone
+├ ƒ /api/auth/welcome
+├ ƒ /api/chess/rooms
+├ ƒ /api/chess/rooms/[code]
+├ ƒ /api/chess/rooms/[code]/move
+├ ƒ /api/dictionary
+├ ƒ /api/game-stats
+├ ○ /api/health
+├ ƒ /api/inbox/admin
+├ ƒ /api/leaderboard
+├ ƒ /api/meal-plan
+├ ƒ /api/notifications
+├ ƒ /api/notifications/[id]
+├ ƒ /api/notifications/[id]/read
+├ ƒ /api/notifications/bulk-delete
+├ ƒ /api/notifications/unread-count
+├ ƒ /api/polls/[id]
+├ ƒ /api/polls/[id]/responses
+├ ƒ /api/products
+├ ƒ /api/products/[id]
+├ ƒ /api/products/import
+├ ƒ /api/push/presets
+├ ƒ /api/push/send
+├ ƒ /api/push/subscribe
+├ ƒ /api/push/unsubscribe
+├ ƒ /api/recipes
+├ ƒ /api/recipes/[id]
+├ ƒ /api/recipes/[id]/history
+├ ƒ /api/recipes/[id]/like
+├ ƒ /api/recipes/[id]/reviews
+├ ƒ /api/recipes/bulk
+├ ƒ /api/recipes/likes
+├ ƒ /api/recipients
+├ ƒ /api/recipients/groups
+├ ƒ /api/replies
+├ ƒ /api/reviews/day/[date]
+├ ƒ /api/settings
+├ ƒ /api/share/whatsapp
+├ ƒ /api/store/match-ingredients
+├ ƒ /api/store/recipe-cost
+├ ƒ /api/store/search-ingredient
+├ ƒ /api/test-db
+├ ƒ /api/upload
+├ ƒ /api/upload-latest
+├ ƒ /api/user-activity
+├ ƒ /api/user-settings
+├ ƒ /api/visitors
+├ ○ /appearance
+├ ○ /calendar
+├   /calendar/[date]
+│ └ ◐ /calendar/[date]
+├ ○ /cart
+├ ○ /dictionary
+├ ○ /dictionary-admin
+├ ○ /games
+├ ○ /games/catch
+├ ○ /games/chess
+├   /games/chess/[code]
+│ └ ◐ /games/chess/[code]
+├ ○ /games/chess/lobby
+├ ○ /games/guess
+├ ○ /games/leaderboard
+├ ○ /games/memory
+├ ○ /games/puzzle
+├ ○ /games/snake
+├ ○ /games/wordle
+├ ○ /hidden-recipes
+├ ○ /import
+├ ○ /import-products
+├ ○ /inbox
+├   /inbox/[id]
+│ └ ◐ /inbox/[id]
+├ ○ /inbox/admin
+├ ○ /login
+├ ◐ /no-dish-today
+├   /poll/[id]
+│ └ ◐ /poll/[id]
+├ ○ /products-admin
+├ ◐ /recipes
+├   /recipes/[id]
+│ └ ◐ /recipes/[id]
+├   /recipes/[id]/edit
+│ └ ◐ /recipes/[id]/edit
+├   /recipes/[id]/history
+│ └ ◐ /recipes/[id]/history
+├ ◐ /recipes/new
+├ ○ /recipients
+├ ○ /replies
+├ ◐ /sendpush
+├ ○ /settings
+├ ○ /store
+├ ○ /store-welcome
+├ ○ /test-upload
+├ ○ /visitors
+├ ○ /week
+└ ◐ /whatsapp
+
+
+○  (Static)             prerendered as static content
+◐  (Partial Prerender)  prerendered as static HTML with dynamic server-streamed content
+ƒ  (Dynamic)            server-rendered on demand
+

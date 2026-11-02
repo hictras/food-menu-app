@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useLang } from "@/components/LanguageProvider";
 import { useCart } from "@/components/CartProvider";
 import { useDebounce } from "use-debounce";
@@ -16,7 +16,6 @@ type Product = {
   brand: string | null;
   price: number;
   imageUrl: string | null;
-  isPromotion: number | null;
   packageSize: number | null;
   packageUnit: string | null;
 };
@@ -30,28 +29,16 @@ const ALLOWED_MAIN_CATEGORIES = [
 ];
 
 const MAIN_CATEGORY_TRANSLATIONS: Record<string, string> = {
-  "Offers & Promotions": "العروض والترويجات",
-  "Meat & Poultry": "لحوم ودواجن",
-  "Fresh Fish": "سمك طازج",
-  "Back To School": "العودة إلى المدرسة",
-  "Produce": "خضار وفواكه",
-  "Dairy & Eggs": "ألبان وبيض",
-  "Bakery": "مخبوزات",
-  "Ready To Eat": "أكل جاهز",
-  "Grocery Food": "بقالة",
-  "Frozen Food": "مأكولات مجمدة",
-  "Snack & Sweet": "وجبات خفيفة وحلويات",
-  "Beverages": "مشروبات",
-  "Coffee & Tea": "قهوة وشاي",
-  "Organic & Healthy": "عضوي وصحي",
-  "Toys": "ألعاب",
-  "Baby Care": "عناية بالطفل",
-  "Home Care": "عناية بالمنزل",
-  "Personal Care": "عناية شخصية",
-  "Pet Care": "عناية بالحيوانات",
-  "Tobacco": "دخان",
-  "Kitchen Accessories": "أدوات المطبخ",
-  "Phone & Home electronics": "هواتف وإلكترونيات"
+  "Offers & Promotions": "العروض والترويجات", "Meat & Poultry": "لحوم ودواجن",
+  "Fresh Fish": "سمك طازج", "Back To School": "العودة إلى المدرسة",
+  "Produce": "خضار وفواكه", "Dairy & Eggs": "ألبان وبيض",
+  "Bakery": "مخبوزات", "Ready To Eat": "أكل جاهز", "Grocery Food": "بقالة",
+  "Frozen Food": "مأكولات مجمدة", "Snack & Sweet": "وجبات خفيفة وحلويات",
+  "Beverages": "مشروبات", "Coffee & Tea": "قهوة وشاي",
+  "Organic & Healthy": "عضوي وصحي", "Toys": "ألعاب", "Baby Care": "عناية بالطفل",
+  "Home Care": "عناية بالمنزل", "Personal Care": "عناية شخصية",
+  "Pet Care": "عناية بالحيوانات", "Tobacco": "دخان",
+  "Kitchen Accessories": "أدوات المطبخ", "Phone & Home electronics": "هواتف وإلكترونيات"
 };
 
 export default function StorePage() {
@@ -70,12 +57,26 @@ export default function StorePage() {
 
   const [activeMainCategory, setActiveMainCategory] = useState<string>("All");
   const [activeSubCategory, setActiveSubCategory] = useState<string>("All");
+  
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch] = useDebounce(searchInput, 500);
+  const [dictionary, setDictionary] = useState<Record<string, string>>({});
+  const [translatedSearch, setTranslatedSearch] = useState("");
 
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const observerTarget = useRef<HTMLDivElement>(null);
 
+  // Load dictionary
+  useEffect(() => {
+    fetch("/api/dictionary").then(res => res.json()).then(data => {
+      if (Array.isArray(data)) {
+        const dict: Record<string, string> = {};
+        data.forEach((item: any) => { if (item.ar && item.en) dict[item.ar] = item.en; });
+        setDictionary(dict);
+      }
+    }).catch(() => {});
+  }, []);
+
+  // Load settings (Infinite scroll toggle)
   useEffect(() => {
     fetch("/api/settings")
       .then((res) => res.json())
@@ -85,6 +86,18 @@ export default function StorePage() {
       .catch(() => {});
   }, []);
 
+  // Translate search
+  useEffect(() => {
+    const raw = debouncedSearch.trim();
+    if (raw.length < 3) { setTranslatedSearch(raw); return; }
+
+    let enMatches = [];
+    for (const [arKey, enVal] of Object.entries(dictionary)) {
+      if (arKey.startsWith(raw)) enMatches.push(enVal);
+    }
+    setTranslatedSearch(enMatches.length > 0 ? enMatches[0] : raw);
+  }, [debouncedSearch, dictionary]);
+
   const fetchProducts = useCallback((page: number, append: boolean) => {
     if (append) setLoadingMore(true);
     else setLoading(true);
@@ -92,8 +105,9 @@ export default function StorePage() {
     const params = new URLSearchParams({ page: page.toString() });
     if (activeMainCategory !== "All") params.append("category", activeMainCategory);
     if (activeSubCategory !== "All") params.append("subCategory", activeSubCategory);
-    if (debouncedSearch.trim().length >= 3) params.append("search", debouncedSearch.trim());
     
+    // Only search if 3+ chars
+    if (translatedSearch.length >= 3) params.append("search", translatedSearch);
     if (page === 1) params.append("random", "true");
 
     fetch(`/api/products?${params.toString()}`)
@@ -119,13 +133,15 @@ export default function StorePage() {
         setLoading(false);
         setLoadingMore(false);
       });
-  }, [activeMainCategory, activeSubCategory, debouncedSearch]);
+  }, [activeMainCategory, activeSubCategory, translatedSearch]);
 
+  // Reset on filter/search change
   useEffect(() => {
     setCurrentPage(1);
     fetchProducts(1, false);
   }, [fetchProducts]);
 
+  // Infinite scroll observer
   useEffect(() => {
     if (!infiniteScrollEnabled) return;
     
@@ -144,21 +160,13 @@ export default function StorePage() {
     return () => observer.disconnect();
   }, [infiniteScrollEnabled, loading, loadingMore, currentPage, totalPages, fetchProducts]);
 
-  function handleMainCategoryClick(cat: string) {
-    setActiveMainCategory(cat);
-    setActiveSubCategory("All");
-  }
-
-  function handleSubCategoryClick(sub: string) {
-    setActiveSubCategory(sub);
-  }
-
   function goToPage(page: number) {
     setCurrentPage(page);
     fetchProducts(page, false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  // Available subcategories based on the current main category
   const subCategories: Record<string, string[]> = {
     "Offers & Promotions": ["Weekly Offers", "Daily offers", "Fresh daily offers", "Online Offers"],
     "Meat & Poultry": ["Cold Cuts", "Meat", "Chicken"],
@@ -178,6 +186,7 @@ export default function StorePage() {
   };
 
   const currentSubs = subCategories[activeMainCategory] || [];
+  const searchTooShort = searchInput.trim().length > 0 && searchInput.trim().length < 3;
 
   return (
     <main className="container" style={{ paddingTop: 40, paddingBottom: 100 }}>
@@ -200,6 +209,11 @@ export default function StorePage() {
         {isAr 
           ? `عرض ${products.length} من ${totalCount} منتج` 
           : `Showing ${products.length} of ${totalCount} products`}
+        {searchTooShort && (
+          <span style={{ marginInlineStart: 8, color: "var(--accent)" }}>
+            {isAr ? "— اكتب 3 أحرف على الأقل للبحث" : "— type at least 3 characters to search"}
+          </span>
+        )}
       </p>
 
       <div className="filter-bar" style={{ marginBottom: 16 }}>
@@ -220,7 +234,7 @@ export default function StorePage() {
         {["All", ...ALLOWED_MAIN_CATEGORIES].map((cat) => (
           <button
             key={cat}
-            onClick={() => handleMainCategoryClick(cat)}
+            onClick={() => { setActiveMainCategory(cat); setActiveSubCategory("All"); }}
             className={`chip ${activeMainCategory === cat ? "active" : ""}`}
             style={{ fontSize: 14, padding: "8px 16px", cursor: "pointer", fontWeight: activeMainCategory === cat ? 700 : 500 }}
           >
@@ -236,7 +250,7 @@ export default function StorePage() {
         <select
           className="filter-select"
           value={activeMainCategory}
-          onChange={(e) => handleMainCategoryClick(e.target.value)}
+          onChange={(e) => { setActiveMainCategory(e.target.value); setActiveSubCategory("All"); }}
           style={{ width: "100%", padding: "10px 12px", fontSize: 14, borderRadius: 8, background: "var(--surface-solid)", border: "1px solid var(--line)", color: "var(--ink)" }}
         >
           {["All", ...ALLOWED_MAIN_CATEGORIES].map((cat) => (
@@ -252,7 +266,7 @@ export default function StorePage() {
           {["All", ...currentSubs].map((sub) => (
             <button
               key={sub}
-              onClick={() => handleSubCategoryClick(sub)}
+              onClick={() => setActiveSubCategory(sub)}
               className={`chip ${activeSubCategory === sub ? "active" : ""}`}
               style={{ fontSize: 12, padding: "6px 14px", cursor: "pointer", flexShrink: 0 }}
             >
@@ -267,9 +281,6 @@ export default function StorePage() {
           <div style={{ width: 48, height: 48, border: "4px solid var(--line-strong)", borderTopColor: "var(--accent)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
           <div style={{ textAlign: "center" }}>
             <h3 style={{ margin: "0 0 8px 0", fontSize: 18, color: "var(--ink)" }}>{isAr ? "جاري تحميل المنتجات..." : "Loading products..."}</h3>
-            <p style={{ margin: 0, fontSize: 13, color: "var(--muted)" }}>
-              {isAr ? "يتم تحميل الصفحة المطلوبة فقط." : "Loading only the requested page."}
-            </p>
           </div>
         </div>
       ) : products.length === 0 ? (
@@ -284,15 +295,10 @@ export default function StorePage() {
               const cartItem = cart.find((i) => i.id === p.id);
               const displayCat = p.brand || p.subCategory || p.category || p.sku;
               const displayTitle = isAr && p.titleAr ? p.titleAr : p.title;
+              const pkgLabel = p.packageSize != null && p.packageUnit ? `${p.packageSize}${p.packageUnit}` : null;
 
               return (
-                <div 
-                  key={p.id} 
-                  className="product-card"
-                  onClick={() => setSelectedProduct(p)}
-                  style={{ background: "var(--surface-solid)", border: "1px solid var(--line)", borderRadius: 16, overflow: "hidden", display: "flex", flexDirection: "column", boxShadow: "0 4px 12px rgba(0,0,0,0.2)", cursor: "pointer", transition: "transform 0.2s, border-color 0.2s" }}
-                >
-                  
+                <div key={p.id} className="product-card" style={{ background: "var(--surface-solid)", border: "1px solid var(--line)", borderRadius: 16, overflow: "hidden", display: "flex", flexDirection: "column", boxShadow: "0 4px 12px rgba(0,0,0,0.2)" }}>
                   <div style={{ width: "100%", aspectRatio: "1/1", background: "var(--surface-2)", position: "relative" }}>
                     {p.imageUrl ? (
                       <img src={p.imageUrl} alt={displayTitle} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
@@ -300,16 +306,9 @@ export default function StorePage() {
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", fontSize: 32, opacity: 0.3 }}>🛒</div>
                     )}
 
-                    {p.isPromotion === 1 && (
-                      <div style={{ position: "absolute", top: 8, left: 8, background: "#61d509", color: "#000", padding: "4px 8px", borderRadius: 6, fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", zIndex: 3, boxShadow: "0 2px 6px rgba(0,0,0,0.3)" }}>
-                        {isAr ? "عرض" : "Promo"}
-                      </div>
-                    )}
-
-                    {/* NEW: Package Size Badge */}
-                    {p.packageSize && p.packageUnit && (
-                      <div style={{ position: "absolute", bottom: 8, left: 8, background: "rgba(0,0,0,0.7)", color: "white", padding: "2px 6px", borderRadius: 4, fontSize: 10, fontWeight: 700, zIndex: 3 }}>
-                        {p.packageSize}{p.packageUnit}
+                    {pkgLabel && (
+                      <div style={{ position: "absolute", bottom: 8, left: 8, background: "rgba(0,0,0,0.75)", color: "#fff", padding: "3px 8px", borderRadius: 6, fontSize: 11, fontWeight: 700, zIndex: 2, pointerEvents: "none" }}>
+                        {pkgLabel}
                       </div>
                     )}
                   </div>
@@ -319,8 +318,7 @@ export default function StorePage() {
                       <div style={{ fontSize: 11, color: "var(--muted)", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", marginBottom: 6 }}>
                         {displayCat}
                       </div>
-                      
-                      <h3 className="product-title" style={{ margin: 0, fontSize: 16, fontWeight: 700, fontFamily: "var(--font-body)", color: "var(--ink)", lineHeight: 1.35, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden", transition: "color 0.2s" }}>
+                      <h3 className="product-title" style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "var(--ink)", lineHeight: 1.35, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden", transition: "color 0.2s" }}>
                         {displayTitle}
                       </h3>
                     </div>
@@ -332,12 +330,12 @@ export default function StorePage() {
 
                       {cartItem ? (
                         <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--accent-soft)", borderRadius: 8, padding: "2px 4px" }}>
-                          <button onClick={(e) => { e.stopPropagation(); removeFromCart(p.id); }} style={{ background: "none", border: "none", color: "var(--accent)", fontSize: 16, cursor: "pointer", width: 20 }}>-</button>
+                          <button onClick={() => removeFromCart(p.id)} style={{ background: "none", border: "none", color: "var(--accent)", fontSize: 16, cursor: "pointer", width: 20 }}>-</button>
                           <span style={{ fontSize: 13, fontWeight: 700, color: "var(--accent)" }}>{cartItem.quantity}</span>
-                          <button onClick={(e) => { e.stopPropagation(); addToCart({ id: p.id, title: displayTitle, price: p.price, imageUrl: p.imageUrl }); }} style={{ background: "none", border: "none", color: "var(--accent)", fontSize: 16, cursor: "pointer", width: 20 }}>+</button>
+                          <button onClick={() => addToCart({ id: p.id, title: displayTitle, price: p.price, imageUrl: p.imageUrl })} style={{ background: "none", border: "none", color: "var(--accent)", fontSize: 16, cursor: "pointer", width: 20 }}>+</button>
                         </div>
                       ) : (
-                        <button onClick={(e) => { e.stopPropagation(); addToCart({ id: p.id, title: displayTitle, price: p.price, imageUrl: p.imageUrl }); }} style={{ background: "var(--surface-2)", border: "1px solid var(--line)", color: "var(--ink)", width: 30, height: 30, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, cursor: "pointer" }}>
+                        <button onClick={() => addToCart({ id: p.id, title: displayTitle, price: p.price, imageUrl: p.imageUrl })} style={{ background: "var(--surface-2)", border: "1px solid var(--line)", color: "var(--ink)", width: 30, height: 30, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, cursor: "pointer" }}>
                           +
                         </button>
                       )}
@@ -370,61 +368,6 @@ export default function StorePage() {
             )
           )}
         </>
-      )}
-
-      {selectedProduct && (
-        <div onClick={() => setSelectedProduct(null)} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, animation: "fadeIn 0.2s ease-out" }}>
-          <div onClick={(e) => e.stopPropagation()} style={{ background: "var(--surface-solid)", border: "1px solid var(--line)", borderRadius: 24, maxWidth: 500, width: "100%", maxHeight: "90vh", overflowY: "auto", display: "flex", flexDirection: "column", boxShadow: "0 24px 48px rgba(0,0,0,0.5)", position: "relative" }}>
-            <button onClick={() => setSelectedProduct(null)} style={{ position: "absolute", top: 16, right: 16, zIndex: 10, background: "rgba(0,0,0,0.5)", border: "none", color: "white", width: 32, height: 32, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, cursor: "pointer", backdropFilter: "blur(4px)" }}>✕</button>
-
-            <div style={{ width: "100%", aspectRatio: "1/1", background: "var(--surface-2)", position: "relative", borderTopLeftRadius: 24, borderTopRightRadius: 24, overflow: "hidden" }}>
-              {selectedProduct.imageUrl ? (
-                <img src={selectedProduct.imageUrl} alt={selectedProduct.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              ) : (
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", fontSize: 64, opacity: 0.3 }}>🛒</div>
-              )}
-            </div>
-
-            <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 16 }}>
-              <div>
-                <div style={{ fontSize: 12, color: "var(--accent)", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", marginBottom: 8 }}>
-                  {selectedProduct.brand || selectedProduct.category || selectedProduct.sku}
-                </div>
-                <h2 style={{ margin: 0, fontSize: 24, fontWeight: 700, color: "var(--ink)", lineHeight: 1.2 }}>
-                  {isAr && selectedProduct.titleAr ? selectedProduct.titleAr : selectedProduct.title}
-                </h2>
-                {selectedProduct.packageSize && selectedProduct.packageUnit && (
-                  <div style={{ fontSize: 14, color: "var(--muted)", marginTop: 4 }}>
-                    {selectedProduct.packageSize} {selectedProduct.packageUnit}
-                  </div>
-                )}
-              </div>
-
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8, paddingTop: 16, borderTop: "1px solid var(--line)" }}>
-                <span style={{ fontSize: 24, fontWeight: 800, color: "var(--olive)" }}>
-                  ${selectedProduct.price.toFixed(2)}
-                </span>
-
-                {(() => {
-                  const cartItem = cart.find((i) => i.id === selectedProduct.id);
-                  const displayTitle = isAr && selectedProduct.titleAr ? selectedProduct.titleAr : selectedProduct.title;
-                  
-                  return cartItem ? (
-                    <div style={{ display: "flex", alignItems: "center", gap: 12, background: "var(--accent-soft)", borderRadius: 12, padding: "8px 12px" }}>
-                      <button onClick={() => removeFromCart(selectedProduct.id)} style={{ background: "none", border: "none", color: "var(--accent)", fontSize: 20, cursor: "pointer" }}>-</button>
-                      <span style={{ fontSize: 18, fontWeight: 700, color: "var(--accent)", minWidth: 20, textAlign: "center" }}>{cartItem.quantity}</span>
-                      <button onClick={() => addToCart({ id: selectedProduct.id, title: displayTitle, price: selectedProduct.price, imageUrl: selectedProduct.imageUrl })} style={{ background: "none", border: "none", color: "var(--accent)", fontSize: 20, cursor: "pointer" }}>+</button>
-                    </div>
-                  ) : (
-                    <button onClick={() => addToCart({ id: selectedProduct.id, title: displayTitle, price: selectedProduct.price, imageUrl: selectedProduct.imageUrl })} style={{ background: "var(--accent)", color: "white", border: "none", padding: "12px 24px", borderRadius: 12, fontSize: 16, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
-                      <span>+</span> {isAr ? "أضف للسلة" : "Add to List"}
-                    </button>
-                  );
-                })()}
-              </div>
-            </div>
-          </div>
-        </div>
       )}
     </main>
   );
