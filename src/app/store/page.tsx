@@ -18,6 +18,7 @@ type Product = {
   imageUrl: string | null;
   packageSize: number | null;
   packageUnit: string | null;
+  isPromotion: number | null;
 };
 
 const ALLOWED_MAIN_CATEGORIES = [
