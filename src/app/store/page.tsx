@@ -68,23 +68,6 @@ export default function StorePage() {
 
   const observerTarget = useRef<HTMLDivElement>(null);
 
-  async function handleBarcodeDetected(code: string) {
-    // 1. Drop the scanned barcode into the search box
-    setSearchInput(code);
-    
-    try {
-      // 2. Check if it exists in the DB
-      const res = await fetch(`/api/store/barcode/${encodeURIComponent(code)}`);
-      const data = await res.json();
-      
-      if (!data.found) {
-        alert(isAr ? "المنتج غير موجود في المتجر" : "Product not found in store");
-      }
-    } catch {
-      alert(isAr ? "خطأ في البحث" : "Lookup failed");
-    }
-  }
-
   // Load dictionary
   useEffect(() => {
     fetch("/api/dictionary").then(res => res.json()).then(data => {
@@ -126,7 +109,6 @@ export default function StorePage() {
     if (activeMainCategory !== "All") params.append("category", activeMainCategory);
     if (activeSubCategory !== "All") params.append("subCategory", activeSubCategory);
     
-    // Only search if 3+ chars
     if (translatedSearch.length >= 3) params.append("search", translatedSearch);
     if (page === 1) params.append("random", "true");
 
@@ -186,7 +168,19 @@ export default function StorePage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Available subcategories based on the current main category
+  async function handleBarcodeDetected(code: string) {
+    setSearchInput(code);
+    try {
+      const res = await fetch(`/api/store/barcode/${encodeURIComponent(code)}`);
+      const data = await res.json();
+      if (!data.found) {
+        alert(isAr ? "المنتج غير موجود في المتجر" : "Product not found in store");
+      }
+    } catch {
+      alert(isAr ? "خطأ في البحث" : "Lookup failed");
+    }
+  }
+
   const subCategories: Record<string, string[]> = {
     "Offers & Promotions": ["Weekly Offers", "Daily offers", "Fresh daily offers", "Online Offers"],
     "Meat & Poultry": ["Cold Cuts", "Meat", "Chicken"],
@@ -237,18 +231,33 @@ export default function StorePage() {
       </p>
 
       <div className="filter-bar" style={{ marginBottom: 16 }}>
-        <div className="search-wrap" style={{ width: "100%", maxWidth: 450, display: "flex", gap: 8 }}>
-          <div style={{ position: "relative", flex: 1 }}>
-            <span className="search-icon">🔍</span>
+        <div className="search-wrap" style={{ width: "100%", maxWidth: 450, display: "flex", gap: 8, padding: 0 }}>
+          <div style={{ position: "relative", flex: 1, display: "flex", alignItems: "center" }}>
+            <span className="search-icon" style={{ position: "absolute", left: 12, zIndex: 2, pointerEvents: "none" }}>🔍</span>
             <input
               type="text"
               className="search-input"
               placeholder={isAr ? "ابحث عن منتج... (3 أحرف على الأقل)" : "Search products... (min 3 chars)"}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              style={{ paddingRight: 40 }}
+              style={{ 
+                width: "100%", 
+                paddingLeft: 36, 
+                paddingRight: searchInput ? 36 : 12, 
+                height: 42, 
+                margin: 0 
+              }}
             />
-            {searchInput && <button type="button" className="search-clear" onClick={() => setSearchInput("")}>✕</button>}
+            {searchInput && (
+              <button 
+                type="button" 
+                className="search-clear" 
+                onClick={() => setSearchInput("")}
+                style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", zIndex: 2 }}
+              >
+                ✕
+              </button>
+            )}
           </div>
           
           <button
