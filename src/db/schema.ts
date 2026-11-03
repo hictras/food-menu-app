@@ -213,6 +213,7 @@ export const storeProducts = sqliteTable("store_products", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   externalId: integer("external_id").notNull().unique(),
   sku: text("sku").notNull().unique(),
+  barcode: text("barcode"),
   title: text("title").notNull(),
   titleAr: text("title_ar"),
   category: text("category"),

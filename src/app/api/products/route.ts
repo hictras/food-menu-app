@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
     if (subCategory && subCategory !== "All") {
       conditions.push(eq(storeProducts.subCategory, subCategory));
     }
-    if (search && search.length >= 3) {
+    if (search && search.length > 0) {
       const lowerSearch = `%${search.toLowerCase()}%`;
       conditions.push(
         or(
