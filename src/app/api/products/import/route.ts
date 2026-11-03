@@ -4,6 +4,27 @@ import { storeProducts } from "@/db/schema";
 import { isAdmin } from "@/lib/auth";
 import { sql } from "drizzle-orm";
 
+function parsePackageSize(title: string): { size: number | null; unit: string | null } {
+  const regex = /(\d+(?:[.,]\d+)?)\s*(kg|kilo|kilos|g|gr|gram|grams|ml|l|liter|liters|litre|litres|pcs|pc|pieces|piece|oz|lb|lbs|cl)\b/i;
+  const match = title.match(regex);
+  if (!match) return { size: null, unit: null };
+
+  let size = parseFloat(match[1].replace(",", "."));
+  const rawUnit = match[2].toLowerCase();
+  let unit = null;
+
+  if (["kg", "kilo", "kilos"].includes(rawUnit)) unit = "kg";
+  else if (["g", "gr", "gram", "grams"].includes(rawUnit)) unit = "g";
+  else if (["ml"].includes(rawUnit)) unit = "ml";
+  else if (["l", "liter", "liters", "litre", "litres"].includes(rawUnit)) unit = "L";
+  else if (["pcs", "pc", "pieces", "piece"].includes(rawUnit)) unit = "pcs";
+  else if (["oz"].includes(rawUnit)) unit = "oz";
+  else if (["lb", "lbs"].includes(rawUnit)) unit = "lb";
+  else if (["cl"].includes(rawUnit)) unit = "cl";
+
+  return { size: Number.isFinite(size) ? size : null, unit };
+}
+
 const ALLOWED_MAIN_CATEGORIES = [
   "Offers & Promotions", "Meat & Poultry", "Fresh Fish", "Back To School",
   "Produce", "Dairy & Eggs", "Bakery", "Ready To Eat", "Grocery Food",
@@ -80,6 +101,8 @@ export async function POST(req: NextRequest) {
         }
       }
 
+      const parsedSize = parsePackageSize(String(p.title).trim());
+
       valuesToInsert.push({
         externalId: Number(p.id),
         sku: String(p.sku).trim(),
@@ -88,6 +111,8 @@ export async function POST(req: NextRequest) {
         subCategory: subCategory,
         brand: p.brandTitle ? String(p.brandTitle).trim() : null,
         price: Number(p.finalPrice) || 0,
+        packageSize: parsedSize.size,
+        packageUnit: parsedSize.unit,
         imageUrl: p.imgSrc || p.localImgSrc || null,
         isPromotion: isPromotion,
         updatedAt: new Date().toISOString(),
@@ -111,6 +136,8 @@ export async function POST(req: NextRequest) {
                 subCategory: sql`excluded.sub_category`,
                 brand: sql`excluded.brand`,
                 price: sql`excluded.price`,
+                packageSize: sql`excluded.package_size`,
+                packageUnit: sql`excluded.package_unit`,
                 imageUrl: sql`excluded.image_url`,
                 isPromotion: sql`excluded.is_promotion`,
                 updatedAt: sql`excluded.updated_at`,
