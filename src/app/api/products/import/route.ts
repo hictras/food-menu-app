@@ -4,27 +4,6 @@ import { storeProducts } from "@/db/schema";
 import { isAdmin } from "@/lib/auth";
 import { sql } from "drizzle-orm";
 
-function parsePackageSize(title: string): { size: number | null; unit: string | null } {
-  const regex = /(\d+(?:[.,]\d+)?)\s*(kg|kilo|kilos|g|gr|gram|grams|ml|l|liter|liters|litre|litres|pcs|pc|pieces|piece|oz|lb|lbs|cl)\b/i;
-  const match = title.match(regex);
-  if (!match) return { size: null, unit: null };
-
-  let size = parseFloat(match[1].replace(",", "."));
-  const rawUnit = match[2].toLowerCase();
-  let unit = null;
-
-  if (["kg", "kilo", "kilos"].includes(rawUnit)) unit = "kg";
-  else if (["g", "gr", "gram", "grams"].includes(rawUnit)) unit = "g";
-  else if (["ml"].includes(rawUnit)) unit = "ml";
-  else if (["l", "liter", "liters", "litre", "litres"].includes(rawUnit)) unit = "L";
-  else if (["pcs", "pc", "pieces", "piece"].includes(rawUnit)) unit = "pcs";
-  else if (["oz"].includes(rawUnit)) unit = "oz";
-  else if (["lb", "lbs"].includes(rawUnit)) unit = "lb";
-  else if (["cl"].includes(rawUnit)) unit = "cl";
-
-  return { size: Number.isFinite(size) ? size : null, unit };
-}
-
 const ALLOWED_MAIN_CATEGORIES = [
   "Offers & Promotions", "Meat & Poultry", "Fresh Fish", "Back To School",
   "Produce", "Dairy & Eggs", "Bakery", "Ready To Eat", "Grocery Food",
@@ -33,7 +12,7 @@ const ALLOWED_MAIN_CATEGORIES = [
   "Pet Care", "Tobacco", "Kitchen Accessories", "Phone & Home electronics"
 ];
 
-// Helper to fix Minim's missing spaces and typos
+// Normalize Minim's missing spaces (e.g., "&Home" -> "& Home")
 function normalizeCategory(cat: string) {
   return cat
     .replace(/&Home/gi, "& Home")
@@ -74,34 +53,32 @@ export async function POST(req: NextRequest) {
 
       const catStr = p.categories ? String(p.categories).trim() : "";
       const isPromotion = /promotion/i.test(catStr) ? 1 : 0;
-
-      // NORMALIZE THE CATEGORIES BEFORE SPLITTING
       const normalizedCatStr = normalizeCategory(catStr);
       const parts = normalizedCatStr.split(",").map((s: string) => s.trim());
-      
-      let mainCategory = parts[0] || null;
-      let subCategory = parts.length > 1 ? parts[1] : null;
 
-      // SMART SWAP LOGIC
-      if (subCategory && ALLOWED_MAIN_CATEGORIES.includes(subCategory) && !ALLOWED_MAIN_CATEGORIES.includes(mainCategory || "")) {
-        const temp = mainCategory;
-        mainCategory = subCategory;
-        subCategory = temp;
-      }
+      let mainCategory = "Produce"; // Default fallback for this import
+      let subCategory = null;
 
-      if (mainCategory && !ALLOWED_MAIN_CATEGORIES.includes(mainCategory)) {
-        const foundValid = parts.find((part: string) => ALLOWED_MAIN_CATEGORIES.includes(part));
-        if (foundValid) {
-          const oldMain = mainCategory;
-          mainCategory = foundValid;
-          subCategory = oldMain; 
-        } else {
-          subCategory = mainCategory;
-          mainCategory = "Grocery Food";
+      // 1. Find the real Main Category
+      for (const part of parts) {
+        if (ALLOWED_MAIN_CATEGORIES.includes(part)) {
+          mainCategory = part;
+          break;
         }
       }
 
-      const parsedSize = parsePackageSize(String(p.title).trim());
+      // 2. Find the Sub Category (Ignore Promotions, Main Category, and anything with a dot at the end)
+      const ignoredSubs = ["Promotion", "Fresh daily offers", "Online Offers", "Weekly Offers", "Daily offers", mainCategory];
+      
+      for (const part of parts) {
+        const cleanPart = part.replace(/\.$/, ""); // Remove dots (e.g., "Produce." -> "Produce")
+        
+        // We want a real subcategory that isn't in the ignore list
+        if (!ignoredSubs.includes(cleanPart) && cleanPart !== "Offers & Promotions" && cleanPart !== "Back To School") {
+          subCategory = cleanPart;
+          break;
+        }
+      }
 
       valuesToInsert.push({
         externalId: Number(p.id),
@@ -111,8 +88,6 @@ export async function POST(req: NextRequest) {
         subCategory: subCategory,
         brand: p.brandTitle ? String(p.brandTitle).trim() : null,
         price: Number(p.finalPrice) || 0,
-        packageSize: parsedSize.size,
-        packageUnit: parsedSize.unit,
         imageUrl: p.imgSrc || p.localImgSrc || null,
         isPromotion: isPromotion,
         updatedAt: new Date().toISOString(),
@@ -120,7 +95,6 @@ export async function POST(req: NextRequest) {
       processed++;
     }
 
-    // Use SQLite Transaction for massive speed boost
     if (valuesToInsert.length > 0) {
       await db.transaction(async (tx) => {
         const chunkSize = 500;
@@ -136,8 +110,6 @@ export async function POST(req: NextRequest) {
                 subCategory: sql`excluded.sub_category`,
                 brand: sql`excluded.brand`,
                 price: sql`excluded.price`,
-                packageSize: sql`excluded.package_size`,
-                packageUnit: sql`excluded.package_unit`,
                 imageUrl: sql`excluded.image_url`,
                 isPromotion: sql`excluded.is_promotion`,
                 updatedAt: sql`excluded.updated_at`,
