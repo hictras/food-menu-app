@@ -1,4 +1,5 @@
 "use client";
+import BarcodeScanModal from "@/components/BarcodeScanModal";
 
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useLang } from "@/components/LanguageProvider";
@@ -48,6 +49,26 @@ export default function StorePage() {
   const { cart, addToCart, removeFromCart } = useCart();
 
   const [products, setProducts] = useState<Product[]>([]);
+  const [barcodeOpen, setBarcodeOpen] = useState(false);
+
+  async function handleBarcodeDetected(code: string) {
+    try {
+      const res = await fetch(`/api/store/barcode/${encodeURIComponent(code)}`);
+      const data = await res.json();
+      if (data.found) {
+        addToCart({
+          id: data.product.id,
+          title: isAr && data.product.titleAr ? data.product.titleAr : data.product.title,
+          price: data.product.price,
+          imageUrl: data.product.imageUrl,
+        });
+      } else {
+        alert(isAr ? "المنتج غير موجود في المتجر" : "Product not found in store");
+      }
+    } catch {
+      alert(isAr ? "خطأ في البحث" : "Lookup failed");
+    }
+  }
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   
@@ -232,8 +253,17 @@ export default function StorePage() {
             />
             {searchInput && <button type="button" className="search-clear" onClick={() => setSearchInput("")}>✕</button>}
           </div>
+
+          <button
+            type="button"
+            onClick={() => setBarcodeOpen(true)}
+            className="btn btn-ghost"
+            title="Scan Barcode"
+            style={{ padding: "0 12px", display: "flex", alignItems: "center", justifyContent: "center", height: 42 }}
+          >
+            📷
+          </button>
         </div>
-      </div>
 
       <div className="main-categories-desktop" style={{ flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
         {["All", ...ALLOWED_MAIN_CATEGORIES].map((cat) => (
@@ -378,6 +408,13 @@ export default function StorePage() {
           )}
         </>
       )}
+      <BarcodeScanModal
+        isOpen={barcodeOpen}
+        onClose={() => setBarcodeOpen(false)}
+        onDetected={handleBarcodeDetected}
+        isAr={isAr}
+      />
+    </div>
     </main>
   );
 }

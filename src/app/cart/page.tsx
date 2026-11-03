@@ -79,7 +79,7 @@ export default function CartPage() {
     function handleAddScannedItems(scannedItems: { title: string; price: number; quantity: number }[]) {
         scannedItems.forEach((item, index) => {
             addToCart({
-                id: `${Date.now()}-${index}-${Math.random().toString(36).substring(2, 9)}`,
+                id: Date.now() + index,
                 title: item.title,
                 price: item.price,
                 imageUrl: null,
