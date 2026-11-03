@@ -33,8 +33,13 @@ export default function ProductsAdminPage() {
 
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
-    const [query, setQuery] = useState("");
-    const [debouncedQuery] = useDebounce(query, 500);
+
+    // --- EXACT STORE PAGE SEARCH LOGIC ---
+    const [searchInput, setSearchInput] = useState("");
+    const [debouncedSearch] = useDebounce(searchInput, 500);
+    const [translatedSearch, setTranslatedSearch] = useState("");
+    // --------------------------------------
+
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
@@ -45,7 +50,8 @@ export default function ProductsAdminPage() {
     const [editValue, setEditValue] = useState<string>("");
     const [saving, setSaving] = useState(false);
 
-    // Scanner state
+    // Scanner states
+    const [searchScannerOpen, setSearchScannerOpen] = useState(false);
     const [barcodeOpen, setBarcodeOpen] = useState(false);
 
     useEffect(() => {
@@ -56,7 +62,18 @@ export default function ProductsAdminPage() {
             });
     }, [router]);
 
-    // Fetch products exactly like the store
+    // --- EXACT STORE PAGE SEARCH LOGIC ---
+    useEffect(() => {
+        const raw = debouncedSearch.trim();
+        if (raw.length < 3) {
+            setTranslatedSearch("");
+            return;
+        }
+        setTranslatedSearch(raw);
+    }, [debouncedSearch]);
+    // --------------------------------------
+
+    // Fetch products
     useEffect(() => {
         setLoading(true);
         const params = new URLSearchParams({
@@ -64,8 +81,9 @@ export default function ProductsAdminPage() {
             page: currentPage.toString(),
         });
 
-        if (debouncedQuery.trim().length >= 3) {
-            params.append("search", debouncedQuery.trim());
+        // Only search if 3+ chars (exactly like store)
+        if (translatedSearch.length >= 3) {
+            params.append("search", translatedSearch);
         }
 
         fetch(`/api/products?${params.toString()}`, { cache: "no-store" })
@@ -77,11 +95,12 @@ export default function ProductsAdminPage() {
                 setLoading(false);
             })
             .catch(() => setLoading(false));
-    }, [currentPage, debouncedQuery]);
+    }, [currentPage, translatedSearch]);
 
+    // Reset to page 1 ONLY when the 3+ letter search fires
     useEffect(() => {
         setCurrentPage(1);
-    }, [debouncedQuery]);
+    }, [translatedSearch]);
 
     async function saveEdit(id: number) {
         setSaving(true);
@@ -154,16 +173,29 @@ export default function ProductsAdminPage() {
             </p>
 
             <div className="filter-bar" style={{ marginBottom: 16 }}>
-                <div className="search-wrap" style={{ width: "100%", maxWidth: 400 }}>
-                    <span className="search-icon">🔍</span>
-                    <input
-                        type="text"
-                        className="search-input"
-                        placeholder={isAr ? "ابحث عن منتج... (3 أحرف)" : "Search products... (min 3 chars)"}
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                    />
-                    {query && <button type="button" className="search-clear" onClick={() => setQuery("")}>✕</button>}
+                <div className="search-wrap" style={{ width: "100%", maxWidth: 450, display: "flex", gap: 8 }}>
+                    <div style={{ position: "relative", flex: 1 }}>
+                        <span className="search-icon">🔍</span>
+                        <input
+                            type="text"
+                            className="search-input"
+                            placeholder={isAr ? "ابحث عن منتج... (3 أحرف)" : "Search products... (min 3 chars)"}
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
+                            style={{ paddingRight: 40 }}
+                        />
+                        {searchInput && <button type="button" className="search-clear" onClick={() => setSearchInput("")}>✕</button>}
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={() => setSearchScannerOpen(true)}
+                        className="btn btn-ghost"
+                        title="Scan Barcode"
+                        style={{ padding: "0 16px", display: "flex", alignItems: "center", justifyContent: "center", height: 42, background: "var(--surface-2)", border: "1px solid var(--line)", borderRadius: "var(--radius-sm)" }}
+                    >
+                        📷
+                    </button>
                 </div>
             </div>
 
@@ -325,13 +357,24 @@ export default function ProductsAdminPage() {
                 </div>
             )}
 
-            {/* The Scanner Modal! */}
+            {/* Search Bar Scanner */}
+            <BarcodeScanModal
+                isOpen={searchScannerOpen}
+                onClose={() => setSearchScannerOpen(false)}
+                onDetected={(code) => {
+                    setSearchInput(code);
+                    setSearchScannerOpen(false);
+                }}
+                isAr={isAr}
+            />
+
+            {/* Table Cell Scanner */}
             <BarcodeScanModal
                 isOpen={barcodeOpen}
                 onClose={() => setBarcodeOpen(false)}
                 onDetected={(code) => {
-                    setEditValue(code); // Automatically fills the input!
-                    setBarcodeOpen(false); // Closes the camera
+                    setEditValue(code);
+                    setBarcodeOpen(false);
                 }}
                 isAr={isAr}
             />

@@ -33,6 +33,7 @@ export async function GET(req: NextRequest) {
           like(sql`lower(${storeProducts.title})`, lowerSearch),
           like(storeProducts.titleAr, `%${search}%`),
           like(sql`lower(${storeProducts.sku})`, lowerSearch),
+          like(sql`lower(${storeProducts.barcode})`, lowerSearch),
           like(sql`lower(${storeProducts.brand})`, lowerSearch)
         )
       );

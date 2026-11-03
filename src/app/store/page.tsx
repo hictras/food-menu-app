@@ -69,17 +69,15 @@ export default function StorePage() {
   const observerTarget = useRef<HTMLDivElement>(null);
 
   async function handleBarcodeDetected(code: string) {
+    // 1. Drop the scanned barcode into the search box
+    setSearchInput(code);
+    
     try {
+      // 2. Check if it exists in the DB
       const res = await fetch(`/api/store/barcode/${encodeURIComponent(code)}`);
       const data = await res.json();
-      if (data.found) {
-        addToCart({
-          id: data.product.id,
-          title: isAr && data.product.titleAr ? data.product.titleAr : data.product.title,
-          price: data.product.price,
-          imageUrl: data.product.imageUrl,
-        });
-      } else {
+      
+      if (!data.found) {
         alert(isAr ? "المنتج غير موجود في المتجر" : "Product not found in store");
       }
     } catch {
