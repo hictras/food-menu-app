@@ -9,9 +9,11 @@ export async function GET(req: NextRequest) {
     const db = getDb();
     const { searchParams } = new URL(req.url);
     
+    const isAdminQuery = searchParams.get("admin") === "true";
     const page = parseInt(searchParams.get("page") || "1");
-    const limit = page === 1 ? 8 : 24;
-    const offset = page === 1 ? 0 : 8 + (page - 2) * 24;
+    
+    const limit = isAdminQuery ? 10000 : (page === 1 ? 8 : 24);
+    const offset = isAdminQuery ? 0 : (page === 1 ? 0 : 8 + (page - 2) * 24);
     
     const category = searchParams.get("category");
     const subCategory = searchParams.get("subCategory");
@@ -26,17 +28,26 @@ export async function GET(req: NextRequest) {
     if (subCategory && subCategory !== "All") {
       conditions.push(eq(storeProducts.subCategory, subCategory));
     }
-    if (search && search.length > 0) {
-      const lowerSearch = `%${search.toLowerCase()}%`;
-      conditions.push(
-        or(
-          like(sql`lower(${storeProducts.title})`, lowerSearch),
-          like(storeProducts.titleAr, `%${search}%`),
-          like(sql`lower(${storeProducts.sku})`, lowerSearch),
-          like(sql`lower(${storeProducts.barcode})`, lowerSearch),
-          like(sql`lower(${storeProducts.brand})`, lowerSearch)
-        )
-      );
+    
+    // --- SMART SEARCH LOGIC ---
+    if (search && search.length >= 3) {
+      // 1. Split the search by spaces (e.g., "milk shake" -> ["milk", "shake"])
+      const words = search.toLowerCase().split(/\s+/).filter(Boolean);
+      
+      // 2. For EVERY word, the title must match it somewhere (AND logic)
+      const wordConditions = words.map(word => {
+        const lowerWord = `%${word}%`;
+        return or(
+          like(sql`lower(${storeProducts.title})`, lowerWord),
+          like(storeProducts.titleAr, `%${word}%`),
+          like(sql`lower(${storeProducts.sku})`, lowerWord),
+          like(sql`lower(${storeProducts.barcode})`, lowerWord),
+          like(sql`lower(${storeProducts.brand})`, lowerWord)
+        );
+      });
+      
+      // Push all the word conditions into the main query
+      conditions.push(and(...wordConditions));
     }
 
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
@@ -58,7 +69,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       products,
       totalCount,
-      totalPages: Math.ceil((totalCount - 8) / 24) + 1,
+      totalPages: isAdminQuery ? 1 : Math.ceil((totalCount - 8) / 24) + 1,
     }, {
       headers: { "Cache-Control": "no-store, max-age=0" }
     });
