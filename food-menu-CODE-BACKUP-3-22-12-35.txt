@@ -1,5 +1,5 @@
 === PROJECT BACKUP ===
-Date: Mon Nov  2 22:27:39 MEST 2026
+Date: Tue Nov  3 12:34:19 MEST 2026
 
 
 --- FILE: public/sw.js ---
@@ -1182,7 +1182,7 @@ export async function POST(req: NextRequest) {
 --- END FILE: src/app/api/auth/verify-phone/route.ts ---
 
 --- FILE: src/app/api/auth/welcome/route.ts ---
-import { NextResponse } from "next/server";
+import { NextResponse, connection } from "next/server";
 import { cookies } from "next/headers";
 import { getDb } from "@/db";
 import { pushSubscriptions } from "@/db/schema";
@@ -1191,6 +1191,7 @@ import { eq } from "drizzle-orm";
 const VIEWER_PHONE_COOKIE = "viewer_phone";
 
 export async function GET() {
+  await connection();
   try {
     const store = await cookies();
     const phone = (store.get(VIEWER_PHONE_COOKIE)?.value || "").trim();
@@ -1547,12 +1548,13 @@ export async function GET() {
 --- END FILE: src/app/api/inbox/admin/route.ts ---
 
 --- FILE: src/app/api/leaderboard/route.ts ---
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, connection } from "next/server";
 import { getDb } from "@/db";
 import { gameStats } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
+  await connection();
   try {
     const game = req.nextUrl.searchParams.get("game") || "catch";
 
@@ -2490,12 +2492,13 @@ export async function POST(req: NextRequest) {
 --- END FILE: src/app/api/products/import/route.ts ---
 
 --- FILE: src/app/api/products/route.ts ---
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, connection } from "next/server";
 import { getDb } from "@/db";
 import { storeProducts } from "@/db/schema";
 import { eq, like, or, and, desc, sql } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
+  await connection();
   try {
     const db = getDb();
     const { searchParams } = new URL(req.url);
@@ -2509,7 +2512,6 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get("search")?.trim();
     const random = searchParams.get("random") === "true";
 
-    // Build conditions
     const conditions = [];
     
     if (category && category !== "All") {
@@ -2532,13 +2534,11 @@ export async function GET(req: NextRequest) {
 
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-    // Get total count
     const countResult = await db.select({ count: sql<number>`count(*)` })
       .from(storeProducts)
       .where(whereClause);
     const totalCount = countResult[0]?.count || 0;
 
-    // Get products with order by included in the chain
     const orderByClause = random ? sql`RANDOM()` : desc(storeProducts.id);
     
     const products = await db.select()
@@ -2560,8 +2560,7 @@ export async function GET(req: NextRequest) {
     console.error("Failed to load products:", err);
     return NextResponse.json({ error: "Failed to load products" }, { status: 500 });
   }
-}
---- END FILE: src/app/api/products/route.ts ---
+}--- END FILE: src/app/api/products/route.ts ---
 
 --- FILE: src/app/api/push/presets/route.ts ---
 import { NextRequest, NextResponse } from "next/server";
@@ -3439,12 +3438,13 @@ export async function POST(req: NextRequest) {
 --- END FILE: src/app/api/recipes/bulk/route.ts ---
 
 --- FILE: src/app/api/recipes/likes/route.ts ---
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, connection } from "next/server";
 import { getDb } from "@/db";
 import { recipeLikes } from "@/db/schema";
 import { inArray } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
+  await connection();
   try {
     const idsParam = req.nextUrl.searchParams.get("ids") || "";
     const visitorId = (req.nextUrl.searchParams.get("visitorId") || "").trim();
@@ -3965,6 +3965,60 @@ export async function DELETE(
 }
 --- END FILE: src/app/api/reviews/day/[date]/route.ts ---
 
+--- FILE: src/app/api/scan-bill/route.ts ---
+import { NextResponse } from "next/server";
+import { GoogleGenAI } from "@google/genai";
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    const base64Image = body.image;
+
+    if (!process.env.GEMINI_API_KEY) {
+      throw new Error("GEMINI_API_KEY is missing in .env.local");
+    }
+
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    const cleanBase64 = base64Image.replace(/^data:image\/\w+;base64,/, "");
+
+    const prompt = `
+      You are an expert receipt scanner. Read the receipt image and extract all items.
+      Return ONLY a valid JSON array. Do not include markdown formatting or backticks.
+      Format: [{"name": "Item Name", "quantity": 1, "price": 10.50}]
+
+      IMPORTANT CURRENCY INSTRUCTIONS:
+      1. Look at the Total amount at the bottom of the receipt.
+      2. If the item prices are over 500, they are in Lebanese Lira (LBP). You must convert the final item prices to USD.
+      3. If the TOTAL amount on the receipt is below 300,000, divide the item prices by 1,500.
+      4. If the TOTAL amount on the receipt is above 300,000, divide the item prices by 90,000.
+      5. If the total is already in USD (e.g., $40.00), just return the USD prices directly.
+      6. Round the final USD price to 2 decimal places.
+    `;
+
+    // Using the Pro model for maximum accuracy
+    const interaction = await ai.interactions.create({
+      model: "gemini-3.8-flash",
+      input: [
+        { type: "text", text: prompt },
+        {
+          type: "image",
+          data: cleanBase64,
+          mime_type: "image/jpeg"
+        }
+      ]
+    });
+
+    const responseText = interaction.output_text || "";
+    const cleanedJson = responseText.replace(/```json/g, "").replace(/```/g, "").trim();
+    
+    return NextResponse.json(JSON.parse(cleanedJson));
+  } catch (error: any) {
+    console.error("Scan Error:", error);
+    return NextResponse.json({ error: error.message || "Failed to scan" }, { status: 500 });
+  }
+}
+--- END FILE: src/app/api/scan-bill/route.ts ---
+
 --- FILE: src/app/api/settings/route.ts ---
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/db";
@@ -4231,12 +4285,13 @@ export async function POST(req: NextRequest) {
 --- END FILE: src/app/api/store/recipe-cost/route.ts ---
 
 --- FILE: src/app/api/store/search-ingredient/route.ts ---
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, connection } from "next/server";
 import { getDb } from "@/db";
 import { storeProducts } from "@/db/schema";
 import { like, or, sql } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
+  await connection();
   try {
     const search = req.nextUrl.searchParams.get("q")?.trim();
     if (!search || search.length < 2) return NextResponse.json({ results: [] });
@@ -5670,14 +5725,17 @@ export default function CalendarPage() {
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { scanBillImage } from "@/lib/ocr";
 import { useCart } from "@/components/CartProvider";
 import { useLang } from "@/components/LanguageProvider";
 
 export default function CartPage() {
+  const [scanning, setScanning] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { lang } = useLang();
   const isAr = lang === "ar";
-  const { cart, updateQuantity, removeFromCart, editCartItem, cartTotal, clearCart } = useCart();
+  const { cart, updateQuantity, removeFromCart, editCartItem, cartTotal, clearCart, addToCart } = useCart();
 
   const [editId, setEditId] = useState<number | null>(null);
   const [editTitle, setEditTitle] = useState("");
@@ -5741,6 +5799,42 @@ export default function CartPage() {
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   }
 
+  async function handleScan(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setScanning(true);
+    try {
+      const items = await scanBillImage(file);
+       
+      if (!items || items.length === 0) {
+        alert(isAr ? "لم يتم العثور على منتجات. جرب صورة أوضح." : "No items detected. Try a clearer image.");
+        return;
+      }
+       
+      const cartItems = items.map((item, index) => ({
+        id: `${Date.now()}-${index}-${Math.random().toString(36).substring(2, 9)}`,
+        title: item.name,
+        price: item.price,
+        imageUrl: null
+      }));
+
+      cartItems.forEach((cartItem) => {
+        addToCart(cartItem);
+      });
+       
+      alert(isAr ? `تمت إضافة ${items.length} منتج` : `Added ${items.length} items to cart!`);
+    } catch (err: any) {
+      console.error("Scan error:", err);
+      alert("Error: " + (err?.message || String(err)));
+    } finally {
+      setScanning(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  }
+
   function generateTextList() {
     const origin = typeof window !== "undefined" ? window.location.origin : "";
     const dateStr = new Date().toLocaleDateString(isAr ? "ar-LB" : "en-US", { weekday: "long", year: "numeric", month: "short", day: "numeric" });
@@ -5758,6 +5852,7 @@ export default function CartPage() {
 
   return (
     <main className="container" style={{ paddingTop: 40, paddingBottom: 100, maxWidth: 800 }}>
+      <input type="file" accept="image/*" ref={fileInputRef} onChange={handleScan} style={{ display: "none" }} />
       <style>{`
         @media print {
           .no-print { display: none !important; }
@@ -5771,15 +5866,22 @@ export default function CartPage() {
         }
       `}</style>
 
-      <div className="no-print" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+      <div className="no-print" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 10 }}>
         <div className="page-head" style={{ margin: 0 }}>
           <h1 style={{ margin: 0 }}>{isAr ? "سلة المشتريات" : "Shopping Cart"}</h1>
         </div>
-        {cart.length > 0 && (
-          <button onClick={clearCart} className="btn btn-danger" style={{ fontSize: 12 }}>
-            🗑 {isAr ? "مسح السلة" : "Clear Cart"}
+
+        <div style={{ display: "flex", gap: 8 }}>
+          <button onClick={() => fileInputRef.current?.click()} className="btn btn-primary" style={{ fontSize: 13, padding: "8px 16px" }} disabled={scanning}>
+            {scanning ? "⏳ Scanning..." : "📷 Scan Bill"}
           </button>
-        )}
+
+          {cart.length > 0 && (
+            <button onClick={clearCart} className="btn btn-danger" style={{ fontSize: 13, padding: "8px 16px" }}>
+              🗑 {isAr ? "مسح السلة" : "Clear Cart"}
+            </button>
+          )}
+        </div>
       </div>
 
       {cart.length === 0 ? (
@@ -5915,8 +6017,7 @@ export default function CartPage() {
       )}
     </main>
   );
-}
---- END FILE: src/app/cart/page.tsx ---
+}--- END FILE: src/app/cart/page.tsx ---
 
 --- FILE: src/app/dictionary-admin/page.tsx ---
 "use client";
@@ -16488,7 +16589,8 @@ export default function StoreWelcomePage() {
 --- FILE: src/app/store/page.tsx ---
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
+import { scanBillImage } from "@/lib/ocr";
 import { useLang } from "@/components/LanguageProvider";
 import { useCart } from "@/components/CartProvider";
 import { useDebounce } from "use-debounce";
@@ -16504,9 +16606,9 @@ type Product = {
   brand: string | null;
   price: number;
   imageUrl: string | null;
-  isPromotion: number | null;
   packageSize: number | null;
   packageUnit: string | null;
+  isPromotion: number | null;
 };
 
 const ALLOWED_MAIN_CATEGORIES = [
@@ -16518,28 +16620,16 @@ const ALLOWED_MAIN_CATEGORIES = [
 ];
 
 const MAIN_CATEGORY_TRANSLATIONS: Record<string, string> = {
-  "Offers & Promotions": "العروض والترويجات",
-  "Meat & Poultry": "لحوم ودواجن",
-  "Fresh Fish": "سمك طازج",
-  "Back To School": "العودة إلى المدرسة",
-  "Produce": "خضار وفواكه",
-  "Dairy & Eggs": "ألبان وبيض",
-  "Bakery": "مخبوزات",
-  "Ready To Eat": "أكل جاهز",
-  "Grocery Food": "بقالة",
-  "Frozen Food": "مأكولات مجمدة",
-  "Snack & Sweet": "وجبات خفيفة وحلويات",
-  "Beverages": "مشروبات",
-  "Coffee & Tea": "قهوة وشاي",
-  "Organic & Healthy": "عضوي وصحي",
-  "Toys": "ألعاب",
-  "Baby Care": "عناية بالطفل",
-  "Home Care": "عناية بالمنزل",
-  "Personal Care": "عناية شخصية",
-  "Pet Care": "عناية بالحيوانات",
-  "Tobacco": "دخان",
-  "Kitchen Accessories": "أدوات المطبخ",
-  "Phone & Home electronics": "هواتف وإلكترونيات"
+  "Offers & Promotions": "العروض والترويجات", "Meat & Poultry": "لحوم ودواجن",
+  "Fresh Fish": "سمك طازج", "Back To School": "العودة إلى المدرسة",
+  "Produce": "خضار وفواكه", "Dairy & Eggs": "ألبان وبيض",
+  "Bakery": "مخبوزات", "Ready To Eat": "أكل جاهز", "Grocery Food": "بقالة",
+  "Frozen Food": "مأكولات مجمدة", "Snack & Sweet": "وجبات خفيفة وحلويات",
+  "Beverages": "مشروبات", "Coffee & Tea": "قهوة وشاي",
+  "Organic & Healthy": "عضوي وصحي", "Toys": "ألعاب", "Baby Care": "عناية بالطفل",
+  "Home Care": "عناية بالمنزل", "Personal Care": "عناية شخصية",
+  "Pet Care": "عناية بالحيوانات", "Tobacco": "دخان",
+  "Kitchen Accessories": "أدوات المطبخ", "Phone & Home electronics": "هواتف وإلكترونيات"
 };
 
 export default function StorePage() {
@@ -16558,12 +16648,29 @@ export default function StorePage() {
 
   const [activeMainCategory, setActiveMainCategory] = useState<string>("All");
   const [activeSubCategory, setActiveSubCategory] = useState<string>("All");
+  
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch] = useDebounce(searchInput, 500);
+  const [dictionary, setDictionary] = useState<Record<string, string>>({});
+  const [translatedSearch, setTranslatedSearch] = useState("");
 
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const observerTarget = useRef<HTMLDivElement>(null);
+  const scanInputRef = useRef<HTMLInputElement>(null);
+  const [scanningSearch, setScanningSearch] = useState(false);
 
+
+  // Load dictionary
+  useEffect(() => {
+    fetch("/api/dictionary").then(res => res.json()).then(data => {
+      if (Array.isArray(data)) {
+        const dict: Record<string, string> = {};
+        data.forEach((item: any) => { if (item.ar && item.en) dict[item.ar] = item.en; });
+        setDictionary(dict);
+      }
+    }).catch(() => {});
+  }, []);
+
+  // Load settings (Infinite scroll toggle)
   useEffect(() => {
     fetch("/api/settings")
       .then((res) => res.json())
@@ -16573,6 +16680,37 @@ export default function StorePage() {
       .catch(() => {});
   }, []);
 
+  // Translate search
+  useEffect(() => {
+    const raw = debouncedSearch.trim();
+    if (raw.length < 3) { setTranslatedSearch(raw); return; }
+
+    let enMatches = [];
+    for (const [arKey, enVal] of Object.entries(dictionary)) {
+      if (arKey.startsWith(raw)) enMatches.push(enVal);
+    }
+    setTranslatedSearch(enMatches.length > 0 ? enMatches[0] : raw);
+  }, [debouncedSearch, dictionary]);
+
+  async function handleSearchScan(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setScanningSearch(true);
+    try {
+      const items = await scanBillImage(file);
+      if (items.length > 0) {
+        setSearchInput(items[0].name);
+      } else {
+        alert("No text found in image.");
+      }
+    } catch (err) {
+      alert("Failed to scan.");
+    } finally {
+      setScanningSearch(false);
+      if (scanInputRef.current) scanInputRef.current.value = "";
+    }
+  }
+
   const fetchProducts = useCallback((page: number, append: boolean) => {
     if (append) setLoadingMore(true);
     else setLoading(true);
@@ -16580,8 +16718,9 @@ export default function StorePage() {
     const params = new URLSearchParams({ page: page.toString() });
     if (activeMainCategory !== "All") params.append("category", activeMainCategory);
     if (activeSubCategory !== "All") params.append("subCategory", activeSubCategory);
-    if (debouncedSearch.trim().length >= 3) params.append("search", debouncedSearch.trim());
     
+    // Only search if 3+ chars
+    if (translatedSearch.length >= 3) params.append("search", translatedSearch);
     if (page === 1) params.append("random", "true");
 
     fetch(`/api/products?${params.toString()}`)
@@ -16607,13 +16746,15 @@ export default function StorePage() {
         setLoading(false);
         setLoadingMore(false);
       });
-  }, [activeMainCategory, activeSubCategory, debouncedSearch]);
+  }, [activeMainCategory, activeSubCategory, translatedSearch]);
 
+  // Reset on filter/search change
   useEffect(() => {
     setCurrentPage(1);
     fetchProducts(1, false);
   }, [fetchProducts]);
 
+  // Infinite scroll observer
   useEffect(() => {
     if (!infiniteScrollEnabled) return;
     
@@ -16632,21 +16773,13 @@ export default function StorePage() {
     return () => observer.disconnect();
   }, [infiniteScrollEnabled, loading, loadingMore, currentPage, totalPages, fetchProducts]);
 
-  function handleMainCategoryClick(cat: string) {
-    setActiveMainCategory(cat);
-    setActiveSubCategory("All");
-  }
-
-  function handleSubCategoryClick(sub: string) {
-    setActiveSubCategory(sub);
-  }
-
   function goToPage(page: number) {
     setCurrentPage(page);
     fetchProducts(page, false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  // Available subcategories based on the current main category
   const subCategories: Record<string, string[]> = {
     "Offers & Promotions": ["Weekly Offers", "Daily offers", "Fresh daily offers", "Online Offers"],
     "Meat & Poultry": ["Cold Cuts", "Meat", "Chicken"],
@@ -16666,6 +16799,7 @@ export default function StorePage() {
   };
 
   const currentSubs = subCategories[activeMainCategory] || [];
+  const searchTooShort = searchInput.trim().length > 0 && searchInput.trim().length < 3;
 
   return (
     <main className="container" style={{ paddingTop: 40, paddingBottom: 100 }}>
@@ -16688,19 +16822,38 @@ export default function StorePage() {
         {isAr 
           ? `عرض ${products.length} من ${totalCount} منتج` 
           : `Showing ${products.length} of ${totalCount} products`}
+        {searchTooShort && (
+          <span style={{ marginInlineStart: 8, color: "var(--accent)" }}>
+            {isAr ? "— اكتب 3 أحرف على الأقل للبحث" : "— type at least 3 characters to search"}
+          </span>
+        )}
       </p>
 
       <div className="filter-bar" style={{ marginBottom: 16 }}>
-        <div className="search-wrap" style={{ width: "100%", maxWidth: 400 }}>
-          <span className="search-icon">🔍</span>
-          <input
-            type="text"
-            className="search-input"
-            placeholder={isAr ? "ابحث عن منتج... (3 أحرف على الأقل)" : "Search products... (min 3 chars)"}
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-          />
-          {searchInput && <button type="button" className="search-clear" onClick={() => setSearchInput("")}>✕</button>}
+        <div className="search-wrap" style={{ width: "100%", maxWidth: 450, display: "flex", gap: 8 }}>
+          <div style={{ position: "relative", flex: 1 }}>
+            <span className="search-icon">🔍</span>
+            <input
+              type="text"
+              className="search-input"
+              placeholder={isAr ? "ابحث عن منتج... (3 أحرف على الأقل)" : "Search products... (min 3 chars)"}
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              style={{ paddingRight: 40 }}
+            />
+            {searchInput && <button type="button" className="search-clear" onClick={() => setSearchInput("")}>✕</button>}
+          </div>
+          <input type="file" accept="image/*" capture="environment" ref={scanInputRef} onChange={handleSearchScan} style={{ display: "none" }} />
+          <button 
+            type="button" 
+            onClick={() => scanInputRef.current?.click()} 
+            className="btn btn-ghost" 
+            disabled={scanningSearch}
+            title="Scan with Camera"
+            style={{ padding: "0 12px", display: "flex", alignItems: "center", justifyContent: "center" }}
+          >
+            {scanningSearch ? "⏳" : "📷"}
+          </button>
         </div>
       </div>
 
@@ -16708,7 +16861,7 @@ export default function StorePage() {
         {["All", ...ALLOWED_MAIN_CATEGORIES].map((cat) => (
           <button
             key={cat}
-            onClick={() => handleMainCategoryClick(cat)}
+            onClick={() => { setActiveMainCategory(cat); setActiveSubCategory("All"); }}
             className={`chip ${activeMainCategory === cat ? "active" : ""}`}
             style={{ fontSize: 14, padding: "8px 16px", cursor: "pointer", fontWeight: activeMainCategory === cat ? 700 : 500 }}
           >
@@ -16724,7 +16877,7 @@ export default function StorePage() {
         <select
           className="filter-select"
           value={activeMainCategory}
-          onChange={(e) => handleMainCategoryClick(e.target.value)}
+          onChange={(e) => { setActiveMainCategory(e.target.value); setActiveSubCategory("All"); }}
           style={{ width: "100%", padding: "10px 12px", fontSize: 14, borderRadius: 8, background: "var(--surface-solid)", border: "1px solid var(--line)", color: "var(--ink)" }}
         >
           {["All", ...ALLOWED_MAIN_CATEGORIES].map((cat) => (
@@ -16740,7 +16893,7 @@ export default function StorePage() {
           {["All", ...currentSubs].map((sub) => (
             <button
               key={sub}
-              onClick={() => handleSubCategoryClick(sub)}
+              onClick={() => setActiveSubCategory(sub)}
               className={`chip ${activeSubCategory === sub ? "active" : ""}`}
               style={{ fontSize: 12, padding: "6px 14px", cursor: "pointer", flexShrink: 0 }}
             >
@@ -16755,9 +16908,6 @@ export default function StorePage() {
           <div style={{ width: 48, height: 48, border: "4px solid var(--line-strong)", borderTopColor: "var(--accent)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
           <div style={{ textAlign: "center" }}>
             <h3 style={{ margin: "0 0 8px 0", fontSize: 18, color: "var(--ink)" }}>{isAr ? "جاري تحميل المنتجات..." : "Loading products..."}</h3>
-            <p style={{ margin: 0, fontSize: 13, color: "var(--muted)" }}>
-              {isAr ? "يتم تحميل الصفحة المطلوبة فقط." : "Loading only the requested page."}
-            </p>
           </div>
         </div>
       ) : products.length === 0 ? (
@@ -16772,32 +16922,24 @@ export default function StorePage() {
               const cartItem = cart.find((i) => i.id === p.id);
               const displayCat = p.brand || p.subCategory || p.category || p.sku;
               const displayTitle = isAr && p.titleAr ? p.titleAr : p.title;
+              const pkgLabel = p.packageSize != null && p.packageUnit ? `${p.packageSize}${p.packageUnit}` : null;
 
               return (
-                <div 
-                  key={p.id} 
-                  className="product-card"
-                  onClick={() => setSelectedProduct(p)}
-                  style={{ background: "var(--surface-solid)", border: "1px solid var(--line)", borderRadius: 16, overflow: "hidden", display: "flex", flexDirection: "column", boxShadow: "0 4px 12px rgba(0,0,0,0.2)", cursor: "pointer", transition: "transform 0.2s, border-color 0.2s" }}
-                >
-                  
+                <div key={p.id} className="product-card" style={{ background: "var(--surface-solid)", border: "1px solid var(--line)", borderRadius: 16, overflow: "hidden", display: "flex", flexDirection: "column", boxShadow: "0 4px 12px rgba(0,0,0,0.2)" }}>
                   <div style={{ width: "100%", aspectRatio: "1/1", background: "var(--surface-2)", position: "relative" }}>
                     {p.imageUrl ? (
                       <img src={p.imageUrl} alt={displayTitle} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
                     ) : (
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", fontSize: 32, opacity: 0.3 }}>🛒</div>
                     )}
-
                     {p.isPromotion === 1 && (
-                      <div style={{ position: "absolute", top: 8, left: 8, background: "#61d509", color: "#000", padding: "4px 8px", borderRadius: 6, fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", zIndex: 3, boxShadow: "0 2px 6px rgba(0,0,0,0.3)" }}>
+                      <div style={{ position: "absolute", top: 8, left: 8, background: "#61d509", color: "#000", padding: "4px 8px", borderRadius: 6, fontSize: 10, fontWeight: 800, textTransform: "uppercase", zIndex: 3, boxShadow: "0 2px 6px rgba(0,0,0,0.3)" }}>
                         {isAr ? "عرض" : "Promo"}
                       </div>
                     )}
-
-                    {/* NEW: Package Size Badge */}
-                    {p.packageSize && p.packageUnit && (
-                      <div style={{ position: "absolute", bottom: 8, left: 8, background: "rgba(0,0,0,0.7)", color: "white", padding: "2px 6px", borderRadius: 4, fontSize: 10, fontWeight: 700, zIndex: 3 }}>
-                        {p.packageSize}{p.packageUnit}
+                    {pkgLabel && (
+                      <div style={{ position: "absolute", bottom: 8, left: 8, background: "rgba(0,0,0,0.75)", color: "#fff", padding: "3px 8px", borderRadius: 6, fontSize: 11, fontWeight: 700, zIndex: 2, pointerEvents: "none" }}>
+                        {pkgLabel}
                       </div>
                     )}
                   </div>
@@ -16807,8 +16949,7 @@ export default function StorePage() {
                       <div style={{ fontSize: 11, color: "var(--muted)", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", marginBottom: 6 }}>
                         {displayCat}
                       </div>
-                      
-                      <h3 className="product-title" style={{ margin: 0, fontSize: 16, fontWeight: 700, fontFamily: "var(--font-body)", color: "var(--ink)", lineHeight: 1.35, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden", transition: "color 0.2s" }}>
+                      <h3 className="product-title" style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "var(--ink)", lineHeight: 1.35, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden", transition: "color 0.2s" }}>
                         {displayTitle}
                       </h3>
                     </div>
@@ -16820,12 +16961,12 @@ export default function StorePage() {
 
                       {cartItem ? (
                         <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--accent-soft)", borderRadius: 8, padding: "2px 4px" }}>
-                          <button onClick={(e) => { e.stopPropagation(); removeFromCart(p.id); }} style={{ background: "none", border: "none", color: "var(--accent)", fontSize: 16, cursor: "pointer", width: 20 }}>-</button>
+                          <button onClick={() => removeFromCart(p.id)} style={{ background: "none", border: "none", color: "var(--accent)", fontSize: 16, cursor: "pointer", width: 20 }}>-</button>
                           <span style={{ fontSize: 13, fontWeight: 700, color: "var(--accent)" }}>{cartItem.quantity}</span>
-                          <button onClick={(e) => { e.stopPropagation(); addToCart({ id: p.id, title: displayTitle, price: p.price, imageUrl: p.imageUrl }); }} style={{ background: "none", border: "none", color: "var(--accent)", fontSize: 16, cursor: "pointer", width: 20 }}>+</button>
+                          <button onClick={() => addToCart({ id: p.id, title: displayTitle, price: p.price, imageUrl: p.imageUrl })} style={{ background: "none", border: "none", color: "var(--accent)", fontSize: 16, cursor: "pointer", width: 20 }}>+</button>
                         </div>
                       ) : (
-                        <button onClick={(e) => { e.stopPropagation(); addToCart({ id: p.id, title: displayTitle, price: p.price, imageUrl: p.imageUrl }); }} style={{ background: "var(--surface-2)", border: "1px solid var(--line)", color: "var(--ink)", width: 30, height: 30, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, cursor: "pointer" }}>
+                        <button onClick={() => addToCart({ id: p.id, title: displayTitle, price: p.price, imageUrl: p.imageUrl })} style={{ background: "var(--surface-2)", border: "1px solid var(--line)", color: "var(--ink)", width: 30, height: 30, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, cursor: "pointer" }}>
                           +
                         </button>
                       )}
@@ -16859,65 +17000,9 @@ export default function StorePage() {
           )}
         </>
       )}
-
-      {selectedProduct && (
-        <div onClick={() => setSelectedProduct(null)} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, animation: "fadeIn 0.2s ease-out" }}>
-          <div onClick={(e) => e.stopPropagation()} style={{ background: "var(--surface-solid)", border: "1px solid var(--line)", borderRadius: 24, maxWidth: 500, width: "100%", maxHeight: "90vh", overflowY: "auto", display: "flex", flexDirection: "column", boxShadow: "0 24px 48px rgba(0,0,0,0.5)", position: "relative" }}>
-            <button onClick={() => setSelectedProduct(null)} style={{ position: "absolute", top: 16, right: 16, zIndex: 10, background: "rgba(0,0,0,0.5)", border: "none", color: "white", width: 32, height: 32, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, cursor: "pointer", backdropFilter: "blur(4px)" }}>✕</button>
-
-            <div style={{ width: "100%", aspectRatio: "1/1", background: "var(--surface-2)", position: "relative", borderTopLeftRadius: 24, borderTopRightRadius: 24, overflow: "hidden" }}>
-              {selectedProduct.imageUrl ? (
-                <img src={selectedProduct.imageUrl} alt={selectedProduct.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              ) : (
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", fontSize: 64, opacity: 0.3 }}>🛒</div>
-              )}
-            </div>
-
-            <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 16 }}>
-              <div>
-                <div style={{ fontSize: 12, color: "var(--accent)", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", marginBottom: 8 }}>
-                  {selectedProduct.brand || selectedProduct.category || selectedProduct.sku}
-                </div>
-                <h2 style={{ margin: 0, fontSize: 24, fontWeight: 700, color: "var(--ink)", lineHeight: 1.2 }}>
-                  {isAr && selectedProduct.titleAr ? selectedProduct.titleAr : selectedProduct.title}
-                </h2>
-                {selectedProduct.packageSize && selectedProduct.packageUnit && (
-                  <div style={{ fontSize: 14, color: "var(--muted)", marginTop: 4 }}>
-                    {selectedProduct.packageSize} {selectedProduct.packageUnit}
-                  </div>
-                )}
-              </div>
-
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8, paddingTop: 16, borderTop: "1px solid var(--line)" }}>
-                <span style={{ fontSize: 24, fontWeight: 800, color: "var(--olive)" }}>
-                  ${selectedProduct.price.toFixed(2)}
-                </span>
-
-                {(() => {
-                  const cartItem = cart.find((i) => i.id === selectedProduct.id);
-                  const displayTitle = isAr && selectedProduct.titleAr ? selectedProduct.titleAr : selectedProduct.title;
-                  
-                  return cartItem ? (
-                    <div style={{ display: "flex", alignItems: "center", gap: 12, background: "var(--accent-soft)", borderRadius: 12, padding: "8px 12px" }}>
-                      <button onClick={() => removeFromCart(selectedProduct.id)} style={{ background: "none", border: "none", color: "var(--accent)", fontSize: 20, cursor: "pointer" }}>-</button>
-                      <span style={{ fontSize: 18, fontWeight: 700, color: "var(--accent)", minWidth: 20, textAlign: "center" }}>{cartItem.quantity}</span>
-                      <button onClick={() => addToCart({ id: selectedProduct.id, title: displayTitle, price: selectedProduct.price, imageUrl: selectedProduct.imageUrl })} style={{ background: "none", border: "none", color: "var(--accent)", fontSize: 20, cursor: "pointer" }}>+</button>
-                    </div>
-                  ) : (
-                    <button onClick={() => addToCart({ id: selectedProduct.id, title: displayTitle, price: selectedProduct.price, imageUrl: selectedProduct.imageUrl })} style={{ background: "var(--accent)", color: "white", border: "none", padding: "12px 24px", borderRadius: 12, fontSize: 16, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
-                      <span>+</span> {isAr ? "أضف للسلة" : "Add to List"}
-                    </button>
-                  );
-                })()}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </main>
   );
-}
---- END FILE: src/app/store/page.tsx ---
+}--- END FILE: src/app/store/page.tsx ---
 
 --- FILE: src/app/test-upload/page.tsx ---
 "use client";
@@ -22517,8 +22602,6 @@ export const recipes = sqliteTable("recipes", {
   howToServeAr: text("how_to_serve_ar"),
   dietaryTags: text("dietary_tags"),
   imageUrl: text("image_url"),
-  packageSize: real("package_size"),
-  packageUnit: text("package_unit"),
   image1Url: text("image_1_url"),
   image2Url: text("image_2_url"),
   useImage2: integer("use_image_2", { mode: "boolean" }).default(false),
@@ -22721,7 +22804,7 @@ export const storeProducts = sqliteTable("store_products", {
   imageUrl: text("image_url"),
   packageSize: real("package_size"),
   packageUnit: text("package_unit"),
-  isPromotion: integer("is_promotion").default(0),
+  isPromotion: integer("is_promotion").default(0), 
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
 });
@@ -24249,6 +24332,548 @@ export function pick(
 }
 --- END FILE: src/lib/i18n.ts ---
 
+--- FILE: src/lib/ocr.ts ---
+
+import * as Tesseract from "tesseract.js";
+
+export interface OCRItem {
+    name: string;
+    quantity: number;
+    price: number;
+}
+
+export interface OCRResult {
+    items: OCRItem[];
+    rawText: string;
+    currency: "USD" | "LBP" | "MIXED" | "UNKNOWN";
+    itemCurrency: "USD" | "LBP" | "UNKNOWN";
+    receiptTotal: number | null;
+    receiptTotalUSD: number | null;
+    receiptTotalLBP: number | null;
+    exchangeRate: number;
+    warnings: string[];
+    confidence: number;
+}
+
+const DEFAULT_EXCHANGE_RATE = 90000;
+
+// ==================================================
+// IMAGE PREPROCESSING: TWO IMAGE VARIANTS
+// ==================================================
+
+async function prepareImages(file: File): Promise<string[]> {
+    return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+
+        img.onload = () => {
+            try {
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
+
+                if (!ctx) throw new Error("Canvas unavailable");
+
+                const scale = Math.min(3, Math.max(1, 2400 / img.width));
+
+                canvas.width = Math.round(img.width * scale);
+                canvas.height = Math.round(img.height * scale);
+
+                ctx.filter = "grayscale(1) contrast(1.5) brightness(1.1)";
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                const normal = canvas.toDataURL("image/jpeg", 0.96);
+
+                // Second variant: black and white threshold.
+                const pixels = ctx.getImageData(
+                    0, 0, canvas.width, canvas.height
+                );
+
+                const data = pixels.data;
+
+                for (let i = 0; i < data.length; i += 4) {
+                    const gray =
+                        0.299 * data[i] +
+                        0.587 * data[i + 1] +
+                        0.114 * data[i + 2];
+
+                    const value = gray > 155 ? 255 : 0;
+
+                    data[i] = value;
+                    data[i + 1] = value;
+                    data[i + 2] = value;
+                }
+
+                ctx.putImageData(pixels, 0, 0);
+
+                const threshold = canvas.toDataURL("image/jpeg", 0.96);
+
+                resolve([normal, threshold]);
+
+            } catch (error) {
+                reject(error);
+            } finally {
+                URL.revokeObjectURL(url);
+            }
+        };
+
+        img.onerror = () => {
+            URL.revokeObjectURL(url);
+            reject(new Error("Image loading failed"));
+        };
+
+        img.src = url;
+    });
+}
+
+// ==================================================
+// NUMBER CONVERSION
+// ==================================================
+
+function numberValue(value: string): number {
+    let s = value.replace(/[^\d.,-]/g, "");
+
+    if (!s) return 0;
+
+    if (s.includes(",") && s.includes(".")) {
+        if (s.lastIndexOf(",") > s.lastIndexOf(".")) {
+            s = s.replace(/\./g, "").replace(",", ".");
+        } else {
+            s = s.replace(/,/g, "");
+        }
+    } else if (s.includes(",")) {
+        s = s.replace(/,/g, "");
+    }
+
+    return Number(s) || 0;
+}
+
+// ==================================================
+// EXTRACT ACTUAL OCR LINES FROM TESSERACT BLOCKS
+// ==================================================
+
+function extractBlockLines(data: any): string[] {
+    const output: string[] = [];
+
+    // Tesseract 5 can expose words through blocks,
+    // rather than data.words.
+    const blocks = data.blocks || [];
+
+    for (const block of blocks) {
+        for (const paragraph of block.paragraphs || []) {
+            for (const line of paragraph.lines || []) {
+                const words = line.words || [];
+
+                const text = words.length
+                    ? words.map((word: any) => word.text).join(" ")
+                    : line.text || "";
+
+                if (text.trim()) {
+                    output.push(text.trim());
+                }
+            }
+        }
+    }
+
+    return output;
+}
+
+// ==================================================
+// REJECT RECEIPT HEADERS AND NON-PRODUCT LINES
+// ==================================================
+
+function isHeader(line: string): boolean {
+    const text = line.trim();
+
+    if (!text) return true;
+
+    // Dates and times must never become products.
+    if (
+        /\b\d{1,2}[-/]\d{1,2}[-/]\d{2,4}\b/.test(text)
+    ) return true;
+
+    if (
+        /\b\d{1,2}:\d{2}\b/.test(text)
+    ) return true;
+
+    if (
+        /^(total|subtotal|sub-total|vat|tax|discount|change|cash|card|thank|welcome|receipt|invoice|date|time|tel|phone|served|client|balance|amount|visa|mastercard|auth|ref|terminal|merchant|gross|net|rounding|description|item|qty|table|check|no\.?|paid|order|payment|due|tip|vanilla|palm beach|hotel|ein el|vat #|check #)/i.test(text)
+    ) return true;
+
+    return false;
+}
+
+// ==================================================
+// PARSE ONE PRODUCT ROW
+// ==================================================
+
+function parseProductRow(line: string): OCRItem | null {
+    const text = line
+        .replace(/\s+/g, " ")
+        .trim();
+
+    if (isHeader(text)) return null;
+
+    // Product name and price must be present.
+    const matches = [...text.matchAll(/\d[\d,.]*/g)];
+
+    if (!matches.length) return null;
+
+    const last = matches[matches.length - 1];
+    const price = numberValue(last[0]);
+
+    if (price <= 0) return null;
+
+    // Reject implausibly short or noisy descriptions.
+    let description = text.substring(0, last.index).trim();
+
+    description = description
+        .replace(/\b(T|LL|LBP)\s*$/i, "")
+        .replace(/[|=~>*]+/g, " ")
+        .trim();
+
+    let quantity = 1;
+
+    const quantityMatch = description.match(/^(\d{1,2})\s+/);
+
+    if (quantityMatch) {
+        quantity = Number(quantityMatch[1]);
+
+        description = description
+            .substring(quantityMatch[0].length)
+            .trim();
+    }
+
+    // Reject OCR noise such as "I", "7", "3" as product names.
+    const letters = description.match(/[a-zA-Z]{2,}/g);
+
+    if (!letters || letters.join("").length < 3) {
+        return null;
+    }
+
+    // Remove stray OCR characters at the beginning/end.
+    description = description
+        .replace(/^[^a-zA-Z]+/, "")
+        .replace(/[^a-zA-Z0-9&()./' -]+$/, "")
+        .replace(/\s+/g, " ")
+        .trim();
+
+    if (description.length < 3 || quantity < 1 || quantity > 99) {
+        return null;
+    }
+
+    return {
+        name: description,
+        quantity,
+        price: Number(price.toFixed(2))
+    };
+}
+
+// ==================================================
+// SCORE AN OCR PASS
+// ==================================================
+
+function parseRows(rows: string[]): OCRItem[] {
+    const result: OCRItem[] = [];
+
+    for (const row of rows) {
+        const item = parseProductRow(row);
+
+        if (item) {
+            result.push(item);
+        }
+    }
+
+    return result;
+}
+
+function scorePass(items: OCRItem[]): number {
+    let score = items.length * 100;
+
+    for (const item of items) {
+        if (item.name.length >= 5) score += 10;
+        if (item.quantity >= 1) score += 5;
+        if (item.price >= 100) score += 10;
+    }
+
+    return score;
+}
+
+// ==================================================
+// TOTALS
+// ==================================================
+
+function detectTotals(text: string) {
+    const lbpMatch = text.match(
+        /TOTAL\s*(?:LL|LBP|L\.L\.)\s*[:=]?\s*([\d,.]+)/i
+    );
+
+    const usdMatch = text.match(
+        /TOTAL\s*\$\s*[:=]?\s*([\d,.]+)/i
+    );
+
+    const lbp = lbpMatch
+        ? numberValue(lbpMatch[1])
+        : null;
+
+    const usd = usdMatch
+        ? numberValue(usdMatch[1])
+        : null;
+
+    const rate =
+        lbp && usd && lbp > 0 && usd > 0
+            ? lbp / usd
+            : DEFAULT_EXCHANGE_RATE;
+
+    return { lbp, usd, rate };
+}
+
+// ==================================================
+// CURRENCY
+// ==================================================
+
+function detectCurrency(text: string): OCRResult["currency"] {
+    const usd = /\$|USD|US DOLLAR/i.test(text);
+    const lbp = /\bLL\b|\bLBP\b|TOTAL\s*LL/i.test(text);
+
+    if (usd && lbp) return "MIXED";
+    if (usd) return "USD";
+    if (lbp) return "LBP";
+
+    return "UNKNOWN";
+}
+
+function identifyItemCurrency(
+    items: OCRItem[],
+    lbp: number | null,
+    usd: number | null
+): "USD" | "LBP" | "UNKNOWN" {
+
+    const sum = items.reduce(
+        (total, item) => total + item.price * item.quantity,
+        0
+    );
+
+    if (!sum) return "UNKNOWN";
+
+    const matches = (total: number | null) =>
+        total !== null &&
+        Math.abs(sum - total) <= Math.max(2, total * 0.03);
+
+    const matchLBP = matches(lbp);
+    const matchUSD = matches(usd);
+
+    if (matchLBP && !matchUSD) return "LBP";
+    if (matchUSD && !matchLBP) return "USD";
+
+    return "UNKNOWN";
+}
+
+// ==================================================
+// MAIN FUNCTION - EXISTING POS COMPATIBILITY
+// ==================================================
+
+export async function scanBillImage(
+    file: File
+): Promise<OCRItem[]> {
+    const result = await scanBillImageDetailed(file);
+    return result.items;
+}
+
+// ==================================================
+// SMART OCR
+// ==================================================
+
+export async function scanBillImageDetailed(
+    file: File
+): Promise<OCRResult> {
+
+    let worker: any = null;
+
+    try {
+        if (!file || !file.type.startsWith("image/")) {
+            throw new Error("Please select a valid image.");
+        }
+
+        console.log("SMART OCR STARTED");
+
+        const images = await prepareImages(file);
+
+        worker = await Tesseract.createWorker("eng", 1, {
+            workerPath:
+                "https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/worker.min.js",
+            langPath:
+                "https://tessdata.projectnaptha.com/4.0.0",
+            corePath:
+                "https://cdn.jsdelivr.net/npm/tesseract.js-core@5",
+            logger: (message: any) => {
+                if (message.status === "recognizing text") {
+                    console.log(
+                        "OCR Progress:",
+                        Math.round(message.progress * 100) + "%"
+                    );
+                }
+            }
+        });
+
+        let bestItems: OCRItem[] = [];
+        let bestText = "";
+        let bestConfidence = 0;
+        let bestScore = -1;
+
+        // FOUR OCR ATTEMPTS:
+        // 1. Contrast image, uniform block.
+        // 2. Contrast image, sparse text.
+        // 3. Threshold image, uniform block.
+        // 4. Threshold image, sparse text.
+
+        const attempts = [
+            { image: images[0], psm: "6" },
+            { image: images[0], psm: "11" },
+            { image: images[1], psm: "6" },
+            { image: images[1], psm: "11" }
+        ];
+
+        for (let i = 0; i < attempts.length; i++) {
+            const attempt = attempts[i];
+
+            console.log("OCR ATTEMPT:", i + 1);
+
+            await worker.setParameters({
+                tessedit_pageseg_mode: attempt.psm,
+                preserve_interword_spaces: "1"
+            });
+
+            // Explicitly request blocks.
+            const result = await worker.recognize(
+                attempt.image,
+                {},
+                {
+                    text: true,
+                    blocks: true
+                }
+            );
+
+            const data = result.data;
+            const rawText = data.text || "";
+
+            // Prefer actual block lines.
+            const blockLines = extractBlockLines(data);
+
+            // Use normal text lines as a fallback.
+            const textLines = rawText
+                .split(/\r?\n/)
+                .map((line: string) => line.trim())
+                .filter(Boolean);
+
+            const rows = blockLines.length >= 3
+                ? blockLines
+                : textLines;
+
+            const parsed = parseRows(rows);
+            const score = scorePass(parsed);
+
+            console.log("ATTEMPT ROWS:", rows);
+            console.log("ATTEMPT PRODUCTS:", parsed);
+            console.log("ATTEMPT SCORE:", score);
+
+            if (score > bestScore) {
+                bestScore = score;
+                bestItems = parsed;
+                bestText = rawText;
+                bestConfidence = Math.round(data.confidence || 0);
+            }
+        }
+
+        console.log("BEST OCR TEXT:", bestText);
+        console.log("BEST PRODUCTS:", bestItems);
+
+        // ==================================================
+        // FINAL PROCESSING
+        // ==================================================
+
+        const totals = detectTotals(bestText);
+
+        const itemCurrency = identifyItemCurrency(
+            bestItems,
+            totals.lbp,
+            totals.usd
+        );
+
+        const items = bestItems.map(item => ({
+            ...item,
+            price:
+                itemCurrency === "LBP"
+                    ? Number((item.price / totals.rate).toFixed(2))
+                    : item.price
+        }));
+
+        const warnings: string[] = [];
+
+        if (items.length === 0) {
+            warnings.push("No products recognized.");
+        }
+
+        if (items.length < 5) {
+            warnings.push(
+                `Only ${items.length} products recognized. Review the receipt.`
+            );
+        }
+
+        if (itemCurrency === "UNKNOWN" && items.length) {
+            warnings.push(
+                "Product currency could not be verified. No conversion performed."
+            );
+        }
+
+        if (totals.lbp === null && totals.usd === null) {
+            warnings.push("Receipt total not detected.");
+        }
+
+        if (bestConfidence < 70) {
+            warnings.push("OCR confidence is low.");
+        }
+
+        const receiptTotalUSD =
+            totals.usd !== null
+                ? totals.usd
+                : totals.lbp !== null
+                    ? Number((totals.lbp / totals.rate).toFixed(2))
+                    : null;
+
+        const currency = detectCurrency(bestText);
+
+        console.log("========== FINAL OCR ==========");
+        console.log("ITEMS:", items);
+        console.log("ITEM CURRENCY:", itemCurrency);
+        console.log("EXCHANGE RATE:", totals.rate);
+        console.log("CONFIDENCE:", bestConfidence);
+        console.log("WARNINGS:", warnings);
+
+        return {
+            items,
+            rawText: bestText,
+            currency,
+            itemCurrency,
+            receiptTotal: receiptTotalUSD,
+            receiptTotalUSD,
+            receiptTotalLBP: totals.lbp,
+            exchangeRate: totals.rate,
+            warnings,
+            confidence: bestConfidence
+        };
+
+    } catch (error) {
+        console.error("SMART OCR ERROR:", error);
+        throw error;
+
+    } finally {
+        if (worker) {
+            await worker.terminate();
+        }
+    }
+}
+--- END FILE: src/lib/ocr.ts ---
+
 --- FILE: src/lib/parse-ingredients.ts ---
 const UNITS = [
   "tablespoons", "tablespoon", "tbsp", "tbs",
@@ -24625,6 +25250,7 @@ export function extractYouTubeId(input: string | null | undefined): string | nul
   "dependencies": {
     "@aws-sdk/client-s3": "^3.726.1",
     "@aws-sdk/s3-request-presigner": "^3.726.1",
+    "@google/genai": "^2.32.0",
     "@libsql/client": "^0.18.0",
     "browser-image-compression": "^2.0.2",
     "drizzle-orm": "^0.45.4",
@@ -24633,6 +25259,7 @@ export function extractYouTubeId(input: string | null | undefined): string | nul
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "sharp": "^0.35.5",
+    "tesseract.js": "^7.0.0",
     "use-debounce": "^10.1.1",
     "web-push": "^3.6.7"
   },
@@ -24656,6 +25283,7 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   allowedDevOrigins: ["192.168.18.9", "localhost:3000"],
+  serverExternalPackages: ["@google/generative-ai", "tesseract.js"], // <-- ADD THIS
 };
 
 export default nextConfig;
