@@ -1,10 +1,10 @@
 "use client";
-import BarcodeScanModal from "@/components/BarcodeScanModal";
 
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useLang } from "@/components/LanguageProvider";
 import { useCart } from "@/components/CartProvider";
 import { useDebounce } from "use-debounce";
+import BarcodeScanModal from "@/components/BarcodeScanModal";
 
 type Product = {
   id: number;
@@ -50,6 +50,23 @@ export default function StorePage() {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [barcodeOpen, setBarcodeOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  
+  const [totalCount, setTotalCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [infiniteScrollEnabled, setInfiniteScrollEnabled] = useState(false);
+
+  const [activeMainCategory, setActiveMainCategory] = useState<string>("All");
+  const [activeSubCategory, setActiveSubCategory] = useState<string>("All");
+  
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearch] = useDebounce(searchInput, 500);
+  const [dictionary, setDictionary] = useState<Record<string, string>>({});
+  const [translatedSearch, setTranslatedSearch] = useState("");
+
+  const observerTarget = useRef<HTMLDivElement>(null);
 
   async function handleBarcodeDetected(code: string) {
     try {
@@ -69,24 +86,6 @@ export default function StorePage() {
       alert(isAr ? "خطأ في البحث" : "Lookup failed");
     }
   }
-  const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  
-  const [totalCount, setTotalCount] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [infiniteScrollEnabled, setInfiniteScrollEnabled] = useState(false);
-
-  const [activeMainCategory, setActiveMainCategory] = useState<string>("All");
-  const [activeSubCategory, setActiveSubCategory] = useState<string>("All");
-  
-  const [searchInput, setSearchInput] = useState("");
-  const [debouncedSearch] = useDebounce(searchInput, 500);
-  const [dictionary, setDictionary] = useState<Record<string, string>>({});
-  const [translatedSearch, setTranslatedSearch] = useState("");
-
-  const observerTarget = useRef<HTMLDivElement>(null);
-
 
   // Load dictionary
   useEffect(() => {
@@ -253,17 +252,18 @@ export default function StorePage() {
             />
             {searchInput && <button type="button" className="search-clear" onClick={() => setSearchInput("")}>✕</button>}
           </div>
-
+          
           <button
             type="button"
             onClick={() => setBarcodeOpen(true)}
             className="btn btn-ghost"
             title="Scan Barcode"
-            style={{ padding: "0 12px", display: "flex", alignItems: "center", justifyContent: "center", height: 42 }}
+            style={{ padding: "0 16px", display: "flex", alignItems: "center", justifyContent: "center", height: 42, background: "var(--surface-2)", border: "1px solid var(--line)", borderRadius: "var(--radius-sm)" }}
           >
             📷
           </button>
         </div>
+      </div>
 
       <div className="main-categories-desktop" style={{ flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
         {["All", ...ALLOWED_MAIN_CATEGORIES].map((cat) => (
@@ -408,13 +408,13 @@ export default function StorePage() {
           )}
         </>
       )}
+
       <BarcodeScanModal
         isOpen={barcodeOpen}
         onClose={() => setBarcodeOpen(false)}
         onDetected={handleBarcodeDetected}
         isAr={isAr}
       />
-    </div>
     </main>
   );
 }
