@@ -2292,7 +2292,7 @@ html[data-theme="dark"] {
     display: flex;
     align-items: center;
     gap: 12px;
-    min-height: 48px;
+    min-height: 28px;
     padding: 0 14px;
     border-radius: 11px;
     color: var(--nav-text);

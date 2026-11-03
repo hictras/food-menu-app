@@ -171,7 +171,7 @@ export default function Nav() {
             </div>
           )}
           {loaded && !isAdmin && <Link className="nav-login" href="/login" onClick={closeAll}>👤 {lang === "ar" ? ar.nav.login : "Login"}</Link>}
-          <style>{`.mobile-nav-link { min-height: 32px; }`}</style>
+          <style>{`.mobile-nav-link { min-height: 28px; }`}</style>
           <div className="nav-mobile-wrap">
             <button type="button" className="nav-menu-toggle" onClick={() => setMobileOpen((v) => !v)} aria-label={mobileOpen ? "Close menu" : "Open menu"} aria-expanded={mobileOpen} aria-controls="nav-mobile-menu" style={{ zIndex: 15 }}>
               <span className="menu-lines">{mobileOpen ? "×" : "☰"}</span>

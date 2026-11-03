@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef, useMemo } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useLang } from "@/components/LanguageProvider";
 import { useCart } from "@/components/CartProvider";
 import { useDebounce } from "use-debounce";
 import BarcodeScanModal from "@/components/BarcodeScanModal";
+import { ar } from "@/lib/ar"; // <--- IMPORTED ar.ts HERE
 
 type Product = {
   id: number;
@@ -29,19 +30,6 @@ const ALLOWED_MAIN_CATEGORIES = [
   "Organic & Healthy", "Toys", "Baby Care", "Home Care", "Personal Care",
   "Pet Care", "Tobacco", "Kitchen Accessories", "Phone & Home electronics"
 ];
-
-const MAIN_CATEGORY_TRANSLATIONS: Record<string, string> = {
-  "Offers & Promotions": "العروض والترويجات", "Meat & Poultry": "لحوم ودواجن",
-  "Fresh Fish": "سمك طازج", "Back To School": "العودة إلى المدرسة",
-  "Produce": "خضار وفواكه", "Dairy & Eggs": "ألبان وبيض",
-  "Bakery": "مخبوزات", "Ready To Eat": "أكل جاهز", "Grocery Food": "بقالة",
-  "Frozen Food": "مأكولات مجمدة", "Snack & Sweet": "وجبات خفيفة وحلويات",
-  "Beverages": "مشروبات", "Coffee & Tea": "قهوة وشاي",
-  "Organic & Healthy": "عضوي وصحي", "Toys": "ألعاب", "Baby Care": "عناية بالطفل",
-  "Home Care": "عناية بالمنزل", "Personal Care": "عناية شخصية",
-  "Pet Care": "عناية بالحيوانات", "Tobacco": "دخان",
-  "Kitchen Accessories": "أدوات المطبخ", "Phone & Home electronics": "هواتف وإلكترونيات"
-};
 
 export default function StorePage() {
   const { lang } = useLang();
@@ -68,7 +56,6 @@ export default function StorePage() {
 
   const observerTarget = useRef<HTMLDivElement>(null);
 
-  // Load dictionary
   useEffect(() => {
     fetch("/api/dictionary").then(res => res.json()).then(data => {
       if (Array.isArray(data)) {
@@ -79,7 +66,6 @@ export default function StorePage() {
     }).catch(() => {});
   }, []);
 
-  // Load settings (Infinite scroll toggle)
   useEffect(() => {
     fetch("/api/settings")
       .then((res) => res.json())
@@ -89,7 +75,6 @@ export default function StorePage() {
       .catch(() => {});
   }, []);
 
-  // Translate search
   useEffect(() => {
     const raw = debouncedSearch.trim();
     if (raw.length < 3) { setTranslatedSearch(raw); return; }
@@ -137,16 +122,13 @@ export default function StorePage() {
       });
   }, [activeMainCategory, activeSubCategory, translatedSearch]);
 
-  // Reset on filter/search change
   useEffect(() => {
     setCurrentPage(1);
     fetchProducts(1, false);
   }, [fetchProducts]);
 
-  // Infinite scroll observer
   useEffect(() => {
     if (!infiniteScrollEnabled) return;
-    
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !loading && !loadingMore && currentPage < totalPages) {
@@ -174,10 +156,10 @@ export default function StorePage() {
       const res = await fetch(`/api/store/barcode/${encodeURIComponent(code)}`);
       const data = await res.json();
       if (!data.found) {
-        alert(isAr ? "المنتج غير موجود في المتجر" : "Product not found in store");
+        alert(isAr ? ar.store.productNotFound : "Product not found in store");
       }
     } catch {
-      alert(isAr ? "خطأ في البحث" : "Lookup failed");
+      alert(isAr ? ar.store.lookupFailed : "Lookup failed");
     }
   }
 
@@ -216,16 +198,18 @@ export default function StorePage() {
       `}</style>
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 16 }}>
-        <div className="page-head" style={{ margin: 0 }}><h1>{isAr ? "المتجر" : "Store"}</h1></div>
+        <div className="page-head" style={{ margin: 0 }}>
+          <h1>{isAr ? ar.store.title : "Store"}</h1>
+        </div>
       </div>
       
       <p className="page-sub">
         {isAr 
-          ? `عرض ${products.length} من ${totalCount} منتج` 
+          ? ar.store.showing.replace("{n}", String(products.length)).replace("{total}", String(totalCount))
           : `Showing ${products.length} of ${totalCount} products`}
         {searchTooShort && (
           <span style={{ marginInlineStart: 8, color: "var(--accent)" }}>
-            {isAr ? "— اكتب 3 أحرف على الأقل للبحث" : "— type at least 3 characters to search"}
+            {isAr ? ar.store.searchTooShort : "— type at least 3 characters to search"}
           </span>
         )}
       </p>
@@ -237,24 +221,13 @@ export default function StorePage() {
             <input
               type="text"
               className="search-input"
-              placeholder={isAr ? "ابحث عن منتج... (3 أحرف على الأقل)" : "Search products... (min 3 chars)"}
+              placeholder={isAr ? ar.store.searchPlaceholder : "Search products... (min 3 chars)"}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              style={{ 
-                width: "100%", 
-                paddingLeft: 36, 
-                paddingRight: searchInput ? 36 : 12, 
-                height: 42, 
-                margin: 0 
-              }}
+              style={{ width: "100%", paddingLeft: 36, paddingRight: searchInput ? 36 : 12, height: 42, margin: 0 }}
             />
             {searchInput && (
-              <button 
-                type="button" 
-                className="search-clear" 
-                onClick={() => setSearchInput("")}
-                style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", zIndex: 2 }}
-              >
+              <button type="button" className="search-clear" onClick={() => setSearchInput("")} style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", zIndex: 2 }}>
                 ✕
               </button>
             )}
@@ -273,21 +246,27 @@ export default function StorePage() {
       </div>
 
       <div className="main-categories-desktop" style={{ flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
-        {["All", ...ALLOWED_MAIN_CATEGORIES].map((cat) => (
-          <button
-            key={cat}
-            onClick={() => { setActiveMainCategory(cat); setActiveSubCategory("All"); }}
-            className={`chip ${activeMainCategory === cat ? "active" : ""}`}
-            style={{ fontSize: 14, padding: "8px 16px", cursor: "pointer", fontWeight: activeMainCategory === cat ? 700 : 500 }}
-          >
-            {cat === "All" ? (isAr ? "الكل" : "All") : (isAr ? MAIN_CATEGORY_TRANSLATIONS[cat] || cat : cat)}
-          </button>
-        ))}
+        {["All", ...ALLOWED_MAIN_CATEGORIES].map((cat) => {
+          // Look up translation from ar.ts categories list, or fallback to default
+          const transKey = cat === "All" ? "All" : cat;
+          const label = isAr ? (ar.store[transKey as keyof typeof ar.store] || cat) : cat;
+          
+          return (
+            <button
+              key={cat}
+              onClick={() => { setActiveMainCategory(cat); setActiveSubCategory("All"); }}
+              className={`chip ${activeMainCategory === cat ? "active" : ""}`}
+              style={{ fontSize: 14, padding: "8px 16px", cursor: "pointer", fontWeight: activeMainCategory === cat ? 700 : 500 }}
+            >
+              {label}
+            </button>
+          );
+        })}
       </div>
 
       <div className="main-categories-mobile" style={{ marginBottom: 16 }}>
         <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--muted)", marginBottom: 6 }}>
-          {isAr ? "الفئة الرئيسية" : "Main Category"}
+          {isAr ? ar.store.mainCategory : "Main Category"}
         </label>
         <select
           className="filter-select"
@@ -295,11 +274,11 @@ export default function StorePage() {
           onChange={(e) => { setActiveMainCategory(e.target.value); setActiveSubCategory("All"); }}
           style={{ width: "100%", padding: "10px 12px", fontSize: 14, borderRadius: 8, background: "var(--surface-solid)", border: "1px solid var(--line)", color: "var(--ink)" }}
         >
-          {["All", ...ALLOWED_MAIN_CATEGORIES].map((cat) => (
-            <option key={cat} value={cat}>
-              {cat === "All" ? (isAr ? "الكل" : "All") : (isAr ? MAIN_CATEGORY_TRANSLATIONS[cat] || cat : cat)}
-            </option>
-          ))}
+          {["All", ...ALLOWED_MAIN_CATEGORIES].map((cat) => {
+            const transKey = cat === "All" ? "All" : cat;
+            const label = isAr ? (ar.store[transKey as keyof typeof ar.store] || cat) : cat;
+            return <option key={cat} value={cat}>{label}</option>;
+          })}
         </select>
       </div>
 
@@ -312,7 +291,7 @@ export default function StorePage() {
               className={`chip ${activeSubCategory === sub ? "active" : ""}`}
               style={{ fontSize: 12, padding: "6px 14px", cursor: "pointer", flexShrink: 0 }}
             >
-              {sub === "All" ? (isAr ? "الكل" : "All") : sub}
+              {sub === "All" ? (isAr ? ar.store.allSub : "All") : sub}
             </button>
           ))}
         </div>
@@ -322,13 +301,13 @@ export default function StorePage() {
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 20px", gap: 20 }}>
           <div style={{ width: 48, height: 48, border: "4px solid var(--line-strong)", borderTopColor: "var(--accent)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
           <div style={{ textAlign: "center" }}>
-            <h3 style={{ margin: "0 0 8px 0", fontSize: 18, color: "var(--ink)" }}>{isAr ? "جاري تحميل المنتجات..." : "Loading products..."}</h3>
+            <h3 style={{ margin: "0 0 8px 0", fontSize: 18, color: "var(--ink)" }}>{isAr ? ar.store.loading : "Loading products..."}</h3>
           </div>
         </div>
       ) : products.length === 0 ? (
         <div className="empty">
-          <h2>{isAr ? "لا توجد منتجات" : "No products found"}</h2>
-          <p>{isAr ? "جرب البحث بكلمة أخرى أو فئة أخرى." : "Try a different search or category."}</p>
+          <h2>{isAr ? ar.store.noProducts : "No products found"}</h2>
+          <p>{isAr ? ar.store.noProductsHint : "Try a different search or category."}</p>
         </div>
       ) : (
         <>
@@ -349,7 +328,7 @@ export default function StorePage() {
                     )}
                     {p.isPromotion === 1 && (
                       <div style={{ position: "absolute", top: 8, left: 8, background: "#61d509", color: "#000", padding: "4px 8px", borderRadius: 6, fontSize: 10, fontWeight: 800, textTransform: "uppercase", zIndex: 3, boxShadow: "0 2px 6px rgba(0,0,0,0.3)" }}>
-                        {isAr ? "عرض" : "Promo"}
+                        {isAr ? ar.store.promo : "Promo"}
                       </div>
                     )}
                     {pkgLabel && (
@@ -397,19 +376,19 @@ export default function StorePage() {
               {loadingMore && (
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
                   <div style={{ width: 32, height: 32, border: "3px solid var(--line-strong)", borderTopColor: "var(--accent)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-                  <span style={{ fontSize: 13, color: "var(--muted)" }}>{isAr ? "جاري تحميل المزيد..." : "Loading more..."}</span>
+                  <span style={{ fontSize: 13, color: "var(--muted)" }}>{isAr ? ar.store.loadingMore : "Loading more..."}</span>
                 </div>
               )}
               {!loadingMore && currentPage >= totalPages && (
-                <span style={{ fontSize: 13, color: "var(--muted)", fontStyle: "italic" }}>{isAr ? "لقد وصلت إلى النهاية" : "You've reached the end"}</span>
+                <span style={{ fontSize: 13, color: "var(--muted)", fontStyle: "italic" }}>{isAr ? ar.store.endOfList : "You've reached the end"}</span>
               )}
             </div>
           ) : (
             totalPages > 1 && (
               <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 12, marginTop: 40 }}>
-                <button className="btn btn-ghost" onClick={() => goToPage(Math.max(1, currentPage - 1))} disabled={currentPage === 1}>← {isAr ? "السابق" : "Prev"}</button>
+                <button className="btn btn-ghost" onClick={() => goToPage(Math.max(1, currentPage - 1))} disabled={currentPage === 1}>← {isAr ? ar.store.prev : "Prev"}</button>
                 <span style={{ fontSize: 14, fontWeight: 600, color: "var(--muted)" }}>{currentPage} / {totalPages}</span>
-                <button className="btn btn-ghost" onClick={() => goToPage(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages}>{isAr ? "التالي" : "Next"} →</button>
+                <button className="btn btn-ghost" onClick={() => goToPage(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages}>{isAr ? ar.store.next : "Next"} →</button>
               </div>
             )
           )}

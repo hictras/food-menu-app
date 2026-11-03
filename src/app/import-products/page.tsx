@@ -1,9 +1,31 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import Link from "next/link";
 import { useLang } from "@/components/LanguageProvider";
 import { useModal } from "@/components/ModalProvider";
+
+// Same parser logic as the API, just for the preview
+function parsePackageSize(title: string): { size: number | null; unit: string | null } {
+  const regex = /(\d+(?:[.,]\d+)?)\s*(kg|kilo|kilos|g|gr|gram|grams|ml|l|liter|liters|litre|litres|pcs|pc|pieces|piece|oz|lb|lbs|cl)\b/i;
+  const match = title.match(regex);
+  if (!match) return { size: null, unit: null };
+
+  let size = parseFloat(match[1].replace(",", "."));
+  const rawUnit = match[2].toLowerCase();
+  let unit = null;
+
+  if (["kg", "kilo", "kilos"].includes(rawUnit)) unit = "kg";
+  else if (["g", "gr", "gram", "grams"].includes(rawUnit)) unit = "g";
+  else if (["ml"].includes(rawUnit)) unit = "ml";
+  else if (["l", "liter", "liters", "litre", "litres"].includes(rawUnit)) unit = "L";
+  else if (["pcs", "pc", "pieces", "piece"].includes(rawUnit)) unit = "pcs";
+  else if (["oz"].includes(rawUnit)) unit = "oz";
+  else if (["lb", "lbs"].includes(rawUnit)) unit = "lb";
+  else if (["cl"].includes(rawUnit)) unit = "cl";
+
+  return { size: Number.isFinite(size) ? size : null, unit };
+}
 
 export default function ImportProductsPage() {
   const { lang } = useLang();
@@ -15,6 +37,19 @@ export default function ImportProductsPage() {
   const [importing, setImporting] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState("");
+
+  // Parse the JSON live to show preview
+  const parsedData = useMemo(() => {
+    if (!json.trim()) return null;
+    try {
+      const parsed = JSON.parse(json);
+      const list = parsed.products || (Array.isArray(parsed) ? parsed : []);
+      if (!Array.isArray(list)) return null;
+      return list;
+    } catch {
+      return null;
+    }
+  }, [json]);
 
   function handleFilePick(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -59,7 +94,7 @@ export default function ImportProductsPage() {
   }
 
   return (
-    <main className="container" style={{ paddingTop: 40, paddingBottom: 80, maxWidth: 800 }}>
+    <main className="container" style={{ paddingTop: 40, paddingBottom: 80, maxWidth: 1000 }}>
       <div className="page-head">
         <h1>{isAr ? "استيراد المنتجات" : "Import Products"}</h1>
       </div>
@@ -77,7 +112,7 @@ export default function ImportProductsPage() {
             onChange={(e) => { setJson(e.target.value); setError(""); setResult(null); }}
             placeholder='{"products": [...]}'
             dir="ltr"
-            style={{ width: "100%", minHeight: 240, padding: 12, fontFamily: "var(--font-mono)", fontSize: 12.5, lineHeight: 1.5 }}
+            style={{ width: "100%", minHeight: 200, padding: 12, fontFamily: "var(--font-mono)", fontSize: 12.5, lineHeight: 1.5 }}
           />
           
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 10 }}>
@@ -96,6 +131,40 @@ export default function ImportProductsPage() {
         {error && (
           <div style={{ padding: "10px 14px", background: "var(--accent-soft)", color: "var(--accent)", border: "1px solid var(--accent)", borderRadius: 8, fontSize: 13, marginTop: 12, marginBottom: 12 }}>
             {error}
+          </div>
+        )}
+
+        {/* LIVE PREVIEW TABLE */}
+        {parsedData && parsedData.length > 0 && !result && (
+          <div style={{ marginTop: 24 }}>
+            <h3 style={{ fontSize: 16, marginBottom: 12 }}>{isAr ? "معاينة أول 50 منتج" : "Preview (first 50 items)"}</h3>
+            <div style={{ maxHeight: 300, overflowY: "auto", border: "1px solid var(--line)", borderRadius: 8 }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                <thead style={{ background: "var(--bg)", position: "sticky", top: 0, zIndex: 1 }}>
+                  <tr>
+                    <th style={{ padding: 10, textAlign: "start", borderBottom: "1px solid var(--line)" }}>{isAr ? "الاسم" : "Title"}</th>
+                    <th style={{ padding: 10, textAlign: "start", borderBottom: "1px solid var(--line)" }}>Category</th>
+                    <th style={{ padding: 10, textAlign: "center", borderBottom: "1px solid var(--line)" }}>Parsed Size</th>
+                    <th style={{ padding: 10, textAlign: "end", borderBottom: "1px solid var(--line)" }}>Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {parsedData.slice(0, 50).map((p: any, idx: number) => {
+                    const { size, unit } = parsePackageSize(p.title || "");
+                    return (
+                      <tr key={idx} style={{ borderBottom: "1px solid var(--line)" }}>
+                        <td style={{ padding: 10 }}>{p.title}</td>
+                        <td style={{ padding: 10, color: "var(--muted)" }}>{p.categories?.split(",")[0] || "-"}</td>
+                        <td style={{ padding: 10, textAlign: "center", fontWeight: 600, color: size ? "var(--olive)" : "var(--accent)" }}>
+                          {size ? `${size} ${unit}` : (isAr ? "لا يوجد" : "None")}
+                        </td>
+                        <td style={{ padding: 10, textAlign: "end" }}>${p.finalPrice}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
